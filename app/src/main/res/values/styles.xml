@@ -1,0 +1,26 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppThemeNone" parent="Base.Theme.AppCompat.Light">
+
+    </style>
+
+    <style name="AppTheme" parent="@android:style/Theme.Holo.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:calendarViewStyle">@style/Widget.CalendarView.ThemeCalendar</item>
+
+
+    </style>
+
+
+    <style name="Widget.CalendarView.ThemeCalendar" parent="android:Widget.CalendarView">
+        <item name="android:focusedMonthDateColor">@color/colorTexto</item>
+        <item name="android:weekNumberColor">@color/colorRojo</item>
+        <item name="android:unfocusedMonthDateColor">@color/colorBlanco</item>
+        <item name="android:selectedWeekBackgroundColor">@color/colorGris</item>
+        <item name="android:windowActionBarOverlay">@color/colorTexto</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+
+</resources>

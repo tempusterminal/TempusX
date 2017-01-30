@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Non focused states -->
+    <item android:state_focused="false" android:state_selected="false" android:state_pressed="false" android:drawable="@color/colorTabNonFocusedNone" />
+    <item android:state_focused="false" android:state_selected="true"  android:state_pressed="false" android:drawable="@color/colorTabNonFocusedSelect" />
+
+        <!-- Focused states
+    <item android:state_focused="true" android:state_selected="false" android:state_pressed="false" android:drawable="@drawable/patron3" />
+    <item android:state_focused="true" android:state_selected="true"  android:state_pressed="false" android:drawable="@drawable/patron4" /> -->
+
+    <!-- Pressed -->
+    <!--    Non focused states -->
+    <item android:state_focused="false" android:state_selected="false" android:state_pressed="true" android:drawable="@color/colorTabFocusedNone" />
+    <item android:state_focused="false" android:state_selected="true"  android:state_pressed="true" android:drawable="@color/colorTabFocusedSelect" />
+
+    <!--    Focused states
+    <item android:state_focused="true" android:state_selected="false" android:state_pressed="true" android:drawable="@drawable/patron7" />
+    <item android:state_focused="true" android:state_selected="true"  android:state_pressed="true" android:drawable="@drawable/patron8" /> -->
+</selector>

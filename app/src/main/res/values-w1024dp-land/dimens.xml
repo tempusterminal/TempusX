@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="activity_horizontal_margin">0dp</dimen>
+    <dimen name="activity_vertical_margin">0dp</dimen>
+
+    <dimen name="linea_width">1024dp</dimen>
+    <dimen name="linea_height">7dp</dimen>
+    <dimen name="linea1_marginTop">0dp</dimen>
+    <dimen name="linea1_marginLeft">0dp</dimen>
+    <dimen name="linea2_marginTop">143dp</dimen>
+    <dimen name="linea2_marginLeft">0dp</dimen>
+    <dimen name="linea2S_marginTop">103dp</dimen>
+    <dimen name="linea2S_marginLeft">0dp</dimen>
+
+    <dimen name="fondo1_width">1024dp</dimen>
+    <dimen name="fondo1_height">136dp</dimen>
+    <dimen name="fondo1_marginTop">7dp</dimen>
+    <dimen name="fondo1_marginLeft">0dp</dimen>
+    <dimen name="fondo1S_width">1024dp</dimen>
+    <dimen name="fondo1S_height">96dp</dimen>
+    <dimen name="fondo1S_marginTop">7dp</dimen>
+    <dimen name="fondo1S_marginLeft">0dp</dimen>
+
+    <dimen name="fondo2_width">1024dp</dimen>
+    <dimen name="fondo2_height">393dp</dimen>
+    <dimen name="fondo2_marginTop">150dp</dimen>
+    <dimen name="fondo2_marginLeft">0dp</dimen>
+    <dimen name="fondo2S_width">1024dp</dimen>
+    <dimen name="fondo2S_height">433dp</dimen>
+    <dimen name="fondo2S_marginTop">110dp</dimen>
+    <dimen name="fondo2S_marginLeft">0dp</dimen>
+
+    <dimen name="hora_textSize">100sp</dimen>
+    <dimen name="fecha_textSize">30sp</dimen>
+
+    <dimen name="cuerpo_textSize">40sp</dimen>
+    <dimen name="cuerpo_min_textSize">25sp</dimen>
+
+    <dimen name="titulo_textSize">65sp</dimen>
+    <dimen name="titulo_width">712dp</dimen>
+    <dimen name="titulo_height">90dp</dimen>
+    <dimen name="titulo_marginTop">10dp</dimen>
+    <dimen name="titulo_marginLeft">20dp</dimen>
+
+
+
+</resources>

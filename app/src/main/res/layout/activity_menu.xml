@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_menu"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.tempus.proyectos.tempusx.ActivityMenu">
+
+    <!-- Fondos -->
+
+    <TextView
+        android:layout_width="@dimen/fondo1_width"
+        android:layout_height="@dimen/fondo1alt_height"
+        android:layout_marginTop="@dimen/fondo1_marginTop"
+        android:layout_marginLeft="@dimen/fondo1_marginLeft"
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/Fondo1" />
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/fondo2alt_height"
+        android:layout_marginTop="@dimen/fondo2alt_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:background="@color/colorFondoCuerpo"
+        android:id="@+id/Fondo2" />
+
+    <fragment
+        android:layout_width="@dimen/fondo3_width"
+        android:layout_height="@dimen/fondo3_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/fondo3_marginLeft"
+        android:name="com.tempus.proyectos.tempusx.FragmentBar"
+        android:layout_marginBottom="0dp"
+        android:id="@+id/fragment1"
+        android:layout_alignParentTop="true"
+        tools:layout="@layout/fragment_bar" />
+
+
+    <!-- Lineas -->
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/linea1_marginTop"
+        android:layout_marginLeft="@dimen/linea1_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/linea1" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/linea2alt_marginTop"
+        android:layout_marginLeft="@dimen/linea2alt_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/linea2" />
+
+
+    <!-- Titulo -->
+
+    <ImageView
+        android:layout_width="@dimen/logo_width"
+        android:layout_height="@dimen/logo_height"
+        android:layout_marginTop="@dimen/logo_marginTop"
+        android:layout_marginRight="@dimen/logo_marginRight"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/logo"
+        android:id="@+id/btnMasterMenu" />
+
+    <TextView
+        android:layout_width="@dimen/titulo_width"
+        android:layout_height="@dimen/titulo_height"
+        android:layout_marginTop="@dimen/titulo_marginTop"
+        android:layout_marginLeft="@dimen/titulo_marginLeft"
+        android:text="@string/titulo_Menu"
+        android:textSize="@dimen/titulo_textSize"
+        android:textColor="@color/colorTexto"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        android:id="@+id/Titulo" />
+
+
+    <!-- Componentes -->
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon1"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc1_marginLeft"
+        android:id="@+id/ibtn01" />
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon2"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc2_marginLeft"
+        android:id="@+id/ibtn02" />
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon3"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc3_marginLeft"
+        android:id="@+id/ibtn03" />
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon4"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc4_marginLeft"
+        android:id="@+id/ibtn04" />
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon5"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc5_marginLeft"
+        android:id="@+id/ibtn05" />
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon6"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc1_marginLeft"
+        android:id="@+id/ibtn06" />
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon7"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc2_marginLeft"
+        android:id="@+id/ibtn07" />
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon8"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc3_marginLeft"
+        android:id="@+id/ibtn08" />
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon9"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc4_marginLeft"
+        android:id="@+id/ibtn09" />
+
+
+    <ImageButton
+        android:layout_width="@dimen/acMenu_btnOpcAll_width"
+        android:layout_height="@dimen/acMenu_btnOpcAll_height"
+        android:src="@drawable/icon1"
+        android:scaleType="fitXY"
+        android:background="@color/colorFondoCuerpo"
+        android:padding="@dimen/acMenu_btnOpcAllPadding"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_btnOpc5_marginLeft"
+        android:id="@+id/ibtn10" />
+
+
+    <TextView
+        android:text="SISTEMA"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc1_marginLeft"
+        android:id="@+id/itxv01" />
+
+    <TextView
+        android:text="COMUNICACIÓN"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc2_marginLeft"
+        android:id="@+id/itxv02" />
+
+    <TextView
+        android:text="FECHA Y HORA"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc3_marginLeft"
+        android:id="@+id/itxv03" />
+
+    <TextView
+        android:text="HISTORIAL"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc4_marginLeft"
+        android:id="@+id/itxv04" />
+
+    <TextView
+        android:text="SINCRONIZACIÓN"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcSupAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc5_marginLeft"
+        android:id="@+id/itxv05" />
+
+    <TextView
+        android:text="BIOMETRIA"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc1_marginLeft"
+        android:id="@+id/itxv06" />
+
+    <TextView
+        android:text="ACTUALIZACIÓN"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc2_marginLeft"
+        android:id="@+id/itxv07" />
+
+    <TextView
+        android:text="ADMINISTRAR"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc3_marginLeft"
+        android:id="@+id/itxv08" />
+
+    <TextView
+        android:text="NULL"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc4_marginLeft"
+        android:id="@+id/itxv09" />
+
+    <TextView
+        android:text="NULL"
+        android:layout_width="@dimen/acMenu_lblOpcAll_width"
+        android:layout_height="@dimen/acMenu_lblOpcAll_height"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/acMenu_lblOpc_textSize"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
+        android:layout_marginLeft="@dimen/acMenu_lblOpc5_marginLeft"
+        android:id="@+id/itxv10" />
+
+</RelativeLayout>

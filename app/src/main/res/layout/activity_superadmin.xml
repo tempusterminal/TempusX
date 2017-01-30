@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_produccion"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.tempus.proyectos.tempusx.ActivityProduccion">
+
+    <!-- Fondos -->
+
+    <TextView
+        android:layout_width="@dimen/fondo1_width"
+        android:layout_height="@dimen/fondo1alt_height"
+        android:layout_marginTop="@dimen/fondo1_marginTop"
+        android:layout_marginLeft="@dimen/fondo1_marginLeft"
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/Fondo1" />
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/fondo2alt_height"
+        android:layout_marginTop="@dimen/fondo2alt_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:background="@color/colorFondoCuerpo"
+        android:id="@+id/Fondo2" />
+
+    <fragment
+        android:layout_width="@dimen/fondo3_width"
+        android:layout_height="@dimen/fondo3_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/fondo3_marginLeft"
+        android:name="com.tempus.proyectos.tempusx.FragmentBar"
+        android:layout_marginBottom="0dp"
+        android:id="@+id/fragment1"
+        android:layout_alignParentTop="true"
+        tools:layout="@layout/fragment_bar" />
+
+    <!-- Lineas -->
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/linea1_marginTop"
+        android:layout_marginLeft="@dimen/linea1_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/linea1" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/linea2alt_marginTop"
+        android:layout_marginLeft="@dimen/linea2alt_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/linea2" />
+
+    <!-- Titulo -->
+
+    <ImageView
+        android:layout_width="@dimen/logo_width"
+        android:layout_height="@dimen/logo_height"
+        android:layout_marginTop="@dimen/logo_marginTop"
+        android:layout_marginRight="@dimen/logo_marginRight"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/logo"
+        android:id="@+id/btnMasterSuperadmin" />
+
+    <TextView
+        android:layout_width="@dimen/titulo_width"
+        android:layout_height="@dimen/titulo_height"
+        android:layout_marginTop="@dimen/titulo_marginTop"
+        android:layout_marginLeft="@dimen/titulo_marginLeft"
+        android:text="@string/titulo_superadmin"
+        android:textSize="@dimen/titulo_textSize"
+        android:textColor="@color/colorTexto"
+        android:textStyle="bold"
+        android:id="@+id/Titulo" />
+
+
+    <!-- COMPONENTES -->
+
+    <TabHost
+        android:id="@+id/tabHostAdmin"
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/fondo2alt_height"
+        android:layout_marginTop="@dimen/fondo2alt_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:layout_centerHorizontal="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TabWidget
+                android:background="@color/colorTabNonFocusedNone"
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></TabWidget>
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/tab1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="This is tab 1" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="This is tab 2" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="This is tab 3" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="This is tab 4" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="This is tab 5" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab6"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="This is tab 6" />
+                </LinearLayout>
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+
+</RelativeLayout>

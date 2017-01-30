@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_principal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.tempus.proyectos.tempusx.ActivityPrincipal">
+
+
+    <!-- Fondos -->
+
+    <TextView
+        android:layout_width="@dimen/fondo1_width"
+        android:layout_height="@dimen/fondo1_height"
+        android:layout_marginTop="@dimen/fondo1_marginTop"
+        android:layout_marginLeft="@dimen/fondo1_marginLeft"
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/txvFondo1" />
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/fondo2_height"
+        android:layout_marginTop="@dimen/fondo2_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:background="@color/colorFondoCuerpo"
+        android:id="@+id/txvFondo2" />
+
+    <fragment
+        android:name="com.tempus.proyectos.tempusx.FragmentBar"
+        android:layout_width="@dimen/fondo3_width"
+        android:layout_height="@dimen/fondo3_height"
+        android:layout_marginLeft="@dimen/fondo3_marginLeft"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:id="@+id/fragment"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        tools:layout="@layout/fragment_bar" />
+
+
+
+    <!-- Lineas -->
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/linea1_marginTop"
+        android:layout_marginLeft="@dimen/linea1_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea1" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/linea2_marginTop"
+        android:layout_marginLeft="@dimen/linea2_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea2" />
+
+
+    <!-- Componentes -->
+
+    <TextClock
+        android:layout_width="@dimen/hora_width"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginLeft="@dimen/hora_marginLeft"
+        android:textSize="@dimen/hora_textSize"
+        android:textColor="@color/colorTexto"
+        android:textStyle="bold"
+        android:format24Hour="HH:mm:ss"
+        android:includeFontPadding="false"
+        android:id="@+id/txcHora" />
+
+    <TextClock
+        android:layout_width="@dimen/fecha_width"
+        android:layout_height="@dimen/fecha_height"
+        android:layout_marginTop="@dimen/fecha_marginTop"
+        android:layout_marginRight="@dimen/fecha_marginRight"
+        android:layout_alignParentRight="true"
+        android:textSize="@dimen/fecha_textSize"
+        android:textColor="@color/colorTexto"
+        android:textStyle="bold"
+        android:format24Hour="dd/MM/yyyy"
+        android:gravity="right"
+        android:id="@+id/textClock" />
+
+    <ImageView
+        android:layout_width="@dimen/logo_width"
+        android:layout_height="@dimen/logo_height"
+        android:layout_marginTop="@dimen/logo_marginTop"
+        android:layout_marginRight="@dimen/logo_marginRight"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/logo"
+        android:id="@+id/btnMaster" />
+
+    <!-- Botones de Accesos -->
+
+    <Button
+        android:text="1"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="@dimen/botonAcceso1_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:id="@+id/btnAccess1" />
+
+    <Button
+        android:text="2"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="@dimen/botonAcceso2_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:id="@+id/btnAccess2" />
+
+    <Button
+        android:text="3"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="@dimen/botonAcceso3_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:id="@+id/btnAccess3" />
+
+    <Button
+        android:text="4"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="@dimen/botonAcceso4_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:id="@+id/btnAccess4" />
+
+    <ImageButton
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/abc_ic_menu_selectall_mtrl_alpha"
+        android:scaleType="fitXY"
+        android:padding="10dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="35dp"
+        android:layout_marginRight="10dp"
+        android:id="@+id/btnAccessKey" />
+
+
+
+    <!-- Botones de Eventos-->
+
+    <Button
+        android:text="ENTRADA"
+        android:layout_width="@dimen/botonAcceso_width_two"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="@dimen/botonAcceso1_marginLeft_24"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:background="@color/colorGrisOscuro"
+        android:id="@+id/btnEvent01" />
+
+    <Button
+        android:text="SALIDA"
+        android:layout_width="@dimen/botonAcceso_width_two"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="@dimen/botonAcceso2_marginLeft_24"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:background="@color/colorGrisOscuro"
+        android:id="@+id/btnEvent02" />
+
+    <Button
+        android:text="3"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="@dimen/botonAcceso3_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:background="@color/colorGris"
+        android:id="@+id/btnEvent03" />
+
+    <Button
+        android:text="4"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="@dimen/botonAcceso4_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:background="@color/colorGris"
+        android:id="@+id/btnEvent04" />
+
+    <Button
+        android:text="5"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="165dp"
+        android:layout_marginLeft="@dimen/botonAcceso1_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:background="@color/colorGris"
+        android:id="@+id/btnEvent05" />
+
+    <Button
+        android:text="6"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="165dp"
+        android:layout_marginLeft="@dimen/botonAcceso2_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:background="@color/colorGris"
+        android:id="@+id/btnEvent06" />
+
+    <Button
+        android:text="7"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="165dp"
+        android:layout_marginLeft="@dimen/botonAcceso3_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:background="@color/colorGris"
+        android:id="@+id/btnEvent07" />
+
+    <Button
+        android:text="8"
+        android:layout_width="@dimen/botonAcceso_width"
+        android:layout_height="@dimen/botonAcceso_height"
+        android:layout_marginTop="165dp"
+        android:layout_marginLeft="@dimen/botonAcceso4_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:textSize="@dimen/botonAcceso_textSize"
+        android:background="@color/colorGris"
+        android:id="@+id/btnEvent08" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <TextView
+        android:text="SELECCIONE EVENTO"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorTexto"
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:id="@+id/txvMensajePantalla"
+        android:layout_marginLeft="120.5dp"
+        android:layout_marginTop="245dp"/>
+
+
+    <!-- Teclado -->
+
+    <TextView
+        android:text=""
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/fondo2_height"
+        android:layout_marginTop="@dimen/fondo2_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:background="@color/colorGris"
+        android:id="@+id/txvKeyFondo" />
+
+    <TextView
+        android:text=""
+        android:layout_width="495dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="85dp"
+        android:layout_marginLeft="20dp"
+        android:background="@color/colorGrisOscuro"
+        android:textColor="@color/colorBlanco"
+        android:gravity="center_vertical|center_horizontal"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        android:id="@+id/txvKeyPantalla" />
+
+    <Button
+        android:text="1"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="20dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey1" />
+
+    <Button
+        android:text="2"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="145dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey2" />
+
+    <Button
+        android:text="3"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="270dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey3" />
+
+    <Button
+        android:text="BORRAR"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="150dp"
+        android:layout_marginLeft="395dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKeyBorrar" />
+
+
+
+    <Button
+        android:text="4"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="195dp"
+        android:layout_marginLeft="20dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey4" />
+
+    <Button
+        android:text="5"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="195dp"
+        android:layout_marginLeft="145dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey5" />
+
+    <Button
+        android:text="6"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="195dp"
+        android:layout_marginLeft="270dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey6" />
+
+    <Button
+        android:text="0"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="195dp"
+        android:layout_marginLeft="395dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey0" />
+
+
+
+    <Button
+        android:text="7"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="240dp"
+        android:layout_marginLeft="20dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey7" />
+
+    <Button
+        android:text="8"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="240dp"
+        android:layout_marginLeft="145dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey8" />
+
+    <Button
+        android:text="9"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="240dp"
+        android:layout_marginLeft="270dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKey9" />
+
+    <Button
+        android:text="INTRO"
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="240dp"
+        android:layout_marginLeft="395dp"
+        android:textStyle="bold"
+        android:id="@+id/btnKeyIntro" />
+
+
+    <!-- Marcacion-->
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/fondo2_height"
+        android:layout_marginTop="@dimen/fondo2_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:background="@color/colorFondoMarcacion"
+        android:id="@+id/txvMarcacionFondo" />
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/mWidgetNombre_height"
+        android:layout_marginTop="@dimen/mWidgetNombre_marginTop"
+        android:layout_alignParentTop="true"
+        android:text="NOMBRES APE01 APE02"
+        android:textSize="@dimen/mWidgetNombre_textSize"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:id="@+id/txvMarcacionNombre"/>
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/mWidgetTarjeta_height"
+        android:layout_marginTop="@dimen/mWidgetTarjeta_marginTop"
+        android:layout_alignParentTop="true"
+        android:text="00000000"
+        android:id="@+id/txvMarcacionTarjeta"
+        android:textSize="@dimen/mWidgetTarjeta_textSize"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/mWidgetMsjPrincipal_height"
+        android:layout_marginTop="@dimen/mWidgetMsjPrincipal_marginTop"
+        android:layout_alignParentTop="true"
+        android:text="MENSAJE PRINCIPAL"
+        android:id="@+id/txvMarcacionMsjPrincipal"
+        android:textSize="@dimen/mWidgetMsjPrincipal_textSize"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textAlignment="center"/>
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/mWidgetMsjSecundario_height"
+        android:layout_marginTop="@dimen/mWidgetMsjSecundario_marginTop"
+        android:layout_alignParentTop="true"
+        android:text="MENSAJE SECUNDARIO"
+        android:id="@+id/txvMarcacionMsjSecundario"
+        android:textSize="@dimen/mWidgetMsjSecundario_textSize"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textAlignment="center"/>
+
+    <!-- AREA BOOT -->
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/fondo2_height"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:background="@color/colorFondoMarcacion"
+        android:id="@+id/txvFondoInicial"
+        android:layout_below="@+id/txcHora"
+        android:layout_alignParentStart="true" />
+
+    <ProgressBar
+        android:layout_width="@dimen/mProgressbar_width"
+        android:layout_height="@dimen/mProgressbar_height"
+        android:layout_marginTop="@dimen/mProgressbar_marginTop"
+        android:layout_marginLeft="@dimen/mProgressbar_marginLeft"
+        android:layout_alignParentTop="true"
+        android:indeterminate="true"
+        android:id="@+id/pbrCargaInicial"/>
+
+    <TextView
+        android:text="Iniciando Sistema"
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/msjSistema_height"
+        android:layout_marginTop="@dimen/msjSistema_marginTop"
+        android:textSize="@dimen/msjSistema_textSize"
+        android:gravity="center"
+        android:id="@+id/txvTextoInicial" />
+
+    <Button
+        android:text="Intentar otra vez"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="240dp"
+        android:layout_marginLeft="60dp"
+        android:textSize="@dimen/cuerpo_min_textSize"
+        android:id="@+id/buttonWarning01" />
+
+    <Button
+        android:text="Reiniciar Terminal"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="240dp"
+        android:layout_marginLeft="325dp"
+        android:textSize="@dimen/cuerpo_min_textSize"
+        android:id="@+id/buttonWarning02" />
+
+    <Button
+        android:text="Reiniciar Terminal"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="240dp"
+        android:layout_marginLeft="192dp"
+        android:textSize="@dimen/cuerpo_min_textSize"
+        android:id="@+id/buttonWarning03" />
+
+    <Button
+        android:text="\?"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="480dp"
+        android:id="@+id/buttonWarningHelp" />
+
+
+
+
+</RelativeLayout>

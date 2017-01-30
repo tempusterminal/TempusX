@@ -1,0 +1,23 @@
+<resources>
+    <string name="titulo_Login">INICIAR SESIÓN</string>
+    <string name="titulo_Menu">MENÚ</string>
+
+    <string name="titulo_comunicacion">COMUNICACIÓN</string>
+    <string name="titulo_sistema">SISTEMA</string>
+    <string name="titulo_exportar">EXPORTAR</string>
+    <string name="titulo_historial">HISTORIAL</string>
+    <string name="titulo_fechahora">FECHA Y HORA</string>
+    <string name="titulo_biometria">BIOMETRIA</string>
+    <string name="titulo_sincronizacion">SINCRONIZACIÓN</string>
+    <string name="titulo_produccion">PRODUCCIÓN</string>
+    <string name="titulo_superadmin">SUPERADMIN</string>
+    <string name="titulo_actualizar">ACTUALIZAR</string>
+    <string name="titulo_configini">ADMINISTRAR</string>
+
+    <string-array name="planets_array">
+        <item>Dni</item>
+        <item>Dnie</item>
+        <item>C.E.</item>
+        <item>Pas.</item>
+    </string-array>
+</resources>

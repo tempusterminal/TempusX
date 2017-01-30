@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorLinea">#e31e25</color>
+    <color name="colorFondoBarra">#dedede</color>
+    <color name="colorFondoCuerpo">#ffffff</color>
+    <color name="colorTexto">#000000</color>
+    <color name="colorBlanco">#ffffff</color>
+    <color name="colorFondoMarcacion">#000000</color>
+
+    <color name="colorMenu">#5674a6a6</color>
+
+    <color name="colorGris">#ececec</color>
+    <color name="colorHint">#c4c3c3</color>
+    <color name="colorGrisOscuro">#999999</color>
+    <color name="colorRojo">#fa0404</color>
+    <color name="colorVerde">#3a9414</color>
+    <color name="colorVerdeClaro">#cbd9c1</color>
+    <color name="colorNegro">#000000</color>
+
+    <color name="colorTabNonFocusedSelect">#00afaf</color>
+    <color name="colorTabNonFocusedNone">#6fcaca</color>
+    <color name="colorTabFocusedSelect">#66a9a9</color>
+    <color name="colorTabFocusedNone">#058383</color>
+</resources>

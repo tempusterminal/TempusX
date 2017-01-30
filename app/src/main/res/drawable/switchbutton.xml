@@ -1,0 +1,9 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Activo
+    <item android:state_enabled="false" android:drawable="@color/colorGris" />
+    <item android:state_pressed="true"  android:drawable="@color/colorRojo" />-->
+    <!-- Activo Checked -->
+    <item android:state_checked="true"  android:drawable="@color/colorNegro" />
+    <!-- Activo Non Checked -->
+    <item                               android:drawable="@color/colorGrisOscuro" />
+</selector>
