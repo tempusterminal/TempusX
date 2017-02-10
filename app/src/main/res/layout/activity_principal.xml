@@ -80,8 +80,8 @@
         android:layout_width="@dimen/fecha_width"
         android:layout_height="@dimen/fecha_height"
         android:layout_marginTop="@dimen/fecha_marginTop"
-        android:layout_marginRight="@dimen/fecha_marginRight"
-        android:layout_alignParentRight="true"
+        android:layout_marginLeft="@dimen/fecha_marginLeft"
+        android:layout_alignParentLeft="true"
         android:textSize="@dimen/fecha_textSize"
         android:textColor="@color/colorTexto"
         android:textStyle="bold"
@@ -93,8 +93,8 @@
         android:layout_width="@dimen/logo_width"
         android:layout_height="@dimen/logo_height"
         android:layout_marginTop="@dimen/logo_marginTop"
-        android:layout_marginRight="@dimen/logo_marginRight"
-        android:layout_alignParentRight="true"
+        android:layout_marginLeft="@dimen/logo_marginLeft"
+        android:layout_alignParentLeft="true"
         android:src="@drawable/logo"
         android:id="@+id/btnMaster" />
 
@@ -150,10 +150,10 @@
         android:src="@drawable/abc_ic_menu_selectall_mtrl_alpha"
         android:scaleType="fitXY"
         android:padding="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="35dp"
-        android:layout_marginRight="10dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="220dp"
+        android:layout_marginLeft="460dp"
         android:id="@+id/btnAccessKey" />
 
 
@@ -271,14 +271,15 @@
 
 
     <TextView
-        android:text="SELECCIONE EVENTO"
-        android:layout_width="wrap_content"
+        android:text=""
+        android:layout_width="@dimen/fondo2_width"
         android:layout_height="wrap_content"
         android:textColor="@color/colorTexto"
         android:textSize="30dp"
         android:textStyle="bold"
+        android:gravity="center_vertical|center_horizontal"
         android:id="@+id/txvMensajePantalla"
-        android:layout_marginLeft="120.5dp"
+        android:layout_marginLeft="0dp"
         android:layout_marginTop="245dp"/>
 
 

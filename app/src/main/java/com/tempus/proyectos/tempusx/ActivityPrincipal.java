@@ -1,5 +1,7 @@
 package com.tempus.proyectos.tempusx;
 
+
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -18,25 +20,23 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.FrameLayout;
+import android.widget.Toast;
 
+import com.tempus.proyectos.crash.TXExceptionHandler;
 import com.tempus.proyectos.bluetoothSerial.MainArduino;
 import com.tempus.proyectos.bluetoothSerial.MainSuprema;
 import com.tempus.proyectos.data.*;
 import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.model.Marcaciones;
-import com.tempus.proyectos.data.process.ProcessMarcas;
-import com.tempus.proyectos.data.process.ProcessSyncTS;
 import com.tempus.proyectos.data.queries.*;
 import com.tempus.proyectos.util.Fechahora;
+import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +73,7 @@ public class ActivityPrincipal extends Activity {
 
     /* --- Declaración de Variables Globales --- */
 
-    public String idTerminal;
+    public static String idTerminal;
 
     public int cantSeriales = 0;
 
@@ -243,6 +243,12 @@ public class ActivityPrincipal extends Activity {
 
         activityActive = "Principal";
 
+        Thread.setDefaultUncaughtExceptionHandler(new TXExceptionHandler(this));
+
+        if (getIntent().getBooleanExtra("crash", false)) {
+            Toast.makeText(this, "App restarted after crash", Toast.LENGTH_SHORT).show();
+        }
+
         /* -------------------- Inicialización de Componentes de la Interfaz -------------------- */
 
         txvMarcacionFondo = (TextView) findViewById(R.id.txvMarcacionFondo);
@@ -339,7 +345,11 @@ public class ActivityPrincipal extends Activity {
         areaAccessEnabled = false;
 
 
-
+        if (modoEvento) {
+            txvMensajePantalla.setText("SELECCIONE EVENTO");
+        } else {
+            txvMensajePantalla.setText("PASE SU TARJETA");
+        }
 
 
         /* --- Eventos --- */
@@ -350,7 +360,12 @@ public class ActivityPrincipal extends Activity {
                     patronAcceso = "";
                     areaAccessEnabled = false;
                     manageAccessButtons(false);
-                    txvMensajePantalla.setText("SELECCIONE EVENTO");
+
+                    if (modoEvento){
+                        txvMensajePantalla.setText("SELECCIONE EVENTO");
+                    } else {
+                        txvMensajePantalla.setText("PASE SU TARJETA");
+                    }
 
 
                 } else {
@@ -358,11 +373,13 @@ public class ActivityPrincipal extends Activity {
                     areaAccessEnabled = true;
                     manageAccessButtons(true);
 
+                    if (modoEvento) {
+                        actualizarFlag(null,null);
+                    }
 
-                    actualizarFlag(null,null);
-                    txvMensajePantalla.setText("PRESIONE     LOGO");
-                    Date date = new Date();
-                    tiempoPasado = date;
+                    txvMensajePantalla.setText("PRESIONE LOGO");
+                    //Date date = new Date();
+                    //tiempoPasado = date;
 
                 }
             }
@@ -479,7 +496,17 @@ public class ActivityPrincipal extends Activity {
             @Override
             public void onClick(View v) {
                 if(flag == null || flag == ""){
-                    manageLayerMarcacion(true);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Toast.makeText(ActivityPrincipal.this, "DEBE SELECCIONAR UN EVENTO", Toast.LENGTH_LONG).show();
+                            try {
+                                ui.showAlert(ActivityPrincipal.this,"warning","   DEBE SELECCIONAR UN EVENTO   ");
+                            } catch(Exception e) {
+                                Toast.makeText(ActivityPrincipal.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
                 }else{
                     if (visibleKey) {
                         manageKeyboard(false);
@@ -678,8 +705,9 @@ public class ActivityPrincipal extends Activity {
 
         dbManager.poblar();
 
+        dbManager.execSQL("DELETE FROM TERMINAL");
         //dbManager.execSQL("UPDATE TERMINAL SET IDTERMINAL = '104'");
-        //dbManager.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES('100')");
+        dbManager.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES('104')");
 
         queriesAutorizaciones = new QueriesAutorizaciones(this);
         queriesAutorizaciones.open();
@@ -739,11 +767,16 @@ public class ActivityPrincipal extends Activity {
         idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL");
         Log.d("Autorizaciones","Terminal: " + idTerminal);
 
-        modoEvento = true;
+        modoEvento = false;
 
         contadorEventoPantalla = 0;
 
-        flag = "1";
+        if (modoEvento) {
+            flag = null;
+        } else {
+            flag = "127";
+        }
+
         tarjetaKey = "";
         visibleKey = false;
 
@@ -783,8 +816,12 @@ public class ActivityPrincipal extends Activity {
         //Lectoras.put("09","DNI");
 
         //PERQUERA DIAMANTE
-        macBTSerial01 = "20:16:08:10:66:60";// corpac 98:D3:32:20:5B:7E
-        macBTSerial02 = "20:16:08:10:63:78";// corpac 98:D3:34:90:7D:C0
+        //macBTSerial01 = "20:16:08:10:66:60";// corpac 98:D3:32:20:5B:7E
+        //macBTSerial02 = "20:16:08:10:63:78";// corpac 98:D3:34:90:7D:C0
+
+        //DEMO EDITORA WIN
+        macBTSerial01 = "00:15:83:35:6C:85";
+        macBTSerial02 = "98:D3:33:80:91:98";
 
         //CORPAC
         //macBTSerial01 = "98:D3:32:20:5B:7E";
@@ -961,13 +998,19 @@ public class ActivityPrincipal extends Activity {
             btnAccess2.setVisibility(View.VISIBLE);
             btnAccess3.setVisibility(View.VISIBLE);
             btnAccess4.setVisibility(View.VISIBLE);
-            manageEventMode(false);
+            if (modoEvento) {
+                manageEventMode(false);
+            }
+
         } else {
             btnAccess1.setVisibility(View.INVISIBLE);
             btnAccess2.setVisibility(View.INVISIBLE);
             btnAccess3.setVisibility(View.INVISIBLE);
             btnAccess4.setVisibility(View.INVISIBLE);
-            manageEventMode(true);
+            if (modoEvento) {
+                manageEventMode(true);
+            }
+
         }
     }
 
@@ -1059,6 +1102,28 @@ public class ActivityPrincipal extends Activity {
 
                 break;
 
+            case "42423123":
+                Shell sh1 = new Shell();
+                String comando1[]={"su","-c","busybox","ifconfig","eth0","172.20.1.119","up"};
+                try{
+                    sh1.exec(comando1);
+                    //Toast.makeText(this,"ifconfig eth0 success!",Toast.LENGTH_SHORT);
+                }catch(Exception e){
+                    Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+                }
+                break;
+
+            case "42421111":
+                Shell sh2 = new Shell();
+                String comando2[]={"su","-c","busybox","route","add","default","gw","172.20.0.1","eth0"};
+                try{
+                    sh2.exec(comando2);
+                    //Toast.makeText(this,"route add gw success!",Toast.LENGTH_SHORT);
+                }catch(Exception e){
+                    Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
+                }
+                break;
+
             case "1324111":
 
                 startDBZero();          // Iniciar Base de Datos desde Cero
@@ -1091,12 +1156,12 @@ public class ActivityPrincipal extends Activity {
         }
 
 
-        ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
-        processSyncTS.start(this);
+        //ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
+        //processSyncTS.start(this);
 
 
-        ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
-        processMarcas.start(this);
+        //ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
+        //processMarcas.start(this);
 
 
 
@@ -1455,11 +1520,9 @@ public class ActivityPrincipal extends Activity {
                     case "00":
                         if (activityActive.equals("Principal")){
 
-                            /* --------------------------------------------------------------------------------- DESCOMENTAR PARA MODO EVENTO Y COMENTAR EL CODIGO DE ABAJO
-
                             if(modoEvento ){
-                                // no aceptamos nada de marcaciones
-                                if (!flag.equalsIgnoreCase("")){
+                                // no ace==ptamos nada de marcaciones
+                                if (flag!="" || flag!=null){
                                     String nroLector = "04";
                                     String tarjeta = objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin());
                                     Log.v("TEMPUS: ",tarjeta);
@@ -1471,10 +1534,27 @@ public class ActivityPrincipal extends Activity {
                                         public void run() {
                                             turnOnScreen();
                                             manageLayerMarcacion(true);
+                                            actualizarFlag(null,null);
                                         }
                                     });
                                 } else {
                                     Log.d("TEMPUS: ","DEBE SELECCIONAR UN EVENTO");
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //Toast.makeText(ActivityPrincipal.this, "DEBE SELECCIONAR UN EVENTO", Toast.LENGTH_LONG).show();
+                                            try {
+                                                ui.showAlert(ActivityPrincipal.this,"warning","   DEBE SELECCIONAR UN EVENTO   ");
+                                            } catch(Exception e) {
+                                                Toast.makeText(ActivityPrincipal.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                            }
+                                        }
+                                    });
+
+
+
+
                                 }
                             } else {
                                 String nroLector = "04";
@@ -1492,7 +1572,7 @@ public class ActivityPrincipal extends Activity {
                                 });
                             }
 
-                            --------------------------------------------------------------------------------- */
+                            /* -----------------------------------------
 
 
                             String nroLector = "02";
@@ -1509,6 +1589,8 @@ public class ActivityPrincipal extends Activity {
                                     actualizarFlag(null,null);
                                 }
                             });
+
+                            ---------------------------------------- */
 
                         }
                         break;
@@ -1565,10 +1647,10 @@ public class ActivityPrincipal extends Activity {
 
                         if (activityActive.equals("Principal")){
 
-                            /* --------------------------------------------------------------------------------- DESCOMENTAR PARA MODO EVENTO Y COMENTAR EL CODIGO DE ABAJO
+
 
                             if (modoEvento){
-                                if (!flag.equalsIgnoreCase("")) {
+                                if (flag == "" || flag!=null) {
                                     String nroLector = "07";
                                     String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
                                     if (objSuprema.getFlag().equalsIgnoreCase("69")){
@@ -1583,10 +1665,27 @@ public class ActivityPrincipal extends Activity {
                                         public void run() {
                                             turnOnScreen();
                                             manageLayerMarcacion(true);
+                                            actualizarFlag(null,null);
                                         }
                                     });
                                 } else {
                                     Log.d("TEMPUS: ","DEBE SELEECIONAR UN EVENTO");
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            //Toast.makeText(ActivityPrincipal.this, "DEBE SELECCIONAR UN EVENTO", Toast.LENGTH_LONG).show();
+
+                                            try {
+
+                                                ui.showAlert(ActivityPrincipal.this,"warning","   DEBE SELECCIONAR UN EVENTO   ");
+
+                                            } catch(Exception e) {
+                                                Toast.makeText(ActivityPrincipal.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                            }
+
+                                        }
+                                    });
                                 }
                             } else {
                                 String nroLector = "07";
@@ -1607,7 +1706,7 @@ public class ActivityPrincipal extends Activity {
                                 });
                             }
 
-                            --------------------------------------------------------------------------------- */
+                            /* -----------------------------------------
 
                             String nroLector = "07";
                             String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
@@ -1629,6 +1728,8 @@ public class ActivityPrincipal extends Activity {
                                 actualizarFlag(null,null);
                                 }
                             });
+
+                            ------------------------------------------ */
 
                         }
 
@@ -1686,7 +1787,9 @@ public class ActivityPrincipal extends Activity {
                     public void run() {
                         turnOnScreen();
                         manageLayerMarcacion(true);
-
+                        if (modoEvento) {
+                            actualizarFlag(null,null);
+                        }
                     }
                 });
             }
@@ -1699,8 +1802,11 @@ public class ActivityPrincipal extends Activity {
                     tiempoPasado = date;
                 } else {
                     manageKeyboard(false);
-                    actualizarFlag(null,null);
-                    txvMensajePantalla.setText("SELECCIONE EVENTO");
+                    if (modoEvento) {
+                        actualizarFlag(null,null);
+                        txvMensajePantalla.setText("SELECCIONE EVENTO");
+                    }
+
                 }
             } else {
                 if (tarjetaKey.length()<7){
@@ -1720,7 +1826,9 @@ public class ActivityPrincipal extends Activity {
                         public void run() {
                             turnOnScreen();
                             manageLayerMarcacion(true);
-                            actualizarFlag(null,null);
+                            if (modoEvento) {
+                                actualizarFlag(null,null);
+                            }
                         }
                     });
                 }
@@ -1758,6 +1866,7 @@ public class ActivityPrincipal extends Activity {
                     btnEvent06.setBackgroundColor(Color.GRAY);
                     btnEvent07.setBackgroundColor(Color.GRAY);
                     btnEvent08.setBackgroundColor(Color.GRAY);
+                    txvMensajePantalla.setText("SELECCIONE EVENTO");
                 }
             });
         }
@@ -2246,12 +2355,15 @@ public class ActivityPrincipal extends Activity {
                                 manageKeyboard(false);
                                 manageLayerMarcacion(false);
 
+                                Log.d("TEMPUS: ","Flag: " + flag);
 
-                                if((tiempoPresente.getTime() - tiempoPasado.getTime()) / 1000 >= tiempoFlag){
-                                    actualizarFlag(null,null);
-                                    manageAccessButtons(false);
-                                    txvMensajePantalla.setText("SELECCIONE EVENTO");
-                                    //Log.v("TEMPUS: ","Flg_Actividad: " + flag);
+                                if (modoEvento){
+                                    if((tiempoPresente.getTime() - tiempoPasado.getTime()) / 1000 >= tiempoFlag){
+                                        actualizarFlag(null,null);
+                                        manageAccessButtons(false);
+                                        txvMensajePantalla.setText("SELECCIONE EVENTO");
+                                        //Log.v("TEMPUS: ","Flg_Actividad: " + flag);
+                                    }
                                 }
                             }
                         });

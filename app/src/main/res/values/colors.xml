@@ -17,8 +17,13 @@
     <color name="colorVerdeClaro">#cbd9c1</color>
     <color name="colorNegro">#000000</color>
 
-    <color name="colorTabNonFocusedSelect">#00afaf</color>
-    <color name="colorTabNonFocusedNone">#6fcaca</color>
-    <color name="colorTabFocusedSelect">#66a9a9</color>
-    <color name="colorTabFocusedNone">#058383</color>
+    <color name="colorTabNonFocusedSelect">#e31e25</color>
+    <color name="colorTabNonFocusedNone">#e46262</color>
+    <color name="colorTabFocusedSelect">#b60606</color>
+    <color name="colorTabFocusedNone">#a74343</color>
+
+    <color name="colorInfo">#5cc0de</color>
+    <color name="colorSuccess">#5db85d</color>
+    <color name="colorWarning">#f0ad4f</color>
+    <color name="colorDanger">#c9312e</color>
 </resources>

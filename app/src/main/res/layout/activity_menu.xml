@@ -66,8 +66,8 @@
         android:layout_width="@dimen/logo_width"
         android:layout_height="@dimen/logo_height"
         android:layout_marginTop="@dimen/logo_marginTop"
-        android:layout_marginRight="@dimen/logo_marginRight"
-        android:layout_alignParentRight="true"
+        android:layout_marginLeft="@dimen/logo_marginLeft"
+        android:layout_alignParentLeft="true"
         android:src="@drawable/logo"
         android:id="@+id/btnMasterMenu" />
 

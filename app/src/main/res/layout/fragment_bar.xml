@@ -36,7 +36,7 @@
     <TextView
         android:layout_width="40dp"
         android:layout_height="20dp"
-        android:text="104"
+        android:text=""
         android:id="@+id/txvIdterminal"
         android:layout_marginLeft="30dp"
         android:layout_marginTop="2dp"

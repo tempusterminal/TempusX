@@ -1,15 +1,26 @@
 package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.internal.view.menu.ListMenuItemView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -39,8 +50,6 @@ public class ActivityBiometria extends Activity {
 
     List<Button> lstHuellaBtn;
     List<TextView> lstHuellaTxv;
-    List<String> list;
-
     /* --- Declaración de Variables Locales --- */
 
     public static boolean ocupado;
@@ -71,7 +80,18 @@ public class ActivityBiometria extends Activity {
     TextView txvHuellaNombrePersonal;
     EditText edtHuellaDocumento;
 
-    Spinner spnRegistros;
+
+
+    String[] val = {"EMP01 00000000 12345678 Carlos","EMP01 00000001 23456789 Jueba","EMP01 00000002 34567891 Carlos","EMP01 00000003 45678912 Pepe","EMP01 00000004 56789123 Carlos"};
+    ListView list;
+    Dialog listDialog;
+
+
+    // Pantalla Lista Huella
+    Button btnExitLstHuella;
+    TextView txvLayerLstHuella;
+    ListView lstHuella;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -130,20 +150,36 @@ public class ActivityBiometria extends Activity {
         txvHuellaNombrePersonal = (TextView) findViewById(R.id.txvHuellaNombrePersonal);
         edtHuellaDocumento = (EditText) findViewById(R.id.edtHuellaDocumento);
 
-        spnRegistros = (Spinner) findViewById(R.id.spnRegistros);
 
-        list = new ArrayList<String>();
-        list.add(" Seleccione Empresa");
-        list.add("Empresa 1");
-        list.add("Empresa 2");
-        list.add("Empresa 3");
-        list.add("Empresa 4");
+        btnExitLstHuella = (Button) findViewById(R.id.btnExitLstHuella);
+        txvLayerLstHuella = (TextView) findViewById(R.id.txvLayerLstHuella);
+        lstHuella = (ListView) findViewById(R.id.lstHuella);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), R.layout.spinner_item, list);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spnRegistros.setAdapter(adapter);
 
-        spnRegistros.setDropDownWidth(1);
+        //ArrayAdapter<String> test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,val);
+
+        ArrayAdapter<String> test = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, android.R.id.text1, val){
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent){
+
+                View view = super.getView(position, convertView, parent);
+
+                final TextView ListItemShow = (TextView) view.findViewById(android.R.id.text1);
+
+
+                if (ListItemShow.getText().toString().contains("Carlos")){
+                    ListItemShow.setBackgroundColor(Color.parseColor("#5db85d"));
+                } else {
+                    ListItemShow.setBackgroundColor(Color.parseColor("#333333"));
+                }
+
+                return view;
+            }
+
+        };
+
+        lstHuella.setAdapter(test);
 
 
         //ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, colors, R.layout.spinner_item);
@@ -157,13 +193,36 @@ public class ActivityBiometria extends Activity {
         limpiarScreen();
         manageEnrollEmp(false,"");
         manageScreenEnroll(false);
+        manageScreenListaHuella(false);
 
 
         /* --- Inicialización de Parametros Generales --- */
 
+        btnExitLstHuella.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                manageScreenListaHuella(false);
+            }
+        });
+
+
         btnConsultarHuella.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
+
+
+                manageScreenListaHuella(true);
+
+
+
+
+
+
+
+
+                /***
 
                 String documento = edtHuellaDocumento.getText().toString();
                 valorTarjeta = documento;
@@ -181,18 +240,7 @@ public class ActivityBiometria extends Activity {
                     boolean btn2 = false;
                     boolean btn3 = false;
 
-                    /*
-                    PERSONAL NO TIENE PERMISOS
-                    */
-
-
-
-
-
-
-
-
-
+                    //PERSONAL NO TIENE PERMISOS
 
                     for(int i = 0; i < biometriasList.size(); i++){
                         if (biometriasList.get(i).Mensaje.equalsIgnoreCase("Enrolamiento disponible")){
@@ -207,6 +255,8 @@ public class ActivityBiometria extends Activity {
                     txvHuellaNombrePersonal.setText(biometriasList.get(0).Mensaje);
                     manageButtonsAction(false,false,false);
                 }
+
+                 ***/
 
 /*
                 if (exito){
@@ -287,24 +337,53 @@ public class ActivityBiometria extends Activity {
             }
         });
 
-        spnRegistros.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+    }
 
-                if (position == 0){
-                    manageEnrollEmp(false, "");
-                } else {
-                    String nombreEmpresa = list.get(position);
-                    manageEnrollEmp(true, nombreEmpresa);
-                }
-            }
 
+
+
+
+
+    private void showdialog()
+    {
+        listDialog = new Dialog(this, R.style.dialog_theme);
+        listDialog.setTitle("Select Item");
+        LayoutInflater li = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = li.inflate(R.layout.list, null, false);
+        listDialog.setContentView(v);
+        listDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+        listDialog.getWindow().getDecorView().setSystemUiVisibility(ActivityBiometria.this.getWindow().getDecorView().getSystemUiVisibility());
+
+        listDialog.setCanceledOnTouchOutside(true);
+        listDialog.getWindow().setLayout(750, 400);
+
+        //there are a lot of settings, for dialog, check them all out!
+
+        final ListView list1 = (ListView) listDialog.findViewById(R.id.listview);
+        Button btnDlgClose = (Button) listDialog.findViewById(R.id.btnDlgClose);
+
+        btnDlgClose.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                Log.v("TEMPUS: "," > ---- > onNothingSelected");
+            public void onClick(View v) {
+                listDialog.hide();
             }
         });
+
+        list1.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, val));
+        //now that the dialog is set up, it's time to show it
+        list1.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+            }
+        });
+        listDialog.show();
     }
+
+
+
+
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -320,6 +399,25 @@ public class ActivityBiometria extends Activity {
         }
         return true;
     }
+
+    public void manageScreenListaHuella(boolean visible) {
+        if (visible) {
+            btnExitLstHuella.setVisibility(View.VISIBLE);
+            txvLayerLstHuella.setVisibility(View.VISIBLE);
+            lstHuella.setVisibility(View.VISIBLE);
+            btnMasterBiometria.setClickable(false);
+            btnConsultarHuella.setClickable(false);
+            edtHuellaDocumento.setEnabled(false);
+        } else {
+            btnExitLstHuella.setVisibility(View.INVISIBLE);
+            txvLayerLstHuella.setVisibility(View.INVISIBLE);
+            lstHuella.setVisibility(View.INVISIBLE);
+            btnMasterBiometria.setClickable(true);
+            btnConsultarHuella.setClickable(true);
+            edtHuellaDocumento.setEnabled(true);
+        }
+    }
+
 
     public static void manageScreenEnroll(boolean visible){
         if (visible) {

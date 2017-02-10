@@ -44,6 +44,7 @@ public class FragmentBar extends Fragment {
     TextView txvINivelBateria;
     ImageView imgViewIBat;
     TextView txvIdDesc;
+    TextView txvIdterminal;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -63,6 +64,8 @@ public class FragmentBar extends Fragment {
 
         txvINivelBateria = (TextView) v.findViewById(R.id.txvINivelBateria);
         imgViewIBat = (ImageView) v.findViewById(R.id.imgViewIBat);
+
+        txvIdterminal = (TextView) v.findViewById(R.id.txvIdterminal);
 
         btnRestart = (Button) v.findViewById(R.id.btnRestart);
         btnRestart.setVisibility(View.INVISIBLE);
@@ -118,6 +121,8 @@ public class FragmentBar extends Fragment {
                     status == BatteryManager.BATTERY_STATUS_FULL;
 
             ActivityPrincipal.isCharging = rIsCharging;
+
+            txvIdterminal.setText(ActivityPrincipal.idTerminal);
 
             int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
             rUSBCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;

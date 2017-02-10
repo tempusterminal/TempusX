@@ -65,8 +65,8 @@
         android:layout_width="@dimen/logo_width"
         android:layout_height="@dimen/logo_height"
         android:layout_marginTop="@dimen/logo_marginTop"
-        android:layout_marginRight="@dimen/logo_marginRight"
-        android:layout_alignParentRight="true"
+        android:layout_marginLeft="@dimen/logo_marginLeft"
+        android:layout_alignParentLeft="true"
         android:src="@drawable/logo"
         android:id="@+id/btnMasterBiometria" />
 
@@ -86,42 +86,24 @@
 
     <TextView
         android:id="@+id/spnDocuments"
-        android:layout_width="70dp"
+        android:layout_width="140dp"
         android:layout_height="35dp"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="60dp"
-        android:text="Nro Doc."
+        android:text="Código ó Nro Doc."
         android:textStyle="bold"
         android:gravity="center_vertical"
         android:textSize="@dimen/cuerpo_min_textSize"
         android:textColor="@color/colorTexto"/>
 
 
-    <TextView
-        android:id="@+id/spnDocumentsFondo"
-        android:layout_width="160dp"
-        android:layout_height="35dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="350dp"
-        android:layout_marginTop="60dp"
-        android:background="@color/colorGrisOscuro"/>
-
-    <Spinner
-        android:id="@+id/spnRegistros"
-        android:layout_width="160dp"
-        android:layout_height="35dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="350dp"
-        android:layout_marginTop="60dp"
-        android:backgroundTint="@color/colorTexto"/>
-
 
     <TextView
         android:layout_width="100dp"
         android:layout_height="35dp"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="90dp"
+        android:layout_marginLeft="170dp"
         android:layout_marginTop="60dp"
         android:background="@color/colorGris"
         android:id="@+id/textView21" />
@@ -133,7 +115,7 @@
         android:text=""
         android:ems="10"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="90dp"
+        android:layout_marginLeft="170dp"
         android:layout_marginTop="60dp"
         android:id="@+id/edtHuellaDocumento"
         android:textSize="15sp"
@@ -149,7 +131,7 @@
         android:textSize="@dimen/cuerpo_min_textSize"
         android:layout_width="120dp"
         android:layout_height="35dp"
-        android:layout_marginLeft="200dp"
+        android:layout_marginLeft="280dp"
         android:layout_marginTop="60dp"
         android:id="@+id/btnConsultarHuella" />
 
@@ -161,8 +143,8 @@
         android:layout_marginLeft="20dp"
         android:layout_marginTop="100dp"
         android:background="@color/colorGris"
-        android:textSize="@dimen/cuerpo_textSize"
-        android:textAlignment="center"
+        android:textSize="20sp"
+        android:gravity="center_horizontal|center_vertical"
         android:textColor="@color/colorTexto"
         android:id="@+id/txvHuellaNombrePersonal" />
 
@@ -333,18 +315,33 @@
         android:id="@+id/txvHuellaTexto" />
 
 
+    <!---->
+
+    <TextView
+        android:text=""
+        android:layout_width="533.33dp"
+        android:layout_height="320dp"
+        android:background="#aa000000"
+        android:id="@+id/txvLayerLstHuella" />
+
+    <Button
+        android:text="x"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/btnConsultarHuella"
+        android:layout_alignEnd="@+id/lstHuella"
+        android:layout_marginBottom="17dp"
+        android:id="@+id/btnExitLstHuella" />
+
+    <ListView
+        android:layout_width="400dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:background="@color/colorNegro"
+        android:id="@+id/lstHuella" />
 
 
-    <!--
-    <ProgressBar
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:indeterminate="true"
-        android:layout_marginTop="270dp"
-        android:layout_marginLeft="135dp"
-        android:scrollbarSize="200dp"
-        android:id="@+id/pbrHuellaCarga"/>
 
-    -->
 
 </RelativeLayout>

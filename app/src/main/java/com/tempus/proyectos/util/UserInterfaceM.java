@@ -2,9 +2,17 @@ package com.tempus.proyectos.util;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.PowerManager;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.tempus.proyectos.tempusx.ActivityPrincipal;
+import com.tempus.proyectos.tempusx.R;
 
 import static android.content.pm.ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE;
 
@@ -45,5 +53,36 @@ public class UserInterfaceM {
         }
         ActivityActual.startActivityForResult(intent, 1);
         ActivityActual.finish();
+    }
+
+    public void showAlert(Activity activity, String tipo, String mensaje){
+        Toast toast = Toast.makeText(activity, mensaje, Toast.LENGTH_SHORT);
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+
+        v.setTextColor(Color.WHITE);
+        v.setTextSize(22);
+        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 50, 80);
+
+        View vieew = toast.getView();
+
+        switch (tipo){
+            case "info":
+                vieew.setBackgroundResource(R.drawable.toastinfo);
+                break;
+            case "danger":
+                vieew.setBackgroundResource(R.drawable.toastdanger);
+                break;
+            case "success":
+                vieew.setBackgroundResource(R.drawable.toastsuccess);
+                break;
+            case "warning":
+                vieew.setBackgroundResource(R.drawable.toastwarning);
+                break;
+            default:
+                break;
+        }
+
+        toast.setView(vieew);
+        toast.show();
     }
 }
