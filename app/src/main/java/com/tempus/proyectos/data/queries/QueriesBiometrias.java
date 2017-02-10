@@ -230,4 +230,53 @@ public class QueriesBiometrias {
     }
 
 
+    public List<Biometrias> ListarPersonalBiometria(int IdTipoLect, String ValorTarjeta){
+        Biometrias biometrias = new Biometrias();
+        List<Biometrias> biometriasList =  new ArrayList<Biometrias>();
+
+        String query = "SELECT " +
+                "EMPRESAS.NOMBRE_CORTO AS " + ViewBiometrias.Empresa + ", " +
+                "PERSONAL.CODIGO AS " + ViewBiometrias.Codigo + ", " +
+                "PERSONAL.NRO_DOCUMENTO AS " + ViewBiometrias.NroDocumento + ", " +
+                "PERSONAL.APELLIDO_PATERNO AS " + ViewBiometrias.ApellidoPaterno + ", " +
+                "PERSONAL.APELLIDO_MATERNO AS " + ViewBiometrias.ApellidoMaterno + ", " +
+                "PERSONAL.NOMBRES AS " + ViewBiometrias.Nombres + ", " +
+                "PER_TIPOLECT_TERM.FLAG AS " + ViewBiometrias.FlagPerTipolectTerm + " " +
+                "FROM PERSONAL " +
+                "INNER JOIN EMPRESAS " +
+                "ON EMPRESAS.EMPRESA = PERSONAL.EMPRESA " +
+                "INNER JOIN PER_TIPOLECT_TERM " +
+                "ON PERSONAL.EMPRESA = PER_TIPOLECT_TERM.EMPRESA " +
+                "AND PERSONAL.CODIGO = PER_TIPOLECT_TERM.CODIGO " +
+                "WHERE PER_TIPOLECT_TERM.ID_TIPO_LECT = ? " +
+                "AND (PERSONAL.CODIGO = ? " +
+                "OR PERSONAL.NRO_DOCUMENTO = ?)" +
+                ";";
+
+        Log.d("Autorizaciones",query);
+
+        this.open();
+        Cursor cursor = database.rawQuery(query, new String[] { String.valueOf(IdTipoLect), ValorTarjeta, ValorTarjeta });
+        if(cursor.moveToNext()){
+            do{
+                biometrias = new Biometrias();
+
+                biometrias.setEmpresa(cursor.getString(cursor.getColumnIndex(ViewBiometrias.Empresa)));
+                biometrias.setCodigo(cursor.getString(cursor.getColumnIndex(ViewBiometrias.Codigo)));
+                biometrias.setNroDocumento(cursor.getString(cursor.getColumnIndex(ViewBiometrias.NroDocumento)));
+                biometrias.setApellidoPaterno(cursor.getString(cursor.getColumnIndex(ViewBiometrias.ApellidoPaterno)));
+                biometrias.setApellidoMaterno(cursor.getString(cursor.getColumnIndex(ViewBiometrias.ApellidoMaterno)));
+                biometrias.setNombres(cursor.getString(cursor.getColumnIndex(ViewBiometrias.Nombres)));
+                biometrias.setFlagPerTipoLectTerm(cursor.getInt(cursor.getColumnIndex(ViewBiometrias.FlagPerTipolectTerm)));
+
+                biometriasList.add(biometrias);
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        this.close();
+
+        return biometriasList;
+    }
+
 }
