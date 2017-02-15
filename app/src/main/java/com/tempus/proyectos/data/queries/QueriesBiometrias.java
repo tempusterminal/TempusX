@@ -166,7 +166,7 @@ public class QueriesBiometrias {
         return biometriasList;
     }
 
-    public List<Biometrias> buscarBiometrias(int IdTipoLect, String ValorTarjeta){
+    public List<Biometrias> BuscarBiometrias(int IdTipoLect, String Empresa, String Codigo){
         Biometrias biometrias = new Biometrias();
 
         List<Biometrias> biometriasList =  new ArrayList<Biometrias>();
@@ -185,14 +185,14 @@ public class QueriesBiometrias {
                 ViewBiometrias.FlagPerTipolectTerm + " " +
                 "FROM " + ViewBiometrias.VIEW_NAME + " " +
                 "WHERE " + ViewBiometrias.IdTipoLect + " = ? " +
-                "AND (" + ViewBiometrias.Codigo + " = ? " +
-                "OR " + ViewBiometrias.NroDocumento + " = ?) " +
+                "AND " + ViewBiometrias.Empresa + " = ? " +
+                "AND " + ViewBiometrias.Codigo + " = ? " +
                 ";";
 
         Log.d("Autorizaciones",query);
 
         this.open();
-        Cursor cursor = database.rawQuery(query, new String[] { String.valueOf(IdTipoLect), ValorTarjeta, ValorTarjeta });
+        Cursor cursor = database.rawQuery(query, new String[] { String.valueOf(IdTipoLect), Empresa, Codigo });
         if(cursor.moveToNext()){
             do{
                 biometrias = new Biometrias();
@@ -230,12 +230,13 @@ public class QueriesBiometrias {
     }
 
 
+
     public List<Biometrias> ListarPersonalBiometria(int IdTipoLect, String ValorTarjeta){
         Biometrias biometrias = new Biometrias();
         List<Biometrias> biometriasList =  new ArrayList<Biometrias>();
 
         String query = "SELECT " +
-                "EMPRESAS.NOMBRE_CORTO AS " + ViewBiometrias.Empresa + ", " +
+                "EMPRESAS.EMPRESA || '-' || EMPRESAS.NOMBRE_CORTO AS " + ViewBiometrias.Empresa + ", " +
                 "PERSONAL.CODIGO AS " + ViewBiometrias.Codigo + ", " +
                 "PERSONAL.NRO_DOCUMENTO AS " + ViewBiometrias.NroDocumento + ", " +
                 "PERSONAL.APELLIDO_PATERNO AS " + ViewBiometrias.ApellidoPaterno + ", " +
@@ -278,5 +279,9 @@ public class QueriesBiometrias {
 
         return biometriasList;
     }
+
+
+
+
 
 }
