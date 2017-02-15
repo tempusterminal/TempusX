@@ -45,11 +45,14 @@ public class QueriesBiometrias {
     }
 
     public void drop(){
+        this.open();
         database.execSQL(ViewBiometrias.DROP_VIEW);
         Log.d("Autorizaciones","Vista eliminada exitosamente");
+        this.close();
     }
 
     public void create(){
+        this.open();
 
         database.execSQL("CREATE VIEW IF NOT EXISTS " + ViewBiometrias.VIEW_NAME + " AS " +
                 "SELECT " +
@@ -108,6 +111,7 @@ public class QueriesBiometrias {
         );
 
         Log.d("Autorizaciones","Vista creada exitosamente");
+        this.close();
     }
 
 
