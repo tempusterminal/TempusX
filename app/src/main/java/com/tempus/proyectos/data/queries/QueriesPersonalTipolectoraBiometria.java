@@ -125,23 +125,15 @@ public class QueriesPersonalTipolectoraBiometria {
     }
 
 
-    public List<Biometrias> EvaluarEmpresaBiometria (String ValorTarjeta){
 
-        Log.d("Autorizaciones","Evaluar Empresa Biometrias");
-
-
-        return null;
-    }
-
-
-
+    /*
     public List<Biometrias> EvaluarBiometrias(int IdTipoLect, String ValorTarjeta){
         Log.d("Autorizaciones","Evaluar Biometrias");
 
         QueriesBiometrias queriesBiometrias = new QueriesBiometrias(context);
         queriesBiometrias.open();
 
-        List<Biometrias> biometriasList = queriesBiometrias.buscarBiometrias(IdTipoLect, ValorTarjeta);
+        List<Biometrias> biometriasList = queriesBiometrias.BuscarBiometrias(IdTipoLect, ValorTarjeta,ValorTarjeta);
 
         if(biometriasList.isEmpty()){
             Biometrias biometrias = new Biometrias();
@@ -156,6 +148,7 @@ public class QueriesPersonalTipolectoraBiometria {
         queriesBiometrias.close();
         return biometriasList;
     }
+    */
 
     public String RegistrarBiometrias(Biometrias biometrias, String ValorBiometria){
 
@@ -173,15 +166,17 @@ public class QueriesPersonalTipolectoraBiometria {
 
         try{
             database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + " AND " + TablePersonalTipolectoraBiometria.IdTipoDetaBio + " = ? ", new String[] { String.valueOf(biometrias.getIndiceBiometria()), String.valueOf(biometrias.getIdTipoDetaBio()) });
+            return "BIOMETRIA ENROLADA";
         }catch(Exception e){
             Log.d("Autorizaciones","Error en el registro de Biometria: " + e.getMessage());
-            return e.getMessage();
+            return "FALLO AL ENROLAR " + e.getMessage();
         }finally {
             this.close();
-            return "REGISTRO DE BIOMETRIA EXITOSO";
         }
 
     }
+
+
 
     public int ActualizarBiometria(int IndiceBiometria, int IdTipoDetaBio){
 
@@ -206,6 +201,7 @@ public class QueriesPersonalTipolectoraBiometria {
             this.close();
         }
 
+
     }
 
     public String EliminarBiometrias(Biometrias biometrias){
@@ -222,10 +218,10 @@ public class QueriesPersonalTipolectoraBiometria {
 
         try{
             database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + " AND " + TablePersonalTipolectoraBiometria.IdTipoDetaBio + " = ? ", new String[] { String.valueOf(biometrias.getIndiceBiometria()), String.valueOf(biometrias.getIdTipoDetaBio()) });
-            return "ELIMINADO DE BIOMETRIA EXITOSO";
+            return "BIOMETRIA ELIMINADA";
         }catch(Exception e){
             Log.d("Autorizaciones","Error en el registro de Biometria: " + e.getMessage());
-            return e.getMessage();
+            return "FALLO AL ELIMINAR " + e.getMessage();
         }finally {
             this.close();
         }
