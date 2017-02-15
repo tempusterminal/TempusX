@@ -307,13 +307,11 @@ public class QueriesPersonalTipolectoraBiometria {
             do{
 
                 String indice = String.valueOf(cursor.getInt(cursor.getColumnIndex(TablePersonalTipolectoraBiometria.IndiceBiometria)));
-                String template = cursor.getString(cursor.getColumnIndex(TablePersonalTipolectoraBiometria.ValorBiometria));
+                String template = CompletarBiometria(cursor.getString(cursor.getColumnIndex(TablePersonalTipolectoraBiometria.ValorBiometria)));
                 String[] sizetemplate = objSuprema.SizeTemplate(template.replace(" ",""));
                 indice = objSuprema.convertCardToEnroll(indice);
 
-                String[] parametro = (objSuprema.convertCardToEnroll(indice) + "," + (sizetemplate[0] + "0" + sizetemplate[1] + "0000") + "," + CompletarBiometria(template).replace(" ","")).split(",");
-
-                Log.v("TEMPUS: ","Valor Biometria: " + CompletarBiometria(template));
+                String[] parametro = (objSuprema.convertCardToEnroll(indice) + "," + (sizetemplate[0] + "0" + sizetemplate[1] + "0000") + "," + template.replace(" ","")).split(",");
 
                 if(template.replace(" ","").length() == 512){
                     try{
