@@ -223,7 +223,7 @@ public class ActivityMenu extends Activity {
                 ui.goToActivity(ActivityMenu.this,ActivityExportar.class,"","");
                 break;
             case "HISTORIAL":
-                ui.goToActivity(ActivityMenu.this,ActivityHistorial.class,"","");
+                //ui.goToActivity(ActivityMenu.this,ActivityHistorial.class,"","");
                 break;
             case "FECHA Y HORA":
                 ui.goToActivity(ActivityMenu.this,ActivityFechaHora.class,"","");

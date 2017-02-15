@@ -829,8 +829,8 @@ public class ActivityPrincipal extends Activity {
         //macBTSerial02 = "20:16:08:10:63:78";// corpac 98:D3:34:90:7D:C0
 
         //DEMO EDITORA WIN
-        macBTSerial01 = "00:15:83:35:6C:85";
-        macBTSerial02 = "98:D3:33:80:91:98";
+        //macBTSerial01 = "00:15:83:35:6C:85";
+        //macBTSerial02 = "98:D3:33:80:91:98";
 
         //CORPAC
         //macBTSerial01 = "98:D3:32:20:5B:7E";
@@ -854,8 +854,8 @@ public class ActivityPrincipal extends Activity {
         //macBTSerial02 = "20:16:08:10:60:73"; //hc-06
 
         //DIRESA CLIENTE TX_Rev0.2
-        //macBTSerial01 = "20:16:08:10:83:58";
-        //macBTSerial02 = "20:16:08:10:60:73";
+        macBTSerial01 = "20:16:08:10:83:58";
+        macBTSerial02 = "20:16:08:10:60:73";
 
         queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this);
 

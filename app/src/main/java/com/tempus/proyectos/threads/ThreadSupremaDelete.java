@@ -47,6 +47,7 @@ public class ThreadSupremaDelete implements Runnable {
         while (control1){
             if (contador > timeout || ActivityBiometria.accionCancel) {
                 Log.v("TEMPUS:","Tiempo excedido Delete");
+                mensajeRespuesta = "Tiempo excedido";
                 cancelarEnroll();
             } else {
 
@@ -96,6 +97,8 @@ public class ThreadSupremaDelete implements Runnable {
                 }
             }
         }
+
+        Thread.currentThread().interrupt();
     }
 
     public void cancelarEnroll(){
@@ -132,7 +135,7 @@ public class ThreadSupremaDelete implements Runnable {
             }
         });
 
-        util.sleep(1000);
+        util.sleep(1750);
 
         this.activity.runOnUiThread(new Runnable() {
             @Override

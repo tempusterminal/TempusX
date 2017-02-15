@@ -399,9 +399,10 @@ public class MainSuprema {
 
         String templateArray[] = new String[256];
 
+        int ini = -2;
+        int fin = 0;
+
         for (int i = 0; i < templateArray.length; i++) {
-            int ini = -2;
-            int fin = 0;
 
             templateFinal = templateFinal + templateHexa.substring(ini+2,fin+2) + " ";
 

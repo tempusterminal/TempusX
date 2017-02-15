@@ -45,6 +45,12 @@ public class ActivityConfigini extends Activity {
     Button btnAdm02;
     Button btnAdm03;
 
+    Button btnMac;
+
+    EditText edtMac1;
+    EditText edtMac2;
+    EditText edtMac3;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +87,12 @@ public class ActivityConfigini extends Activity {
         btnAdm02 = (Button) findViewById(R.id.btnAdm02);
         btnAdm03 = (Button) findViewById(R.id.btnAdm03);
 
+        btnMac = (Button) findViewById(R.id.btnMac);
+
+        edtMac1 = (EditText) findViewById(R.id.edtMac1);
+        edtMac2 = (EditText) findViewById(R.id.edtMac2);
+        edtMac3 = (EditText) findViewById(R.id.edtMac3);
+
         btnAdm01.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,6 +103,16 @@ public class ActivityConfigini extends Activity {
                 shell.exec(datos);
             }
         });
+
+        btnMac.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String mac1 = edtMac1.getText().toString();
+                String mac2 = edtMac2.getText().toString();
+                String mac3 = edtMac3.getText().toString();
+            }
+        });
+
 
     }
 
@@ -107,6 +129,18 @@ public class ActivityConfigini extends Activity {
                 break;
         }
         return true;
+    }
+
+
+    public void loadData(){
+
+        String mac1 = "";
+        String mac2 = "";
+        String mac3 = "";
+
+        edtMac1.setText(mac1);
+        edtMac2.setText(mac2);
+        edtMac3.setText(mac3);
     }
 
     /*

@@ -318,6 +318,7 @@ public class ActivityBiometria extends Activity {
                 idTipoDetaBio = 1;
                 ocupado = true;
                 ActivityPrincipal.isEnrolling = true;
+                txvHuellaTexto.setText("Escaneando ... \nPor favor coloque su dedo");
                 manageScreenEnroll(true);
                 Thread threadSupremaEnroll = new Thread(new ThreadSupremaEnroll(ActivityBiometria.this));
                 threadSupremaEnroll.start();
@@ -331,6 +332,7 @@ public class ActivityBiometria extends Activity {
                 idTipoDetaBio = 2;
                 ocupado = true;
                 ActivityPrincipal.isEnrolling = true;
+                txvHuellaTexto.setText("Escaneando ... \nPor favor coloque su dedo");
                 manageScreenEnroll(true);
                 Thread threadSupremaEnroll = new Thread(new ThreadSupremaEnroll(ActivityBiometria.this));
                 threadSupremaEnroll.start();
@@ -343,6 +345,7 @@ public class ActivityBiometria extends Activity {
                 // Eliminando huella
                 ocupado = true;
                 ActivityPrincipal.isDeleting = true;
+                txvHuellaTexto.setText("Borrando huella ... \nPor favor espere ...");
                 manageScreenEnroll(true);
                 Thread threadSupremaDelete = new Thread(new ThreadSupremaDelete(ActivityBiometria.this));
                 threadSupremaDelete.start();
@@ -369,7 +372,7 @@ public class ActivityBiometria extends Activity {
 
             try {
                 queriesBiometrias = new QueriesBiometrias(activity);
-                List<Biometrias> espaciosBiometrias = queriesBiometrias.buscarBiometrias(7,empresaCodigo,codigo);
+                List<Biometrias> espaciosBiometrias = queriesBiometrias.BuscarBiometrias(7,empresaCodigo,codigo);
                 int cantidad = espaciosBiometrias.size();
 
                 if (cantidad == 2 ) {
@@ -497,8 +500,6 @@ public class ActivityBiometria extends Activity {
 
 
     public static void manageScreenEnroll(boolean visible){
-
-        txvHuellaTexto.setText("Escaneando ... \\nPor favor coloque su dedo");
 
         if (visible) {
             txvHuellaFondo.setVisibility(View.VISIBLE);

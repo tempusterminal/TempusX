@@ -219,76 +219,65 @@
                         android:textStyle="bold"
                         android:id="@+id/textView8" />
 
+
+
+<!---->
                     <EditText
                         android:layout_width="280dp"
                         android:layout_height="28dp"
                         android:inputType="textPersonName"
                         android:text=""
-                        android:ems="10"
                         android:textSize="14dp"
                         android:layout_marginLeft="200dp"
                         android:layout_marginTop="10dp"
                         android:textColor="@color/colorTexto"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
                         android:id="@+id/edtSyncHost" />
-
 
                     <EditText
                         android:layout_width="280dp"
                         android:layout_height="28dp"
                         android:inputType="textPersonName"
                         android:text=""
-                        android:ems="10"
                         android:textSize="14dp"
                         android:layout_marginLeft="200dp"
                         android:layout_marginTop="40dp"
                         android:textColor="@color/colorTexto"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/edtSyncDB" />
+                        android:id="@+id/edtSyncB" />
 
                     <EditText
                         android:layout_width="280dp"
                         android:layout_height="28dp"
                         android:inputType="textPersonName"
                         android:text=""
-                        android:ems="10"
                         android:textSize="14dp"
                         android:layout_marginLeft="200dp"
                         android:layout_marginTop="70dp"
                         android:textColor="@color/colorTexto"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/edtSyncPort" />
+                        android:id="@+id/editText3" />
 
                     <EditText
                         android:layout_width="280dp"
                         android:layout_height="28dp"
                         android:inputType="textPersonName"
                         android:text=""
-                        android:ems="10"
                         android:textSize="14dp"
                         android:layout_marginLeft="200dp"
                         android:layout_marginTop="100dp"
                         android:textColor="@color/colorTexto"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/edtSyncUser" />
+                        android:id="@+id/editText4" />
 
                     <EditText
                         android:layout_width="280dp"
                         android:layout_height="28dp"
                         android:inputType="textPersonName"
                         android:text=""
-                        android:ems="10"
                         android:textSize="14dp"
                         android:layout_marginLeft="200dp"
                         android:layout_marginTop="130dp"
                         android:textColor="@color/colorTexto"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/edtSyncPassword" />
+                        android:id="@+id/editText5" />
+
+
 
                     <Button
                         android:text="Guardar"

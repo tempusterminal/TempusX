@@ -53,6 +53,7 @@ public class ThreadSupremaEnroll implements Runnable {
         while (control1) {
             if (contador > timeout || ActivityBiometria.accionCancel) {
                 Log.v("TEMPUS:","Tiempo excedido");
+                mensajeRespuesta = "Tiempo excedido";
                 cancelarEnroll();
             } else {
                 if (ActivityPrincipal.huellaEnrollFlag1.equals("SUCCESS")) {
@@ -110,16 +111,14 @@ public class ThreadSupremaEnroll implements Runnable {
                     } catch(Exception e) {
                         Log.e("TEMPUS: ","Error Al registrar Huella");
                     }
-                    Log.v("TEMPUS:","|||||||||||||||||||||||||||||||||||||||||");
                     // Formatear Huella
                     String template = ActivityPrincipal.objSuprema.formatTemplate(templateSalida);
-                    Log.v("TEMPUS:","-----------------------------------------");
                     Log.v("TEMPUS:",template);
 
                     if (template.length()!=0){
                         // Insertamos template en base de datos
                         queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this.activity);
-                        String respuesta = queriesPersonalTipolectoraBiometria.RegistrarBiometrias(objBiometria, templateSalida);
+                        String respuesta = queriesPersonalTipolectoraBiometria.RegistrarBiometrias(objBiometria, template);
 
                         mensajeRespuesta = respuesta;
 
@@ -130,7 +129,7 @@ public class ThreadSupremaEnroll implements Runnable {
                         }
 
                     } else {
-                        Log.v("TEMPUS:","FAIL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        Log.v("TEMPUS:","FAIL!");
                     }
 
                     ActivityPrincipal.huellaEnroll2 = "";
@@ -194,7 +193,7 @@ public class ThreadSupremaEnroll implements Runnable {
             }
         });
 
-        util.sleep(1000);
+        util.sleep(1750);
 
         this.activity.runOnUiThread(new Runnable() {
             @Override

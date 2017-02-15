@@ -95,7 +95,6 @@ public class ActivitySincronizacion extends Activity {
         TabWidget widget = host.getTabWidget();
         for(int i = 0; i < widget.getChildCount(); i++) {
             View v = widget.getChildAt(i);
-
             // Look for the title view to ensure this is an indicator and not a divider.
             TextView tv = (TextView)v.findViewById(android.R.id.title);
             if(tv == null) {
