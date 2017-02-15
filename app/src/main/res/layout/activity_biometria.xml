@@ -302,6 +302,26 @@
         android:layout_marginTop="80dp"
         android:id="@+id/txvHuellaGif" />
 
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/sist2"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="100dp"
+        android:id="@+id/imgViewResultOK" />
+
+    <ImageView
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:src="@drawable/sist0"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="40dp"
+        android:layout_marginTop="100dp"
+        android:id="@+id/imgViewResultKO" />
+
+
+
     <TextView
         android:text="Escaneando ... \nPor favor coloque su dedo"
         android:textSize="20dp"
@@ -315,6 +335,8 @@
         android:id="@+id/txvHuellaTexto" />
 
 
+
+
     <!---->
 
     <TextView
@@ -324,6 +346,26 @@
         android:background="#aa000000"
         android:id="@+id/txvLayerLstHuella" />
 
+    <ListView
+        android:layout_width="460dp"
+        android:layout_height="200dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp"
+        android:background="@color/colorNegro"
+        android:id="@+id/lstHuella" />
+
+    <TextView
+        android:text="         EMPRESA        CÓDIGO       DOCUMEN     PERSONAL"
+        android:layout_width="460dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp"
+        android:textColor="@color/colorBlanco"
+        android:textSize="16sp"
+        android:gravity="center_vertical"
+        android:background="@color/colorNegro"
+        android:id="@+id/txvCabeceraLstHuella" />
+
     <Button
         android:text="x"
         android:layout_width="40dp"
@@ -332,16 +374,6 @@
         android:layout_alignEnd="@+id/lstHuella"
         android:layout_marginBottom="17dp"
         android:id="@+id/btnExitLstHuella" />
-
-    <ListView
-        android:layout_width="400dp"
-        android:layout_height="200dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
-        android:background="@color/colorNegro"
-        android:id="@+id/lstHuella" />
-
-
 
 
 </RelativeLayout>

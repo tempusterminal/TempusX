@@ -65,8 +65,11 @@ public class ActivityConfigini extends Activity {
 
 
         InternalFile file = new InternalFile();
-        JSONArray read = file.readJsonArray(Environment.getExternalStorageDirectory().toString() + "tempus/config.json");
+        JSONArray read = file.readJsonArray(Environment.getExternalStorageDirectory().toString() + "/tempus/config.json");
+        Log.d("TEMPUS:", String.valueOf(read));
+        /*
         init(read);
+        */
 
         btnMasterConfigini.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -106,6 +109,7 @@ public class ActivityConfigini extends Activity {
         return true;
     }
 
+    /*
     public void init(JSONArray array) {
 
         TableLayout stk = (TableLayout) findViewById(R.id.table_main);
@@ -131,13 +135,15 @@ public class ActivityConfigini extends Activity {
 
         stk.addView(tbrow0);
 
+        String arrayFake[] = {"MACBT01","",""};
+
         try {
-            for (int i = 0; i < array.getJSONObject(0).length(); i++) {
+            for (int i = 0; i < array.length(); i++) {
 
                 try {
                     TableRow tbrow = new TableRow(this);
                     TextView t1v = new TextView(this);
-                    t1v.setText("");
+                    t1v.setText(array.getJSONObject(0).get("ITEM").toString());
                     t1v.setTextColor(Color.WHITE);
                     t1v.setGravity(Gravity.CENTER_VERTICAL);
                     t1v.setPadding(10,0,0,0);
@@ -146,7 +152,7 @@ public class ActivityConfigini extends Activity {
                     tbrow.addView(t1v);
 
                     EditText e2t = new EditText(this);
-                    e2t.setText(array.getJSONObject(i).toString());
+                    e2t.setText(array.getString(1));
                     e2t.setTextColor(Color.WHITE);
                     e2t.setGravity(Gravity.CENTER_VERTICAL);
                     e2t.setPadding(10,0,0,0);
@@ -165,6 +171,7 @@ public class ActivityConfigini extends Activity {
 
 
     }
+    */
 }
 
 

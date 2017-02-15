@@ -56,33 +56,33 @@ public class UserInterfaceM {
     }
 
     public void showAlert(Activity activity, String tipo, String mensaje){
-        Toast toast = Toast.makeText(activity, mensaje, Toast.LENGTH_SHORT);
+        Toast toast = Toast.makeText(activity, "   "+mensaje+"   ", Toast.LENGTH_SHORT);
         TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
 
         v.setTextColor(Color.WHITE);
         v.setTextSize(22);
         toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 50, 80);
 
-        View vieew = toast.getView();
+        View view = toast.getView();
 
         switch (tipo){
             case "info":
-                vieew.setBackgroundResource(R.drawable.toastinfo);
+                view.setBackgroundResource(R.drawable.toastinfo);
                 break;
             case "danger":
-                vieew.setBackgroundResource(R.drawable.toastdanger);
+                view.setBackgroundResource(R.drawable.toastdanger);
                 break;
             case "success":
-                vieew.setBackgroundResource(R.drawable.toastsuccess);
+                view.setBackgroundResource(R.drawable.toastsuccess);
                 break;
             case "warning":
-                vieew.setBackgroundResource(R.drawable.toastwarning);
+                view.setBackgroundResource(R.drawable.toastwarning);
                 break;
             default:
                 break;
         }
 
-        toast.setView(vieew);
+        toast.setView(view);
         toast.show();
     }
 }

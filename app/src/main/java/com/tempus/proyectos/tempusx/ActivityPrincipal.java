@@ -28,6 +28,8 @@ import com.tempus.proyectos.bluetoothSerial.MainSuprema;
 import com.tempus.proyectos.data.*;
 import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.model.Marcaciones;
+import com.tempus.proyectos.data.process.ProcessMarcas;
+import com.tempus.proyectos.data.process.ProcessSyncTS;
 import com.tempus.proyectos.data.queries.*;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.Shell;
@@ -121,9 +123,12 @@ public class ActivityPrincipal extends Activity {
     public static boolean isReplicating;
     public static boolean isReplicatingTemplate;
     public static boolean isDeleting;
+    public static String huellaEnrollFlag1;
+    public static String huellaEnrollFlag2;
     public static String huellaEnroll1;
     public static String huellaEnroll2;
     public static String huellaDelete1;
+    public static String huellaDeleteFlag1;
 
     public boolean enableThreadReplicate;
 
@@ -684,6 +689,10 @@ public class ActivityPrincipal extends Activity {
             isReplicatingTemplate = false;
             isDeleting = false;
 
+            huellaEnrollFlag1 = "";
+            huellaEnrollFlag2 = "";
+            huellaDeleteFlag1 = "";
+
             huellaEnroll1 = "";
             huellaEnroll2 = "";
             huellaDelete1 = "";
@@ -707,7 +716,7 @@ public class ActivityPrincipal extends Activity {
 
         dbManager.execSQL("DELETE FROM TERMINAL");
         //dbManager.execSQL("UPDATE TERMINAL SET IDTERMINAL = '104'");
-        dbManager.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES('104')");
+        dbManager.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES('101')");
 
         queriesAutorizaciones = new QueriesAutorizaciones(this);
         queriesAutorizaciones.open();
@@ -827,7 +836,6 @@ public class ActivityPrincipal extends Activity {
         //macBTSerial01 = "98:D3:32:20:5B:7E";
         //macBTSerial02 = "98:D3:34:90:7D:C0";
 
-
         //macBTSerial01 = "98:D3:32:30:62:0E";
         //macBTSerial02 = "00:00:00:00:00:00";
         //macBTSerial03 = "00:00:00:00:00:00";
@@ -837,10 +845,17 @@ public class ActivityPrincipal extends Activity {
         //macBTSerial02 = "20:16:08:09:04:41";
         //macBTSerial03 = "00:00:00:00:00:00";
 
-
         //EDITORA
         //macBTSerial01 = "00:15:83:35:6C:85";
         //macBTSerial02 = "98:D3:33:80:91:98";
+
+        //DIRESA CLIENTE TX_Rev0.1
+        //macBTSerial01 = "00:15:83:35:80:A5"; //hc-06
+        //macBTSerial02 = "20:16:08:10:60:73"; //hc-06
+
+        //DIRESA CLIENTE TX_Rev0.2
+        //macBTSerial01 = "20:16:08:10:83:58";
+        //macBTSerial02 = "20:16:08:10:60:73";
 
         queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this);
 
@@ -1019,6 +1034,7 @@ public class ActivityPrincipal extends Activity {
 
         switch(patronAcceso) {
             case "123432":
+                txvMensajePantalla.setText("PASE SU TARJETA");
                 Intent intent01 = new Intent(ActivityPrincipal.this, ActivityLogin.class);
                 intent01.putExtra("llave", "valor");
                 startActivityForResult(intent01, 1);
@@ -1155,17 +1171,11 @@ public class ActivityPrincipal extends Activity {
             routineEventScreen.start();
         }
 
+        ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
+        processSyncTS.start(this);
 
-        //ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
-        //processSyncTS.start(this);
-
-
-        //ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
-        //processMarcas.start(this);
-
-
-
-
+        ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
+        processMarcas.start(this);
 
     }
 
@@ -1622,8 +1632,13 @@ public class ActivityPrincipal extends Activity {
                     case "05": // EnrollByScan
                         Log.v("TEMPUS: ","EnrollByScan >>>");
                         if(isEnrolling) {
-                            huellaEnroll1 = trama;
-                            Log.v("TEMPUS: ",objSuprema.getFlagError());
+                            if (objSuprema.getFlagError().equalsIgnoreCase("SUCCESS")){
+                                huellaEnroll1 = trama;
+                                huellaEnrollFlag1 = objSuprema.getFlagError();
+                            } else {
+                                huellaEnroll1 = "";
+                                huellaEnrollFlag1 = objSuprema.getFlagError();
+                            }
                         }
                         break;
                     case "07": // EnrollByTemplate
@@ -1742,12 +1757,28 @@ public class ActivityPrincipal extends Activity {
                     case "14": // ReadTemplate
                         Log.v("TEMPUS: ","ReadTemplate >>>");
                         if(isEnrolling){
-                            huellaEnroll2 = trama;
+                            if (objSuprema.getFlagError().equalsIgnoreCase("SUCCESS") || objSuprema.getFlagError().equalsIgnoreCase("CONTINUE")){
+                                huellaEnroll2 = trama;
+                                huellaEnrollFlag2 = objSuprema.getFlagError();
+                            } else {
+                                huellaEnroll2 = "";
+                                huellaEnrollFlag2 = objSuprema.getFlagError();
+                            }
                             Log.v("TEMPUS: ",objSuprema.getFlagError());
                         }
                         break;
                     case "16": // DeleteTemplate
                         Log.v("TEMPUS: ","DeleteTemplate >>>");
+                        if (isDeleting){
+                            if (objSuprema.getFlagError().equalsIgnoreCase("SUCCESS") || objSuprema.getFlagError().equalsIgnoreCase("NOT_FOUND")){
+                                huellaDelete1 = trama;
+                                huellaDeleteFlag1 = objSuprema.getFlagError();
+                            } else {
+                                huellaDelete1 = "";
+                                huellaDeleteFlag1 = objSuprema.getFlagError();
+                            }
+                            Log.v("TEMPUS: ",objSuprema.getFlagError() + " - " + huellaDeleteFlag1);
+                        }
                         break;
                     case "17": // DeleteAllTemplates
                         Log.v("TEMPUS: ","DeleteAllTemplates >>>");

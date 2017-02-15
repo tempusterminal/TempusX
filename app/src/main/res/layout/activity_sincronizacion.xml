@@ -89,7 +89,7 @@
         android:layout_height="@dimen/fondo2alt_height"
         android:layout_marginTop="@dimen/fondo2alt_marginTop"
         android:layout_marginLeft="@dimen/fondo2_marginLeft"
-        android:layout_centerHorizontal="true">
+        android:layout_alignParentLeft="true">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -160,7 +160,7 @@
                     android:orientation="vertical">
 
                     <TextView
-                        android:text="SERVIDOR / INSTANCIA:"
+                        android:text="SERVIDOR:"
                         android:layout_width="160dp"
                         android:layout_height="25dp"
                         android:textColor="@color/colorTexto"
@@ -220,7 +220,7 @@
                         android:id="@+id/textView8" />
 
                     <EditText
-                        android:layout_width="130dp"
+                        android:layout_width="280dp"
                         android:layout_height="28dp"
                         android:inputType="textPersonName"
                         android:text=""
@@ -231,21 +231,8 @@
                         android:textColor="@color/colorTexto"
                         android:textCursorDrawable="@color/colorTexto"
                         android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/editText" />
+                        android:id="@+id/edtSyncHost" />
 
-                    <EditText
-                        android:layout_width="130dp"
-                        android:layout_height="28dp"
-                        android:inputType="textPersonName"
-                        android:text=""
-                        android:ems="10"
-                        android:textSize="14dp"
-                        android:layout_marginLeft="350dp"
-                        android:layout_marginTop="10dp"
-                        android:textColor="@color/colorTexto"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/editText11" />
 
                     <EditText
                         android:layout_width="280dp"
@@ -259,7 +246,7 @@
                         android:textColor="@color/colorTexto"
                         android:textCursorDrawable="@color/colorTexto"
                         android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/editText2" />
+                        android:id="@+id/edtSyncDB" />
 
                     <EditText
                         android:layout_width="280dp"
@@ -273,7 +260,7 @@
                         android:textColor="@color/colorTexto"
                         android:textCursorDrawable="@color/colorTexto"
                         android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/editText3" />
+                        android:id="@+id/edtSyncPort" />
 
                     <EditText
                         android:layout_width="280dp"
@@ -287,7 +274,7 @@
                         android:textColor="@color/colorTexto"
                         android:textCursorDrawable="@color/colorTexto"
                         android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/editText4" />
+                        android:id="@+id/edtSyncUser" />
 
                     <EditText
                         android:layout_width="280dp"
@@ -301,7 +288,7 @@
                         android:textColor="@color/colorTexto"
                         android:textCursorDrawable="@color/colorTexto"
                         android:backgroundTint="@color/colorNegro"
-                        android:id="@+id/editText5" />
+                        android:id="@+id/edtSyncPassword" />
 
                     <Button
                         android:text="Guardar"

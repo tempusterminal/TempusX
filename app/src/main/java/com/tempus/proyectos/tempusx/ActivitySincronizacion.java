@@ -10,15 +10,18 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
+import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -31,6 +34,8 @@ public class ActivitySincronizacion extends Activity {
 
     /* --- Declaración de Variables Globales --- */
 
+    public static List<String> logSincronizacion;
+
     /* --- Declaración de Variables Locales --- */
 
     /* --- Declaración de Componentes de la Interfaz --- */
@@ -38,6 +43,7 @@ public class ActivitySincronizacion extends Activity {
     TabHost host;
 
     ImageView btnMasterSincronizacion;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,7 @@ public class ActivitySincronizacion extends Activity {
         /* --- Inicialización de Variables Globales --- */
 
         ActivityPrincipal.activityActive = "Sincronizacion";
+        logSincronizacion = new ArrayList<String>();
 
         /* --- Inicialización de Variables Locales --- */
 
@@ -62,10 +69,6 @@ public class ActivitySincronizacion extends Activity {
         /* --- Inicialización de Métodos --- */
 
         ui.initScreen(this);
-
-
-
-
 
 
         host = (TabHost)findViewById(R.id.tabHostSync);

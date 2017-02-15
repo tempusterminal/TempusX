@@ -88,8 +88,14 @@ public class ActivityActualizar extends Activity {
         btnInstallAPK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //new DownloadFileFromURL().execute("http://www.mirrorupdtxd.pe.hu/dev/tempusx_v1.apk");
-                new DownloadFileFromURL().execute("http://192.168.0.14/TempusX/tempusx_v1.apk");
+                //new DownloadFileFromURL().execute("http://192.168.0.14/TempusX/tempusx_v1.apk");
+
+                Log.e("Tempus: ", "Instalando");
+                Toast.makeText(getApplicationContext(),"Instalando actualizaciones ...",Toast.LENGTH_SHORT);
+                InstallAPK(Environment.getExternalStorageDirectory().toString()  + "/tempus/tempusx_v1.apk");
+                Log.e("Tempus: ", "Instalado");
+                Toast.makeText(getApplicationContext(),"Sistema actualizado ... reiniciando ...",Toast.LENGTH_SHORT);
+
             }
         });
 

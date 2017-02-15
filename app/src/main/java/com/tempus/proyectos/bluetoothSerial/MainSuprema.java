@@ -318,7 +318,7 @@ public class MainSuprema {
 
     public String getFlagError() {
         String msj = "";
-        switch (this.trama) {
+        switch (this.trama.substring(20,22)) {
             case "62":
                 msj = "SCAN_SUCCESS";
                 break;
@@ -356,6 +356,7 @@ public class MainSuprema {
                 msj = "CONTINUE";
                 break;
             default:
+                msj = "NUMERO "+ this.trama.substring(20,22);
                 break;
         }
         return msj;
@@ -385,6 +386,36 @@ public class MainSuprema {
             }
         }
         return card;
+    }
+
+    public String convertTemplateForDB(String template) {
+        String templateFinal = "";
+
+        return templateFinal;
+    }
+
+    public String formatTemplate(String templateHexa) {
+        String templateFinal = "";
+
+        String templateArray[] = new String[256];
+
+        for (int i = 0; i < templateArray.length; i++) {
+            int ini = -2;
+            int fin = 0;
+
+            templateFinal = templateFinal + templateHexa.substring(ini+2,fin+2) + " ";
+
+            ini = ini + 2;
+            fin = fin + 2;
+        }
+
+        try {
+            templateFinal = templateFinal.substring(0,templateFinal.length()-1);
+        } catch (Exception e) {
+            templateFinal = "";
+        }
+
+        return templateFinal;
     }
 
     @Override

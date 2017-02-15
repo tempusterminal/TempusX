@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tempus.proyectos.data.model.Biometrias;
+import com.tempus.proyectos.data.queries.QueriesBiometrias;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.threads.ThreadSupremaDelete;
 import com.tempus.proyectos.threads.ThreadSupremaEnroll;
@@ -41,7 +42,7 @@ public class ActivityBiometria extends Activity {
 
     /* --- Declaración de Objetos --- */
 
-    UserInterfaceM ui;
+    static UserInterfaceM ui;
     public static ViewDialog dialog;
     Utilities util;
     QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria;
@@ -56,29 +57,32 @@ public class ActivityBiometria extends Activity {
     public static boolean accionCancel;
     public static String valorTarjeta;
 
+    public static Biometrias objEspacio01;
+    public static Biometrias objEspacio02;
+    public static Biometrias objBiometriaList;
+
+    public static QueriesBiometrias queriesBiometrias;
+    public static List<Biometrias> biometriasList;
+
     /* --- Declaración de Componentes de la Interfaz --- */
 
-    ImageView btnMasterBiometria;
+    static ImageView btnMasterBiometria;
     static TextView txvHuellaFondo;
-    static GifTextView txvHuellaGif;
-    static TextView txvHuellaTexto;
+    public static GifTextView txvHuellaGif;
+    public static TextView txvHuellaTexto;
     //ProgressBar pbrHuellaCarga;
 
-    TextView txvHuellaEmpA1;
-    TextView txvHuellaEmpA2;
-    Button btnAcHuella1;
-    Button btnAcHuella2;
-    Button btnAcHuella3;
-    TextView txvActHuella1;
-    TextView txvActHuella2;
-    TextView txvHuellaEmpresaCorner;
-
-
-
-    Button btnConsultarHuella;
-
-    TextView txvHuellaNombrePersonal;
-    EditText edtHuellaDocumento;
+    static TextView txvHuellaEmpA1;
+    static TextView txvHuellaEmpA2;
+    static Button btnAcHuella1;
+    static Button btnAcHuella2;
+    static Button btnAcHuella3;
+    static TextView txvActHuella1;
+    static TextView txvActHuella2;
+    static TextView txvHuellaEmpresaCorner;
+    static Button btnConsultarHuella;
+    static TextView txvHuellaNombrePersonal;
+    static EditText edtHuellaDocumento;
 
 
 
@@ -88,9 +92,26 @@ public class ActivityBiometria extends Activity {
 
 
     // Pantalla Lista Huella
-    Button btnExitLstHuella;
-    TextView txvLayerLstHuella;
-    ListView lstHuella;
+    static Button btnExitLstHuella;
+    static TextView txvLayerLstHuella;
+    static ListView lstHuella;
+    static TextView txvCabeceraLstHuella;
+    public static ImageView imgViewResultOK;
+    public static ImageView imgViewResultKO;
+
+
+
+
+
+    // Parametros para enrolar
+
+    public static String nombre;
+    public static String empresaCodigo;
+    public static String empresaNombre;
+    public static String codigo;
+    public static String template;
+    public static int indice;
+    public static int idTipoDetaBio;
 
 
     @Override
@@ -124,6 +145,8 @@ public class ActivityBiometria extends Activity {
         txvHuellaFondo = (TextView) findViewById(R.id.txvHuellaFondo);
         txvHuellaGif = (GifTextView) findViewById(R.id.txvHuellaGif);
         txvHuellaTexto = (TextView) findViewById(R.id.txvHuellaTexto);
+        imgViewResultOK = (ImageView) findViewById(R.id.imgViewResultOK);
+        imgViewResultKO = (ImageView) findViewById(R.id.imgViewResultKO);
         //pbrHuellaCarga = (ProgressBar) findViewById(R.id.pbrHuellaCarga);
 
         btnAcHuella1 = (Button) findViewById(R.id.btnAcHuella1);
@@ -154,32 +177,10 @@ public class ActivityBiometria extends Activity {
         btnExitLstHuella = (Button) findViewById(R.id.btnExitLstHuella);
         txvLayerLstHuella = (TextView) findViewById(R.id.txvLayerLstHuella);
         lstHuella = (ListView) findViewById(R.id.lstHuella);
+        txvCabeceraLstHuella = (TextView) findViewById(R.id.txvCabeceraLstHuella);
 
 
         //ArrayAdapter<String> test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,val);
-
-        ArrayAdapter<String> test = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, android.R.id.text1, val){
-
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent){
-
-                View view = super.getView(position, convertView, parent);
-
-                final TextView ListItemShow = (TextView) view.findViewById(android.R.id.text1);
-
-
-                if (ListItemShow.getText().toString().contains("Carlos")){
-                    ListItemShow.setBackgroundColor(Color.parseColor("#5db85d"));
-                } else {
-                    ListItemShow.setBackgroundColor(Color.parseColor("#333333"));
-                }
-
-                return view;
-            }
-
-        };
-
-        lstHuella.setAdapter(test);
 
 
         //ArrayAdapter<CharSequence> adapter1 = ArrayAdapter.createFromResource(this, colors, R.layout.spinner_item);
@@ -210,65 +211,74 @@ public class ActivityBiometria extends Activity {
             @Override
             public void onClick(View v) {
 
+                String numero = edtHuellaDocumento.getText().toString();
 
+                if (numero.isEmpty()){
+                    ui.showAlert(ActivityBiometria.this,"info","Debe ingresar un número de válido");
+                } else {
 
+                    List<String> lista = new ArrayList<String>();
 
-                manageScreenListaHuella(true);
+                    try {
+                        Log.d("TEMPUS",numero);
+                        queriesBiometrias = new QueriesBiometrias(ActivityBiometria.this);
+                        biometriasList = queriesBiometrias.ListarPersonalBiometria(7,numero);
 
+                        int cantidad = biometriasList.size();
 
+                        if ( cantidad > 0 ) {
+                            for(int i = 0; i < biometriasList.size(); i++){
 
+                                Log.d("Autorizaciones",biometriasList.get(i).toString());
+                                String empresa = biometriasList.get(i).getEmpresa();
+                                String codigo = biometriasList.get(i).getCodigo();
+                                String nrodocumento = biometriasList.get(i).getNroDocumento();
+                                String apellidoPaterno = biometriasList.get(i).getApellidoPaterno();
+                                int flag = biometriasList.get(i).getFlagPerTipoLectTerm();
 
+                                String registro = String.valueOf(flag) + "|   " + empresa + "   " + codigo + "   " + nrodocumento + "   " + apellidoPaterno;
+                                lista.add(registro);
+                            }
 
+                            ArrayAdapter<String> test = new ArrayAdapter<String>(ActivityBiometria.this,android.R.layout.simple_list_item_1, android.R.id.text1, lista){
 
+                                @Override
+                                public View getView(int position, View convertView, ViewGroup parent){
 
+                                    View view = super.getView(position, convertView, parent);
 
-                /***
+                                    final TextView ListItemShow = (TextView) view.findViewById(android.R.id.text1);
 
-                String documento = edtHuellaDocumento.getText().toString();
-                valorTarjeta = documento;
+                                    if (ListItemShow.getText().toString().contains("1|")){
+                                        ListItemShow.setBackgroundColor(Color.parseColor("#5db85d"));
+                                    } else {
+                                        ListItemShow.setBackgroundColor(Color.parseColor("#333333"));
+                                    }
+                                    return view;
+                                }
+                            };
 
-                queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityBiometria.this);
+                            lstHuella.setAdapter(test);
 
+                            manageScreenListaHuella(true);
 
-                List<Biometrias> biometriasList = queriesPersonalTipolectoraBiometria.EvaluarBiometrias(7,valorTarjeta);
-                Log.v("TEMPUS: ", "♫♫♫♫" + String.valueOf(biometriasList));
-
-
-                if (!biometriasList.get(0).Mensaje.equalsIgnoreCase("personal no registrado")) {
-                    txvHuellaNombrePersonal.setText(biometriasList.get(0).Nombres + " " + biometriasList.get(0).ApellidoPaterno + " " + biometriasList.get(0).ApellidoMaterno);
-                    boolean btn1 = false;
-                    boolean btn2 = false;
-                    boolean btn3 = false;
-
-                    //PERSONAL NO TIENE PERMISOS
-
-                    for(int i = 0; i < biometriasList.size(); i++){
-                        if (biometriasList.get(i).Mensaje.equalsIgnoreCase("Enrolamiento disponible")){
-                            lstHuellaBtn.get(i).setEnabled(true);
                         } else {
-                            lstHuellaBtn.get(i).setEnabled(false);
+                            ui.showAlert(ActivityBiometria.this,"warning","Cod/Doc no se reconoce");
                         }
-                        lstHuellaTxv.get(i).setText(biometriasList.get(i).Mensaje);
+
+                    } catch (Exception e ){
+                        Log.e("ERROR",e.getMessage());
                     }
 
-                } else {
-                    txvHuellaNombrePersonal.setText(biometriasList.get(0).Mensaje);
-                    manageButtonsAction(false,false,false);
                 }
+            }
+        });
 
-                 ***/
-
-/*
-                if (exito){
-                    txvHuellaNombrePersonal.setText("JUAN PEREZ");
-                    txvHuellaEstado.setText(" PERSONAL NO TIENE HUELLAS");
-                    manageButtonsAction(true,true,true);
-                } else {
-                    limpiarScreen();
-                    txvHuellaNombrePersonal.setText("PERSONAL NO REGISTRADO");
-                    valorTarjeta = "";
-                }
-*/
+        lstHuella.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                objBiometriaList =  biometriasList.get(position);
+                analizarRegistroBiometriaList(ActivityBiometria.this);
             }
         });
 
@@ -305,6 +315,7 @@ public class ActivityBiometria extends Activity {
             @Override
             public void onClick(View v) {
                 // Registrando huella 1
+                idTipoDetaBio = 1;
                 ocupado = true;
                 ActivityPrincipal.isEnrolling = true;
                 manageScreenEnroll(true);
@@ -317,6 +328,7 @@ public class ActivityBiometria extends Activity {
             @Override
             public void onClick(View v) {
                 // Registrando huella 2
+                idTipoDetaBio = 2;
                 ocupado = true;
                 ActivityPrincipal.isEnrolling = true;
                 manageScreenEnroll(true);
@@ -332,7 +344,7 @@ public class ActivityBiometria extends Activity {
                 ocupado = true;
                 ActivityPrincipal.isDeleting = true;
                 manageScreenEnroll(true);
-                Thread threadSupremaDelete = new Thread(new ThreadSupremaDelete());
+                Thread threadSupremaDelete = new Thread(new ThreadSupremaDelete(ActivityBiometria.this));
                 threadSupremaDelete.start();
             }
         });
@@ -340,12 +352,77 @@ public class ActivityBiometria extends Activity {
     }
 
 
+    public static void analizarRegistroBiometriaList(Activity activity){
+
+        int permisos = objBiometriaList.getFlagPerTipoLectTerm();
+
+        if (permisos == 1){
+            nombre = objBiometriaList.getNombres() + " " + objBiometriaList.getApellidoPaterno() + " " + objBiometriaList.getApellidoMaterno();
+            empresaCodigo = objBiometriaList.getEmpresa().split("-")[0];
+            empresaNombre = objBiometriaList.getEmpresa().split("-")[1];
+            codigo = objBiometriaList.getCodigo();
+            template = "";
+
+            Log.d("TEMPUS: ","HUELLA SELECCIONADA: " + objBiometriaList.toString());
+
+            manageScreenListaHuella(false);
+
+            try {
+                queriesBiometrias = new QueriesBiometrias(activity);
+                List<Biometrias> espaciosBiometrias = queriesBiometrias.buscarBiometrias(7,empresaCodigo,codigo);
+                int cantidad = espaciosBiometrias.size();
+
+                if (cantidad == 2 ) {
+                    for(int i = 0; i < espaciosBiometrias.size(); i++){
+                        Log.d("Autorizaciones",espaciosBiometrias.get(i).toString());
+                    }
+
+                    // Espacio 01
+                    int espacio01 = espaciosBiometrias.get(0).getValorBiometria();
+                    objEspacio01 = espaciosBiometrias.get(0);
+                    // Espacio 02
+                    int espacio02 = espaciosBiometrias.get(1).getValorBiometria();
+                    objEspacio02 = espaciosBiometrias.get(1);
+
+
+                    indice = espaciosBiometrias.get(0).getIndiceBiometria();
+                    Log.e("TEMPUS: ", ":::::::::::::: " + String.valueOf(indice));
+
+                    txvHuellaNombrePersonal.setText(nombre);
+
+                    manageEnrollEmp(true,empresaNombre);
+
+                    valorTarjeta = objBiometriaList.getNroDocumento();
+
+                    // Analisis de espacios para enrolar
+                    if (espacio01 == 0) {
+                        //Enrolar Huella 1
+                        manageButtonsAction(true,false,false);
+                    } else {
+                        if (espacio02 == 0) {
+                            //Enrolar Huella 2
+                            manageButtonsAction(false,true,false);
+                        } else {
+                            //Eliminar Huellas
+                            manageButtonsAction(false,false,true);
+                        }
+                    }
+                } else {
+                    ui.showAlert(activity,"warning","Proceso no Soportado (!=2)");
+                }
+
+            } catch (Exception e){
+                Log.e("Error: ",e.getMessage());
+            }
+        } else {
+            ui.showAlert(activity,"warning","Registro no tiene permisos");
+        }
+    }
 
 
 
 
-    private void showdialog()
-    {
+    private void showdialog() {
         listDialog = new Dialog(this, R.style.dialog_theme);
         listDialog.setTitle("Select Item");
         LayoutInflater li = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -383,8 +460,6 @@ public class ActivityBiometria extends Activity {
 
 
 
-
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int eventaction = event.getAction();
@@ -400,11 +475,12 @@ public class ActivityBiometria extends Activity {
         return true;
     }
 
-    public void manageScreenListaHuella(boolean visible) {
+    public static void manageScreenListaHuella(boolean visible) {
         if (visible) {
             btnExitLstHuella.setVisibility(View.VISIBLE);
             txvLayerLstHuella.setVisibility(View.VISIBLE);
             lstHuella.setVisibility(View.VISIBLE);
+            txvCabeceraLstHuella.setVisibility(View.VISIBLE);
             btnMasterBiometria.setClickable(false);
             btnConsultarHuella.setClickable(false);
             edtHuellaDocumento.setEnabled(false);
@@ -412,6 +488,7 @@ public class ActivityBiometria extends Activity {
             btnExitLstHuella.setVisibility(View.INVISIBLE);
             txvLayerLstHuella.setVisibility(View.INVISIBLE);
             lstHuella.setVisibility(View.INVISIBLE);
+            txvCabeceraLstHuella.setVisibility(View.INVISIBLE);
             btnMasterBiometria.setClickable(true);
             btnConsultarHuella.setClickable(true);
             edtHuellaDocumento.setEnabled(true);
@@ -420,6 +497,9 @@ public class ActivityBiometria extends Activity {
 
 
     public static void manageScreenEnroll(boolean visible){
+
+        txvHuellaTexto.setText("Escaneando ... \\nPor favor coloque su dedo");
+
         if (visible) {
             txvHuellaFondo.setVisibility(View.VISIBLE);
             txvHuellaGif.setVisibility(View.VISIBLE);
@@ -431,6 +511,9 @@ public class ActivityBiometria extends Activity {
             txvHuellaTexto.setVisibility(View.INVISIBLE);
             //pbrHuellaCarga.setVisibility(View.INVISIBLE);
         }
+
+        imgViewResultOK.setVisibility(View.INVISIBLE);
+        imgViewResultKO.setVisibility(View.INVISIBLE);
     }
 
     public void limpiarScreen(){
@@ -440,13 +523,13 @@ public class ActivityBiometria extends Activity {
         btnAcHuella3.setEnabled(false);
     }
 
-    public void manageButtonsAction(boolean btn1, boolean btn2, boolean btn3) {
+    public static void manageButtonsAction(boolean btn1, boolean btn2, boolean btn3) {
         btnAcHuella1.setEnabled(btn1);
         btnAcHuella2.setEnabled(btn2);
         btnAcHuella3.setEnabled(btn3);
     }
 
-    public void manageEnrollEmp(boolean visible,String empresa) {
+    public static void manageEnrollEmp(boolean visible,String empresa) {
         if (visible) {
             btnAcHuella1.setVisibility(View.VISIBLE);
             btnAcHuella2.setVisibility(View.VISIBLE);
