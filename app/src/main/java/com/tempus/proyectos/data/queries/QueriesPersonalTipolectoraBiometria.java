@@ -204,6 +204,22 @@ public class QueriesPersonalTipolectoraBiometria {
 
     }
 
+    public String CompletarBiometria(String template){
+
+        String ValorBiometria = "";
+        String[] bytebiometria = template.split(" ");
+
+        for(int i = 0; i < bytebiometria.length; i++){
+            if(bytebiometria[i].length() == 1){
+                ValorBiometria = ValorBiometria + "0" + bytebiometria[i] + " ";
+            }else{
+                ValorBiometria = ValorBiometria + bytebiometria[i] + " ";
+            }
+        }
+
+        return ValorBiometria;
+    }
+
     public String EliminarBiometrias(Biometrias biometrias){
         Log.d("Autorizaciones","Eliminar Biometrias");
 
@@ -295,7 +311,9 @@ public class QueriesPersonalTipolectoraBiometria {
                 String[] sizetemplate = objSuprema.SizeTemplate(template.replace(" ",""));
                 indice = objSuprema.convertCardToEnroll(indice);
 
-                String[] parametro = (objSuprema.convertCardToEnroll(indice) + "," + (sizetemplate[0] + "0" + sizetemplate[1] + "0000") + "," + template.replace(" ","")).split(",");
+                String[] parametro = (objSuprema.convertCardToEnroll(indice) + "," + (sizetemplate[0] + "0" + sizetemplate[1] + "0000") + "," + CompletarBiometria(template).replace(" ","")).split(",");
+
+                Log.v("TEMPUS: ","Valor Biometria: " + CompletarBiometria(template));
 
                 if(template.replace(" ","").length() == 512){
                     try{

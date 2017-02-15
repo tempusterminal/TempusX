@@ -43,11 +43,14 @@ public class QueriesAutorizaciones {
     }
 
     public void drop(){
+        this.open();
         database.execSQL(ViewAutorizaciones.DROP_VIEW);
         Log.d("Autorizaciones","Vista eliminada exitosamente");
+        this.close();
     }
 
     public void create(){
+        this.open();
         database.execSQL(
                 "CREATE VIEW IF NOT EXISTS " + ViewAutorizaciones.VIEW_NAME + " AS " +
                         "SELECT " + "" +
@@ -153,6 +156,7 @@ public class QueriesAutorizaciones {
                         ";"
         );
         Log.d("Autorizaciones","Vista creada exitosamente");
+        this.close();
     }
 
 
