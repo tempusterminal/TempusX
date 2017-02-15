@@ -153,6 +153,7 @@ public class QueriesServicios {
     public void poblar(){
         this.open();
 
+        database.execSQL("DELETE FROM SERVICIOS;");
         database.execSQL("INSERT INTO SERVICIOS(IDSERVICIOS, DESCRIPCION) VALUES(1,'SERVIDOR_DATOS_PRINCIPAL');");
         database.execSQL("INSERT INTO SERVICIOS(IDSERVICIOS, DESCRIPCION) VALUES(2,'SERVIDOR_DATOS_SECUNDARIO');");
         database.execSQL("INSERT INTO SERVICIOS(IDSERVICIOS, DESCRIPCION) VALUES(3,'SERVIDOR_FTP');");

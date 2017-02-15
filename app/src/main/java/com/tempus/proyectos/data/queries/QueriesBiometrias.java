@@ -111,6 +111,7 @@ public class QueriesBiometrias {
         );
 
         Log.d("Autorizaciones","Vista creada exitosamente");
+
         this.close();
     }
 
