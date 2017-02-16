@@ -12,8 +12,11 @@ import java.util.List;
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManagerServidor;
 import com.tempus.proyectos.data.model.Autorizaciones;
+import com.tempus.proyectos.data.model.Biometrias;
 import com.tempus.proyectos.data.model.Marcaciones;
+import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
+import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.util.Fechahora;
 
 /**
@@ -24,7 +27,8 @@ public class ProcessSyncTS extends Thread{
     private Thread hilo;
     private String nombreHilo;
     private QueriesMarcaciones queriesMarcaciones;
-    Marcaciones marcaciones = new Marcaciones();
+    private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria;
+    //Marcaciones marcaciones = new Marcaciones();
     Fechahora fechahora = new Fechahora();
     private Context context;
 
@@ -39,6 +43,43 @@ public class ProcessSyncTS extends Thread{
         Log.d("Autorizaciones","Ejecutando Hilo " + nombreHilo);
 
         while(true){
+            try{
+                queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(context);
+                List<PersonalTipolectoraBiometria> personalTipolectoraBiometriaList = queriesPersonalTipolectoraBiometria.select_one_row();
+                ProcessSync processSync = new ProcessSync();
+
+                if(personalTipolectoraBiometriaList.isEmpty()){
+                    Log.d("Autorizaciones","Sin biometrias por pasar");
+                }else{
+                    Log.d("Autorizaciones","Biometria a sincronizar: " + personalTipolectoraBiometriaList.get(0).toString());
+                    try{
+                        if(processSync.syncBiometrias(personalTipolectoraBiometriaList.get(0)) > 0){
+                            queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(context);
+                            queriesPersonalTipolectoraBiometria.ActualizarBiometriaEnviadaServidor(personalTipolectoraBiometriaList.get(0).getIndiceBiometria(),personalTipolectoraBiometriaList.get(0).getIdTipoDetaBio());
+                        }else{
+                            Log.d("Autorizaciones","No se completo la sincronización de biometrias");
+                        }
+                    }catch(SQLException e){
+                        Log.d("Autorizaciones","ProcessSyncTS.run SQLException SQLServer: " + e.toString());
+                    }catch(Exception e){
+                        Log.d("Autorizaciones","ProcessSyncTS.run Exception: " + e.toString());
+                    }
+                }
+
+                Thread.sleep(2000);
+
+
+            }catch (SQLException e){
+                Log.d("Autorizaciones","ProcessSyncTS.run SQLException SQLServer Hilo " + nombreHilo + ": " + e.getMessage());
+            }catch (InterruptedException e){
+                Log.d("Autorizaciones","ProcessSyncTS.run InterruptedException Hilo " + nombreHilo + ": " + e.getMessage());
+            }catch (ExceptionInInitializerError e){
+                Log.d("Autorizaciones","ProcessSyncTS.run ExceptionInInitializerError Hilo " + nombreHilo + ": " + e.getMessage());
+            }catch (Exception e){
+                Log.d("Autorizaciones","ProcessSyncTS.run Exception Hilo " + nombreHilo + ": " + e.getMessage());
+            }
+
+
             try{
                 queriesMarcaciones = new QueriesMarcaciones(context);
                 List<Marcaciones> marcacionesList = queriesMarcaciones.select_one_row();

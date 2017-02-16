@@ -18,6 +18,7 @@ import com.tempus.proyectos.data.DBManagerServidor;
 import com.tempus.proyectos.data.model.Estados;
 import com.tempus.proyectos.data.model.Llamadas;
 import com.tempus.proyectos.data.model.Marcaciones;
+import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesEstados;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
 import com.tempus.proyectos.data.tables.TableEstados;
@@ -44,69 +45,6 @@ public class ProcessSync {
     public ProcessSync() {
 
     }
-
-    public void SyncG(String fechahora, String idterminal, Context context){
-        //Fechahora fh = new Fechahora();
-        List <Estados> estadosList = new ArrayList<Estados>();
-        Estados estados = new Estados();
-
-        ConexionServidor conexionServidor = new ConexionServidor();
-        if(connection == null){
-            connection = conexionServidor.getInstance().getConnection();
-        }
-
-        String sql = "EXEC TEMPUS.USP_ETL_ESTADOS '" + fechahora + "'";
-        Log.d("Autorizaciones",sql);
-
-        try{
-
-            if(connection.isClosed()){
-                Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
-                connection = conexionServidor.conectar();
-            }
-
-            preparedStatement = connection.prepareStatement(sql);
-            resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()){
-                estados = new Estados();
-                estados.setEstado(resultSet.getString(TableEstados.Estado));
-                estados.setDescripcion(resultSet.getString(TableEstados.Descripcion));
-                estados.setRequiereAsistencia(resultSet.getInt(TableEstados.RequiereAsistencia));
-                estados.setFechaHoraSinc(resultSet.getString(TableEstados.FechaHoraSinc));
-                Log.d("Autorizaciones",estados.toString());
-                estadosList.add(estados);
-            }
-
-            Log.d("Autorizaciones","Size: " + estadosList.size());
-
-            for(int i = 0; i < estadosList.size(); i++){
-                try{
-                    queriesEstados = new QueriesEstados(context);
-                    Log.d("Autorizaciones","Insertando Tabla Estados...");
-                    if(queriesEstados.insert(estadosList.get(i)) > 0){
-                        Log.d("Autorizaciones","Row " + (i + 1) + ": " + estadosList.get(i).toString());
-                        Log.d("Autorizaciones","Inserción con exito");
-                    }else{
-                        Log.d("Autorizaciones","No se pudo insertar...");
-                        Log.d("Autorizaciones", "Actualizando Tabla Estados...");
-                        queriesEstados.update(estadosList.get(i));
-                        Log.d("Autorizaciones", "Row " + i + ": " + estadosList.get(i).toString());
-                        Log.d("Autorizaciones", "Actualización con exito");
-                    }
-                }catch(SQLException e){
-                    Log.d("Autorizaciones","No se pudo realizar la inserción / actualización");
-                }
-            }
-
-        }catch(SQLException e){
-            Log.d("Autorizaciones","Error SQLite: " + e.getMessage());
-        }catch (java.sql.SQLException e) {
-            Log.d("Autorizaciones","Error SQLServer: " + e.getMessage());
-        }
-
-    }
-
 
     public void Sync(String idllamada, String llamada, String parameters, String tablename, String primarykey, String columns, Context context){
         String insert = "";
@@ -302,6 +240,65 @@ public class ProcessSync {
         Log.d("Autorizaciones","Cantidad de filas afectadas: " + String.valueOf(rowaffected));
         return rowaffected;
     }
+
+    public int syncBiometrias(PersonalTipolectoraBiometria personalTipolectoraBiometria) throws java.sql.SQLException {
+        Fechahora fechahora = new Fechahora();
+        int rowaffected = 0;
+        String ValorBiometria = "";
+        String ImagenBiometria = "";
+        ConexionServidor conexionServidor = new ConexionServidor();
+
+        if(personalTipolectoraBiometria.getValorBiometria() == null){
+            ValorBiometria = "NULL";
+        }else{
+            ValorBiometria = "'" + personalTipolectoraBiometria.getValorBiometria() + "'";
+        }
+
+        if(personalTipolectoraBiometria.getImagenBiometria() == null){
+            ImagenBiometria = "NULL";
+        }else{
+            ImagenBiometria = "'" + personalTipolectoraBiometria.getImagenBiometria() + "'";
+        }
+
+        if(connection == null){
+            connection = conexionServidor.getInstance().getConnection();
+        }
+
+        String sql = "UPDATE TEMPUS.PERSONAL_TIPOLECTORA_BIOMETRIA " +
+                "SET PERSONAL_TIPOLECTORA_BIOMETRIA.VALOR_BIOMETRIA = " + ValorBiometria  + ", " +
+                "PERSONAL_TIPOLECTORA_BIOMETRIA.IMAGEN_BIOMETRIA = " + ImagenBiometria + ", " +
+                "PERSONAL_TIPOLECTORA_BIOMETRIA.FECHA_HORA_SINC = '" + fechahora.getFechahoraSync(personalTipolectoraBiometria.getFechaHoraSinc())+ "', " +
+                "PERSONAL_TIPOLECTORA_BIOMETRIA.FECHA_BIOMETRIA = '" + personalTipolectoraBiometria.getFechaBiometria() + "' " +
+                "WHERE PERSONAL_TIPOLECTORA_BIOMETRIA.ID_PER_TIPOLECT_BIO = " + personalTipolectoraBiometria.getIdPerTipolectBio() + " " +
+                "AND PERSONAL_TIPOLECTORA_BIOMETRIA.INDICE_BIOMETRIA = " + personalTipolectoraBiometria.getIndiceBiometria() + " " +
+                "AND PERSONAL_TIPOLECTORA_BIOMETRIA.EMPRESA = '" + personalTipolectoraBiometria.getEmpresa() + "' " +
+                "AND PERSONAL_TIPOLECTORA_BIOMETRIA.CODIGO = '" + personalTipolectoraBiometria.getCodigo() + "' " +
+                ";";
+        Log.d("Autorizaciones",sql);
+
+        try{
+            if(connection.isClosed()){
+                Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
+                connection = conexionServidor.conectar();
+            }
+            statement = connection.createStatement();
+            rowaffected = statement.executeUpdate(sql);
+
+            Log.d("Autorizaciones","Registro actualizado");
+
+        }catch (SQLException e) {
+            Log.d("Autorizaciones","DBManagerServidor.syncMarcaciones SQLException SQLite: " + e.getMessage());
+        }catch (java.sql.SQLException e) {
+            Log.d("Autorizaciones","DBManagerServidor.syncMarcaciones SQLException SQLServer: " + e.getMessage());
+        }finally {
+            connection.close();
+            Log.d("Autorizaciones","Conexion cerrada");
+        }
+        Log.d("Autorizaciones","Cantidad de filas afectadas: " + String.valueOf(rowaffected));
+        return rowaffected;
+
+    }
+
 
 
     public void Process(Context context){

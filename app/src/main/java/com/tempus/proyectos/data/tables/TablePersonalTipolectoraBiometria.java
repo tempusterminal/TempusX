@@ -78,6 +78,28 @@ public class TablePersonalTipolectoraBiometria {
             "WHERE " + ValorBiometria + " IS NOT NULL " +
             "AND " + Sincronizado + " = 0 " +
             "ORDER BY " + IndiceBiometria + " ASC " +
-            " ";
+            "; ";
+
+    public static final String SELECT_BIOMETRIA_SINCRONIZAR = "SELECT " +
+            IdPerTipolectBio + ", " +
+            IndiceBiometria + ", " +
+            Empresa + ", " +
+            Codigo + ", " +
+            IdTipoLect + ", " +
+            ValorTarjeta + ", " +
+            IdTipoDetaBio + ", " +
+            ValorBiometria + ", " +
+            FechaBiometria + ", " +
+            ImagenBiometria + ", " +
+            IdAutorizacion + ", " +
+            Sincronizado + ", " +
+            FechaHoraSinc + " " +
+            "FROM " + TABLE_NAME + " " +
+            //"WHERE " + ValorBiometria + " IS NOT NULL " +
+            "WHERE " + Sincronizado + " = 2 " +
+            "ORDER BY " + IndiceBiometria + " ASC " +
+            "LIMIT 1 " +
+            "; ";
+
 
 }

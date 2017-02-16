@@ -50,7 +50,7 @@ public class Fechahora {
     }
 
     public String getFechahoraSync(String fechahora){ //yyyy-MM-dd HH:mm:ss -> dd/MM/yyy HH:mm:ss.mmm
-        fechahora = fechahora.substring(8,10) + "/" + fechahora.substring(5,7) + "/" + fechahora.substring(0,5) + " " + fechahora.substring(11,23);
+        fechahora = fechahora.substring(8,10) + "/" + fechahora.substring(5,7) + "/" + fechahora.substring(0,4) + " " + fechahora.substring(11,fechahora.length());
         return fechahora;
     }
 

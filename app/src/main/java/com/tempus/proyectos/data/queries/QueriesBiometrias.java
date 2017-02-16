@@ -256,7 +256,8 @@ public class QueriesBiometrias {
                 "AND PERSONAL.CODIGO = PER_TIPOLECT_TERM.CODIGO " +
                 "WHERE PER_TIPOLECT_TERM.ID_TIPO_LECT = ? " +
                 "AND (PERSONAL.CODIGO = ? " +
-                "OR PERSONAL.NRO_DOCUMENTO = ?)" +
+                "OR PERSONAL.NRO_DOCUMENTO = ?) " +
+                "AND (PERSONAL.ESTADO != '002' OR PERSONAL.FECHA_DE_CESE IS NULL) " +
                 ";";
 
         Log.d("Autorizaciones",query);

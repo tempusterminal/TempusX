@@ -204,6 +204,32 @@ public class QueriesPersonalTipolectoraBiometria {
 
     }
 
+    public int ActualizarBiometriaEnviadaServidor(int IndiceBiometria, int IdTipoDetaBio){
+
+        this.open();
+        int sincronizado = 4; // ESTADO BIOMETRIA ENVIADA AL SERVIDOR
+        Fechahora fechahora = new Fechahora();
+
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TablePersonalTipolectoraBiometria.Sincronizado,sincronizado);
+        contentValues.put(TablePersonalTipolectoraBiometria.FechaBiometria,fechahora.getFecha(fechahora.getFechahora()));
+        contentValues.put(TablePersonalTipolectoraBiometria.FechaHoraSinc,fechahora.getFechahora());
+
+        try{
+            database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + " AND " + TablePersonalTipolectoraBiometria.IdTipoDetaBio + " = ? ", new String[] { String.valueOf(IndiceBiometria), String.valueOf(IdTipoDetaBio) });
+            Log.v("TEMPUS: ","Biometria Actualizada a Estado " + sincronizado + " (Biometria Enviada al Servidor)");
+            return 1;
+        }catch(Exception e){
+            Log.d("Autorizaciones","QueriesPersonalTipolectoraBiometria.ActualizarBiometria Error al Actualizar Biometria: " + e.getMessage());
+            return 0;
+        }finally {
+            this.close();
+        }
+
+    }
+
+
     public String CompletarBiometria(String template){
 
         String ValorBiometria = "";
@@ -246,11 +272,11 @@ public class QueriesPersonalTipolectoraBiometria {
 
     public List<PersonalTipolectoraBiometria> select_one_row(){
 
+        this.open();
         PersonalTipolectoraBiometria personalTipolectoraBiometria = new PersonalTipolectoraBiometria();
         List<PersonalTipolectoraBiometria> personalTipolectoraBiometriaList =  new ArrayList<PersonalTipolectoraBiometria>();
 
-        String query = TablePersonalTipolectoraBiometria.SELECT_BIOMETRIA_REPLICAR;
-
+        String query = TablePersonalTipolectoraBiometria.SELECT_BIOMETRIA_SINCRONIZAR;
 
         Cursor cursor = database.rawQuery(query, null);
         if(cursor.moveToNext()){
@@ -274,8 +300,11 @@ public class QueriesPersonalTipolectoraBiometria {
         }
 
         cursor.close();
+        this.close();
         return personalTipolectoraBiometriaList;
     }
+
+
 
 
 
