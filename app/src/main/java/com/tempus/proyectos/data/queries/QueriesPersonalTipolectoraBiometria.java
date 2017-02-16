@@ -259,7 +259,7 @@ public class QueriesPersonalTipolectoraBiometria {
         contentValues.put(TablePersonalTipolectoraBiometria.FechaHoraSinc,fechahora.getFechahora());
 
         try{
-            database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + " AND " + TablePersonalTipolectoraBiometria.IdTipoDetaBio + " = ? ", new String[] { String.valueOf(biometrias.getIndiceBiometria()), String.valueOf(biometrias.getIdTipoDetaBio()) });
+            database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " , new String[] { String.valueOf(biometrias.getIndiceBiometria()) });
             return "BIOMETRIA ELIMINADA";
         }catch(Exception e){
             Log.d("Autorizaciones","Error en el registro de Biometria: " + e.getMessage());
