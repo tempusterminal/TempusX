@@ -1,6 +1,7 @@
 package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
+import android.net.LinkAddress;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.wifi.ScanResult;
@@ -30,6 +32,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.SimpleAdapter;
 import android.widget.Switch;
 import android.widget.TabHost;
@@ -38,9 +41,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tempus.proyectos.util.Connectivity;
+import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.InterfaceAddress;
@@ -54,7 +61,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.content.Intent.FLAG_ACTIVITY_NO_HISTORY;
+
 public class ActivityComunicacion extends Activity {
+
+    String TAG;
 
     /* --- Declaración de Objetos --- */
 
@@ -65,7 +76,8 @@ public class ActivityComunicacion extends Activity {
 
     /* --- Declaración de Variables Locales --- */
 
-    String s_dns1 ;
+    String mask;
+    String s_dns1;
     String s_dns2;
     String s_gateway;
     String s_ipAddress;
@@ -115,6 +127,7 @@ public class ActivityComunicacion extends Activity {
     Switch swtStatusWlan0;
     Switch swtStatusPpp0;
 
+    TextView txvIndicador;
     TextView txvWifiState;
     TextView txvWifiConfigArea;
     TextView txvWifiConfigSSID;
@@ -124,6 +137,9 @@ public class ActivityComunicacion extends Activity {
     CheckBox chkWifiConfigMostrarPass;
     Button btnWifiConfigCancelar;
     Button btnWifiConfigConectar;
+    RadioButton rbnWifiStatic;
+    RadioButton rbnWifiDynamic;
+    Button btnConfRed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -138,6 +154,7 @@ public class ActivityComunicacion extends Activity {
         /* --- Inicialización de Variables Globales --- */
 
         ActivityPrincipal.activityActive = "Comunicacion";
+        TAG = "ActivityComunicacion";
 
         /* --- Inicialización de Variables Locales --- */
 
@@ -160,6 +177,16 @@ public class ActivityComunicacion extends Activity {
         swtStatusWlan0 = (Switch) findViewById(R.id.swtStatusWlan0);
         swtStatusPpp0 = (Switch) findViewById(R.id.swtStatusPpp0);
 
+        txvIndicador = (TextView) findViewById(R.id.txvIndicador);
+
+
+        if (connectivity.existSIM(ActivityComunicacion.this)){
+            txvIndicador.setText("SIM INSERTADA");
+        } else {
+            txvIndicador.setText("SIM NO INSERTADA");
+        }
+
+
         //this.adapter = new SimpleAdapter(ActivityComunicacion.this, arraylist, android.R.layout.simple_list_item_1, new String[] { ITEM_KEY }, new int[] { android.R.id.text1 });
         this.adapter = new SimpleAdapter(ActivityComunicacion.this, arraylist, R.layout.spinner_item, new String[] { ITEM_KEY }, new int[] { android.R.id.text1 });
         lstWifi.setAdapter(this.adapter);
@@ -176,13 +203,13 @@ public class ActivityComunicacion extends Activity {
         //Tab 2
         spec = host.newTabSpec("Tab2");
         spec.setContent(R.id.tab2);
-        spec.setIndicator("ETHERNET");
+        spec.setIndicator("GPRS");
         host.addTab(spec);
 
         //Tab 3
         spec = host.newTabSpec("Tab3");
         spec.setContent(R.id.tab3);
-        spec.setIndicator("GPRS");
+        spec.setIndicator("ETHERNET");
         host.addTab(spec);
 
         TabWidget widget = host.getTabWidget();
@@ -198,10 +225,10 @@ public class ActivityComunicacion extends Activity {
             tv.setTextSize(15);
         }
 
-        View w3 = host.getTabWidget().getChildTabViewAt(2);
-        w3.setVisibility(View.INVISIBLE);
+        //View w3 = host.getTabWidget().getChildTabViewAt(2);
+        //w3.setVisibility(View.INVISIBLE);
 
-        View w1 = host.getTabWidget().getChildTabViewAt(1);
+        View w1 = host.getTabWidget().getChildTabViewAt(2);
         w1.setVisibility(View.INVISIBLE);
 
 
@@ -214,12 +241,15 @@ public class ActivityComunicacion extends Activity {
         chkWifiConfigMostrarPass = (CheckBox) findViewById(R.id.chkWifiConfigMostrarPass);
         btnWifiConfigConectar = (Button) findViewById(R.id.btnWifiConfigConectar);
         btnWifiConfigCancelar = (Button) findViewById(R.id.btnWifiConfigCancelar);
+        rbnWifiStatic = (RadioButton) findViewById(R.id.rbnWifiStatic);
+        rbnWifiDynamic = (RadioButton) findViewById(R.id.rbnWifiDynamic);
+        btnConfRed =  (Button) findViewById(R.id.btnConfRed);
 
         /* --- Inicialización de Métodos --- */
 
         ui.initScreen(this);
-        //NetworkInfo();
         manageAreaWifiConfig(false);
+        disableDataWifi();
 
         /* --- Inicialización de Parametros Generales --- */
 
@@ -244,21 +274,7 @@ public class ActivityComunicacion extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (wifi.isWifiEnabled()){
-                            arraylist.clear();
-                            wifi.startScan();
-
-                            try {
-                                for (int i = 0; i < size; i++) {
-                                    HashMap<String, String> item = new HashMap<String, String>();
-                                    item.put(ITEM_KEY, results.get(i).SSID);
-                                    arraylist.add(item);
-                                    adapter.notifyDataSetChanged();
-                                }
-                            } catch (Exception e) {
-                                Log.v("TEMPUS: ","EXCEPCION REGISTERRECEIVER WIFI"+e.getMessage());
-                            }
-                        }
+                        scanWifiToListView();
                     }
                 });
             }
@@ -270,12 +286,106 @@ public class ActivityComunicacion extends Activity {
                 arraylist.clear();
                 adapter.notifyDataSetChanged();
 
-                if (isChecked){
+                if (isChecked) {
                     wifi.setWifiEnabled(true);
-                    Log.v("TEMPUS: ","WIFI TRUE");
+                    Log.v(TAG,"WIFI TRUE");
+
+                    scanWifiToListView();
+
+                    Thread thWifiState = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    edtWlanIp.setEnabled(true);
+                                    edtWlanMascara.setEnabled(true);
+                                    edtWlanPuerta.setEnabled(true);
+                                }
+                            });
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    rbnWifiDynamic.setEnabled(true);
+                                    rbnWifiStatic.setEnabled(true);
+                                }
+                            });
+
+                            try {
+                                Thread.sleep(2000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+
+                            if (wifi.isWifiEnabled() && swtStatusWlan0.isChecked()){
+
+                                try {
+                                    Thread.sleep(10000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+
+                                try {
+                                    checkWifiConnection();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+                                try {
+                                    checkDataWifiConnection();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+
+
+
+                                try {
+                                    checkWifiTypeConnection();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+
+
+                            }
+                        }
+                    });
+
+                    thWifiState.start();
+
+                    Toast.makeText(getApplicationContext(),"Wifi Activado", Toast.LENGTH_SHORT).show();
                 } else {
                     wifi.setWifiEnabled(false);
-                    Log.v("TEMPUS: ","WIFI FALSE");
+                    Log.v(TAG,"WIFI FALSE");
+
+                    disableDataWifi();
+
+                    Toast.makeText(getApplicationContext(),"Wifi Desactivado", Toast.LENGTH_SHORT).show();
+                }
+
+
+            }
+        });
+
+        swtStatusPpp0.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (connectivity.existSIM(ActivityComunicacion.this)){
+                        connectivity.setMobileDataState(ActivityComunicacion.this,true);
+                    } else {
+                        ui.showAlert(ActivityComunicacion.this,"warning","No hay SIM insertada.");
+                    }
+
+                } else {
+                    if (connectivity.existSIM(ActivityComunicacion.this)){
+                        connectivity.setMobileDataState(ActivityComunicacion.this,false);
+                    } else {
+                        ui.showAlert(ActivityComunicacion.this,"warning","No hay SIM insertada.");
+                    }
+
                 }
             }
         });
@@ -287,12 +397,12 @@ public class ActivityComunicacion extends Activity {
                     manageAreaWifiConfig(true);
                     txvWifiConfigSSID.setText(results.get(position).SSID);
                     txvWifiConfigCapab.setText(results.get(position).capabilities);
-                    Log.v("TEMPUS: ", "SSID - " + results.get(position).SSID);
-                    Log.v("TEMPUS: ", "BSSID - " + results.get(position).BSSID);
-                    Log.v("TEMPUS: ", "Caracteristicas - " + results.get(position).capabilities);
-                    Log.v("TEMPUS: ", "Nivel - " + results.get(position).level);
-                    Log.v("TEMPUS: ", "Frecuencia - " + results.get(position).frequency);
-                    Log.v("TEMPUS: ", "Tiempo - " + results.get(position).timestamp);
+                    Log.v(TAG, "SSID - " + results.get(position).SSID);
+                    Log.v(TAG, "BSSID - " + results.get(position).BSSID);
+                    Log.v(TAG, "Caracteristicas - " + results.get(position).capabilities);
+                    Log.v(TAG, "Nivel - " + results.get(position).level);
+                    Log.v(TAG, "Frecuencia - " + results.get(position).frequency);
+                    Log.v(TAG, "Tiempo - " + results.get(position).timestamp);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -325,76 +435,43 @@ public class ActivityComunicacion extends Activity {
                     connectWifi(isWPA,ssid,pass);
                     manageAreaWifiConfig(false);
                 } else {
-                    Toast.makeText(getApplicationContext(),"Debe colocar un SSIS y/o CONTRASEÑA válidos",Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(),"Debe colocar un SSID y/o CONTRASEÑA válidos",Toast.LENGTH_SHORT);
                 }
+            }
+        });
 
+        btnConfRed.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // changeWifiConfiguration(false, "192.168.0.101", 24, "192.168.0.1","192.168.0.2");
+                Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
+                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(i);
 
+                ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
 
             }
         });
 
         inicializarSwitches();
-        startWifi();
+        checkWifiConnection();
+        checkWifiTypeConnection();
+        checkDataWifiConnection();
 
-        Log.d("Conn", String.valueOf(connectivity.isConnectedMobile(this.getApplicationContext())));
-        Log.d("Conn", String.valueOf(connectivity.getMobileDataState(ActivityComunicacion.this)));
-        Log.d("Conn", connectivity.getNetworkClass(getApplicationContext()));
-        connectivity.setMobileDataState(ActivityComunicacion.this,true);
+
+        //Log.d(TAG, String.valueOf(connectivity.isConnectedMobile(this.getApplicationContext())));
+        //Log.d(TAG, String.valueOf(connectivity.getMobileDataState(ActivityComunicacion.this)));
+        //Log.d(TAG, connectivity.getNetworkClass(getApplicationContext()));
+        //connectivity.setMobileDataState(ActivityComunicacion.this,true);
 
     }
-
-
-
 
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-
-                    ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                    NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                    mWifi.getState();
-
-                    if (mWifi.isConnected()) {
-                        txvWifiState.setText("SSID: " + wifi.getConnectionInfo().getSSID());
-                        Log.v("TEMPUS: ", "ESTADO DE WIFI CONECTADO");
-                    } else {
-                        txvWifiState.setText("SSID: -");
-                        Log.v("TEMPUS: ", "ESTADO DE WIFI DESCONECTADO");
-                    }
-
-                    results = wifi.getScanResults();
-                    size = results.size();
-                    Log.v("TEMPUS: ", String.valueOf(results));
-                    Log.v("TEMPUS: ", "-------------------->" + String.valueOf(wifi.isWifiEnabled()));
-                    arraylist.clear();
-                    wifi.startScan();
-
-                    if (wifi.isWifiEnabled()) {
-                        try {
-                            getInforWIFI();
-                            for (int i = 0; i < size; i++) {
-                                HashMap<String, String> item = new HashMap<String, String>();
-                                item.put(ITEM_KEY, results.get(i).SSID);
-                                arraylist.add(item);
-                                adapter.notifyDataSetChanged();
-                            }
-                        } catch (Exception e) {
-                            Log.v("TEMPUS: ","EXCEPCION WIFI 1"+e.getMessage());
-                        }
-                    } else {
-                        try {
-                            adapter.notifyDataSetChanged();
-                        } catch(Exception e) {
-                            Log.v("TEMPUS: ","EXCEPCION WIFI 2"+e.getMessage());
-                        }
-
-                    }
-                }
-            });
+            Log.v(TAG, "RECIBIENDO DATA ... ");
+            scanWifiToListView();
         }
     };
 
@@ -413,189 +490,187 @@ public class ActivityComunicacion extends Activity {
         return true;
     }
 
+    public void scanWifiToListView(){
 
+        results = wifi.getScanResults();
+        size = results.size();
+        Log.v(TAG, String.valueOf(results));
+        arraylist.clear();
+        wifi.startScan();
 
+        if (wifi.isWifiEnabled() ) {
+            try {
+                Log.v(TAG, "---------------------------------------------------------------------------->");
+                for (int i = 0; i < size; i++) {
+                    HashMap<String, String> item = new HashMap<String, String>();
+                    item.put(ITEM_KEY, results.get(i).SSID);
+                    arraylist.add(item);
+                    adapter.notifyDataSetChanged();
+                }
+            } catch (Exception e) {
+                Log.v(TAG,"EXCEPCION WIFI 1"+e.getMessage());
+            }
+        } else {
+            try {
+                adapter.notifyDataSetChanged();
+            } catch (Exception e) {
+                Log.v(TAG, "EXCEPCION WIFI 2" + e.getMessage());
+            }
+        }
+    }
 
-    public void NetworkInfo(){
+    public void checkWifiConnection(){
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        mWifi.getState();
+
+        if (mWifi.isConnected()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    txvWifiState.setText("SSID: " + wifi.getConnectionInfo().getSSID());
+                }
+            });
+
+            Log.v(TAG, "WIFI CONECTADO");
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    txvWifiState.setText("SSID: -");
+                }
+            });
+
+            Log.v(TAG, "WIFI DESCONECTADO");
+        }
+    }
+
+    public void checkWifiTypeConnection(){
         try {
-            HashMap<String, Boolean> Interfaces = new HashMap<String, Boolean>();
-            Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-            for (NetworkInterface netint : Collections.list(nets)) {
+            String tipoIp = "";
+            String res = "";
 
-                Interfaces.put(netint.getName(),netint.isUp());
+            res = connectivity.getWifiConfiguration(ActivityComunicacion.this.getApplicationContext());
+            Log.d(TAG,"GET WIFI CONFIGURATION: " + res);
+            tipoIp = res.split("\n")[0].split(": ")[1];
 
-                Log.v("TEMPUS: ", String.valueOf(netint.getName()) + "~" + String.valueOf(netint.isUp()));
+            Log.d(TAG,tipoIp.trim() + "~");
 
-
-                switch (netint.getName()) {
-
-                    case "wlan0":
-
-                        if (netint.isUp()){
-                            interfaceWlan0Enabled = true;
-
-                            Wlan0Name = String.valueOf(netint.getDisplayName());
-                            Wlan0Interface = String.valueOf(netint.getInterfaceAddresses());
-                            interfaceDataWlan0 = netint.getInterfaceAddresses();
-                        }
-
-                        break;
-
-                    case "eth0":
-
-                        if (netint.isUp()){
-                            interfaceEth0Enabled = true;
-
-                            Eth0Name = String.valueOf(netint.getDisplayName());
-                            Eth0Interface = String.valueOf(netint.getInterfaceAddresses());
-                            interfaceDataEth0 = netint.getInterfaceAddresses();
-                        }
-
-                        break;
-                    default:
-                        break;
-                }
-
-            }
-
-            Log.v("TEMPUS: ", String.valueOf(Interfaces));
-
-
-            if (interfaceEth0Enabled) {
-                swtStatusEth0.setChecked(true);
+            if (tipoIp.equalsIgnoreCase("static")){
+                Log.d(TAG,"xxxxxxxx static xxxxxxxx");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rbnWifiStatic.setChecked(true);
+                        rbnWifiDynamic.setChecked(false);
+                        Log.d(TAG,"xxxxxxxx static xxxxxxxx");
+                    }
+                });
             } else {
-                swtStatusEth0.setChecked(false);
+                Log.d(TAG,"xxxxxxxx dynamic xxxxxxxx");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        rbnWifiDynamic.setChecked(true);
+                        rbnWifiStatic.setChecked(false);
+                        Log.d(TAG,"xxxxxxxx dynamic xxxxxxxx");
+                    }
+                });
             }
 
-            if (interfaceWlan0Enabled) {
+            Log.d(TAG,"----------> "+ rbnWifiStatic.isChecked() + " - " + rbnWifiDynamic.isChecked());
+            Thread.sleep(1000);
 
-                swtStatusWlan0.setChecked(true);
-/*
-                WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-                String dhcpInfo = wm.getDhcpInfo().toString();
-
-                String []datos = dhcpInfo.split(" ");
-                String ip = datos[1];
-                String puerta = datos[3];
-                String mascara = datos[5];
-
-                edtWlanIp.setText(ip);
-                edtWlanMascara.setText(mascara);
-                edtWlanPuerta.setText(puerta);
-*/
-
-            } else {
-                swtStatusWlan0.setChecked(false);
-            }
-
-            if (interfacePpp00Enabled) {
-
-            } else {
-
-            }
-
-
-
-
-
-
-
-/*
-            if (interfaceEth0Enabled){
-                Log.v("TEMPUS: ", "--> E");
-                edtIp.setText(String.valueOf(interfaceDataEth0.get(1).getAddress()));
-                edtMascara.setText("");
-                edtPuerta.setText("");
-
-            } else {
-                if (interfaceWlan0Enabled) {
-                    Log.v("TEMPUS: ", "--> W");
-                    edtIp.setText(String.valueOf(interfaceDataWlan0.get(1).getAddress()));
-                    edtMascara.setText("");
-                    edtPuerta.setText("");
-                } else {
-                    Log.v("TEMPUS: ", "--> NO DISPONIBLE");
-                    edtIp.setText("NO DISPONIBLE");
-                    edtMascara.setText("NO DISPONIBLE");
-                    edtPuerta.setText("NO DISPONIBLE");
-                }
-            }
-
-*/
-
-
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void ConnectionWifiInfo(){
-        WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-
-        String dhcpInfo = wm.getDhcpInfo().toString();
-
-        Log.v("TEMPUS: ",dhcpInfo);
-
-        //editText3.setText(dhcpInfo);
-
-        String []datos = dhcpInfo.split(" ");
-        String ip = datos[1];
-        String puerta = datos[3];
-        String mascara = datos[5];
-
-        edtWlanIp.setText(ip);
-        edtWlanMascara.setText(mascara);
-        edtWlanPuerta.setText(puerta);
-    }
-
-    public void ConnectionEthernetInfo(){
-        WifiManager wm = (WifiManager) getSystemService(WIFI_SERVICE);
-
-        String dhcpInfo = wm.getDhcpInfo().toString();
-
-        Log.v("TEMPUS: ",dhcpInfo);
-
-        String []datos = dhcpInfo.split(" ");
-        String ip = datos[1];
-        String puerta = datos[3];
-        String mascara = datos[5];
-
-        edtWlanIp.setText(ip);
-        edtWlanMascara.setText(mascara);
-        edtWlanPuerta.setText(puerta);
-    }
-
-    public String displayInterfaceInformation(NetworkInterface netint) throws SocketException {
-
-        String info = "";
-
-        info = netint.getDisplayName() + " --- " + netint.getName() + " ---: ";
-
-        Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
-        for (InetAddress inetAddress : Collections.list(inetAddresses)) {
-            info = info + inetAddress;
-            Log.v("TEMPUS: ",info);
-        }
-        return info;
-    }
-
-    public void setData(){
-
+    public void checkDataWifiConnection() {
         try {
-            android.provider.Settings.System.putString(getContentResolver(), android.provider.Settings.System.WIFI_USE_STATIC_IP, "192.168.0.240");
-            android.provider.Settings.System.putString(getContentResolver(), android.provider.Settings.System.WIFI_STATIC_DNS1, "192.168.0.2");
-            android.provider.Settings.System.putString(getContentResolver(), android.provider.Settings.System.WIFI_STATIC_DNS2, "192.168.0.3");
-            android.provider.Settings.System.putString(getContentResolver(), android.provider.Settings.System.WIFI_STATIC_GATEWAY, "192.168.0.2");
-            android.provider.Settings.System.putString(getContentResolver(), android.provider.Settings.System.WIFI_STATIC_NETMASK, "255.255.255.0");
-            android.provider.Settings.System.putString(getContentResolver(), android.provider.Settings.System.WIFI_STATIC_IP, "1");
+            Log.v(TAG,"checkDataWifiConnection: ");
+
+            wifi= (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            DhcpInfo dinfo = wifi.getDhcpInfo();
+
+            s_dns1=String.valueOf(intToIp(dinfo.dns1));
+            s_dns2=String.valueOf(intToIp(dinfo.dns2));
+            s_gateway=String.valueOf(intToIp(dinfo.gateway));
+            s_ipAddress=String.valueOf(intToIp(dinfo.ipAddress));
+            s_leaseDuration=String.valueOf(intToIp(dinfo.leaseDuration));
+            s_netmask=String.valueOf(intToIp(dinfo.netmask));
+            s_serverAddress=String.valueOf(intToIp(dinfo.serverAddress));
+
+            Shell sh = new Shell();
+            String params[] = {"su", "-c", "busybox", "ifconfig"};
+            String data = sh.exec(params);
+            //Log.v(TAG,"checkDataWifiConnection: " + data);
+
+            if (s_ipAddress.equalsIgnoreCase("0.0.0.0")){
+                s_ipAddress = "";
+            }
+
+            if (s_gateway.equalsIgnoreCase("0.0.0.0")){
+                s_gateway = "";
+            }
+
+            mask = "";
+
+            if (data.contains("wlan0")) {
+                Log.v(TAG,"checkDataWifiConnection: Wlan Encontrada");
+                String dataArray[] = data.split("\n");
+                for (int i = 0; i < dataArray.length; i++){
+                    if (dataArray[i].contains("wlan0")){
+                        String linea = dataArray[i+1];
+                        String d[] = linea.toLowerCase()
+                                          .trim()
+                                          .replace("inet addr:","~")
+                                          .replace("bcast:","~")
+                                          .replace("mask:","~").split("~");
+                        mask = d[3];
+                        break;
+                    }
+                }
+            }
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    edtWlanIp.setText(s_ipAddress);
+                    edtWlanMascara.setText(mask);
+                    edtWlanPuerta.setText(s_gateway);
+                }
+            });
 
 
-            getSystemService(ACCESSIBILITY_SERVICE);
-
-        } catch(Exception e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Log.v(TAG,e.toString());
         }
+    }
 
+    public void disableDataWifi() {
+        txvWifiState.setText("SSID: -");
+
+        Log.d(TAG,"disableDataWifi");
+        rbnWifiDynamic.setChecked(false);
+        rbnWifiStatic.setChecked(false);
+        edtWlanIp.setText("");
+        edtWlanMascara.setText("");
+        edtWlanPuerta.setText("");
+
+        rbnWifiDynamic.setEnabled(false);
+        rbnWifiStatic.setEnabled(false);
+        edtWlanIp.setEnabled(false);
+        edtWlanMascara.setEnabled(false);
+        edtWlanPuerta.setEnabled(false);
+    }
+
+    public String intToIp(int i) {
+
+        return  ( i & 0xFF) + "." +
+                ((i >> 8 ) & 0xFF) + "." +
+                ((i >> 16 ) & 0xFF) + "." +
+                ((i >> 24 ) & 0xFF );
     }
 
     public void manageAreaWifiConfig(boolean visible){
@@ -651,92 +726,12 @@ public class ActivityComunicacion extends Activity {
         }
     }
 
-    public void getInforWIFI() {
-        DhcpInfo d = wifi.getDhcpInfo();
-        //s_dns1="DNS 1: "+String.valueOf(Formatter.formatIpAddress(d.dns1));
-        //s_dns2="DNS 2: "+String.valueOf(Formatter.formatIpAddress(d.dns2));
-        //s_gateway="Default Gateway: "+String.valueOf(Formatter.formatIpAddress(d.gateway));
-        //s_ipAddress="IP Address: "+String.valueOf(Formatter.formatIpAddress(d.ipAddress));
-        //s_netmask="Subnet Mask: "+String.valueOf(Formatter.formatIpAddress(d.netmask));
-        //s_serverAddress="Server IP: "+String.valueOf(Formatter.formatIpAddress(d.serverAddress));
-        //Log.v("TEMPUS: ","Network Info\n"+s_dns1+"\n"+s_dns2+"\n"+s_gateway+"\n"+s_ipAddress+"\n"+s_leaseDuration+"\n"+s_netmask+"\n"+s_serverAddress);
-
-        try {
-            edtWlanIp.setText(String.valueOf(Formatter.formatIpAddress(d.ipAddress)));
-            edtWlanMascara.setText(String.valueOf(Formatter.formatIpAddress(d.netmask)));
-            edtWlanPuerta.setText(String.valueOf(Formatter.formatIpAddress(d.gateway)));
-        } catch (Exception e) {
-            Log.v("TEMPUS: ",e.toString());
-        }
-
-    }
-
-    public void getInforWIFI2() {
-        WifiInfo connectionInfo = wifi.getConnectionInfo();
-        String strWifiInfo =
-                "SSID: " + connectionInfo.getSSID() + "\n" +
-                        "BSSID: " + connectionInfo.getBSSID() + "\n" +
-                        "IP Address: " + String.format("%d.%d.%d.%d",
-                        (connectionInfo.getIpAddress() & 0xff),
-                        (connectionInfo.getIpAddress() >> 8 & 0xff),
-                        (connectionInfo.getIpAddress() >> 16 & 0xff),
-                        (connectionInfo.getIpAddress() >> 24 & 0xff)) + "\n" +
-                        "MAC Address: " + connectionInfo.getMacAddress() + "\n" +
-                        "LinkSpeed: " + connectionInfo.getLinkSpeed() + WifiInfo.LINK_SPEED_UNITS + "\n" +
-                        "Rssi: " + connectionInfo.getRssi() + "dBm" + "\n";
-        Log.v("Tempus: ",strWifiInfo);
-
-    }
-
-    public void startWifi(){
-        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        mWifi.getState();
-
-        if (mWifi.isConnected()) {
-            txvWifiState.setText("SSID: " + wifi.getConnectionInfo().getSSID());
-            Log.v("TEMPUS: ", "ESTADO DE WIFI CONECTADO");
-        } else {
-            txvWifiState.setText("SSID: -");
-            Log.v("TEMPUS: ", "ESTADO DE WIFI DESCONECTADO");
-        }
-
-        results = wifi.getScanResults();
-        size = results.size();
-        Log.v("TEMPUS: ", String.valueOf(results));
-        Log.v("TEMPUS: ", "-------------------->" + String.valueOf(wifi.isWifiEnabled()));
-        arraylist.clear();
-        wifi.startScan();
-
-        if (wifi.isWifiEnabled()) {
-            try {
-                getInforWIFI();
-                for (int i = 0; i < size; i++) {
-                    HashMap<String, String> item = new HashMap<String, String>();
-                    item.put(ITEM_KEY, results.get(i).SSID);
-                    arraylist.add(item);
-                    adapter.notifyDataSetChanged();
-                }
-            } catch (Exception e) {
-                Log.v("TEMPUS: ","EXCEPCION WIFI 1"+e.getMessage());
-            }
-        } else {
-            try {
-                adapter.notifyDataSetChanged();
-            } catch(Exception e) {
-                Log.v("TEMPUS: ","EXCEPCION WIFI 2"+e.getMessage());
-            }
-
-        }
-    }
-
     public void inicializarSwitches() {
         // ETH
 
         // WIFI
         if (wifi.isWifiEnabled()) {
             swtStatusWlan0.setChecked(true);
-            getInforWIFI();
         } else {
             swtStatusWlan0.setChecked(false);
         }
@@ -744,40 +739,98 @@ public class ActivityComunicacion extends Activity {
         // PPP
     }
 
-    /*
-    public String getIpAssignment(){
 
-        String myenumvalue="";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void changeWifiConfiguration(boolean dhcp, String ip, int prefix, String dns1, String gateway) {
+        WifiManager wm = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        if(!wm.isWifiEnabled()) {
+            // wifi is disabled
+            return;
+        }
+        // get the current wifi configuration
         WifiConfiguration wifiConf = null;
-        WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        WifiInfo connectionInfo = wifiManager.getConnectionInfo();
-        List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
-        for (WifiConfiguration conf : configuredNetworks){
-            if (conf.networkId == connectionInfo.getNetworkId()){
-                wifiConf = conf;
-                break;
+        WifiInfo connectionInfo = wm.getConnectionInfo();
+        List<WifiConfiguration> configuredNetworks = wm.getConfiguredNetworks();
+        if(configuredNetworks != null) {
+            for (WifiConfiguration conf : configuredNetworks){
+                if (conf.networkId == connectionInfo.getNetworkId()){
+                    wifiConf = conf;
+                    break;
+                }
             }
         }
-        if(wifiConf != null){
-
-            try {
-                Object Enumer = getDeclaredField(wifiConf, "ipAssignment");
-                myenumvalue = Enumer.toString();
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-
-
+        if(wifiConf == null) {
+            // wifi is not connected
+            return;
         }
-
-        return myenumvalue;
+        try {
+            Class<?> ipAssignment = wifiConf.getClass().getMethod("getIpAssignment").invoke(wifiConf).getClass();
+            Object staticConf = wifiConf.getClass().getMethod("getStaticIpConfiguration").invoke(wifiConf);
+            if(dhcp) {
+                Log.d("CONF WIFI","DHCP ESTABLISHED");
+                wifiConf.getClass().getMethod("setIpAssignment", ipAssignment).invoke(wifiConf, Enum.valueOf((Class<Enum>) ipAssignment, "DHCP"));
+                if(staticConf != null) {
+                    staticConf.getClass().getMethod("clear").invoke(staticConf);
+                }
+            } else {
+                Log.d("CONF WIFI","STATIC ESTABLISHED");
+                wifiConf.getClass().getMethod("setIpAssignment", ipAssignment).invoke(wifiConf, Enum.valueOf((Class<Enum>) ipAssignment, "STATIC"));
+                if(staticConf == null) {
+                    Class<?> staticConfigClass = Class.forName("android.net.StaticIpConfiguration");
+                    staticConf = staticConfigClass.newInstance();
+                }
+                // STATIC IP AND MASK PREFIX
+                Constructor<?> laConstructor = LinkAddress.class.getConstructor(InetAddress.class, int.class);
+                LinkAddress linkAddress = (LinkAddress) laConstructor.newInstance(
+                        InetAddress.getByName(ip),
+                        prefix);
+                staticConf.getClass().getField("ipAddress").set(staticConf, linkAddress);
+                // GATEWAY
+                staticConf.getClass().getField("gateway").set(staticConf, InetAddress.getByName(gateway));
+                // DNS
+                List<InetAddress> dnsServers = (List<InetAddress>) staticConf.getClass().getField("dnsServers").get(staticConf);
+                dnsServers.clear();
+                dnsServers.add(InetAddress.getByName(dns1));
+                dnsServers.add(InetAddress.getByName("8.8.8.8")); // Google DNS as DNS2 for safety
+                // apply the new static configuration
+                wifiConf.getClass().getMethod("setStaticIpConfiguration", staticConf.getClass()).invoke(wifiConf, staticConf);
+            }
+            // apply the configuration change
+            boolean result = wm.updateNetwork(wifiConf) != -1; //apply the setting
+            if(result) result = wm.saveConfiguration(); //Save it
+            if(result) wm.reassociate(); // reconnect with the new static IP
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
     }
-    */
+
+
+
+
+
+
+
+
 
 }
+

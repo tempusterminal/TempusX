@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
+import android.net.wifi.SupplicantState;
+import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
@@ -20,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tempus.proyectos.data.DBManager;
+import com.tempus.proyectos.util.WifiReceiver;
 
 
 /**
@@ -28,8 +31,6 @@ import com.tempus.proyectos.data.DBManager;
 
 public class FragmentBar extends Fragment {
 
-    //Context context;
-    //DBManager dbManager = new DBManager(context);
 
     int rBatteryTemp;
     int rBatteryLevel;
@@ -91,6 +92,12 @@ public class FragmentBar extends Fragment {
         getActivity().registerReceiver(mYourBroadcastReceiver,
                 new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
+        //WifiReceiver receiverWifi = new WifiReceiver(getActivity());
+        //IntentFilter mIntentFilter = new IntentFilter();
+        //mIntentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
+        //getActivity().registerReceiver(receiverWifi, mIntentFilter);
+
+
         routineIndicators.start();
         activo = true;
 
@@ -109,27 +116,32 @@ public class FragmentBar extends Fragment {
     }
 
 
-    BroadcastReceiver mYourBroadcastReceiver = new BroadcastReceiver()
-    {
+    BroadcastReceiver mYourBroadcastReceiver = new BroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent)
-        {
-            rBatteryTemp = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
-            rBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-            int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            rIsCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
-                    status == BatteryManager.BATTERY_STATUS_FULL;
+        public void onReceive(Context context, Intent intent) {
+            // Bateria
+            try {
+                rBatteryTemp = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
+                rBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+                int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+                rIsCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
+                        status == BatteryManager.BATTERY_STATUS_FULL;
 
-            ActivityPrincipal.isCharging = rIsCharging;
+                ActivityPrincipal.isCharging = rIsCharging;
+
+                int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+                rUSBCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
+                rACCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
+            } catch(Exception e) {
+                Log.e("BroadcastReceiver","Bateria Error: "+e.getMessage());
+            }
 
             txvIdterminal.setText(ActivityPrincipal.idTerminal);
-
-            int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-            rUSBCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
-            rACCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
         }
     };
 
+
+    /* ===================================== RUTINA ROOT ===================================== */
 
     Thread routineIndicators = new Thread(new Runnable() {
         @Override
@@ -184,7 +196,7 @@ public class FragmentBar extends Fragment {
                                 int imageresource = getResources().getIdentifier("@drawable/b1", "drawable", getActivity().getPackageName());
                                 imgViewIBat.setImageResource(imageresource);
                             } else {
-                                if (rBatteryLevel >= 0 && rBatteryLevel <= 5){
+                                if (rBatteryLevel >= 0 && rBatteryLevel <= 24){
                                     int imageresource = getResources().getIdentifier("@drawable/b0", "drawable", getActivity().getPackageName());
                                     imgViewIBat.setImageResource(imageresource);
                                 }

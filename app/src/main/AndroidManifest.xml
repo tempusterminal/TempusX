@@ -18,6 +18,9 @@
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.MODIFY_PHONE_STATE"/>
 
+    <uses-feature android:name="android.hardware.camera"
+        android:required="true" />
+
     <application
         android:label="tempusX"
         android:allowBackup="true"
@@ -29,13 +32,13 @@
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".ActivityLogin"
             android:screenOrientation="landscape" />
+
         <activity
             android:name=".ActivityMenu"
             android:screenOrientation="landscape" >

@@ -62,7 +62,7 @@ public class ProcessSyncTS extends Thread{
                     }catch(SQLException e){
                         Log.d("Autorizaciones","ProcessSyncTS.run SQLException SQLServer: " + e.toString());
                     }catch(Exception e){
-                        Log.d("Autorizaciones","ProcessSyncTS.run Exception: " + e.toString());
+                        Log.d("TX - QPTLB","(1)ProcessSyncTS.run Exception: " + e.toString());
                     }
                 }
 

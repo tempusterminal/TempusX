@@ -119,7 +119,7 @@ public class ActivityLogin extends Activity {
 
     public void goToMain(){
         try {
-            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"FreeScanOn",null);
+            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOn",null);
         } catch(Exception e) {
             Log.e("Error",e.getMessage());
         }

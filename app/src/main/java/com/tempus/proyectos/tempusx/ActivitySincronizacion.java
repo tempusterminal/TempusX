@@ -3,24 +3,35 @@ package com.tempus.proyectos.tempusx;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.database.SQLException;
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tempus.proyectos.data.ConexionServidor;
+import com.tempus.proyectos.servicios.OverlayShowingService;
+import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
+import org.apache.commons.net.io.ToNetASCIIInputStream;
+
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -31,6 +42,7 @@ public class ActivitySincronizacion extends Activity {
 
     UserInterfaceM ui;
     Utilities util;
+    Connectivity connectivity;
 
     /* --- Declaración de Variables Globales --- */
 
@@ -43,6 +55,13 @@ public class ActivitySincronizacion extends Activity {
     TabHost host;
 
     ImageView btnMasterSincronizacion;
+    Button btnAccessVPN;
+    Button btnTest;
+    TextView txvInternet;
+    TextView txvOrigen;
+
+    boolean internet = false;
+    boolean servidor = false;
 
 
     @Override
@@ -65,6 +84,10 @@ public class ActivitySincronizacion extends Activity {
         /* --- Inicialización de Componentes de la Interfaz --- */
 
         btnMasterSincronizacion = (ImageView) findViewById(R.id.btnMasterSincronizacion);
+        btnAccessVPN = (Button) findViewById(R.id.btnAccessVPN);
+        btnTest = (Button) findViewById(R.id.btnTest);
+        txvInternet = (TextView) findViewById(R.id.txvInternet);
+        txvOrigen = (TextView) findViewById(R.id.txvOrigen);
 
         /* --- Inicialización de Métodos --- */
 
@@ -77,7 +100,7 @@ public class ActivitySincronizacion extends Activity {
         //Tab 1
         TabHost.TabSpec spec = host.newTabSpec("Tab1");
         spec.setContent(R.id.tabSync1);
-        spec.setIndicator("PROCESOS");
+        spec.setIndicator("SERVICIOS");
         host.addTab(spec);
 
         //Tab 2
@@ -106,13 +129,13 @@ public class ActivitySincronizacion extends Activity {
 
         //View w3 = host.getTabWidget().getChildTabViewAt(2);
         //w3.setVisibility(View.INVISIBLE);
-//
         //View w1 = host.getTabWidget().getChildTabViewAt(1);
         //w1.setVisibility(View.INVISIBLE);
 
+        txvInternet.setBackgroundColor(Color.RED);
+        txvOrigen.setBackgroundColor(Color.RED);
 
-
-
+        connectivity = new Connectivity();
 
 
         /* --- Inicialización de Parametros Generales --- */
@@ -123,10 +146,54 @@ public class ActivitySincronizacion extends Activity {
             }
         });
 
+        btnAccessVPN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"Configurando VPN",Toast.LENGTH_SHORT).show();
+
+                t.start();
+
+                Intent launchIntent2 = getPackageManager().getLaunchIntentForPackage("net.openvpn.openvpn");
+                if (launchIntent2 != null) {
+                    startActivity(launchIntent2);
+                }
+
+
+                //Intent launchIntent1 = getPackageManager().getLaunchIntentForPackage("com.tempus.ecernar.overlayapp");
+                //if (launchIntent1 != null) {
+                //    startActivity(launchIntent1);
+                //}
+
+            }
+        });
+
+        btnTest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                thread.start();
+            }
+        });
 
         boolean internet = util.isOnline(this);
         Log.e("Tempus: ", "Coneccion Test -> " + String.valueOf(internet));
     }
+
+
+    Thread t = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Intent launchIntent1 = getPackageManager().getLaunchIntentForPackage("com.tempus.ecernar.overlayapp");
+            if (launchIntent1 != null) {
+                startActivity(launchIntent1);
+            }
+        }
+    });
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -142,4 +209,79 @@ public class ActivitySincronizacion extends Activity {
         }
         return true;
     }
+
+    Thread thread = new Thread(new Runnable() {
+
+        @Override
+        public void run() {
+            try  {
+                internet = false;
+                servidor = false;
+
+                try {
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),"Probando conexión ... ", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                    internet = connectivity.isURLReachable(getApplicationContext(),"http://www.google.com","url");
+                    servidor = connectivity.isURLReachable(getApplicationContext(),ConexionServidor.getHost(),"ip");
+
+                    Log.d("PING","LINEA"+internet+servidor);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),"Terminó", Toast.LENGTH_LONG).show();
+                        }
+                    });
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (internet){
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        txvInternet.setBackgroundColor(Color.GREEN);
+                                    }
+                                });
+
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        txvInternet.setBackgroundColor(Color.RED);
+                                    }
+                                });
+                            }
+
+                            if (servidor){
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        txvOrigen.setBackgroundColor(Color.GREEN);
+                                    }
+                                });
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        txvOrigen.setBackgroundColor(Color.RED);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    });
 }

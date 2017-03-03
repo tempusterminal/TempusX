@@ -20,6 +20,7 @@ import com.tempus.proyectos.util.Utilities;
 
 import org.apache.commons.net.io.Util;
 
+import static com.tempus.proyectos.tempusx.ActivityPrincipal.btSocket02;
 import static com.tempus.proyectos.tempusx.ActivityPrincipal.isReplicating;
 import static com.tempus.proyectos.tempusx.ActivityPrincipal.isReplicatingTemplate;
 import static com.tempus.proyectos.tempusx.ActivityPrincipal.objSuprema;
@@ -324,7 +325,7 @@ public class QueriesPersonalTipolectoraBiometria {
         if(cursor.moveToNext()){
             Log.v("TEMPUS: ","Cantidad de Biometrias a Replicar: " + String.valueOf(cursor.getCount()));
             try{
-                ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"FreeScanOff",null);
+                ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOff",null);
                 Log.v("TEMPUS: ","Huella Apagada");
                 Log.v("TEMPUS: ","Preparando para Replicar...");
             }catch(Exception e){
@@ -345,7 +346,7 @@ public class QueriesPersonalTipolectoraBiometria {
                 if(template.replace(" ","").length() == 512){
                     try{
 
-                        objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"EnrollByTemplate",parametro);
+                        objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"EnrollByTemplate",parametro);
                         isReplicatingTemplate = true;
 
 
@@ -397,7 +398,7 @@ public class QueriesPersonalTipolectoraBiometria {
             }while(cursor.moveToNext());
 
             try{
-                ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"FreeScanOn",null);
+                ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOn",null);
                 Log.v("TEMPUS: ","Huella Encendida");
                 Log.v("TEMPUS: ","Finalizando Replica...");
             }catch(Exception e){

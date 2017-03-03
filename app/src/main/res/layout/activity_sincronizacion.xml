@@ -115,41 +115,27 @@
                     android:background="@color/colorFondoCuerpo"
                     android:orientation="vertical">
 
-                    <Button
-                        android:text="Enviar Marcaciones"
-                        android:layout_width="220dp"
-                        android:layout_height="40dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="20dp"
-                        android:id="@+id/button" />
-
-                    <Button
-                        android:text="Recoger Autorizaciones"
-                        android:layout_width="220dp"
-                        android:layout_height="40dp"
-                        android:layout_marginLeft="290dp"
-                        android:layout_marginTop="20dp"
-                        android:id="@+id/button2" />
-
-                    <Button
-                        android:text="Replicar Huellas Interno"
-                        android:layout_width="220dp"
-                        android:layout_height="40dp"
-                        android:layout_marginLeft="156.5dp"
-                        android:layout_marginTop="80dp"
-                        android:id="@+id/button3" />
-
                     <TextView
-                        android:text="Log de Ejemplo"
-                        android:layout_width="490dp"
-                        android:layout_height="35dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="150dp"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:textSize="20sp"
-                        android:textColor="@color/colorBlanco"
-                        android:background="@color/colorTexto"
-                        android:id="@+id/textView3" />
+                        android:text="Acceso a VPN"
+                        android:layout_width="150dp"
+                        android:layout_height="30dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorNegro"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginTop="50dp"
+                        android:layout_marginLeft="40dp"
+                        android:id="@+id/txvServicio0" />
+
+                    <Button
+                        android:text="Configurar VPN"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginTop="45dp"
+                        android:layout_marginLeft="340dp"
+                        android:id="@+id/btnAccessVPN" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -162,11 +148,11 @@
                     <TextView
                         android:text="SERVIDOR:"
                         android:layout_width="160dp"
-                        android:layout_height="25dp"
+                        android:layout_height="29dp"
                         android:textColor="@color/colorTexto"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginTop="12dp"
+                        android:layout_marginTop="20dp"
                         android:textSize="12dp"
                         android:textStyle="bold"
                         android:id="@+id/textView4"/>
@@ -174,11 +160,11 @@
                     <TextView
                         android:text="BASE DE DATOS:"
                         android:layout_width="160dp"
-                        android:layout_height="25dp"
+                        android:layout_height="29dp"
                         android:textColor="@color/colorTexto"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginTop="42dp"
+                        android:layout_marginTop="55dp"
                         android:textSize="12dp"
                         android:textStyle="bold"
                         android:id="@+id/textView5" />
@@ -186,11 +172,11 @@
                     <TextView
                         android:text="PUERTO:"
                         android:layout_width="160dp"
-                        android:layout_height="25dp"
+                        android:layout_height="29dp"
                         android:textColor="@color/colorTexto"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginTop="72dp"
+                        android:layout_marginTop="90dp"
                         android:textSize="12dp"
                         android:textStyle="bold"
                         android:id="@+id/textView6" />
@@ -198,11 +184,11 @@
                     <TextView
                         android:text="USUARIO:"
                         android:layout_width="160dp"
-                        android:layout_height="25dp"
+                        android:layout_height="29dp"
                         android:textColor="@color/colorTexto"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginTop="102dp"
+                        android:layout_marginTop="125dp"
                         android:textSize="12dp"
                         android:textStyle="bold"
                         android:id="@+id/textView7" />
@@ -210,11 +196,11 @@
                     <TextView
                         android:text="CONTRASEÑA:"
                         android:layout_width="160dp"
-                        android:layout_height="25dp"
+                        android:layout_height="29dp"
                         android:textColor="@color/colorTexto"
                         android:gravity="center_vertical"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginTop="132dp"
+                        android:layout_marginTop="160dp"
                         android:textSize="12dp"
                         android:textStyle="bold"
                         android:id="@+id/textView8" />
@@ -222,58 +208,99 @@
 
 
 <!---->
-                    <EditText
+                    <TextView
                         android:layout_width="280dp"
-                        android:layout_height="28dp"
-                        android:inputType="textPersonName"
+                        android:layout_height="29dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="280dp"
+                        android:layout_height="29dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="55dp"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="280dp"
+                        android:layout_height="29dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="90dp"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="280dp"
+                        android:layout_height="29dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="125dp"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="280dp"
+                        android:layout_height="29dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="160dp"
+                        android:background="@color/colorGris"
+                        />
+
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="280dp"
+                        android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="200dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="20dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/edtSyncHost" />
 
                     <EditText
+                        android:imeOptions="actionDone"
                         android:layout_width="280dp"
-                        android:layout_height="28dp"
-                        android:inputType="textPersonName"
+                        android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="200dp"
-                        android:layout_marginTop="40dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="55dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/edtSyncB" />
 
                     <EditText
+                        android:imeOptions="actionDone"
                         android:layout_width="280dp"
-                        android:layout_height="28dp"
-                        android:inputType="textPersonName"
+                        android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="200dp"
-                        android:layout_marginTop="70dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="90dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/editText3" />
 
                     <EditText
+                        android:imeOptions="actionDone"
                         android:layout_width="280dp"
-                        android:layout_height="28dp"
-                        android:inputType="textPersonName"
+                        android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="200dp"
-                        android:layout_marginTop="100dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="125dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/editText4" />
 
                     <EditText
+                        android:imeOptions="actionDone"
                         android:layout_width="280dp"
-                        android:layout_height="28dp"
-                        android:inputType="textPersonName"
+                        android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="200dp"
-                        android:layout_marginTop="130dp"
+                        android:layout_marginLeft="190dp"
+                        android:layout_marginTop="160dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/editText5" />
 
@@ -281,11 +308,11 @@
 
                     <Button
                         android:text="Guardar"
-                        android:layout_width="120dp"
-                        android:layout_height="35dp"
+                        android:layout_width="80dp"
+                        android:layout_height="50dp"
                         android:textSize="15sp"
-                        android:layout_marginLeft="207.5dp"
-                        android:layout_marginTop="163dp"
+                        android:layout_marginLeft="500dp"
+                        android:layout_marginTop="80dp"
                         android:id="@+id/button4" />
 
                 </RelativeLayout>
@@ -303,7 +330,7 @@
                         android:layout_width="200dp"
                         android:layout_height="30dp"
                         android:layout_marginLeft="60dp"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginTop="50dp"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -314,7 +341,7 @@
                         android:layout_width="200dp"
                         android:layout_height="30dp"
                         android:layout_marginLeft="60dp"
-                        android:layout_marginTop="70dp"
+                        android:layout_marginTop="90dp"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -324,23 +351,32 @@
                         android:text="KO"
                         android:layout_width="60dp"
                         android:layout_height="30dp"
-                        android:layout_marginLeft="360dp"
-                        android:layout_marginTop="30dp"
+                        android:layout_marginLeft="460dp"
+                        android:layout_marginTop="50dp"
                         android:gravity="center_vertical|center_horizontal"
                         android:textColor="@color/colorBlanco"
                         android:background="@color/colorRojo"
-                        android:id="@+id/textView28" />
+                        android:id="@+id/txvInternet" />
 
                     <TextView
                         android:text="KO"
                         android:layout_width="60dp"
                         android:layout_height="30dp"
-                        android:layout_marginLeft="360dp"
-                        android:layout_marginTop="70dp"
+                        android:layout_marginLeft="460dp"
+                        android:layout_marginTop="90dp"
                         android:gravity="center_vertical|center_horizontal"
                         android:textColor="@color/colorBlanco"
                         android:background="@color/colorRojo"
-                        android:id="@+id/textView29" />
+                        android:id="@+id/txvOrigen" />
+
+                    <Button
+                        android:text="Iniciar"
+                        android:layout_width="150dp"
+                        android:layout_height="35dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginTop="150dp"
+                        android:layout_centerHorizontal="true"
+                        android:id="@+id/btnTest" />
 
                 </RelativeLayout>
 

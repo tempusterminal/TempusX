@@ -42,7 +42,7 @@ public class ThreadSupremaDelete implements Runnable {
         String parametros[] = new String[1];
         valorIndice = String.valueOf(ActivityBiometria.indice);
         parametros[0] = ActivityPrincipal.objSuprema.convertCardToEnroll(valorIndice);
-        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"DeleteTemplate",parametros);
+        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"DeleteTemplate",parametros);
 
         while (control1){
             if (contador > timeout || ActivityBiometria.accionCancel) {
@@ -102,7 +102,7 @@ public class ThreadSupremaDelete implements Runnable {
     }
 
     public void cancelarEnroll(){
-        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"Cancel",null);
+        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"Cancel",null);
 
         control1 = false;
 

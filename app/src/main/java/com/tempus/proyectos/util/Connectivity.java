@@ -2,12 +2,29 @@ package com.tempus.proyectos.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
+import android.net.wifi.WifiConfiguration;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Created by ecernar on 09/01/2017.
@@ -119,6 +136,41 @@ public class Connectivity {
         }
     }
 
+    public String getMobileDataAPN(Activity activity){
+        //path to APN table
+        final Uri APN_TABLE_URI = Uri.parse("content://telephony/carriers");
+
+        //path to preffered APNs
+        final Uri PREFERRED_APN_URI = Uri.parse("content://telephony/carriers/preferapn");
+
+        //receiving cursor to preffered APN table
+        Cursor c = activity.getContentResolver().query(PREFERRED_APN_URI, null, null, null, null);
+
+        //moving the cursor to beggining of the table
+        c.moveToFirst();
+
+        //now the cursor points to the first preffered APN and we can get some
+        //information about it
+        //for example first preffered APN id
+        int index = c.getColumnIndex("_id");    //getting index of required column
+        Short id = c.getShort(index);           //getting APN's id from
+
+        //we can get APN name by the same way
+        index = c.getColumnIndex("name");
+        String name = "";
+
+        try {
+            name = c.getString(index);
+        } catch (Exception e) {
+            Log.v("TEMPUS: ",e.getMessage());
+        }
+
+        //and any other APN properties: numeric, mcc, mnc, apn, user, server,
+        //password, proxy, port, mmsproxy, mmsport, mmsc, type, current
+
+        return name;
+    }
+
     public void setMobileDataState(Activity activity, boolean mobileDataEnabled){
         try
         {
@@ -184,5 +236,94 @@ public class Connectivity {
             default:
                 return "Unknown";
         }
+    }
+
+    public boolean existSIM(Activity activity){
+        Boolean resultado = false;
+        TelephonyManager tm = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);  //gets the current TelephonyManager
+        if (tm.getSimState() != TelephonyManager.SIM_STATE_ABSENT){
+            resultado = true;
+        }
+        return resultado;
+    }
+
+    public String getWifiConfiguration(Context context){
+
+        String myenumvalue="";
+        WifiConfiguration wifiConf = null;
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiInfo connectionInfo = wifiManager.getConnectionInfo();
+        List<WifiConfiguration> configuredNetworks = wifiManager.getConfiguredNetworks();
+        for (WifiConfiguration conf : configuredNetworks){
+            if (conf.networkId == connectionInfo.getNetworkId()){
+                wifiConf = conf;
+                break;
+            }
+        }
+        if(wifiConf != null){
+            try {
+                Object ipConfiguration = wifiConf.getClass().getMethod("getIpConfiguration").invoke(wifiConf);
+                //Object ipAssignment = getEnumValue("android.net.IpConfiguration$IpAssignment", "STATIC");
+                ;
+                Log.d("RESULTADO XD", ipConfiguration.toString());
+                myenumvalue = ipConfiguration.toString();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        return myenumvalue;
+    }
+
+    public boolean isURLReachable(Context context, String host, String tipo) {
+
+        if (tipo.equalsIgnoreCase("ip")){
+            try {
+                boolean reachable1 = InetAddress.getByName(host).isReachable(10000);
+                return reachable1;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.isConnected()) {
+                try {
+                    URL url = new URL(host);   // Change to "http://google.com" for www  test.
+                    HttpURLConnection urlc = (HttpURLConnection) url.openConnection();
+                    urlc.setConnectTimeout(10 * 1000);          // 10 s.
+                    urlc.connect();
+                    if (urlc.getResponseCode() == 200) {        // 200 = "OK" code (http connection is fine).
+                        Log.wtf("Connection", "Success !");
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch (MalformedURLException e1) {
+                    return false;
+                } catch (IOException e) {
+                    return false;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public String displayInterfaceInformation(NetworkInterface netint) throws SocketException {
+
+        String info = "";
+
+        info = netint.getDisplayName() + " --- " + netint.getName() + " ---: ";
+
+        Enumeration<InetAddress> inetAddresses = netint.getInetAddresses();
+        for (InetAddress inetAddress : Collections.list(inetAddresses)) {
+            info = info + inetAddress;
+            Log.v("TEMPUS: ",info);
+        }
+        return info;
     }
 }

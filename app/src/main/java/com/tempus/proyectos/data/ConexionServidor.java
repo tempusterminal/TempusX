@@ -15,11 +15,18 @@ import android.os.StrictMode;
 
 public class ConexionServidor {
     private static ConexionServidor instance = null;
+    // private static final String user = "SA";
+    // private static final String pass = "D1R3S42013";
+    // private static final String port = "58723";
+    // private static final String database = "TEMPUS_T9";
+    // private static final String host = "129.21.22.136"; // 172.20.1.119 //172.20.1.100
+
     private static final String user = "SA";
-    private static final String pass = "1234567";
-    private static final String port = "1433";
-    private static final String database = "EDITORA";
-    private static final String host = "192.168.0.68";
+    private static final String pass = "tempus+123";
+    private static final String port = "49758";
+    private static final String database = "CROVISA_T10";
+    private static final String host = "192.168.1.103"; // 172.20.1.119 //172.20.1.100
+
     private static final String url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
     private static Connection connection = null;
 
@@ -67,6 +74,27 @@ public class ConexionServidor {
 
         return connection;
 
+    }
+
+
+    public static String getUser() {
+        return user;
+    }
+
+    public static String getPass() {
+        return pass;
+    }
+
+    public static String getPort() {
+        return port;
+    }
+
+    public static String getDatabase() {
+        return database;
+    }
+
+    public static String getHost() {
+        return host;
     }
 
 }

@@ -2,6 +2,8 @@ package com.tempus.proyectos.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
@@ -14,6 +16,7 @@ import java.net.Socket;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by ecernar on 02/11/2016.
@@ -165,6 +168,18 @@ public class Utilities {
             return false;
         }
         return false;
+    }
+
+    public void getAllAppsInstalled(Activity activity){
+        final PackageManager pm = activity.getPackageManager();
+
+        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+
+        for (ApplicationInfo packageInfo : packages) {
+            Log.d("APK", "Installed package :" + packageInfo.packageName);
+            Log.d("APK", "Source dir : " + packageInfo.sourceDir);
+            Log.d("APK", "Launch Activity :" + pm.getLaunchIntentForPackage(packageInfo.packageName));
+        }
     }
 }
 

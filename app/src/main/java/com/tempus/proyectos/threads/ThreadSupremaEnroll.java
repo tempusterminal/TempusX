@@ -48,7 +48,7 @@ public class ThreadSupremaEnroll implements Runnable {
         valorIndice = String.valueOf(ActivityBiometria.indice);
         parametros[0] = ActivityPrincipal.objSuprema.convertCardToEnroll(valorIndice);
         Log.e("TEMPUS: ", String.valueOf(parametros[0]));
-        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"EnrollByScan",parametros);
+        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"EnrollByScan",parametros);
 
         while (control1) {
             if (contador > timeout || ActivityBiometria.accionCancel) {
@@ -80,7 +80,7 @@ public class ThreadSupremaEnroll implements Runnable {
 
         // Enviamos Peticion para extraer huella
         if (control2) {
-            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"ReadTemplate",parametros);
+            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"ReadTemplate",parametros);
         }
 
         while (control2) {
@@ -156,7 +156,7 @@ public class ThreadSupremaEnroll implements Runnable {
     }
 
     public void cancelarEnroll(){
-        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.outputStreamS,"Cancel",null);
+        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"Cancel",null);
 
         control1 = false;
         control2 = false;

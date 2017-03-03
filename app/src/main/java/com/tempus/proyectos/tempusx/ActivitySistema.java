@@ -106,7 +106,7 @@ public class ActivitySistema extends Activity {
         txvSistIp.setText("0.0.0.0");
         txvSistAhorro.setText("Siempre");
         txvSistTec1.setText("DNI");
-        txvSistTec2.setText("PROXIMIDAD");
-        txvSistTec3.setText("HUELLA");
+        txvSistTec2.setText("HUELLA");
+        txvSistTec3.setText("TECLADO");
     }
 }
