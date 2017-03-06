@@ -316,12 +316,13 @@
 
 
                     <Button
-                        android:text="Button"
+                        android:text="Guardar"
                         android:layout_width="100dp"
                         android:layout_height="35dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
                         android:layout_alignParentTop="true"
-                        android:layout_marginTop="170dp"
-                        android:layout_marginLeft="500dp"
+                        android:layout_marginTop="175dp"
+                        android:layout_marginLeft="472dp"
                         android:id="@+id/btnConfRed" />
 
 
@@ -426,10 +427,9 @@
                         android:layout_width="150dp"
                         android:layout_height="35dp"
                         android:layout_marginLeft="20dp"
+                        android:layout_marginTop="175dp"
                         android:textSize="13sp"
-                        android:id="@+id/buttonWifi"
-                        android:layout_alignParentBottom="true"
-                        android:layout_alignStart="@+id/lstWifi" />
+                        android:id="@+id/buttonWifi" />
 
                 </RelativeLayout>
 
@@ -480,7 +480,6 @@
                 </RelativeLayout>
 
 
-
                 <RelativeLayout
                     android:id="@+id/tab3"
                     android:layout_width="match_parent"
@@ -512,6 +511,7 @@
                         android:textOff="Off "
                         android:textOn=" On " />
 
+                    <!--
                     <RadioButton
                         android:text="Static"
                         android:layout_width="120dp"
@@ -536,6 +536,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/rbnEthDynamic" />
 
+
                     <TextView
                         android:text="DNS"
                         android:layout_width="60dp"
@@ -548,13 +549,15 @@
                         android:gravity="center_vertical"
                         android:id="@+id/textView22" />
 
+                    -->
+
                     <TextView
                         android:text="Dirección IP"
                         android:layout_width="140dp"
                         android:layout_height="25dp"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="160dp"
-                        android:layout_marginTop="40dp"
+                        android:layout_marginLeft="100dp"
+                        android:layout_marginTop="60dp"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -565,8 +568,8 @@
                         android:layout_width="140dp"
                         android:layout_height="25dp"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="160dp"
-                        android:layout_marginTop="70dp"
+                        android:layout_marginLeft="100dp"
+                        android:layout_marginTop="100dp"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -577,13 +580,14 @@
                         android:layout_width="140dp"
                         android:layout_height="25dp"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="160dp"
-                        android:layout_marginTop="100dp"
+                        android:layout_marginLeft="100dp"
+                        android:layout_marginTop="140dp"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/textView13" />
 
+                    <!--
                     <TextView
                         android:text="Principal"
                         android:layout_width="140dp"
@@ -608,10 +612,12 @@
                         android:gravity="center_vertical"
                         android:id="@+id/textView25" />
 
+                    -->
+
                     <TextView
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="300dp"
-                        android:layout_marginTop="40dp"
+                        android:layout_marginTop="60dp"
                         android:layout_width="200dp"
                         android:layout_height="25dp"
                         android:background="@color/colorGris"
@@ -620,7 +626,7 @@
                     <TextView
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="300dp"
-                        android:layout_marginTop="70dp"
+                        android:layout_marginTop="100dp"
                         android:layout_width="200dp"
                         android:layout_height="25dp"
                         android:background="@color/colorGris"
@@ -629,12 +635,13 @@
                     <TextView
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="300dp"
-                        android:layout_marginTop="100dp"
+                        android:layout_marginTop="140dp"
                         android:layout_width="200dp"
                         android:layout_height="25dp"
                         android:background="@color/colorGris"
                         android:id="@+id/background103" />
 
+                    <!--
                     <TextView
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="300dp"
@@ -652,7 +659,7 @@
                         android:layout_height="25dp"
                         android:background="@color/colorGris"
                         android:id="@+id/background105" />
-
+                    -->
 
 
                     <EditText
@@ -662,7 +669,7 @@
                         android:text=""
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="300dp"
-                        android:layout_marginTop="37dp"
+                        android:layout_marginTop="57dp"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:backgroundTint="@color/colorNegro"
@@ -676,7 +683,7 @@
                         android:text=""
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="300dp"
-                        android:layout_marginTop="67dp"
+                        android:layout_marginTop="97dp"
                         android:backgroundTint="@color/colorNegro"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -689,13 +696,14 @@
                         android:text=""
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="300dp"
-                        android:layout_marginTop="97dp"
+                        android:layout_marginTop="137dp"
                         android:backgroundTint="@color/colorNegro"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtEthPuerta" />
 
 
+                    <!--
                     <EditText
                         android:layout_width="200dp"
                         android:layout_height="30dp"
@@ -721,7 +729,7 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtEthDns2" />
-
+                    -->
 
                 </RelativeLayout>
 

@@ -60,6 +60,14 @@ public class ActivitySincronizacion extends Activity {
     TextView txvInternet;
     TextView txvOrigen;
 
+    Button btnSyncGuardar;
+
+    EditText edtSyncHost;
+    EditText edtSyncDB;
+    EditText edtSyncPort;
+    EditText edtSyncUser;
+    EditText edtSyncPass;
+
     boolean internet = false;
     boolean servidor = false;
 
@@ -88,6 +96,14 @@ public class ActivitySincronizacion extends Activity {
         btnTest = (Button) findViewById(R.id.btnTest);
         txvInternet = (TextView) findViewById(R.id.txvInternet);
         txvOrigen = (TextView) findViewById(R.id.txvOrigen);
+
+        btnSyncGuardar = (Button) findViewById(R.id.btnSyncGuardar);
+
+        edtSyncHost = (EditText) findViewById(R.id.edtSyncHost);
+        edtSyncDB = (EditText) findViewById(R.id.edtSyncDB);
+        edtSyncPort = (EditText) findViewById(R.id.edtSyncPort);
+        edtSyncUser = (EditText) findViewById(R.id.edtSyncUser);
+        edtSyncPass = (EditText) findViewById(R.id.edtSyncPass);
 
         /* --- Inicialización de Métodos --- */
 
@@ -164,6 +180,25 @@ public class ActivitySincronizacion extends Activity {
                 //    startActivity(launchIntent1);
                 //}
 
+            }
+        });
+
+        btnSyncGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String host = "";
+                String database = "";
+                String port = "";
+                String user = "";
+                String pass = "";
+
+                host = edtSyncHost.getText().toString();
+                database = edtSyncHost.getText().toString();
+                port = edtSyncHost.getText().toString();
+                user = edtSyncHost.getText().toString();
+                pass = edtSyncHost.getText().toString();
+
+                Log.d("SYNC SAVE",host+" "+database+" "+port+" "+user+" "+pass);
             }
         });
 
