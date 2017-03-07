@@ -98,6 +98,8 @@ public class ActivityPrincipal extends Activity {
 
     /* --- ACCESO ESTÁTICO --- */
 
+    public static Context context;
+
     public static MainArduino objArduino;
     public static MainSuprema objSuprema;
 
@@ -240,6 +242,7 @@ public class ActivityPrincipal extends Activity {
         // Inicialización nivel cero
 
         activityActive = "Principal";
+        context = getApplicationContext();
 
         Thread.setDefaultUncaughtExceptionHandler(new TXExceptionHandler(this));
 
