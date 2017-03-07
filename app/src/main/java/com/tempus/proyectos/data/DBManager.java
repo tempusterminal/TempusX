@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tempus.proyectos.data.model.Estados;
+import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
+import com.tempus.proyectos.data.queries.QueriesBiometrias;
+import com.tempus.proyectos.data.queries.QueriesLlamadas;
+import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.data.tables.TableEstados;
 
 public class DBManager {
@@ -42,7 +46,7 @@ public class DBManager {
         this.close();
     }
 
-    public void tables(){
+    public void listarTables(){
         this.open();
         String query = "select name from sqlite_master where type = 'table'";
 
@@ -60,7 +64,7 @@ public class DBManager {
         this.close();
     }
 
-    public void views(){
+    public void listarViews(){
         this.open();
         String query = "select name from sqlite_master where type = 'view'";
 
@@ -78,7 +82,7 @@ public class DBManager {
         this.close();
     }
 
-    public void dropalltables(){
+    public void deletealltables(){
         this.open();
         database.execSQL("BEGIN TRANSACTION;");
         database.execSQL("DELETE FROM ESTADOS;");
@@ -86,7 +90,6 @@ public class DBManager {
 
         //database.execSQL("DELETE FROM TERMINAL;");
         //database.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES('1');");
-
 
         database.execSQL("DELETE FROM TERMINAL_TIPOLECT;");
         database.execSQL("DELETE FROM TIPO_LECTORA;");
@@ -100,12 +103,58 @@ public class DBManager {
 
     }
 
-    public void all(){
+    public void all(String lote){
 
-        this.create();
-        this.dropalltables();
-        this.tables();
-        this.views();
+        String[] lotearray = lote.split(",");
+
+        if(lotearray[0].equals("1")){
+            // Crear la BD TEMPUSPLUS.db
+            this.create();
+        }
+
+        if(lotearray[1].equals("1")){
+            // Limpiar Registros de la BD
+            this.deletealltables();
+        }
+
+        if(lotearray[2].equals("1")){
+            // Listar las Tablas
+            this.listarTables();
+        }
+
+        if(lotearray[3].equals("1")){
+            // Crear las Vistas
+            QueriesAutorizaciones queriesAutorizaciones = new QueriesAutorizaciones(context);
+            queriesAutorizaciones.drop();
+            queriesAutorizaciones.create();
+
+            QueriesBiometrias queriesBiometrias = new QueriesBiometrias(context);
+            queriesBiometrias.drop();
+            queriesBiometrias.create();
+        }
+
+        if(lotearray[4].equals("1")){
+            // Listar las Vistas
+            this.listarViews();
+        }
+
+        if(lotearray[5].equals("1")){
+            // Poblar Tablar Iniciales
+
+            // Tabla Llamadas para sincronizar autorizaciones
+            QueriesLlamadas queriesLlamadas = new QueriesLlamadas(context);
+            queriesLlamadas.poblar();
+
+            // Tabla Servicios para conectar a servidores externos
+            QueriesServicios queriesServicios = new QueriesServicios(context);
+            queriesServicios.poblar();
+
+        }
+
+
+
+
+
 
     }
 
