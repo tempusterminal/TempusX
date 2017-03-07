@@ -269,7 +269,7 @@
                         android:layout_marginLeft="190dp"
                         android:layout_marginTop="55dp"
                         android:textColor="@color/colorTexto"
-                        android:id="@+id/edtSyncB" />
+                        android:id="@+id/edtSyncDB" />
 
                     <EditText
                         android:imeOptions="actionDone"
@@ -280,7 +280,7 @@
                         android:layout_marginLeft="190dp"
                         android:layout_marginTop="90dp"
                         android:textColor="@color/colorTexto"
-                        android:id="@+id/editText3" />
+                        android:id="@+id/edtSyncPort" />
 
                     <EditText
                         android:imeOptions="actionDone"
@@ -291,7 +291,7 @@
                         android:layout_marginLeft="190dp"
                         android:layout_marginTop="125dp"
                         android:textColor="@color/colorTexto"
-                        android:id="@+id/editText4" />
+                        android:id="@+id/edtSyncUser" />
 
                     <EditText
                         android:imeOptions="actionDone"
@@ -302,7 +302,7 @@
                         android:layout_marginLeft="190dp"
                         android:layout_marginTop="160dp"
                         android:textColor="@color/colorTexto"
-                        android:id="@+id/editText5" />
+                        android:id="@+id/edtSyncPass" />
 
 
 
@@ -313,7 +313,7 @@
                         android:textSize="15sp"
                         android:layout_marginLeft="500dp"
                         android:layout_marginTop="80dp"
-                        android:id="@+id/button4" />
+                        android:id="@+id/btnSyncGuardar" />
 
                 </RelativeLayout>
 

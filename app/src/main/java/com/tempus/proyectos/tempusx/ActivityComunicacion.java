@@ -170,6 +170,10 @@ public class ActivityComunicacion extends Activity {
         edtWlanMascara = (EditText) findViewById(R.id.edtWlanMascara);
         edtWlanPuerta = (EditText) findViewById(R.id.edtWlanPuerta);
 
+        edtEthIp = (EditText) findViewById(R.id.edtWlanIp);
+        edtEthMascara = (EditText) findViewById(R.id.edtWlanMascara);
+        edtEthPuerta = (EditText) findViewById(R.id.edtWlanPuerta);
+
         lstWifi = (ListView)findViewById(R.id.lstWifi);
         buttonWifi = (Button) findViewById(R.id.buttonWifi);
 
@@ -228,8 +232,8 @@ public class ActivityComunicacion extends Activity {
         //View w3 = host.getTabWidget().getChildTabViewAt(2);
         //w3.setVisibility(View.INVISIBLE);
 
-        View w1 = host.getTabWidget().getChildTabViewAt(2);
-        w1.setVisibility(View.INVISIBLE);
+        //View w1 = host.getTabWidget().getChildTabViewAt(2);
+        //w1.setVisibility(View.INVISIBLE);
 
 
         txvWifiState = (TextView) findViewById(R.id.txvWifiState);
@@ -443,13 +447,60 @@ public class ActivityComunicacion extends Activity {
         btnConfRed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // changeWifiConfiguration(false, "192.168.0.101", 24, "192.168.0.1","192.168.0.2");
-                Intent i = new Intent(Settings.ACTION_WIFI_SETTINGS);
-                i.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
 
-                ActivityManager am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+                String ip = edtWlanIp.getText().toString();
+                String mask = edtWlanMascara.getText().toString();
+                String gw = edtWlanPuerta.getText().toString();
+                boolean dhcp = false;
 
+                if (rbnWifiDynamic.isChecked()){
+                    dhcp = true;
+                }
+
+                changeWifiConfiguration(dhcp, ip, convertIpToBytes(mask), "8.8.8.8",gw);
+
+                String params1[] = {"su","-c","ifconfig","down"};
+                String params2[] = {"su","-c","ifconfig","up"};
+
+                Shell sh = new Shell();
+                sh.exec(params1);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                sh.exec(params2);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                checkWifiTypeConnection();
+                checkDataWifiConnection();
+
+            }
+        });
+
+        rbnWifiStatic.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    edtWlanIp.setEnabled(true);
+                    edtWlanMascara.setEnabled(true);
+                    edtWlanPuerta.setEnabled(true);
+                }
+            }
+        });
+
+        rbnWifiDynamic.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    edtWlanIp.setEnabled(false);
+                    edtWlanMascara.setEnabled(false);
+                    edtWlanPuerta.setEnabled(false);
+                }
             }
         });
 
@@ -457,6 +508,10 @@ public class ActivityComunicacion extends Activity {
         checkWifiConnection();
         checkWifiTypeConnection();
         checkDataWifiConnection();
+
+        edtEthIp.setEnabled(false);
+        edtEthMascara.setEnabled(false);
+        edtEthPuerta.setEnabled(false);
 
 
         //Log.d(TAG, String.valueOf(connectivity.isConnectedMobile(this.getApplicationContext())));
@@ -488,6 +543,11 @@ public class ActivityComunicacion extends Activity {
                 break;
         }
         return true;
+    }
+
+    public int convertIpToBytes(String ip){
+        int res = 0;
+        return res;
     }
 
     public void scanWifiToListView(){
@@ -738,6 +798,8 @@ public class ActivityComunicacion extends Activity {
 
         // PPP
     }
+
+
 
 
 
