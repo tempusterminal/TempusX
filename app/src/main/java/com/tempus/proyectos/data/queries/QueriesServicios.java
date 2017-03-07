@@ -162,47 +162,35 @@ public class QueriesServicios {
         this.close();
     }
 
-    public void update(Servicios servicios){
+    public void update(String Descripcion, String Host, String Ip, String Instance, String Database, String Port, String User, String Pass){
 
         this.open();
         Fechahora fechahora = new Fechahora();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TableServicios.Host,servicios.Host);
-        contentValues.put(TableServicios.Ip,servicios.Ip);
-        contentValues.put(TableServicios.Instance,servicios.Instance);
-        contentValues.put(TableServicios.Database,servicios.Database);
-        contentValues.put(TableServicios.Port,servicios.Port);
-        contentValues.put(TableServicios.User,servicios.User);
-        contentValues.put(TableServicios.Pass,servicios.Pass);
+        contentValues.put(TableServicios.Host,Host);
+        contentValues.put(TableServicios.Ip,Ip);
+        contentValues.put(TableServicios.Instance,Instance);
+        contentValues.put(TableServicios.Database,Database);
+        contentValues.put(TableServicios.Port,Port);
+        contentValues.put(TableServicios.User,User);
+        contentValues.put(TableServicios.Pass,Pass);
         contentValues.put(TableServicios.FechaHoraSinc,fechahora.getFechahora());
 
         try{
-            database.update(TableServicios.TABLE_NAME, contentValues, TableServicios.Descripcion + " = ? ", new String[] { String.valueOf(servicios.Descripcion) });
-            Log.v("TEMPUS: ","SERVICIO ACTUALIZADO " + servicios.Descripcion);
+            database.update(TableServicios.TABLE_NAME, contentValues, TableServicios.Descripcion + " = ? ", new String[] { String.valueOf(Descripcion) });
+            Log.v("TEMPUS: ","SERVICIO ACTUALIZADO " + Descripcion);
         }catch(Exception e){
-            Log.v("TEMPUS: ","ERROR SERVICIO NO ACTUALIZADO " + e.getMessage() + " " + servicios.Descripcion);
+            Log.v("TEMPUS: ","ERROR SERVICIO NO ACTUALIZADO " + e.getMessage() + " " + Descripcion);
         }finally {
             this.close();
         }
 
     }
 
-    public void insertupdate(String Descripcion, String Host, String Ip, String Instance, String Database, String Port, String User, String Pass){
 
-        Servicios servicios = new Servicios();
-        servicios.setDescripcion(Descripcion);
-        servicios.setHost(Host);
-        servicios.setIp(Ip);
-        servicios.setInstance(Instance);
-        servicios.setDatabase(Database);
-        servicios.setPort(Port);
-        servicios.setUser(User);
-        servicios.setPass(Pass);
 
-        this.update(servicios);
 
-    }
 
 
 }

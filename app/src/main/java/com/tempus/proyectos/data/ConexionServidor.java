@@ -1,12 +1,20 @@
 package com.tempus.proyectos.data;
 
+import android.content.Context;
 import android.database.SQLException;
 import android.util.Log;
 
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.StrictMode;
+
+import com.tempus.proyectos.data.model.Servicios;
+import com.tempus.proyectos.data.queries.QueriesServicios;
+import com.tempus.proyectos.tempusx.ActivityPrincipal;
 
 
 /**
@@ -21,16 +29,32 @@ public class ConexionServidor {
     // private static final String database = "TEMPUS_T9";
     // private static final String host = "129.21.22.136"; // 172.20.1.119 //172.20.1.100
 
-    private static final String user = "SA";
-    private static final String pass = "tempus+123";
-    private static final String port = "49758";
-    private static final String database = "CROVISA_T10";
-    private static final String host = "192.168.1.103"; // 172.20.1.119 //172.20.1.100
+    private static String user = "";
+    private static String pass = "";
+    private static String port = "";
+    private static String database = "";
+    private static String ip = "";
+    private static String host = "";
 
-    private static final String url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
+    private static String url = "jdbc:jtds:sqlserver://" + ip + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
     private static Connection connection = null;
 
     public ConexionServidor() {
+        //Iniciar Parametros
+
+        QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+        List<Servicios> serviciosList =  new ArrayList<Servicios>();
+        serviciosList = queriesServicios.BuscarServicios("SERVIDOR_DATOS_PRINCIPAL");
+
+        user = serviciosList.get(0).getUser();
+        pass = serviciosList.get(0).getPass();
+        port = serviciosList.get(0).getPort();
+        database = serviciosList.get(0).getDatabase();
+        ip = serviciosList.get(0).getIp();
+        host = serviciosList.get(0).getHost();
+
+        url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
+
     }
 
     public static ConexionServidor getInstance(){

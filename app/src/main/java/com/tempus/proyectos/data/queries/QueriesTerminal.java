@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.tempus.proyectos.data.Conexion;
+import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Terminal;
 import com.tempus.proyectos.data.tables.TableTerminal;
+import com.tempus.proyectos.util.Fechahora;
 
 /**
  * Created by GURRUTIAM on 11/11/2016.
@@ -40,7 +42,6 @@ public class QueriesTerminal {
 
     public void insert(Terminal terminal){
 
-        conexion.onCreate(database);
 
         ContentValues contentValues = new ContentValues();
 
@@ -113,6 +114,35 @@ public class QueriesTerminal {
         return count;
 
     }
+
+
+    public int ActualizarIdterminal(String Idterminal){
+
+        this.open();
+        Fechahora fechahora =  new Fechahora();
+        DBManager dbManager = new DBManager(context);
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TableTerminal.Idterminal,Idterminal);
+
+        try{
+            database.update(TableTerminal.TABLE_NAME,contentValues,null,null);
+            Log.v("TEMPUS: ","Idterminal Actualizado a " + Idterminal);
+            dbManager.all("0,1,0,0,0,0");
+            return 1;
+        }catch(Exception e){
+            Log.v("TEMPUS: ","QueriesTerminal.ActualizarIdterminal Error " + e.getMessage());
+            return 0;
+        }finally {
+            this.close();
+        }
+
+    }
+
+
+
+
+
 
 
 }
