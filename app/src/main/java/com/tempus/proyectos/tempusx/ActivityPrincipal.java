@@ -18,14 +18,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.tempus.proyectos.bluetoothSerial.BluetoothManager;
+import com.tempus.proyectos.bluetoothSerial.BluetoothSuperAdmin;
 import com.tempus.proyectos.bluetoothSerial.MainArduino;
 import com.tempus.proyectos.bluetoothSerial.MainSuprema;
 import com.tempus.proyectos.crash.TXExceptionHandler;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Autorizaciones;
-import com.tempus.proyectos.data.process.ProcessMarcas;
-import com.tempus.proyectos.data.process.ProcessSyncTS;
 import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
 import com.tempus.proyectos.data.queries.QueriesBiometrias;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
@@ -38,13 +36,15 @@ import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ActivityPrincipal extends Activity {
+
+    BluetoothSuperAdmin bs01;
+    BluetoothSuperAdmin bs02;
 
 
     /* Variables Globales */
@@ -87,9 +87,13 @@ public class ActivityPrincipal extends Activity {
 
     /* --- BLUETOOTH SOCKET ESTÁTICO --- */
 
-    public static BluetoothManager btSocket01;
-    public static BluetoothManager btSocket02;
-    public static BluetoothManager btSocket03;
+    public static BluetoothSuperAdmin btSocket01;
+    public static BluetoothSuperAdmin btSocket02;
+    public static BluetoothSuperAdmin btSocket03;
+
+    //public static BluetoothManager btSocket01;
+    //public static BluetoothManager btSocket02;
+    //public static BluetoothManager btSocket03;
 
 
     /* --- ACCESO ESTÁTICO --- */
@@ -321,6 +325,8 @@ public class ActivityPrincipal extends Activity {
         manageEventMode( MODO_EVENTO );     // Ocultar modo Evento
         manageKeyboard(false);              // Ocultar teclado
 
+        //restartBluetooth();
+
         showMsgBoot(true,"Iniciando sistema, por favor espere ...");    // Bloquear pantalla hasta conectar
 
         buttonWarning01.setVisibility(View.INVISIBLE);
@@ -339,20 +345,52 @@ public class ActivityPrincipal extends Activity {
 
         // Seriales
         iniciarParametrosSeriales();
-        conectarSeriales();
+        //
 
-        // Iniciar Rutinas en falso
+        btSocket01 = new BluetoothSuperAdmin(MAC_BT_01);
+        btSocket02 = new BluetoothSuperAdmin(MAC_BT_02);
+
+
+        threadControlSerial01.start();
+        threadControlSerial02.start();
+
+        conectarSeriales();
         threadControlPrincipal.start();
         threadControlPantalla.start();
         threadReplicado.start();
 
-        ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
-        processSyncTS.start(this);
-
-        ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
-        processMarcas.start(this);
 
 
+
+
+
+        //
+        //
+        //
+        //
+        // threadControlSerial01.start();
+        //
+        //
+        //
+        //
+        // threadControlSerial02.start();
+
+        /*
+
+
+
+
+        // Iniciar Rutinas en falso
+
+
+        //ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
+        //processSyncTS.start(this);
+//
+        //ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
+        //processMarcas.start(this);
+
+
+        */
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
 
@@ -659,6 +697,14 @@ public class ActivityPrincipal extends Activity {
 
     }
 
+
+
+
+
+
+
+
+
     public void reboot() {
 
         try {
@@ -733,28 +779,7 @@ public class ActivityPrincipal extends Activity {
     public void crearBD() {
 
         dbManager = new DBManager(this);
-        dbManager.all();
-
-        dbManager.execSQL("DELETE FROM TERMINAL");
-        dbManager.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES('100')");
-
-        queriesAutorizaciones = new QueriesAutorizaciones(this);
-        Log.v(TAG,"Eliminación de vista Autorizaciones");
-        queriesAutorizaciones.drop();
-        Log.v(TAG,"Creación de vista Autorizaciones");
-        queriesAutorizaciones.create();
-
-        queriesBiometrias = new QueriesBiometrias(this);
-        Log.v(TAG,"Eliminación de vista Biometrias");
-        queriesBiometrias.drop();
-        Log.v(TAG,"Creación de vista Biometrias");
-        queriesBiometrias.create();
-
-        queriesLlamadas = new QueriesLlamadas(this);
-        queriesLlamadas.poblar();
-
-        queriesServicios = new QueriesServicios(this);
-        queriesServicios.poblar();
+        dbManager.all("1,1,1,1,1,1");
 
     }
 
@@ -829,25 +854,22 @@ public class ActivityPrincipal extends Activity {
     public void conectarSeriales(){
         // Reseteamos la interfaz
 
-        restartBluetooth();
 
         if (BT_01_ENABLED) {
             Log.i(TAG,"INICIANDO BT 01");
-            btSocket01 = new BluetoothManager(MAC_BT_01,getApplicationContext());
+            //btSocket01 = new BluetoothManager(MAC_BT_01,getApplicationContext());
             threadSerial01.start();
-            threadControlSerial01.start();
         }
 
         if (BT_02_ENABLED) {
             Log.i(TAG,"INICIANDO BT 02");
-            btSocket02 = new BluetoothManager(MAC_BT_02,getApplicationContext());
+            //btSocket02 = new BluetoothManager(MAC_BT_02,getApplicationContext());
             threadSerial02.start();
-            threadControlSerial02.start();
         }
 
         if (BT_03_ENABLED) {
             Log.i(TAG,"INICIANDO BT 03");
-            btSocket03 = new BluetoothManager(MAC_BT_03,getApplicationContext());
+            //btSocket03 = new BluetoothManager(MAC_BT_03,getApplicationContext());
             threadSerial03.start();
             threadControlSerial03.start();
         }
@@ -2007,6 +2029,7 @@ public class ActivityPrincipal extends Activity {
     Thread threadControlSerial01 = new Thread(new Runnable() {
         @Override
         public void run() {
+
             while (true) {
 
                 Date date = new Date();
@@ -2019,10 +2042,10 @@ public class ActivityPrincipal extends Activity {
                     if (dif <= TIEMPO_CONN_BT) {
                         Log.v(TAG,
                                 "Conectando SERIAL01 - " +
-                                "TIEMPO_PRESENTE_BT01: " + TIEMPO_PRESENTE_BT01.toString() + " | " +
-                                "TIEMPO_PASADO_BT01:" + TIEMPO_PASADO_BT01.toString());
+                                        "TIEMPO_PRESENTE_BT01: " + TIEMPO_PRESENTE_BT01.toString() + " | " +
+                                        "TIEMPO_PASADO_BT01:" + TIEMPO_PASADO_BT01.toString());
                         STATUS_CONNECT_01 = btSocket01.Connect();
-                        util.sleep(5000);
+                        util.sleep(1000);
                     } else {
                         Log.wtf(TAG,"No pudo iniciar Serial01");
                         HARD_FAIL_01 = true;
@@ -2033,15 +2056,16 @@ public class ActivityPrincipal extends Activity {
                     Date dateP = new Date();
                     TIEMPO_PASADO_BT01 = dateP;
                 }
-
                 util.sleep(1000);
             }
+
         }
     });
 
     Thread threadControlSerial02 = new Thread(new Runnable() {
         @Override
         public void run() {
+
             while (true) {
 
                 Date date = new Date();
@@ -2054,10 +2078,10 @@ public class ActivityPrincipal extends Activity {
                     if (dif <= TIEMPO_CONN_BT) {
                         Log.v(TAG,
                                 "Conectando SERIAL02 - " +
-                                "TIEMPO_PRESENTE_BT02: " + TIEMPO_PRESENTE_BT02.toString() + " | " +
-                                "TIEMPO_PASADO_BT02:" + TIEMPO_PASADO_BT02.toString());
+                                        "TIEMPO_PRESENTE_BT02: " + TIEMPO_PRESENTE_BT02.toString() + " | " +
+                                        "TIEMPO_PASADO_BT02:" + TIEMPO_PASADO_BT02.toString());
                         STATUS_CONNECT_02 = btSocket02.Connect();
-                        util.sleep(5000);
+                        util.sleep(1000);
                     } else {
                         Log.wtf(TAG,"No pudo iniciar Serial02");
                         HARD_FAIL_02 = true;
@@ -2088,10 +2112,10 @@ public class ActivityPrincipal extends Activity {
                     if (dif <= TIEMPO_CONN_BT) {
                         Log.v(TAG,
                                 "Conectando SERIAL03 - " +
-                                "TIEMPO_PRESENTE_BT03: " + TIEMPO_PRESENTE_BT03.toString() + " | " +
-                                "TIEMPO_PASADO_BT03:" + TIEMPO_PASADO_BT03.toString());
+                                        "TIEMPO_PRESENTE_BT03: " + TIEMPO_PRESENTE_BT03.toString() + " | " +
+                                        "TIEMPO_PASADO_BT03:" + TIEMPO_PASADO_BT03.toString());
                         STATUS_CONNECT_03 = btSocket03.Connect();
-                        util.sleep(5000);
+                        util.sleep(1000);
                     } else {
                         Log.wtf(TAG,"No pudo iniciar Serial03");
                         HARD_FAIL_03 = true;

@@ -11,6 +11,8 @@ import com.tempus.proyectos.tempusx.ActivityBiometria;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Utilities;
 
+import java.io.IOException;
+
 /**
  * Created by ecernar on 15/11/2016.
  */
@@ -42,7 +44,11 @@ public class ThreadSupremaDelete implements Runnable {
         String parametros[] = new String[1];
         valorIndice = String.valueOf(ActivityBiometria.indice);
         parametros[0] = ActivityPrincipal.objSuprema.convertCardToEnroll(valorIndice);
-        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"DeleteTemplate",parametros);
+        try {
+            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"DeleteTemplate",parametros);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         while (control1){
             if (contador > timeout || ActivityBiometria.accionCancel) {
@@ -102,7 +108,11 @@ public class ThreadSupremaDelete implements Runnable {
     }
 
     public void cancelarEnroll(){
-        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"Cancel",null);
+        try {
+            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"Cancel",null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         control1 = false;
 

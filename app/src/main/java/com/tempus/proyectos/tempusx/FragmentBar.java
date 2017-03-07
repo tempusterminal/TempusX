@@ -173,7 +173,7 @@ public class FragmentBar extends Fragment {
 
         txvINivelBateria.setText(String.valueOf(rBatteryLevel)+"%");
 
-        Log.v("TEMPUS: ",String.valueOf(rBatteryLevel)+"%");
+        //Log.v("TEMPUS: ",String.valueOf(rBatteryLevel)+"%");
 
         try {
             if (rIsCharging) {

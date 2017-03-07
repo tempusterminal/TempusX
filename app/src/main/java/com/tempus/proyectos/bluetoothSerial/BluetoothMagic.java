@@ -114,6 +114,8 @@ public class BluetoothMagic {
 
         BluetoothSocket getUnderlyingSocket();
 
+        boolean isConnected();
+
     }
 
 
@@ -160,6 +162,10 @@ public class BluetoothMagic {
             return socket;
         }
 
+        public boolean isConnected() {
+            return socket.isConnected();
+        }
+
     }
 
     public class FallbackBluetoothSocket extends NativeBluetoothSocket {
@@ -198,6 +204,10 @@ public class BluetoothMagic {
         @Override
         public void close() throws IOException {
             fallbackSocket.close();
+        }
+
+        public boolean isConnected() {
+            return fallbackSocket.isConnected();
         }
 
     }

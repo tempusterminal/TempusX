@@ -11,6 +11,8 @@ import com.tempus.proyectos.tempusx.ActivityBiometria;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Utilities;
 
+import java.io.IOException;
+
 /**
  * Created by ecernar on 15/11/2016.
  */
@@ -48,7 +50,11 @@ public class ThreadSupremaEnroll implements Runnable {
         valorIndice = String.valueOf(ActivityBiometria.indice);
         parametros[0] = ActivityPrincipal.objSuprema.convertCardToEnroll(valorIndice);
         Log.e("TEMPUS: ", String.valueOf(parametros[0]));
-        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"EnrollByScan",parametros);
+        try {
+            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"EnrollByScan",parametros);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         while (control1) {
             if (contador > timeout || ActivityBiometria.accionCancel) {
@@ -80,7 +86,11 @@ public class ThreadSupremaEnroll implements Runnable {
 
         // Enviamos Peticion para extraer huella
         if (control2) {
-            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"ReadTemplate",parametros);
+            try {
+                ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"ReadTemplate",parametros);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         while (control2) {
@@ -156,7 +166,11 @@ public class ThreadSupremaEnroll implements Runnable {
     }
 
     public void cancelarEnroll(){
-        ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"Cancel",null);
+        try {
+            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"Cancel",null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         control1 = false;
         control2 = false;

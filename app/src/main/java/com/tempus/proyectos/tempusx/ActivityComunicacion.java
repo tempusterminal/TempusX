@@ -1,5 +1,6 @@
 package com.tempus.proyectos.tempusx;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
@@ -7,6 +8,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.LinkAddress;
@@ -16,6 +18,7 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -75,6 +78,9 @@ public class ActivityComunicacion extends Activity {
     /* --- Declaración de Variables Globales --- */
 
     /* --- Declaración de Variables Locales --- */
+
+    String macWlan;
+    String macEth;
 
     String mask;
     String s_dns1;
@@ -170,9 +176,9 @@ public class ActivityComunicacion extends Activity {
         edtWlanMascara = (EditText) findViewById(R.id.edtWlanMascara);
         edtWlanPuerta = (EditText) findViewById(R.id.edtWlanPuerta);
 
-        edtEthIp = (EditText) findViewById(R.id.edtWlanIp);
-        edtEthMascara = (EditText) findViewById(R.id.edtWlanMascara);
-        edtEthPuerta = (EditText) findViewById(R.id.edtWlanPuerta);
+        edtEthIp = (EditText) findViewById(R.id.edtEthIp);
+        edtEthMascara = (EditText) findViewById(R.id.edtEthMascara);
+        edtEthPuerta = (EditText) findViewById(R.id.edtEthPuerta);
 
         lstWifi = (ListView)findViewById(R.id.lstWifi);
         buttonWifi = (Button) findViewById(R.id.buttonWifi);
@@ -436,7 +442,8 @@ public class ActivityComunicacion extends Activity {
                             isWPA = true;
                         }
                     }
-                    connectWifi(isWPA,ssid,pass);
+                    //connectWifi(isWPA,ssid,pass);
+                    connectWifiM(isWPA,ssid,pass);
                     manageAreaWifiConfig(false);
                 } else {
                     Toast.makeText(getApplicationContext(),"Debe colocar un SSID y/o CONTRASEÑA válidos",Toast.LENGTH_SHORT);
@@ -459,24 +466,53 @@ public class ActivityComunicacion extends Activity {
 
                 changeWifiConfiguration(dhcp, ip, convertIpToBytes(mask), "8.8.8.8",gw);
 
-                String params1[] = {"su","-c","ifconfig","down"};
-                String params2[] = {"su","-c","ifconfig","up"};
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                String params1[] = {"su","-c","busybox","ifconfig","down"};
+                String params2[] = {"su","-c","busybox","ifconfig","up"};
 
                 Shell sh = new Shell();
                 sh.exec(params1);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 sh.exec(params2);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
 
+                wifi.setWifiEnabled(false);
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                wifi.setWifiEnabled(true);
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                Toast.makeText(getApplicationContext(),"TERMINO",Toast.LENGTH_SHORT);
+
                 checkWifiTypeConnection();
+
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
                 checkDataWifiConnection();
 
             }
@@ -504,7 +540,7 @@ public class ActivityComunicacion extends Activity {
             }
         });
 
-        inicializarSwitches();
+
         checkWifiConnection();
         checkWifiTypeConnection();
         checkDataWifiConnection();
@@ -514,11 +550,19 @@ public class ActivityComunicacion extends Activity {
         edtEthPuerta.setEnabled(false);
 
 
-        //Log.d(TAG, String.valueOf(connectivity.isConnectedMobile(this.getApplicationContext())));
-        //Log.d(TAG, String.valueOf(connectivity.getMobileDataState(ActivityComunicacion.this)));
-        //Log.d(TAG, connectivity.getNetworkClass(getApplicationContext()));
-        //connectivity.setMobileDataState(ActivityComunicacion.this,true);
+        Shell sh = new Shell();
+        String params[] = {"su","-c","busybox","ifconfig"};
+        String cadena = sh.exec(params);
 
+        checkEthernetConfig(cadena);
+
+        macWlan = connectivity.getMacAddress(cadena,"wlan0");
+        macEth = connectivity.getMacAddress(cadena,"eth0");
+
+        Log.d(TAG, ">>" + macWlan);
+        Log.d(TAG, ">>" + macEth);
+
+        inicializarSwitches();
     }
 
 
@@ -547,6 +591,11 @@ public class ActivityComunicacion extends Activity {
 
     public int convertIpToBytes(String ip){
         int res = 0;
+        long l = ipToLong(ip);
+        Log.d(TAG, "convertIpToBytes ->" + String.valueOf(l));
+        String p = String.valueOf(Integer.toBinaryString((int)l));
+        Log.d(TAG, "convertIpToBytes ->" + p);
+        res = p.replace("0","").length();
         return res;
     }
 
@@ -786,6 +835,44 @@ public class ActivityComunicacion extends Activity {
         }
     }
 
+    public void connectWifiM(boolean isWPA, String ssid, String pass){
+
+
+
+        WifiConfiguration conf = new WifiConfiguration();
+
+        WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wifiManager.addNetwork(conf);
+
+        conf.hiddenSSID = true;
+        conf.priority = 1000;
+        conf.SSID = "\"" + ssid + "\"";
+        conf.preSharedKey = "\""+pass+"\"";
+        conf.status = WifiConfiguration.Status.ENABLED;
+        conf.allowedAuthAlgorithms.set(WifiConfiguration.AuthAlgorithm.OPEN);
+
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
+        conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
+
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
+        conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_EAP);
+
+        conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.TKIP);
+        conf.allowedPairwiseCiphers.set(WifiConfiguration.PairwiseCipher.CCMP);
+
+        conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
+        conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
+        int res = wifiManager.addNetwork(conf);
+        boolean es = wifiManager.saveConfiguration();
+        Log.d(TAG, "saveConfiguration returned " + es );
+        wifiManager.disconnect();
+        boolean bRet = wifiManager.enableNetwork(res, true);
+        Log.i(TAG, "enableNetwork bRet = " + bRet);
+        wifiManager.reconnect();
+    }
+
     public void inicializarSwitches() {
         // ETH
 
@@ -796,31 +883,7 @@ public class ActivityComunicacion extends Activity {
             swtStatusWlan0.setChecked(false);
         }
 
-        // PPP
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public void changeWifiConfiguration(boolean dhcp, String ip, int prefix, String dns1, String gateway) {
@@ -886,9 +949,51 @@ public class ActivityComunicacion extends Activity {
         }
     }
 
+    public long ipToLong(String ipAddress) {
+        long result = 0;
+        String[] ipAddressInArray = ipAddress.split("\\.");
+        for (int i = 3; i >= 0; i--) {
+            long ip = Long.parseLong(ipAddressInArray[3 - i]);
 
+            //left shifting 24,16,8,0 and bitwise OR
 
+            //1. 192 << 24
+            //1. 168 << 16
+            //1. 1   << 8
+            //1. 2   << 0
+            result |= ip << (i * 8);
+        }
+        return result;
+    }
 
+    public void checkEthernetConfig(String cadena) {
+        String salida = cadena;
+
+        try {
+            String tmp[] = {"-","-","-","-"};
+            String salidaArray[] = salida.split("\n");
+
+            for (int i = 0 ; i < salidaArray.length; i++) {
+                if (salidaArray[i].contains("eth0")){
+                    String linea = salidaArray[i+1];
+                    String d[] = linea.toLowerCase()
+                            .trim()
+                            .replace("inet addr:","~")
+                            .replace("bcast:","~")
+                            .replace("mask:","~").split("~");
+                    tmp = d;
+                }
+            }
+
+            //ip
+            edtEthIp.setText(tmp[1]);
+            //mask
+            edtEthMascara.setText(tmp[3]);
+
+        } catch (Exception e) {
+            Log.e("TEMPUS: ","checkEthernetConfig > "+e.getMessage());
+        }
+    }
 
 
 

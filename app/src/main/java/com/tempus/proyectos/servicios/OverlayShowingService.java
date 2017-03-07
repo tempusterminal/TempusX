@@ -1,6 +1,8 @@
 package com.tempus.proyectos.servicios;
 
+import android.app.Activity;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -12,6 +14,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.tempus.proyectos.tempusx.R;
 
 /**
  * Created by ecernar on 01/03/2017.
@@ -127,13 +131,19 @@ public class OverlayShowingService extends Service implements View.OnTouchListen
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(getApplicationContext(),"Reactivando Servicios ... ",Toast.LENGTH_SHORT).show();
-        Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.tempus.proyectos.tempusx");
-        if (launchIntent != null) {
-            startActivity(launchIntent);
-        }
-        stopSelf();
-        System.exit(0);
+        //Toast.makeText(getApplicationContext(),"Reactivando Servicios ... ",Toast.LENGTH_SHORT).show();
+        //Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.tempus.proyectos.tempusx");
+        //if (launchIntent != null) {
+        //    startActivity(launchIntent);
+        //}
+        //stopSelf();
+        //System.exit(0);
+        Toast.makeText(getApplicationContext(),"asd",Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent ("com.android.systemui.recent.action.TOGGLE_RECENTS");
+        intent.setComponent (new ComponentName ("com.android.systemui", "com.android.systemui.recent.RecentsActivity"));
+        startActivity (intent);
     }
+
+
 
 }

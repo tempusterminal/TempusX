@@ -326,4 +326,25 @@ public class Connectivity {
         }
         return info;
     }
+
+    public String getMacAddress(String cadena, String networkInterface){
+        String resultado = "";
+        String salida = cadena;
+        try {
+            String salidaArray[] = salida.split("\n");
+            String tmp = "";
+            for (int i = 0 ; i < salidaArray.length; i++) {
+                if (salidaArray[i].contains(networkInterface)){
+                    tmp = salidaArray[i];
+                    Log.v("TEMPUS: ","getMacAddress SALIDA > "+tmp);
+                    break;
+                }
+            }
+            resultado = tmp.split("HWaddr")[1].trim();
+        } catch (Exception e) {
+            Log.v("TEMPUS: ","getMacAddress > "+e.getMessage());
+        }
+
+        return resultado;
+    }
 }
