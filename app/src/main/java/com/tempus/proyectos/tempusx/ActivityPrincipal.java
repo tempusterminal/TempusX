@@ -43,9 +43,6 @@ import java.util.Map;
 
 public class ActivityPrincipal extends Activity {
 
-    BluetoothSuperAdmin bs01;
-    BluetoothSuperAdmin bs02;
-
 
     /* Variables Globales */
 
