@@ -7,10 +7,13 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.tempus.proyectos.data.queries.QueriesTerminal;
 import com.tempus.proyectos.util.UserInterfaceM;
 
 
@@ -34,6 +37,7 @@ public class ActivitySistema extends Activity {
     TextView txvSistTec1;
     TextView txvSistTec2;
     TextView txvSistTec3;
+    Button btnActualizarID;
 
     ImageView btnMasterSistema;
 
@@ -65,6 +69,7 @@ public class ActivitySistema extends Activity {
         txvSistTec1 = (TextView) findViewById(R.id.txvSistTec1);
         txvSistTec2 = (TextView) findViewById(R.id.txvSistTec2);
         txvSistTec3 = (TextView) findViewById(R.id.txvSistTec3);
+        btnActualizarID = (Button) findViewById(R.id.btnActualizarID);
 
         /* --- Inicialización de Métodos --- */
 
@@ -77,6 +82,20 @@ public class ActivitySistema extends Activity {
         btnMasterSistema.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 ui.goToActivity(ActivitySistema.this, ActivityMenu.class , "","");
+            }
+        });
+
+        btnActualizarID.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                QueriesTerminal queriesTerminal = new QueriesTerminal(ActivityPrincipal.context);
+                int i = queriesTerminal.ActualizarIdterminal(edtSistIdTerminal.getText().toString());
+                if (i == 1) {
+                    Toast.makeText(getApplicationContext(),"ID Actualizados Correctamente",Toast.LENGTH_SHORT).show();
+                    ActivityPrincipal.idTerminal = edtSistIdTerminal.getText().toString();
+                } else {
+                    Toast.makeText(getApplicationContext(),"Fallo al Actualizar",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

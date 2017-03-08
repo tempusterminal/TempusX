@@ -23,6 +23,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tempus.proyectos.data.ConexionServidor;
+import com.tempus.proyectos.data.model.Servicios;
+import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.servicios.OverlayShowingService;
 import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.UserInterfaceM;
@@ -167,6 +169,21 @@ public class ActivitySincronizacion extends Activity {
             public void onClick(View v) {
                 Toast.makeText(getApplicationContext(),"Configurando VPN",Toast.LENGTH_SHORT).show();
 
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Intent launchIntent1 = getPackageManager().getLaunchIntentForPackage("com.tempus.ecernar.overlayapp");
+                        if (launchIntent1 != null) {
+                            startActivity(launchIntent1);
+                        }
+                    }
+                });
+
                 t.start();
 
                 Intent launchIntent2 = getPackageManager().getLaunchIntentForPackage("net.openvpn.openvpn");
@@ -193,12 +210,20 @@ public class ActivitySincronizacion extends Activity {
                 String pass = "";
 
                 host = edtSyncHost.getText().toString();
-                database = edtSyncHost.getText().toString();
-                port = edtSyncHost.getText().toString();
-                user = edtSyncHost.getText().toString();
-                pass = edtSyncHost.getText().toString();
+                database = edtSyncDB.getText().toString();
+                port = edtSyncPort.getText().toString();
+                user = edtSyncUser.getText().toString();
+                pass = edtSyncPass.getText().toString();
 
                 Log.d("SYNC SAVE",host+" "+database+" "+port+" "+user+" "+pass);
+
+                QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+                queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",host,host,"",database,port,user,pass);
+
+                Toast.makeText(getApplicationContext(),"Actualizado", Toast.LENGTH_SHORT).show();
+
+                Log.d("SYNC SAVE","EXITO!");
+
             }
         });
 
@@ -211,23 +236,17 @@ public class ActivitySincronizacion extends Activity {
 
         boolean internet = util.isOnline(this);
         Log.e("Tempus: ", "Coneccion Test -> " + String.valueOf(internet));
+
+        try {
+            getDatosServidor();
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 
-    Thread t = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            Intent launchIntent1 = getPackageManager().getLaunchIntentForPackage("com.tempus.ecernar.overlayapp");
-            if (launchIntent1 != null) {
-                startActivity(launchIntent1);
-            }
-        }
-    });
+
 
 
     @Override
@@ -243,6 +262,19 @@ public class ActivitySincronizacion extends Activity {
                 break;
         }
         return true;
+    }
+
+    public void getDatosServidor() {
+        QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+        List<Servicios> servidor_datos_principal = queriesServicios.BuscarServicios("SERVIDOR_DATOS_PRINCIPAL");
+        for (int i = 0; i < servidor_datos_principal.size(); i++){
+            edtSyncDB.setText(servidor_datos_principal.get(i).getDatabase());
+            edtSyncHost.setText(servidor_datos_principal.get(i).getHost());
+            edtSyncPort.setText(servidor_datos_principal.get(i).getPort());
+            edtSyncUser.setText(servidor_datos_principal.get(i).getUser());
+            edtSyncPass.setText(servidor_datos_principal.get(i).getPass());
+            break;
+        }
     }
 
     Thread thread = new Thread(new Runnable() {
