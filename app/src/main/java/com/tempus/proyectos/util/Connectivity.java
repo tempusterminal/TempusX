@@ -2,6 +2,7 @@ package com.tempus.proyectos.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -346,5 +347,31 @@ public class Connectivity {
         }
 
         return resultado;
+    }
+
+    public void turnGPSOn(Activity activity) {
+        Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
+        intent.putExtra("enabled", true);
+        activity.getApplicationContext().sendBroadcast(intent);
+
+        String provider = Settings.Secure.getString(activity.getApplicationContext().getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        if(!provider.contains("gps")){ //if gps is disabled
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3"));
+            activity.getApplicationContext().sendBroadcast(poke);
+        }
+    }
+
+    public void turnGPSOff(Activity activity) {
+        String provider = Settings.Secure.getString(activity.getApplicationContext().getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        if(provider.contains("gps")){ //if gps is enabled
+            final Intent poke = new Intent();
+            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+            poke.setData(Uri.parse("3"));
+            activity.getApplicationContext().sendBroadcast(poke);
+        }
     }
 }

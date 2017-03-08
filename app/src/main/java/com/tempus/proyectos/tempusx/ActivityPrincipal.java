@@ -24,6 +24,8 @@ import com.tempus.proyectos.bluetoothSerial.MainSuprema;
 import com.tempus.proyectos.crash.TXExceptionHandler;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Autorizaciones;
+import com.tempus.proyectos.data.process.ProcessMarcas;
+import com.tempus.proyectos.data.process.ProcessSyncTS;
 import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
 import com.tempus.proyectos.data.queries.QueriesBiometrias;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
@@ -96,6 +98,7 @@ public class ActivityPrincipal extends Activity {
     /* --- ACCESO ESTÁTICO --- */
 
     public static Context context;
+    public static boolean controlFlagSyncAutorizaciones;
 
     public static MainArduino objArduino;
     public static MainSuprema objSuprema;
@@ -360,37 +363,19 @@ public class ActivityPrincipal extends Activity {
         threadReplicado.start();
 
 
-
-
-
-
-        //
-        //
-        //
         //
         // threadControlSerial01.start();
         //
-        //
-        //
-        //
         // threadControlSerial02.start();
 
-        /*
-
-
-
-
+/*
         // Iniciar Rutinas en falso
-
-
-        //ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
-        //processSyncTS.start(this);
-//
-        //ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
-        //processMarcas.start(this);
-
-
+        ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
+        processSyncTS.start(this);
+        ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
+        processMarcas.start(this);
         */
+
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
 
@@ -822,10 +807,16 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_PASADO_BT03 = new Date();
 
 
-        // DIRESA
+        // PRUEBA CROVISA 01
 
-        MAC_BT_01 = "00:15:83:35:6C:85";
-        MAC_BT_02 = "98:D3:33:80:91:98";
+        //MAC_BT_01 = "00:15:83:35:7A:E1";
+        //MAC_BT_02 = "20:16:08:10:64:80";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // PRUEBA CROVISA 02
+
+        MAC_BT_01 = "20:16:08:10:65:03";
+        MAC_BT_02 = "00:15:83:35:79:C9";
         MAC_BT_03 = "00:00:00:00:00:00";
 
 
@@ -1007,6 +998,12 @@ public class ActivityPrincipal extends Activity {
 
             case "1324111":
                 crearBD();          // Iniciar Base de Datos desde Cero
+                break;
+
+            case "4421324":
+                Intent i = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
+                i.putExtra("android.intent.extra.KEY_CONFIRM", true);
+                startActivity(i);
                 break;
 
             default:
@@ -1228,6 +1225,15 @@ public class ActivityPrincipal extends Activity {
         Log.v(TAG, "MARCACION KO");
         try {
             out.write(util.hexStringToByteArray("244F415841000C3530000041"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void ActivarOTG(OutputStream out) {
+        Log.v(TAG, "ActivarOTG");
+        try {
+            out.write(util.hexStringToByteArray("244F4158410013423131313131313131000041"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1861,7 +1867,6 @@ public class ActivityPrincipal extends Activity {
                         } catch(Exception ex) {
                             Log.d(TAG,"routine catch 1.5 returned exception "+ex.getMessage());
                         }
-                        util.sleep(1000);
                         ctrlThreadSerial01Enabled = false;
                     }
                 } else {
@@ -1929,7 +1934,6 @@ public class ActivityPrincipal extends Activity {
                         } catch(Exception ex) {
                             Log.d(TAG,"routine catch 1.5 returned exception "+ex.getMessage());
                         }
-                        util.sleep(1000);
                         ctrlThreadSerial02Enabled = false;
                     }
                 } else {
@@ -1971,7 +1975,7 @@ public class ActivityPrincipal extends Activity {
     public void controlGeneral(boolean c1,boolean c2, boolean c3) {
 
         if (c1 && c2 && c3){ // Si todos los seriales estan conectados podemos hacer algo
-            if (isBooting){ isBooting = false; }
+            if (isBooting){ isBooting = false; ActivarOTG(btSocket01.getOutputStream());}
             Log.v(TAG,"SERIALES OK");
             ctrlThreadPantallaEnabled = true;
             ctrlThreadSyncMarcasEnabled = false;
@@ -1982,6 +1986,9 @@ public class ActivityPrincipal extends Activity {
             showMsgBoot(false,"");
             buttonWarning01.setVisibility(View.INVISIBLE);
             buttonWarning02.setVisibility(View.INVISIBLE);
+            /*
+            ActivarOTG(btSocket01.getOutputStream());
+            */
         } else {
             Log.v(TAG,"SERIALES KO");
 
@@ -2003,8 +2010,23 @@ public class ActivityPrincipal extends Activity {
                 showMsgBoot(true,"Iniciando Sistema \n"+detail+"]");
             } else {
                 if (!isCharging) {
+
                     // Emitimos alerta de energia
+
                     detail = detail + "\nNO CONECTADO A ENERGÍA";
+                    showMsgBoot(true,"Energia desconectada\nApagando Equipo");
+                    Intent i = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
+                    i.putExtra("android.intent.extra.KEY_CONFIRM", true);
+                    startActivity(i);
+
+                    /*
+                    try {
+                        Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
+                        proc.waitFor();
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                     */
                 }
                 showMsgBoot(true,"Reconectando Interfaces \n"+detail+"]");
             }
@@ -2044,6 +2066,7 @@ public class ActivityPrincipal extends Activity {
                                 "Conectando SERIAL01 - " +
                                         "TIEMPO_PRESENTE_BT01: " + TIEMPO_PRESENTE_BT01.toString() + " | " +
                                         "TIEMPO_PASADO_BT01:" + TIEMPO_PASADO_BT01.toString());
+
                         STATUS_CONNECT_01 = btSocket01.Connect();
                         util.sleep(1000);
                     } else {
@@ -2080,6 +2103,7 @@ public class ActivityPrincipal extends Activity {
                                 "Conectando SERIAL02 - " +
                                         "TIEMPO_PRESENTE_BT02: " + TIEMPO_PRESENTE_BT02.toString() + " | " +
                                         "TIEMPO_PASADO_BT02:" + TIEMPO_PASADO_BT02.toString());
+
                         STATUS_CONNECT_02 = btSocket02.Connect();
                         util.sleep(1000);
                     } else {
