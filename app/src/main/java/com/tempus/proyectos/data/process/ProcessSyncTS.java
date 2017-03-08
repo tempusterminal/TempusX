@@ -102,6 +102,7 @@ public class ProcessSyncTS extends Thread{
                         Log.d("Autorizaciones","ProcessSyncTS.run Exception: " + e.toString());
                     }
                 }
+                // //////////////////////////////////
 
                 Thread.sleep(5000);
 

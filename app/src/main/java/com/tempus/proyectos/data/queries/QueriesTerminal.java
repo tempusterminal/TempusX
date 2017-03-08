@@ -128,6 +128,7 @@ public class QueriesTerminal {
         contentValues.put(TableTerminal.FechaHoraSinc,fechahora.getFechahora());
 
         while(ActivityPrincipal.controlFlagSyncAutorizaciones){
+            // //////////////////////////////////
 
         }
         try{

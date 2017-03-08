@@ -54,6 +54,7 @@ public class ConexionServidor {
         host = serviciosList.get(0).getHost();
 
         url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
+        // //////////////////////////////////
 
     }
 

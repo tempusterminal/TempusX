@@ -120,6 +120,7 @@ public class QueriesServicios {
                 serviciosList.add(servicios);
 
                 //Log.d("Autorizaciones",autorizaciones.toString());
+                // //////////////////////////////////
 
             }while (cursor.moveToNext());
         }

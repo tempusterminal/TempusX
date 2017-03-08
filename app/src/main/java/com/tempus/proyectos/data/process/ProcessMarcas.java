@@ -53,6 +53,7 @@ public class ProcessMarcas extends Thread{
             }
         }
 
+        // //////////////////////////////////
         //Log.d("Autorizaciones","Fin Hilo");
     }
 
