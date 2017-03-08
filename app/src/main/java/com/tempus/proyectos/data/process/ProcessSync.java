@@ -22,6 +22,7 @@ import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesEstados;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
 import com.tempus.proyectos.data.tables.TableEstados;
+import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 
 /**
@@ -303,31 +304,38 @@ public class ProcessSync {
 
     public void Process(Context context){
 
-        String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX,SYNC_TARJETA_PERSONAL_TIPOLECTORA_TX,SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
-        //String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX";
-        //String process = "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
-        String[] processarray = process.split(",");
+        if(ActivityPrincipal.ctrlThreadSyncAutorizacionesEnabled){
+            String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX,SYNC_TARJETA_PERSONAL_TIPOLECTORA_TX,SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
+            //String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX";
+            //String process = "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
+            String[] processarray = process.split(",");
 
-        Log.d("Autorizaciones", "processarray.length: " + String.valueOf(processarray.length) );
-        queriesLlamadas = new QueriesLlamadas(context);
+            //Log.d("Autorizaciones", "processarray.length: " + String.valueOf(processarray.length) );
+            queriesLlamadas = new QueriesLlamadas(context);
 
-        for(int i = 0; i < processarray.length; i++){
+            for(int i = 0; i < processarray.length; i++){
 
-            List<Llamadas> llamadasList = queriesLlamadas.select_one_row(processarray[i]);
+                List<Llamadas> llamadasList = queriesLlamadas.select_one_row(processarray[i]);
 
-            Log.d("Autorizaciones","llamadasList.size(): " + String.valueOf(llamadasList.size()));
-            for(int y = 0; y < llamadasList.size(); y++){
-                Log.d("Autorizaciones",llamadasList.get(y).toString());
-                try{
-                    Sync(llamadasList.get(y).getIdllamada(),llamadasList.get(y).getLlamada(),llamadasList.get(y).getParameters(),llamadasList.get(y).getTableName(),llamadasList.get(y).getPrimarykey(),llamadasList.get(y).getColumns(),context);
-                }catch(Exception e){
-                    Log.d("Autorizaciones","ProcessSync.Process Error: " + e.getMessage());
+                Log.d("Autorizaciones","llamadasList.size(): " + String.valueOf(llamadasList.size()));
+                for(int y = 0; y < llamadasList.size(); y++){
+                    Log.d("Autorizaciones",llamadasList.get(y).toString());
+
+                    ActivityPrincipal.controlFlagSyncAutorizaciones = true;
+
+                    try{
+                        if(ActivityPrincipal.controlFlagSyncAutorizaciones){
+                            Sync(llamadasList.get(y).getIdllamada(),llamadasList.get(y).getLlamada(),llamadasList.get(y).getParameters(),llamadasList.get(y).getTableName(),llamadasList.get(y).getPrimarykey(),llamadasList.get(y).getColumns(),context);
+                            ActivityPrincipal.controlFlagSyncAutorizaciones = false;
+                        }
+                        Thread.sleep(3000);
+                    }catch(Exception e){
+                        Log.d("Autorizaciones","ProcessSync.Process Error: " + e.getMessage());
+                    }
+
                 }
-
             }
-
         }
-
     }
 
 

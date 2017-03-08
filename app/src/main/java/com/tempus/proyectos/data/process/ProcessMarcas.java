@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
+import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 
 /**

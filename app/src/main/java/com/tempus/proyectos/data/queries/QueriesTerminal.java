@@ -14,6 +14,7 @@ import com.tempus.proyectos.data.Conexion;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Terminal;
 import com.tempus.proyectos.data.tables.TableTerminal;
+import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 
 /**
@@ -124,11 +125,21 @@ public class QueriesTerminal {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(TableTerminal.Idterminal,Idterminal);
+        contentValues.put(TableTerminal.FechaHoraSinc,fechahora.getFechahora());
 
+        while(ActivityPrincipal.controlFlagSyncAutorizaciones){
+
+        }
         try{
-            database.update(TableTerminal.TABLE_NAME,contentValues,null,null);
-            Log.v("TEMPUS: ","Idterminal Actualizado a " + Idterminal);
-            dbManager.all("0,1,0,0,0,0");
+            if(!ActivityPrincipal.controlFlagSyncAutorizaciones){
+                database.update(TableTerminal.TABLE_NAME,contentValues,null,null);
+                // Set idterminal con el nuevo Idterminal
+                ActivityPrincipal.idTerminal = Idterminal;
+                // Limpiar los registros de las tablas
+                dbManager.all("0,1,0,0,0,0");
+
+                Log.v("TEMPUS: ","Idterminal Actualizado a " + Idterminal);
+            }
             return 1;
         }catch(Exception e){
             Log.v("TEMPUS: ","QueriesTerminal.ActualizarIdterminal Error " + e.getMessage());

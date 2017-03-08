@@ -107,6 +107,11 @@ public class DBManager {
 
         String[] lotearray = lote.split(",");
 
+        DBManager dbManager = new DBManager(context);
+        if(dbManager.valexecSQL("SELECT COUNT(*) FROM TERMINAL").equals("0")){
+            dbManager.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES (0)");
+        }
+
         if(lotearray[0].equals("1")){
             // Crear la BD TEMPUSPLUS.db
             this.create();
