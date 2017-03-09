@@ -40,8 +40,6 @@ public class QueriesTerminalConfiguracion {
 
     public void insert(TerminalConfiguracion terminalConfiguracion){
 
-        conexion.onCreate(database);
-
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(TableTerminalConfiguracion.Idterminal, terminalConfiguracion.Idterminal);
@@ -114,6 +112,15 @@ public class QueriesTerminalConfiguracion {
 
         return count;
 
+    }
+
+    public void poblar(){
+        this.open();
+
+        database.execSQL("DELETE FROM TERMINAL_CONFIGURACION;");
+        database.execSQL("INSERT INTO TERMINAL_CONFIGURACION(IDTERMINAL,PARAMETRO) VALUES('0','ETHERNET,1');");
+
+        this.close();
     }
 
 

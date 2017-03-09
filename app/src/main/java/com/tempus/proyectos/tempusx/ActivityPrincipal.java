@@ -368,13 +368,13 @@ public class ActivityPrincipal extends Activity {
         //
         // threadControlSerial02.start();
 
-/*
+
         // Iniciar Rutinas en falso
         ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
         processSyncTS.start(this);
         ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
         processMarcas.start(this);
-        */
+
 
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
@@ -806,33 +806,9 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_PRESENTE_BT03 = new Date();
         TIEMPO_PASADO_BT03 = new Date();
 
-
-        // PRUEBA CROVISA 01
-
-        //MAC_BT_01 = "00:15:83:35:7A:E1";
-        //MAC_BT_02 = "20:16:08:10:64:80";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // PRUEBA CROVISA 02
-
-        MAC_BT_01 = "20:16:08:10:65:03";
-        MAC_BT_02 = "00:15:83:35:79:C9";
-        MAC_BT_03 = "00:00:00:00:00:00";
-
-
-
-        // DIRESA ID 100
-        //MAC_BT_01 = "20:16:08:10:42:38";
-        //MAC_BT_02 = "20:16:08:09:04:41";
-
-        // DIRESA ID 101
-        //MAC_BT_01 = "20:16:08:10:83:58";
-        //MAC_BT_02 = "20:16:08:10:60:73";
-
-
-        //CROVISA 101
-        //MAC_BT_01 = "00:15:83:35:79:C9";
-        //MAC_BT_02 = "20:16:08:10:65:03";
+        //CORPAC
+        MAC_BT_01 = "98:D3:32:20:5B:7E";
+        MAC_BT_02 = "98:D3:34:90:7D:C0";
 
 
 
@@ -1978,8 +1954,8 @@ public class ActivityPrincipal extends Activity {
             if (isBooting){ isBooting = false; ActivarOTG(btSocket01.getOutputStream());}
             Log.v(TAG,"SERIALES OK");
             ctrlThreadPantallaEnabled = true;
-            ctrlThreadSyncMarcasEnabled = false;
-            ctrlThreadSyncAutorizacionesEnabled = false;
+            ctrlThreadSyncMarcasEnabled = true;
+            ctrlThreadSyncAutorizacionesEnabled = true;
             ctrlThreadSerial01Enabled = true;
             ctrlThreadSerial02Enabled = true;
             ctrlThreadReplicadoEnabled = true;

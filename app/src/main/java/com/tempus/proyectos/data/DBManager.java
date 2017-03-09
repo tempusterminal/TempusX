@@ -18,6 +18,7 @@ import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
 import com.tempus.proyectos.data.queries.QueriesBiometrias;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
 import com.tempus.proyectos.data.queries.QueriesServicios;
+import com.tempus.proyectos.data.queries.QueriesTerminalConfiguracion;
 import com.tempus.proyectos.data.tables.TableEstados;
 
 public class DBManager {
@@ -153,6 +154,10 @@ public class DBManager {
             // Tabla Servicios para conectar a servidores externos
             QueriesServicios queriesServicios = new QueriesServicios(context);
             queriesServicios.poblar();
+
+            // Tabla TerminalConfiguracion
+            QueriesTerminalConfiguracion queriesTerminalConfiguracion = new QueriesTerminalConfiguracion(context);
+            queriesTerminalConfiguracion.poblar();
 
         }
         // //////////////////////////////////
