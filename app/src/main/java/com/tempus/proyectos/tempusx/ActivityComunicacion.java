@@ -43,6 +43,7 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
@@ -192,8 +193,10 @@ public class ActivityComunicacion extends Activity {
 
         if (connectivity.existSIM(ActivityComunicacion.this)){
             txvIndicador.setText("SIM INSERTADA");
+            swtStatusPpp0.setChecked(true);
         } else {
             txvIndicador.setText("SIM NO INSERTADA");
+            swtStatusPpp0.setChecked(false);
         }
 
 
@@ -287,6 +290,20 @@ public class ActivityComunicacion extends Activity {
                         scanWifiToListView();
                     }
                 });
+            }
+        });
+
+        swtStatusEth0.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                if (isChecked) {
+                    DBManager db = new DBManager(ActivityPrincipal.context);
+                    db.execSQL("UPDATE TERMINAL_CONFIGURACION SET PARAMETRO = 'Ethernet,1'");
+                } else {
+                    DBManager db = new DBManager(ActivityPrincipal.context);
+                    db.execSQL("UPDATE TERMINAL_CONFIGURACION SET PARAMETRO = 'Ethernet,0'");
+                }
             }
         });
 
@@ -472,8 +489,8 @@ public class ActivityComunicacion extends Activity {
                     e.printStackTrace();
                 }
 
-                String params1[] = {"su","-c","busybox","ifconfig","down"};
-                String params2[] = {"su","-c","busybox","ifconfig","up"};
+                String params1[] = {"su","-c","ifconfig","down"};
+                String params2[] = {"su","-c","ifconfig","up"};
 
                 Shell sh = new Shell();
                 sh.exec(params1);
@@ -551,7 +568,7 @@ public class ActivityComunicacion extends Activity {
 
 
         Shell sh = new Shell();
-        String params[] = {"su","-c","busybox","ifconfig"};
+        String params[] = {"su","-c","ifconfig"};
         String cadena = sh.exec(params);
 
         checkEthernetConfig(cadena);
@@ -569,7 +586,7 @@ public class ActivityComunicacion extends Activity {
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.v(TAG, "RECIBIENDO DATA ... ");
+            //Log.v(TAG, "RECIBIENDO DATA ... ");
             scanWifiToListView();
         }
     };
@@ -603,13 +620,13 @@ public class ActivityComunicacion extends Activity {
 
         results = wifi.getScanResults();
         size = results.size();
-        Log.v(TAG, String.valueOf(results));
+        //Log.v(TAG, String.valueOf(results));
         arraylist.clear();
         wifi.startScan();
 
         if (wifi.isWifiEnabled() ) {
             try {
-                Log.v(TAG, "---------------------------------------------------------------------------->");
+                //Log.v(TAG, "---------------------------------------------------------------------------->");
                 for (int i = 0; i < size; i++) {
                     HashMap<String, String> item = new HashMap<String, String>();
                     item.put(ITEM_KEY, results.get(i).SSID);
@@ -711,7 +728,7 @@ public class ActivityComunicacion extends Activity {
             s_serverAddress=String.valueOf(intToIp(dinfo.serverAddress));
 
             Shell sh = new Shell();
-            String params[] = {"su", "-c", "busybox", "ifconfig"};
+            String params[] = {"su", "-c", "ifconfig"};
             String data = sh.exec(params);
             //Log.v(TAG,"checkDataWifiConnection: " + data);
 
@@ -967,8 +984,25 @@ public class ActivityComunicacion extends Activity {
     }
 
     public void checkEthernetConfig(String cadena) {
-        String salida = cadena;
 
+        try {
+            DBManager db = new DBManager(ActivityPrincipal.context);
+            String resultado = db.valexecSQL("SELECT PARAMETRO FROM TERMINAL_CONFIGURACION");
+            Log.wtf("VAL EXEC DB",resultado);
+            String valor = resultado.split(",")[1];
+            Log.wtf("VAL EXEC DB valor",valor);
+            if (valor.equalsIgnoreCase("1")){
+                swtStatusEth0.setChecked(true);
+            } else {
+                swtStatusEth0.setChecked(false);
+            }
+        } catch(Exception e){
+            Log.wtf("ERROR CHECKETHERNET_DB",e.getMessage());
+        }
+
+
+
+        String salida = cadena;
         try {
             String tmp[] = {"-","-","-","-"};
             String salidaArray[] = salida.split("\n");

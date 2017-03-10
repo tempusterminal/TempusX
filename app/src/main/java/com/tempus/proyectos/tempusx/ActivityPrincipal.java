@@ -1,7 +1,11 @@
 package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -41,6 +45,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ActivityPrincipal extends Activity {
@@ -49,6 +54,8 @@ public class ActivityPrincipal extends Activity {
     /* Variables Globales */
 
     String TAG = "TX-PTX-CAP";
+
+    int c = 100;
 
     boolean MODO_EVENTO = false;
 
@@ -97,6 +104,7 @@ public class ActivityPrincipal extends Activity {
 
     /* --- ACCESO ESTÁTICO --- */
 
+    public static boolean activo;
     public static Context context;
     public static boolean controlFlagSyncAutorizaciones;
 
@@ -239,450 +247,510 @@ public class ActivityPrincipal extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
-        // Inicialización nivel cero
+        //if(savedInstanceState == null && (btSocket01 == null || btSocket02 == null)){
 
-        activityActive = "Principal";
-        context = getApplicationContext();
-
-        Thread.setDefaultUncaughtExceptionHandler(new TXExceptionHandler(this));
-
-        if (getIntent().getBooleanExtra("crash", false)) {
-            Toast.makeText(this, "Restarting app after crash ... ", Toast.LENGTH_SHORT).show();
+        /*
+        if(activo == true) {
+            finish();
         }
 
+        activo = true;
+        */
 
-        // Inicializacion de componentes
-
-        txvFondoInicial = (TextView) findViewById(R.id.txvFondoInicial);
-        txvTextoInicial = (TextView) findViewById(R.id.txvTextoInicial);
-        pbrCargaInicial = (ProgressBar) findViewById(R.id.pbrCargaInicial);
-
-        txvMarcacionFondo = (TextView) findViewById(R.id.txvMarcacionFondo);
-        txvMarcacionNombre = (TextView) findViewById(R.id.txvMarcacionNombre);
-        txvMarcacionTarjeta = (TextView) findViewById(R.id.txvMarcacionTarjeta);
-        txvMarcacionMsjPrincipal = (TextView) findViewById(R.id.txvMarcacionMsjPrincipal);
-        txvMarcacionMsjSecundario = (TextView) findViewById(R.id.txvMarcacionMsjSecundario);
-
-        btnMaster = (ImageView) findViewById(R.id.btnMaster);
-
-        btnAccess1 = (Button) findViewById(R.id.btnAccess1);
-        btnAccess2 = (Button) findViewById(R.id.btnAccess2);
-        btnAccess3 = (Button) findViewById(R.id.btnAccess3);
-        btnAccess4 = (Button) findViewById(R.id.btnAccess4);
-
-        buttonWarning01 = (Button) findViewById(R.id.buttonWarning01);
-        buttonWarning02 = (Button) findViewById(R.id.buttonWarning02);
-        buttonWarning03 = (Button) findViewById(R.id.buttonWarning03);
-        buttonWarningHelp = (Button) findViewById(R.id.buttonWarningHelp);
-
-        txvMensajePantalla = (TextView) findViewById(R.id.txvMensajePantalla);
-
-        btnEvent01 = (Button) findViewById(R.id.btnEvent01);
-        btnEvent02 = (Button) findViewById(R.id.btnEvent02);
-        btnEvent03 = (Button) findViewById(R.id.btnEvent03);
-        btnEvent04 = (Button) findViewById(R.id.btnEvent04);
-        btnEvent05 = (Button) findViewById(R.id.btnEvent05);
-        btnEvent06 = (Button) findViewById(R.id.btnEvent06);
-        btnEvent07 = (Button) findViewById(R.id.btnEvent07);
-        btnEvent08 = (Button) findViewById(R.id.btnEvent08);
-
-        btnAccessKey = (ImageButton) findViewById(R.id.btnAccessKey);
-
-        txvKeyFondo = (TextView) findViewById(R.id.txvKeyFondo);
-        txvKeyPantalla = (TextView) findViewById(R.id.txvKeyPantalla);
-        btnKey0 = (Button) findViewById(R.id.btnKey0);
-        btnKey1 = (Button) findViewById(R.id.btnKey1);
-        btnKey2 = (Button) findViewById(R.id.btnKey2);
-        btnKey3 = (Button) findViewById(R.id.btnKey3);
-        btnKey4 = (Button) findViewById(R.id.btnKey4);
-        btnKey5 = (Button) findViewById(R.id.btnKey5);
-        btnKey6 = (Button) findViewById(R.id.btnKey6);
-        btnKey7 = (Button) findViewById(R.id.btnKey7);
-        btnKey8 = (Button) findViewById(R.id.btnKey8);
-        btnKey9 = (Button) findViewById(R.id.btnKey9);
-        btnKeyBorrar = (Button) findViewById(R.id.btnKeyBorrar);
-        btnKeyIntro = (Button) findViewById(R.id.btnKeyIntro);
-
-        txvIdterminal = (TextView) findViewById(R.id.txvIdterminal);
-
-        // Objetos
-        tiempoPresente = new Date();
-        tiempoPasado = new Date();
-
-        tiempoPresentePatron = new Date();
-        tiempoPasadoPatron = new Date();
-
-        ui = new UserInterfaceM();
-        util = new Utilities();
-        fechahora = new Fechahora();
-
-        dbManager = new DBManager(this);
-        queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this);
-
-        // Iniciar UI
-        ui.initScreen(this);
-
-        // Administramos UI
-        manageLayerMarcacion(false);        // Ocultar Layer de Marcación
-        manageAccessButtons(false);         // Ocultar Botones de Acceso
-        manageEventMode( MODO_EVENTO );     // Ocultar modo Evento
-        manageKeyboard(false);              // Ocultar teclado
-
-        //restartBluetooth();
-
-        showMsgBoot(true,"Iniciando sistema, por favor espere ...");    // Bloquear pantalla hasta conectar
-
-        buttonWarning01.setVisibility(View.INVISIBLE);
-        buttonWarning02.setVisibility(View.INVISIBLE);
-        buttonWarning03.setVisibility(View.INVISIBLE);
-        buttonWarningHelp.setVisibility(View.INVISIBLE);
-
-        areaMarcaEnabled = false;
-        areaAccessEnabled = false;
-
-        // Creacion de BD
-        //crearBD();
-
-        // Cargar Datos
-        cargarDatosIniciales();
-
-        // Seriales
-        iniciarParametrosSeriales();
-        //
-
-        btSocket01 = new BluetoothSuperAdmin(MAC_BT_01);
-        btSocket02 = new BluetoothSuperAdmin(MAC_BT_02);
+            //boolean b = isForeground("com.tempus.proyectos.tempusx");
+            //Log.wtf("INITEMPUS", String.valueOf(b));
 
 
-        threadControlSerial01.start();
-        threadControlSerial02.start();
+            int id = android.os.Process.myPid();
+            Log.wtf("PID_ACTIVITIE", String.valueOf(id));
 
-        conectarSeriales();
-        threadControlPrincipal.start();
-        threadControlPantalla.start();
-        threadReplicado.start();
+            if (btSocket01 != null || btSocket02 != null) {
+                Log.wtf("OBJ_STATUS", "EXISTE");
+                //Intent intent = getIntent();
+                //finish();
+                //try {
+                //    Thread.sleep(1000);
+                //} catch (InterruptedException e) {
+                //    e.printStackTrace();
+                //}
+                //startActivity(intent);
+            } else {
+                Log.wtf("OBJ_STATUS", "NO EXISTE");
+            }
 
 
-        //
-        // threadControlSerial01.start();
-        //
-        // threadControlSerial02.start();
+            // Inicialización nivel cero
+
+            activityActive = "Principal";
+            context = getApplicationContext();
+
+            Thread.setDefaultUncaughtExceptionHandler(new TXExceptionHandler(this));
+
+            if (getIntent().getBooleanExtra("crash", false)) {
+                Toast.makeText(this, "Restarting app after crash ... ", Toast.LENGTH_SHORT).show();
+            }
 
 
+            // Inicializacion de componentes
+
+            txvFondoInicial = (TextView) findViewById(R.id.txvFondoInicial);
+            txvTextoInicial = (TextView) findViewById(R.id.txvTextoInicial);
+            pbrCargaInicial = (ProgressBar) findViewById(R.id.pbrCargaInicial);
+
+            txvMarcacionFondo = (TextView) findViewById(R.id.txvMarcacionFondo);
+            txvMarcacionNombre = (TextView) findViewById(R.id.txvMarcacionNombre);
+            txvMarcacionTarjeta = (TextView) findViewById(R.id.txvMarcacionTarjeta);
+            txvMarcacionMsjPrincipal = (TextView) findViewById(R.id.txvMarcacionMsjPrincipal);
+            txvMarcacionMsjSecundario = (TextView) findViewById(R.id.txvMarcacionMsjSecundario);
+
+            btnMaster = (ImageView) findViewById(R.id.btnMaster);
+
+            btnAccess1 = (Button) findViewById(R.id.btnAccess1);
+            btnAccess2 = (Button) findViewById(R.id.btnAccess2);
+            btnAccess3 = (Button) findViewById(R.id.btnAccess3);
+            btnAccess4 = (Button) findViewById(R.id.btnAccess4);
+
+            buttonWarning01 = (Button) findViewById(R.id.buttonWarning01);
+            buttonWarning02 = (Button) findViewById(R.id.buttonWarning02);
+            buttonWarning03 = (Button) findViewById(R.id.buttonWarning03);
+            buttonWarningHelp = (Button) findViewById(R.id.buttonWarningHelp);
+
+            txvMensajePantalla = (TextView) findViewById(R.id.txvMensajePantalla);
+
+            btnEvent01 = (Button) findViewById(R.id.btnEvent01);
+            btnEvent02 = (Button) findViewById(R.id.btnEvent02);
+            btnEvent03 = (Button) findViewById(R.id.btnEvent03);
+            btnEvent04 = (Button) findViewById(R.id.btnEvent04);
+            btnEvent05 = (Button) findViewById(R.id.btnEvent05);
+            btnEvent06 = (Button) findViewById(R.id.btnEvent06);
+            btnEvent07 = (Button) findViewById(R.id.btnEvent07);
+            btnEvent08 = (Button) findViewById(R.id.btnEvent08);
+
+            btnAccessKey = (ImageButton) findViewById(R.id.btnAccessKey);
+
+            txvKeyFondo = (TextView) findViewById(R.id.txvKeyFondo);
+            txvKeyPantalla = (TextView) findViewById(R.id.txvKeyPantalla);
+            btnKey0 = (Button) findViewById(R.id.btnKey0);
+            btnKey1 = (Button) findViewById(R.id.btnKey1);
+            btnKey2 = (Button) findViewById(R.id.btnKey2);
+            btnKey3 = (Button) findViewById(R.id.btnKey3);
+            btnKey4 = (Button) findViewById(R.id.btnKey4);
+            btnKey5 = (Button) findViewById(R.id.btnKey5);
+            btnKey6 = (Button) findViewById(R.id.btnKey6);
+            btnKey7 = (Button) findViewById(R.id.btnKey7);
+            btnKey8 = (Button) findViewById(R.id.btnKey8);
+            btnKey9 = (Button) findViewById(R.id.btnKey9);
+            btnKeyBorrar = (Button) findViewById(R.id.btnKeyBorrar);
+            btnKeyIntro = (Button) findViewById(R.id.btnKeyIntro);
+
+            txvIdterminal = (TextView) findViewById(R.id.txvIdterminal);
+
+            // Objetos
+            tiempoPresente = new Date();
+            tiempoPasado = new Date();
+
+            tiempoPresentePatron = new Date();
+            tiempoPasadoPatron = new Date();
+
+            ui = new UserInterfaceM();
+            util = new Utilities();
+            fechahora = new Fechahora();
+
+            dbManager = new DBManager(this);
+            queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this);
+
+            // Iniciar UI
+            ui.initScreen(this);
+
+            // Administramos UI
+            manageLayerMarcacion(false);        // Ocultar Layer de Marcación
+            manageAccessButtons(false);         // Ocultar Botones de Acceso
+            manageEventMode(MODO_EVENTO);     // Ocultar modo Evento
+            manageKeyboard(false);              // Ocultar teclado
+
+            //restartBluetooth();
+
+            showMsgBoot(true, "Iniciando sistema, por favor espere ...");    // Bloquear pantalla hasta conectar
+
+            buttonWarning01.setVisibility(View.INVISIBLE);
+            buttonWarning02.setVisibility(View.INVISIBLE);
+            buttonWarning03.setVisibility(View.INVISIBLE);
+            buttonWarningHelp.setVisibility(View.INVISIBLE);
+
+            areaMarcaEnabled = false;
+            areaAccessEnabled = false;
+
+            // Creacion de BD
+            //crearBD();
+
+            // Cargar Datos
+            cargarDatosIniciales();
+
+            // Seriales
+            iniciarParametrosSeriales();
+            //
+
+            //Restart Bluetooth
+            //restartBluetooth();
+            //util.sleep(1000);
+
+            btSocket01 = new BluetoothSuperAdmin(MAC_BT_01);
+            btSocket02 = new BluetoothSuperAdmin(MAC_BT_02);
+
+
+            threadControlSerial01.start();
+            threadControlSerial02.start();
+
+            conectarSeriales();
+            threadControlPrincipal.start();
+            threadControlPantalla.start();
+            threadReplicado.start();
+
+
+            //
+            // threadControlSerial01.start();
+            //
+            // threadControlSerial02.start();
+
+/*
         // Iniciar Rutinas en falso
         ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
         processSyncTS.start(this);
         ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
         processMarcas.start(this);
+        */
 
+            checkETH0.start();
 
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
 
-        // Boton Master (Logo)
-        btnMaster.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                if(areaAccessEnabled) {
-                    patronAcceso = "";
-                    areaAccessEnabled = false;
-                    manageAccessButtons(false);
+            // Boton Master (Logo)
+            btnMaster.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if (areaAccessEnabled) {
+                        patronAcceso = "";
+                        areaAccessEnabled = false;
+                        manageAccessButtons(false);
 
-                    if (MODO_EVENTO){
-                        txvMensajePantalla.setText("SELECCIONE EVENTO");
-                    } else {
-                        txvMensajePantalla.setText("PASE SU TARJETA");
-                    }
-
-                    MODO_PATRON = false;
-
-                } else {
-                    patronAcceso = "";
-                    areaAccessEnabled = true;
-                    manageAccessButtons(true);
-
-                    if (MODO_EVENTO) {
-                        actualizarFlag(null,null);
-                    }
-
-                    txvMensajePantalla.setText("");
-
-                    //Date date = new Date();
-                    //tiempoPasado = date;
-
-                    MODO_PATRON = true;
-
-                }
-            }
-        });
-
-
-        // Boton Acceso Patron 1
-        btnAccess1.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                AccessManager("1");
-            }
-        });
-
-        // Boton Acceso Patron 2
-        btnAccess2.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                AccessManager("2");
-            }
-        });
-
-        // Boton Acceso Patron 3
-        btnAccess3.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                AccessManager("3");
-            }
-        });
-
-        // Boton Acceso Patron 4
-        btnAccess4.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                AccessManager("4");
-            }
-        });
-
-        // Boton Evento 01
-        btnEvent01.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = "001";
-                Log.v(TAG,"Flg_Actividad: " + flag);
-                txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                actualizarFlag("001",btnEvent01);
-                Date date = new Date();
-                tiempoPasado = date;
-            }
-        });
-
-        // Boton Evento 02
-        btnEvent02.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = "009";
-                Log.v(TAG,"Flg_Actividad: " + flag);
-                txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                actualizarFlag("009",btnEvent02);
-                Date date = new Date();
-                tiempoPasado = date;
-            }
-        });
-
-        // Boton Evento 03
-        btnEvent03.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = "3";
-            }
-        });
-
-        // Boton Evento 04
-        btnEvent04.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = "4";
-            }
-        });
-
-        // Boton Evento 05
-        btnEvent05.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = "5";
-            }
-        });
-
-        // Boton Evento 06
-        btnEvent06.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = "6";
-            }
-        });
-
-        // Boton Evento 07
-        btnEvent07.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = "7";
-            }
-        });
-
-        // Boton Evento 08
-        btnEvent08.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                flag = "8";
-            }
-        });
-
-        // Boton de Acceso a teclado
-        btnAccessKey.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(flag == null || flag == ""){
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                ui.showAlert(ActivityPrincipal.this,"warning","   DEBE SELECCIONAR UN EVENTO   ");
-                            } catch(Exception e) {
-                                Toast.makeText(ActivityPrincipal.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
+                        if (MODO_EVENTO) {
+                            txvMensajePantalla.setText("SELECCIONE EVENTO");
+                        } else {
+                            txvMensajePantalla.setText("PASE SU TARJETA");
                         }
-                    });
-                }else{
-                    if (visibleKey) {
-                        manageKeyboard(false);
+
+                        MODO_PATRON = false;
 
                     } else {
-                        manageKeyboard(true);
+                        patronAcceso = "";
+                        areaAccessEnabled = true;
+                        manageAccessButtons(true);
+
+                        if (MODO_EVENTO) {
+                            actualizarFlag(null, null);
+                        }
+
+                        txvMensajePantalla.setText("");
+
+                        //Date date = new Date();
+                        //tiempoPasado = date;
+
+                        MODO_PATRON = true;
+
                     }
                 }
+            });
 
+
+            // Boton Acceso Patron 1
+            btnAccess1.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    AccessManager("1");
+                }
+            });
+
+            // Boton Acceso Patron 2
+            btnAccess2.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    AccessManager("2");
+                }
+            });
+
+            // Boton Acceso Patron 3
+            btnAccess3.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    AccessManager("3");
+                }
+            });
+
+            // Boton Acceso Patron 4
+            btnAccess4.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    AccessManager("4");
+                }
+            });
+
+            // Boton Evento 01
+            btnEvent01.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    flag = "001";
+                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    txvMensajePantalla.setText("PASE SU TARJ/BIOM");
+                    actualizarFlag("001", btnEvent01);
+                    Date date = new Date();
+                    tiempoPasado = date;
+                }
+            });
+
+            // Boton Evento 02
+            btnEvent02.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    flag = "009";
+                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    txvMensajePantalla.setText("PASE SU TARJ/BIOM");
+                    actualizarFlag("009", btnEvent02);
+                    Date date = new Date();
+                    tiempoPasado = date;
+                }
+            });
+
+            // Boton Evento 03
+            btnEvent03.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    flag = "3";
+                }
+            });
+
+            // Boton Evento 04
+            btnEvent04.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    flag = "4";
+                }
+            });
+
+            // Boton Evento 05
+            btnEvent05.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    flag = "5";
+                }
+            });
+
+            // Boton Evento 06
+            btnEvent06.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    flag = "6";
+                }
+            });
+
+            // Boton Evento 07
+            btnEvent07.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    flag = "7";
+                }
+            });
+
+            // Boton Evento 08
+            btnEvent08.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    flag = "8";
+                }
+            });
+
+            // Boton de Acceso a teclado
+            btnAccessKey.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (flag == null || flag == "") {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    ui.showAlert(ActivityPrincipal.this, "warning", "   DEBE SELECCIONAR UN EVENTO   ");
+                                } catch (Exception e) {
+                                    Toast.makeText(ActivityPrincipal.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+                    } else {
+                        if (visibleKey) {
+                            manageKeyboard(false);
+
+                        } else {
+                            manageKeyboard(true);
+                        }
+                    }
+
+                }
+            });
+
+            // Boton Teclado 1
+            btnKey1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("1");
+                }
+            });
+
+            // Boton Teclado 2
+            btnKey2.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("2");
+                }
+            });
+
+            // Boton Teclado 3
+            btnKey3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("3");
+                }
+            });
+
+            // Boton Teclado 4
+            btnKey4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("4");
+                }
+            });
+
+            // Boton Teclado 5
+            btnKey5.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("5");
+                }
+            });
+
+            // Boton Teclado 6
+            btnKey6.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("6");
+                }
+            });
+
+            // Boton Teclado 7
+            btnKey7.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("7");
+                }
+            });
+
+            // Boton Teclado 8
+            btnKey8.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("8");
+                }
+            });
+
+            // Boton Teclado 9
+            btnKey9.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("9");
+                }
+            });
+
+            // Boton Teclado 0
+            btnKey0.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("0");
+                }
+            });
+
+            // Boton Teclado Intro
+            btnKeyIntro.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("Intro");
+                }
+            });
+
+            // Boton Teclado Borrar
+            btnKeyBorrar.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    keyboard("Borrar");
+                }
+            });
+
+            // Boton Intentar Otra Vez
+            buttonWarning01.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    restartBluetooth();
+
+                    Date date = new Date();
+
+                    TIEMPO_PRESENTE_BT01 = date;
+                    TIEMPO_PASADO_BT01 = date;
+                    TIEMPO_PRESENTE_BT02 = date;
+                    TIEMPO_PASADO_BT02 = date;
+                    TIEMPO_PRESENTE_BT03 = date;
+                    TIEMPO_PASADO_BT03 = date;
+
+                    HARD_FAIL_01 = false;
+                    HARD_FAIL_02 = false;
+                    HARD_FAIL_03 = false;
+
+                    STATUS_CONNECT_01 = false;
+                    STATUS_CONNECT_02 = false;
+                    STATUS_CONNECT_03 = false;
+
+                    buttonWarning01.setVisibility(View.INVISIBLE);
+                    buttonWarning02.setVisibility(View.INVISIBLE);
+
+                }
+            });
+
+            // Boton Reiniciar Terminal
+            buttonWarning02.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    reboot();
+                }
+            });
+
+        //} else {
+        //    Log.wtf("PID WTF","FINALIZANDOOOOO");
+
+            //System.exit(0);
+
+            //this.recreate();
+            /*
+            try {
+                Log.wtf("XD01","INICIO XD");
+                Intent homeIntent = getPackageManager().getLaunchIntentForPackage("com.tempus.proyectos.tempusx");
+                homeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                startActivity(homeIntent);
+                Log.wtf("XD02","FIN XD");
+            } catch (Exception e){
+                Log.wtf("XD03","ERROR XD " + e.getMessage());
             }
-        });
-
-        // Boton Teclado 1
-        btnKey1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("1");
-            }
-        });
-
-        // Boton Teclado 2
-        btnKey2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("2");
-            }
-        });
-
-        // Boton Teclado 3
-        btnKey3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("3");
-            }
-        });
-
-        // Boton Teclado 4
-        btnKey4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("4");
-            }
-        });
-
-        // Boton Teclado 5
-        btnKey5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("5");
-            }
-        });
-
-        // Boton Teclado 6
-        btnKey6.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("6");
-            }
-        });
-
-        // Boton Teclado 7
-        btnKey7.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("7");
-            }
-        });
-
-        // Boton Teclado 8
-        btnKey8.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("8");
-            }
-        });
-
-        // Boton Teclado 9
-        btnKey9.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("9");
-            }
-        });
-
-        // Boton Teclado 0
-        btnKey0.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("0");
-            }
-        });
-
-        // Boton Teclado Intro
-        btnKeyIntro.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("Intro");
-            }
-        });
-
-        // Boton Teclado Borrar
-        btnKeyBorrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                keyboard("Borrar");
-            }
-        });
-
-        // Boton Intentar Otra Vez
-        buttonWarning01.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                restartBluetooth();
-
-                Date date = new Date();
-
-                TIEMPO_PRESENTE_BT01 = date;
-                TIEMPO_PASADO_BT01 = date;
-                TIEMPO_PRESENTE_BT02 = date;
-                TIEMPO_PASADO_BT02 = date;
-                TIEMPO_PRESENTE_BT03 = date;
-                TIEMPO_PASADO_BT03 = date;
-
-                HARD_FAIL_01 = false;
-                HARD_FAIL_02 = false;
-                HARD_FAIL_03 = false;
-
-                STATUS_CONNECT_01 = false;
-                STATUS_CONNECT_02 = false;
-                STATUS_CONNECT_03 = false;
-
-                buttonWarning01.setVisibility(View.INVISIBLE);
-                buttonWarning02.setVisibility(View.INVISIBLE);
-
-            }
-        });
-
-        // Boton Reiniciar Terminal
-        buttonWarning02.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reboot();
-            }
-        });
-
-
+            */
+        //}
     }
 
-
+    public boolean isForeground(String myPackage) {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
+        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
+        return componentInfo.getPackageName().equals(myPackage);
+    }
 
 
 
@@ -700,6 +768,7 @@ public class ActivityPrincipal extends Activity {
         }
 
     }
+
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -806,9 +875,33 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_PRESENTE_BT03 = new Date();
         TIEMPO_PASADO_BT03 = new Date();
 
-        //CORPAC
-        MAC_BT_01 = "98:D3:32:20:5B:7E";
-        MAC_BT_02 = "98:D3:34:90:7D:C0";
+
+        // PRUEBA CROVISA 01
+
+        //MAC_BT_01 = "00:15:83:35:7A:E1";
+        //MAC_BT_02 = "20:16:08:10:64:80";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // PRUEBA CROVISA 02
+
+        MAC_BT_01 = "20:16:08:10:65:03";
+        MAC_BT_02 = "00:15:83:35:79:C9";
+        MAC_BT_03 = "00:00:00:00:00:00";
+
+
+
+        // DIRESA ID 100
+        //MAC_BT_01 = "20:16:08:10:42:38";
+        //MAC_BT_02 = "20:16:08:09:04:41";
+
+        // DIRESA ID 101
+        //MAC_BT_01 = "20:16:08:10:83:58";
+        //MAC_BT_02 = "20:16:08:10:60:73";
+
+
+        //CROVISA 101
+        //MAC_BT_01 = "00:15:83:35:79:C9";
+        //MAC_BT_02 = "20:16:08:10:65:03";
 
 
 
@@ -1206,10 +1299,16 @@ public class ActivityPrincipal extends Activity {
         }
     }
 
-    public void ActivarOTG(OutputStream out) {
-        Log.v(TAG, "ActivarOTG");
+    public void AdministrarOTG(OutputStream out, String parametro) {
+        String p = "30";
+        if (parametro.equalsIgnoreCase("1")){
+            p = "31";
+        }
+
+
+        Log.v(TAG, "AdministrarOTG");
         try {
-            out.write(util.hexStringToByteArray("244F4158410013423131313131313131000041"));
+            out.write(util.hexStringToByteArray("244F41584100134231313131"+p+"313131000041"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -1950,8 +2049,18 @@ public class ActivityPrincipal extends Activity {
     /* --- CONTROL PRINCIPAL --- */
     public void controlGeneral(boolean c1,boolean c2, boolean c3) {
 
+        Log.v(TAG,"CONTROL GENERAL");
+
         if (c1 && c2 && c3){ // Si todos los seriales estan conectados podemos hacer algo
-            if (isBooting){ isBooting = false; ActivarOTG(btSocket01.getOutputStream());}
+            if (isBooting){
+                isBooting = false;
+                //util.sleep(1000);
+                //try {
+                //    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
+                //} catch(Exception e) {
+                //    Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
+                //}
+            }
             Log.v(TAG,"SERIALES OK");
             ctrlThreadPantallaEnabled = true;
             ctrlThreadSyncMarcasEnabled = true;
@@ -1962,9 +2071,7 @@ public class ActivityPrincipal extends Activity {
             showMsgBoot(false,"");
             buttonWarning01.setVisibility(View.INVISIBLE);
             buttonWarning02.setVisibility(View.INVISIBLE);
-            /*
-            ActivarOTG(btSocket01.getOutputStream());
-            */
+
         } else {
             Log.v(TAG,"SERIALES KO");
 
@@ -1989,22 +2096,58 @@ public class ActivityPrincipal extends Activity {
 
                     // Emitimos alerta de energia
 
-                    detail = detail + "\nNO CONECTADO A ENERGÍA";
-                    showMsgBoot(true,"Energia desconectada\nApagando Equipo");
-                    Intent i = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
-                    i.putExtra("android.intent.extra.KEY_CONFIRM", true);
-                    startActivity(i);
+                    //detail = detail + "\nNO CONECTADO A ENERGÍA";
+                    showMsgBoot(true,"Apagando Equipo en 15 segundos ... espere ...");
 
-                    /*
-                    try {
-                        Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
-                        proc.waitFor();
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                     */
+                    c = 15;
+
+                    Thread threadShutdown = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                            util.sleep(15000);
+
+                            try {
+                                Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
+                                proc.waitFor();
+                            } catch (Exception e) {
+                                Log.wtf("WTF",e.getMessage());
+                            }
+
+                            /*
+                            while(true){
+                                if (c <= 0){
+                                    c = 0;
+                                    try {
+                                        Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
+                                        proc.waitFor();
+                                    } catch (Exception e) {
+                                        Log.wtf("WTF",e.getMessage());
+                                    }
+                                    util.sleep(2000);
+                                } else {
+                                    c = c-1;
+                                    runOnUiThread(new Runnable() { // Cruce con hilo padre WTF
+                                        @Override
+                                        public void run() {
+                                            showMsgBoot(true,"Apagando Equipo en "+String.valueOf(c)+" segundos ...");
+                                        }
+                                    });
+                                    util.sleep(1000);
+                                }
+                            }
+                            */
+                        }
+                    });
+
+                    threadShutdown.start();
+
+                } else {
+                    c = 100;
+                    detail = detail + "\n... ";
+                    showMsgBoot(true,"Reconectando Interfaces \n"+detail+"]");
                 }
-                showMsgBoot(true,"Reconectando Interfaces \n"+detail+"]");
+
             }
 
         }
@@ -2305,6 +2448,34 @@ public class ActivityPrincipal extends Activity {
                     */
                 }
                 util.sleep(1000);
+            }
+        }
+    });
+
+
+    Thread checkETH0 = new Thread(new Runnable() {
+        @Override
+        public void run() {
+
+            util.sleep(120000); // 1 min
+
+            while (true){
+                DBManager db = new DBManager(ActivityPrincipal.context);
+                String resultado = db.valexecSQL("SELECT PARAMETRO FROM TERMINAL_CONFIGURACION");
+                String valor = resultado.split(",")[1];
+
+                if (valor.equalsIgnoreCase("1")){
+                    // levantamos ethernet
+                    AdministrarOTG(btSocket01.getOutputStream(),"1");
+                    util.sleep(600000); // 10min
+                    AdministrarOTG(btSocket01.getOutputStream(),"0");
+                    util.sleep(600000); // 10min
+                } else {
+                    // apagamos ethernet
+                    AdministrarOTG(btSocket01.getOutputStream(),"0");
+                    util.sleep(600000); // 10min
+                }
+
             }
         }
     });

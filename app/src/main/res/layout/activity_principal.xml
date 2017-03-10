@@ -521,7 +521,7 @@
         android:layout_height="40dp"
         android:layout_alignParentTop="true"
         android:layout_marginTop="240dp"
-        android:layout_marginLeft="325dp"
+        android:layout_marginLeft="385dp"
         android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/buttonWarning02" />
 

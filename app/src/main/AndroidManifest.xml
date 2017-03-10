@@ -21,10 +21,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
     <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
+    <uses-permission android:name="android.permission.SHUTDOWN"/>
 
-
-    <uses-feature android:name="android.hardware.camera"
-        android:required="true" />
 
     <application
         android:label="tempusX"
@@ -34,6 +32,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ActivityPrincipal"
+            android:launchMode="singleTask"
+            android:alwaysRetainTaskState="true"
             android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -265,8 +265,8 @@
     <Button
         android:text="Actualizar"
         android:layout_width="100dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="60dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="54dp"
         android:layout_marginLeft="400dp"
         android:textSize="15sp"
         android:id="@+id/btnActualizarID" />

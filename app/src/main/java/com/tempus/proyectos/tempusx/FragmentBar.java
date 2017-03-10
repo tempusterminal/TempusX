@@ -126,12 +126,16 @@ public class FragmentBar extends Fragment {
                 int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
                 rIsCharging = status == BatteryManager.BATTERY_STATUS_CHARGING ||
                         status == BatteryManager.BATTERY_STATUS_FULL;
-
-                ActivityPrincipal.isCharging = rIsCharging;
-
                 int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
                 rUSBCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
                 rACCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
+
+                if (rIsCharging || rUSBCharge) {
+                    ActivityPrincipal.isCharging = true;
+                } else {
+                    ActivityPrincipal.isCharging = false;
+                }
+
             } catch(Exception e) {
                 Log.e("BroadcastReceiver","Bateria Error: "+e.getMessage());
             }
@@ -169,14 +173,14 @@ public class FragmentBar extends Fragment {
 
     public void fnBatteryManager(){
 
-        //Log.v("LOG APP: ",rBatteryTemp +"-"+ rBatteryLevel +"-"+ rIsCharging +"-"+ rUSBCharge +"-"+ rACCharge);
+        Log.v("LOG APP: ",rBatteryTemp +"-"+ rBatteryLevel +"-"+ rIsCharging +"-"+ rUSBCharge +"-"+ rACCharge);
 
         txvINivelBateria.setText(String.valueOf(rBatteryLevel)+"%");
 
         //Log.v("TEMPUS: ",String.valueOf(rBatteryLevel)+"%");
 
         try {
-            if (rIsCharging) {
+            if (rIsCharging || rUSBCharge) {
                 int imageresource = getResources().getIdentifier("@drawable/b5", "drawable", getActivity().getPackageName());
                 imgViewIBat.setImageResource(imageresource);
             } else {
