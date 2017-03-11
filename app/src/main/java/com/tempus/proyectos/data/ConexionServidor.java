@@ -85,10 +85,10 @@ public class ConexionServidor {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         try{
-            Log.d("Autorizaciones","Intentando Conexion MSSQLSERVER...");
+            //Log.d("Autorizaciones","Intentando Conexion MSSQLSERVER...");
             Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
             connection = DriverManager.getConnection(url);
-            Log.d("Autorizaciones","Conexion MSSQLSERVER OK");
+            //Log.d("Autorizaciones","Conexion MSSQLSERVER OK");
         }catch (ClassNotFoundException e) {
             Log.d("Autorizaciones","Class not Found: " + e.getMessage());
         }catch (java.sql.SQLException e) {

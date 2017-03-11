@@ -25,6 +25,7 @@ import com.tempus.proyectos.data.tables.TableEstados;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 
+
 /**
  * Created by gurrutiam on 22/12/2016.
  */
@@ -63,15 +64,13 @@ public class ProcessSync {
         dbManager = new DBManager(context);
 
 
-
-        //Log.d ("Autorizaciones","parametros varios: " + parametersnamesarray[0] + " - " + parametersnamesarray[1]);
-        Log.d ("Autorizaciones","parametersnamesarray.length: " + parametersnamesarray.length);
+        //Log.d ("Autorizaciones","parametersnamesarray.length: " + parametersnamesarray.length);
 
         if(parametersnamesarray.length > 0){
             for(int i = 0; i < parametersnamesarray.length; i++){
 
                 parameter = parametersnamesarray[i].split("&");
-                Log.d ("Autorizaciones","parametro nombre y valor: " + parameter[0] + " - " + parameter[1]);
+                //Log.d ("Autorizaciones","parametro nombre y valor: " + parameter[0] + " - " + parameter[1]);
                 try{
 
                     parametersnamesvalues = parametersnamesvalues + parameter[0] + "," + dbManager.valexecSQL(parameter[1]);
@@ -84,7 +83,7 @@ public class ProcessSync {
             }
         }
 
-        Log.d ("Autorizaciones","Parametros: " + parametersnamesvalues);
+        //Log.d ("Autorizaciones","Parametros: " + parametersnamesvalues);
 
         ConexionServidor conexionServidor = new ConexionServidor();
         if(connection == null){
@@ -92,11 +91,13 @@ public class ProcessSync {
         }
 
         String sql = llamada + " '" + idllamada + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'";
-        Log.d("Autorizaciones",sql);
+        //Log.d("Autorizaciones",sql);
+        Log.d("Autorizaciones","Llamada: " + idllamada + " - " + parametersnamesvalues);
+
 
         try{
             if(connection.isClosed()){
-                Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
+                //Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
                 connection = conexionServidor.conectar();
             }
 
@@ -181,7 +182,7 @@ public class ProcessSync {
         }catch(SQLException e){
             Log.d("Autorizaciones","Error SQLite: " + e.getMessage());
         }catch (java.sql.SQLException e) {
-            Log.d("Autorizaciones","Error SQLServer: " + e.getMessage());
+            //Log.d("Autorizaciones","Error SQLServer: " + e.getMessage());
         }
 
     }
@@ -319,9 +320,14 @@ public class ProcessSync {
 
                 List<Llamadas> llamadasList = queriesLlamadas.select_one_row(processarray[i]);
 
-                Log.d("Autorizaciones","llamadasList.size(): " + String.valueOf(llamadasList.size()));
+                //Log.d("Autorizaciones","llamadasList.size(): " + String.valueOf(llamadasList.size()));
+
+                if(llamadasList.size() == 0){
+                    Log.d("Autorizaciones"," Sin llamadas por ejecutar " + String.valueOf(llamadasList.size()));
+                }
+
                 for(int y = 0; y < llamadasList.size(); y++){
-                    Log.d("Autorizaciones",llamadasList.get(y).toString());
+                    //Log.d("Autorizaciones",llamadasList.get(y).toString());
 
                     ActivityPrincipal.controlFlagSyncAutorizaciones = true;
 
@@ -332,7 +338,13 @@ public class ProcessSync {
                         }
                         Thread.sleep(3000);
                     }catch(Exception e){
-                        Log.d("Autorizaciones","ProcessSync.Process Error: " + e.getMessage());
+                        //Log.d("Autorizaciones","ProcessSync.Process Error: " + e.getMessage());
+                        ActivityPrincipal.controlFlagSyncAutorizaciones = false;
+                        try{
+                            Thread.sleep(3000);
+                        }catch (Exception ex){
+
+                        }
                     }
 
                 }
