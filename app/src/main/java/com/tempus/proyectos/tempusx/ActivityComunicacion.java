@@ -147,11 +147,16 @@ public class ActivityComunicacion extends Activity {
     RadioButton rbnWifiStatic;
     RadioButton rbnWifiDynamic;
     Button btnConfRed;
+    TextView txvStatusWlan0;
+    TextView txvStatusPpp0;
+    TextView txvStatusEth0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comunicacion);
+
+        Log.wtf("POINT","PUNTO 1");
 
         /* --- Inicialización de Objetos --- */
 
@@ -190,6 +195,11 @@ public class ActivityComunicacion extends Activity {
 
         txvIndicador = (TextView) findViewById(R.id.txvIndicador);
 
+        txvStatusWlan0 = (TextView) findViewById(R.id.txvStatusWlan0);
+        txvStatusPpp0 = (TextView) findViewById(R.id.txvStatusPpp0);
+        txvStatusEth0 = (TextView) findViewById(R.id.txvStatusEth0);
+
+        Log.wtf("POINT","PUNTO 2");
 
         if (connectivity.existSIM(ActivityComunicacion.this)){
             txvIndicador.setText("SIM INSERTADA");
@@ -198,6 +208,8 @@ public class ActivityComunicacion extends Activity {
             txvIndicador.setText("SIM NO INSERTADA");
             swtStatusPpp0.setChecked(false);
         }
+
+        Log.wtf("POINT","PUNTO 3");
 
 
         //this.adapter = new SimpleAdapter(ActivityComunicacion.this, arraylist, android.R.layout.simple_list_item_1, new String[] { ITEM_KEY }, new int[] { android.R.id.text1 });
@@ -238,6 +250,7 @@ public class ActivityComunicacion extends Activity {
             tv.setTextSize(15);
         }
 
+        Log.wtf("POINT","PUNTO 4");
         //View w3 = host.getTabWidget().getChildTabViewAt(2);
         //w3.setVisibility(View.INVISIBLE);
 
@@ -264,12 +277,14 @@ public class ActivityComunicacion extends Activity {
         manageAreaWifiConfig(false);
         disableDataWifi();
 
+        Log.wtf("POINT","PUNTO 5");
+
         /* --- Inicialización de Parametros Generales --- */
 
         wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
         registerReceiver(broadcastReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
-
+        Log.wtf("POINT","PUNTO 6");
         /* ------------------------------ */
 
         /* --- Eventos --- */
@@ -557,10 +572,20 @@ public class ActivityComunicacion extends Activity {
             }
         });
 
+        Log.wtf("POINT","PUNTO 7");
 
-        checkWifiConnection();
-        checkWifiTypeConnection();
-        checkDataWifiConnection();
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                checkWifiConnection();
+                checkWifiTypeConnection();
+                checkDataWifiConnection();
+            }
+        });
+
+        t.start();
+
+        Log.wtf("POINT","PUNTO 8");
 
         edtEthIp.setEnabled(false);
         edtEthMascara.setEnabled(false);
@@ -576,10 +601,17 @@ public class ActivityComunicacion extends Activity {
         macWlan = connectivity.getMacAddress(cadena,"wlan0");
         macEth = connectivity.getMacAddress(cadena,"eth0");
 
+        txvStatusWlan0.append(" "+ macWlan);
+        txvStatusEth0.append(" "+ macEth);
+
         Log.d(TAG, ">>" + macWlan);
         Log.d(TAG, ">>" + macEth);
 
+        Log.wtf("POINT","PUNTO 9");
+
         inicializarSwitches();
+
+        Log.wtf("POINT","PUNTO 10");
     }
 
 
@@ -989,9 +1021,9 @@ public class ActivityComunicacion extends Activity {
             DBManager db = new DBManager(ActivityPrincipal.context);
             String resultado = db.valexecSQL("SELECT PARAMETRO FROM TERMINAL_CONFIGURACION");
             Log.wtf("VAL EXEC DB",resultado);
-            String valor = resultado.split(",")[1];
-            Log.wtf("VAL EXEC DB valor",valor);
-            if (valor.equalsIgnoreCase("1")){
+            String[] valor = resultado.split(",");
+            Log.wtf("VAL EXEC DB valor",valor[1]);
+            if (valor[1].equalsIgnoreCase("1")){
                 swtStatusEth0.setChecked(true);
             } else {
                 swtStatusEth0.setChecked(false);

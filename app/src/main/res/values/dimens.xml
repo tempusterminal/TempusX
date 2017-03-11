@@ -40,12 +40,12 @@
 
     <!-- Fondo Medio -->
     <dimen name="fondo2_width">598.33dp</dimen>
-    <dimen name="fondo2_height">239.33dp</dimen>
+    <dimen name="fondo2_height">240.33dp</dimen>
     <dimen name="fondo2_marginTop">66.66dp</dimen>
     <dimen name="fondo2_marginLeft">0dp</dimen>
 
     <!-- Fondo Medio Alternativo -->
-    <dimen name="fondo2alt_height">255.99dp</dimen>
+    <dimen name="fondo2alt_height">256.99dp</dimen>
     <dimen name="fondo2alt_marginTop">50dp</dimen>
 
     <!-- Fondo Inferior -->

@@ -14,6 +14,8 @@ import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import com.tempus.proyectos.data.ConexionServidor;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,6 +25,8 @@ import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
@@ -283,10 +287,15 @@ public class Connectivity {
 
         if (tipo.equalsIgnoreCase("ip")){
             try {
-                boolean reachable1 = InetAddress.getByName(host).isReachable(10000);
-                return reachable1;
+                if (host.isEmpty() || host == "" || host == "0.0.0.0"){
+                    return false;
+                } else {
+                    boolean reachable1 = InetAddress.getByName(host).isReachable(10000); // 10 seg Timeout
+                    return reachable1;
+                }
+
             } catch (IOException e) {
-                e.printStackTrace();
+                Log.wtf("isURLReachable","IP - " + e.getMessage());
             }
         } else {
             ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -304,14 +313,33 @@ public class Connectivity {
                         return false;
                     }
                 } catch (MalformedURLException e1) {
+                    Log.wtf("isURLReachable","IP - MalformedURLException" + e1.getMessage());
                     return false;
                 } catch (IOException e) {
+                    Log.wtf("isURLReachable","IP - IOException" + e.getMessage());
                     return false;
                 }
             }
         }
 
         return false;
+    }
+
+
+    public boolean isValidConnection(){
+        boolean res = false;
+        ConexionServidor cs = new ConexionServidor();
+        Connection connection = cs.getInstance().getConnection();
+        try {
+            if(connection == null){
+                return res;
+            }else{
+                res = connection.isValid(3);
+            }
+        } catch (SQLException e) {
+            Log.wtf("isValidConnection","Conection - "+e.getMessage());
+        }
+        return res;
     }
 
     public String displayInterfaceInformation(NetworkInterface netint) throws SocketException {
@@ -341,7 +369,8 @@ public class Connectivity {
                     break;
                 }
             }
-            resultado = tmp.split("HWaddr")[1].trim();
+            resultado = tmp.trim().toLowerCase().split("hwaddr")[1].trim().toUpperCase();
+            Log.v("TEMPUS: ","getMacAddress ..."+resultado+"...");
         } catch (Exception e) {
             Log.v("TEMPUS: ","getMacAddress > "+e.getMessage());
         }

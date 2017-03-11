@@ -99,9 +99,13 @@ public class ActivityMenu extends Activity {
 
         /* --- Inicialización de Métodos --- */
 
+        itxv07.setVisibility(View.INVISIBLE);
+        itxv08.setVisibility(View.INVISIBLE);
         itxv09.setVisibility(View.INVISIBLE);
         itxv10.setVisibility(View.INVISIBLE);
 
+        ibtn07.setVisibility(View.INVISIBLE);
+        ibtn08.setVisibility(View.INVISIBLE);
         ibtn09.setVisibility(View.INVISIBLE);
         ibtn10.setVisibility(View.INVISIBLE);
 

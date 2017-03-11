@@ -103,7 +103,7 @@
         android:layout_width="@dimen/acSistema_lblItemAll_width"
         android:layout_height="@dimen/acSistema_lblItemAll_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem2_marginTop"
+        android:layout_marginTop="105dp"
         android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
         android:textColor="@color/colorTexto"
         android:textSize="@dimen/cuerpo_min_textSize"
@@ -116,7 +116,7 @@
         android:layout_width="@dimen/acSistema_lblItemAll_width"
         android:layout_height="@dimen/acSistema_lblItemAll_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem3_marginTop"
+        android:layout_marginTop="135dp"
         android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
         android:textColor="@color/colorTexto"
         android:textSize="@dimen/cuerpo_min_textSize"
@@ -129,7 +129,7 @@
         android:layout_width="@dimen/acSistema_lblItemAll_width"
         android:layout_height="@dimen/acSistema_lblItemAll_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem4_marginTop"
+        android:layout_marginTop="165dp"
         android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
         android:textColor="@color/colorTexto"
         android:textSize="@dimen/cuerpo_min_textSize"
@@ -137,18 +137,6 @@
         android:gravity="center_vertical"
         android:id="@+id/textView17" />
 
-    <TextView
-        android:text="Ahorro de Energia:"
-        android:layout_width="@dimen/acSistema_lblItemAll_width"
-        android:layout_height="@dimen/acSistema_lblItemAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem5_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:id="@+id/textView18" />
 
     <TextView
         android:text="Tecnologías:"
@@ -183,7 +171,7 @@
         android:layout_width="@dimen/acSistema_lblItemDescAll_width"
         android:layout_height="@dimen/acSistema_lblItemDescAll_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItemDesc2_marginTop"
+        android:layout_marginTop="105dp"
         android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
         android:textColor="@color/colorTexto"
         android:textSize="@dimen/cuerpo_min_textSize"
@@ -195,7 +183,7 @@
         android:layout_width="@dimen/acSistema_lblItemDescAll_width"
         android:layout_height="@dimen/acSistema_lblItemDescAll_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItemDesc3_marginTop"
+        android:layout_marginTop="135dp"
         android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
         android:textColor="@color/colorTexto"
         android:textSize="@dimen/cuerpo_min_textSize"
@@ -207,24 +195,12 @@
         android:layout_width="@dimen/acSistema_lblItemDescAll_width"
         android:layout_height="@dimen/acSistema_lblItemDescAll_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItemDesc4_marginTop"
+        android:layout_marginTop="165dp"
         android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
         android:textColor="@color/colorTexto"
         android:textSize="@dimen/cuerpo_min_textSize"
         android:gravity="center_vertical"
         android:id="@+id/txvSistIp" />
-
-    <TextView
-        android:text="Lorem Ipsum"
-        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
-        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItemDesc5_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:gravity="center_vertical"
-        android:id="@+id/txvSistAhorro" />
 
     <TextView
         android:text="T1"

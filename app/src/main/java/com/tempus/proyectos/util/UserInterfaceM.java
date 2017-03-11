@@ -61,7 +61,7 @@ public class UserInterfaceM {
 
         v.setTextColor(Color.WHITE);
         v.setTextSize(22);
-        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 50, 80);
+        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 80);
 
         View view = toast.getView();
 

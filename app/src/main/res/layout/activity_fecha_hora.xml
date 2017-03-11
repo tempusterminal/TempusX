@@ -191,7 +191,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="253dp"
         android:layout_marginLeft="400dp"
-        android:textSize="12sp"
+        android:textSize="15sp"
         android:id="@+id/btnGuardarFechaHora" />
 
 
