@@ -100,7 +100,7 @@ public class QueriesServicios {
                 "WHERE " + TableServicios.Descripcion + " = ? " +
                 ";";
 
-        Log.v("TEMPUS: ",query);
+        //Log.v("TEMPUS: ",query);
 
         this.open();
         Cursor cursor = database.rawQuery(query, new String[] { Descripcion });
