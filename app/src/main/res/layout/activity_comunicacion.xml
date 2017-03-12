@@ -332,7 +332,7 @@
                     <TextView
                         android:id="@+id/txvWifiConfigArea"
                         android:layout_width="390dp"
-                        android:layout_height="155dp"
+                        android:layout_height="170dp"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="185dp"
                         android:layout_marginTop="40dp"
@@ -374,11 +374,11 @@
                         android:layout_height="30dp"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="210dp"
-                        android:layout_marginTop="110dp"/>
+                        android:layout_marginTop="120dp"/>
 
                     <EditText
                         android:id="@+id/edtWifiConfigPass"
-                        android:layout_width="180dp"
+                        android:layout_width="250dp"
                         android:layout_height="30dp"
                         android:inputType="textPassword"
                         android:backgroundTint="@color/colorNegro"
@@ -386,21 +386,10 @@
                         android:textSize="15sp"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="300dp"
-                        android:layout_marginTop="110dp"
+                        android:layout_marginTop="120dp"
                         android:text=""
-                        android:paddingBottom="4dp"/>
-
-                    <CheckBox
-                        android:text="Ver"
-                        android:layout_width="60dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="490dp"
-                        android:layout_marginTop="110dp"
-                        android:textColor="@color/colorTexto"
-                        android:buttonTint="@color/colorTexto"
-                        android:textSize="12sp"
-                        android:id="@+id/chkWifiConfigMostrarPass" />
+                        android:paddingBottom="4dp"
+                        android:imeOptions="actionDone"/>
 
                     <Button
                         android:text="Cancelar"
@@ -408,7 +397,7 @@
                         android:layout_height="35dp"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="340dp"
-                        android:layout_marginTop="150dp"
+                        android:layout_marginTop="165dp"
                         android:textSize="15sp"
                         android:id="@+id/btnWifiConfigCancelar" />
 
@@ -418,7 +407,7 @@
                         android:layout_height="35dp"
                         android:layout_alignParentTop="true"
                         android:layout_marginLeft="452dp"
-                        android:layout_marginTop="150dp"
+                        android:layout_marginTop="165dp"
                         android:textSize="15sp"
                         android:id="@+id/btnWifiConfigConectar" />
 

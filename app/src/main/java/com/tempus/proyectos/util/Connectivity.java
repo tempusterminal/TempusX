@@ -327,18 +327,9 @@ public class Connectivity {
 
 
     public boolean isValidConnection(){
-        boolean res = false;
+        boolean res;
         ConexionServidor cs = new ConexionServidor();
-        Connection connection = cs.getInstance().getConnection();
-        try {
-            if(connection == null){
-                return res;
-            }else{
-                res = connection.isValid(3);
-            }
-        } catch (SQLException e) {
-            Log.wtf("isValidConnection","Conection - "+e.getMessage());
-        }
+        res = cs.testConexionServidor();
         return res;
     }
 
@@ -379,18 +370,11 @@ public class Connectivity {
     }
 
     public void turnGPSOn(Activity activity) {
-        Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
-        intent.putExtra("enabled", true);
-        activity.getApplicationContext().sendBroadcast(intent);
-
-        String provider = Settings.Secure.getString(activity.getApplicationContext().getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-        if(!provider.contains("gps")){ //if gps is disabled
-            final Intent poke = new Intent();
-            poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
-            poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-            poke.setData(Uri.parse("3"));
-            activity.getApplicationContext().sendBroadcast(poke);
-        }
+        final Intent poke = new Intent();
+        poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
+        poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
+        poke.setData(Uri.parse("3"));
+        activity.sendBroadcast(poke);
     }
 
     public void turnGPSOff(Activity activity) {

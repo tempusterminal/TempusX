@@ -141,7 +141,6 @@ public class ActivityComunicacion extends Activity {
     TextView txvWifiConfigCapab;
     TextView txvWifiConfigPass;
     EditText edtWifiConfigPass;
-    CheckBox chkWifiConfigMostrarPass;
     Button btnWifiConfigCancelar;
     Button btnWifiConfigConectar;
     RadioButton rbnWifiStatic;
@@ -264,7 +263,6 @@ public class ActivityComunicacion extends Activity {
         txvWifiConfigSSID = (TextView) findViewById(R.id.txvWifiConfigSSID);
         txvWifiConfigPass = (TextView) findViewById(R.id.txvWifiConfigPass);
         edtWifiConfigPass = (EditText) findViewById(R.id.edtWifiConfigPass);
-        chkWifiConfigMostrarPass = (CheckBox) findViewById(R.id.chkWifiConfigMostrarPass);
         btnWifiConfigConectar = (Button) findViewById(R.id.btnWifiConfigConectar);
         btnWifiConfigCancelar = (Button) findViewById(R.id.btnWifiConfigCancelar);
         rbnWifiStatic = (RadioButton) findViewById(R.id.rbnWifiStatic);
@@ -419,6 +417,7 @@ public class ActivityComunicacion extends Activity {
                         connectivity.setMobileDataState(ActivityComunicacion.this,true);
                     } else {
                         ui.showAlert(ActivityComunicacion.this,"warning","No hay SIM insertada.");
+                        swtStatusPpp0.setChecked(false);
                     }
 
                 } else {
@@ -426,6 +425,7 @@ public class ActivityComunicacion extends Activity {
                         connectivity.setMobileDataState(ActivityComunicacion.this,false);
                     } else {
                         ui.showAlert(ActivityComunicacion.this,"warning","No hay SIM insertada.");
+                        swtStatusPpp0.setChecked(false);
                     }
 
                 }
@@ -838,7 +838,6 @@ public class ActivityComunicacion extends Activity {
             txvWifiConfigCapab.setVisibility(View.VISIBLE);
             txvWifiConfigPass.setVisibility(View.VISIBLE);
             edtWifiConfigPass.setVisibility(View.VISIBLE);
-            chkWifiConfigMostrarPass.setVisibility(View.VISIBLE);
             btnWifiConfigConectar.setVisibility(View.VISIBLE);
             btnWifiConfigCancelar.setVisibility(View.VISIBLE);
         } else {
@@ -847,7 +846,6 @@ public class ActivityComunicacion extends Activity {
             txvWifiConfigCapab.setVisibility(View.INVISIBLE);
             txvWifiConfigPass.setVisibility(View.INVISIBLE);
             edtWifiConfigPass.setVisibility(View.INVISIBLE);
-            chkWifiConfigMostrarPass.setVisibility(View.INVISIBLE);
             btnWifiConfigConectar.setVisibility(View.INVISIBLE);
             btnWifiConfigCancelar.setVisibility(View.INVISIBLE);
         }
@@ -886,8 +884,6 @@ public class ActivityComunicacion extends Activity {
 
     public void connectWifiM(boolean isWPA, String ssid, String pass){
 
-
-
         WifiConfiguration conf = new WifiConfiguration();
 
         WifiManager wifiManager = (WifiManager)getApplicationContext().getSystemService(Context.WIFI_SERVICE);
@@ -920,6 +916,28 @@ public class ActivityComunicacion extends Activity {
         boolean bRet = wifiManager.enableNetwork(res, true);
         Log.i(TAG, "enableNetwork bRet = " + bRet);
         wifiManager.reconnect();
+        /**/
+        ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        mWifi.getState();
+        if (mWifi.isConnected()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(),"Conectado",Toast.LENGTH_SHORT).show();
+                }
+            });
+            Log.v("connectWifiM", "WIFI CONECTADO");
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getApplicationContext(),"Intente otra vez",Toast.LENGTH_SHORT).show();
+                }
+            });
+
+            Log.v("connectWifiM", "WIFI DESCONECTADO");
+        }
     }
 
     public void inicializarSwitches() {
