@@ -7,6 +7,8 @@ import android.util.Log;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,6 +101,37 @@ public class ConexionServidor {
 
         return connection;
 
+    }
+
+    public boolean testConexionServidor(){
+        Connection conn = null;
+        PreparedStatement prep;
+        ResultSet resu;
+        String sql = "SELECT @@SERVERNAME AS SERVERNAME";
+        if(conn == null){
+            conn = ConexionServidor.getInstance().getConnection();
+        }
+
+        Log.d("Autorizaciones","testConexionServidor Iniciando Test");
+
+        try{
+            if(conn.isClosed()){
+                //Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
+                conn = ConexionServidor.this.conectar();
+            }
+            prep = conn.prepareStatement(sql);
+            resu = prep.executeQuery();
+            return resu.next();
+        }catch(Exception e){
+            Log.d("Autorizaciones","testConexionServidor Sql Error: " + e.getMessage());
+            return false;
+        }finally {
+            try{
+                conn.close();
+            }catch (Exception e){
+            }
+            Log.d("Autorizaciones","testConexionServidor Finalizando Test");
+        }
     }
 
 
