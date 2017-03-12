@@ -55,7 +55,7 @@ public class ConexionServidor {
         ip = serviciosList.get(0).getIp();
         host = serviciosList.get(0).getHost();
 
-        url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
+        url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";" + "socketTimeout=4;";
         // //////////////////////////////////
 
     }
