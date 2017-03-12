@@ -38,7 +38,7 @@ public class ConexionServidor {
     private static String ip = "";
     private static String host = "";
 
-    private static String url = "jdbc:jtds:sqlserver://" + ip + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
+    private static String url = "";//"jdbc:jtds:sqlserver://" + ip + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
     private static Connection connection = null;
 
     public ConexionServidor() {
@@ -55,7 +55,7 @@ public class ConexionServidor {
         ip = serviciosList.get(0).getIp();
         host = serviciosList.get(0).getHost();
 
-        url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";" + "socketTimeout=4;";
+        url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";" + "";
         // //////////////////////////////////
 
     }
@@ -108,6 +108,7 @@ public class ConexionServidor {
         PreparedStatement prep;
         ResultSet resu;
         String sql = "SELECT @@SERVERNAME AS SERVERNAME";
+
         if(conn == null){
             conn = ConexionServidor.getInstance().getConnection();
         }
