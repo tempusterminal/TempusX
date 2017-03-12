@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tempus.proyectos.data.queries.QueriesTerminal;
+import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
 
 
@@ -25,6 +26,8 @@ public class ActivitySistema extends Activity {
 
     /* --- Declaración de Variables Globales --- */
 
+    String resultadoIP;
+
     /* --- Declaración de Variables Locales --- */
 
     /* --- Declaración de Componentes de la Interfaz --- */
@@ -33,7 +36,6 @@ public class ActivitySistema extends Activity {
     TextView txvSistFirmware;
     TextView txvSistSoftware;
     TextView txvSistIp;
-    TextView txvSistAhorro;
     TextView txvSistTec1;
     TextView txvSistTec2;
     TextView txvSistTec3;
@@ -65,7 +67,6 @@ public class ActivitySistema extends Activity {
         txvSistFirmware = (TextView) findViewById(R.id.txvSistFirmware);
         txvSistSoftware = (TextView) findViewById(R.id.txvSistSoftware);
         txvSistIp = (TextView) findViewById(R.id.txvSistIp);
-        txvSistAhorro = (TextView) findViewById(R.id.txvSistAhorro);
         txvSistTec1 = (TextView) findViewById(R.id.txvSistTec1);
         txvSistTec2 = (TextView) findViewById(R.id.txvSistTec2);
         txvSistTec3 = (TextView) findViewById(R.id.txvSistTec3);
@@ -100,7 +101,7 @@ public class ActivitySistema extends Activity {
         });
 
         ManageData();
-
+        showIP();
     }
 
     @Override
@@ -118,12 +119,49 @@ public class ActivitySistema extends Activity {
         return true;
     }
 
+    public void showIP(){
+        Shell sh = new Shell();
+        String params[] = {"su","-c","ifconfig"};
+        String cadena = sh.exec(params);
+        String arreglo[] = cadena.split("\n");
+
+        String wifi = " - ";
+        String eth = " - ";
+
+        for (int i = 0 ; i < arreglo.length; i++){
+            if (arreglo[i].contains("wlan0")){
+                try {
+                    wifi = arreglo[i+1].toLowerCase().trim().split(":")[1].replace("bcast","");
+                } catch(Exception e){
+                    Log.wtf("showIP","WLAN0" + e);
+                }
+
+            }
+
+            if (arreglo[i].contains("eth0")){
+                try {
+                    eth = arreglo[i+1].toLowerCase().trim().split(":")[1].replace("bcast","");
+                } catch(Exception e){
+                    Log.wtf("showIP","WLAN0" + e);
+                }
+            }
+        }
+
+        resultadoIP = "wlan:" + wifi + " / eth:" + eth;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                txvSistIp.setText(resultadoIP);
+            }
+        });
+    }
+
     public void ManageData() {
-        edtSistIdTerminal.setText("100");
+        edtSistIdTerminal.setText(ActivityPrincipal.idTerminal);
         txvSistFirmware.setText("J");
         txvSistSoftware.setText("E");
-        txvSistIp.setText("0.0.0.0");
-        txvSistAhorro.setText("Siempre");
+        txvSistIp.setText("");
         txvSistTec1.setText("DNI");
         txvSistTec2.setText("HUELLA");
         txvSistTec3.setText("TECLADO");

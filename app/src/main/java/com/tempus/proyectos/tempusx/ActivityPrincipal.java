@@ -26,8 +26,10 @@ import com.tempus.proyectos.bluetoothSerial.BluetoothSuperAdmin;
 import com.tempus.proyectos.bluetoothSerial.MainArduino;
 import com.tempus.proyectos.bluetoothSerial.MainSuprema;
 import com.tempus.proyectos.crash.TXExceptionHandler;
+import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Autorizaciones;
+import com.tempus.proyectos.data.model.Servicios;
 import com.tempus.proyectos.data.process.ProcessMarcas;
 import com.tempus.proyectos.data.process.ProcessSyncTS;
 import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
@@ -36,6 +38,7 @@ import com.tempus.proyectos.data.queries.QueriesLlamadas;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
+import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
@@ -43,6 +46,8 @@ import com.tempus.proyectos.util.Utilities;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -89,6 +94,8 @@ public class ActivityPrincipal extends Activity {
 
 
     boolean MODO_PATRON = false;
+
+    int CONTROL_MASTER_ETHERNET_MARCAS = 0; // 0 = CARGA    1 = ETHERNET
 
 
     /* --- BLUETOOTH SOCKET ESTÁTICO --- */
@@ -412,15 +419,15 @@ public class ActivityPrincipal extends Activity {
             //
             // threadControlSerial02.start();
 
-/*
-        // Iniciar Rutinas en falso
-        ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
-        processSyncTS.start(this);
-        ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
-        processMarcas.start(this);
-        */
 
-            checkETH0.start();
+        // Iniciar Rutinas en falso
+            ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
+            processSyncTS.start(this);
+            ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
+            processMarcas.start(this);
+
+
+            //checkETH0.start();
 
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
@@ -878,15 +885,15 @@ public class ActivityPrincipal extends Activity {
 
         // PRUEBA CROVISA 01
 
-        //MAC_BT_01 = "00:15:83:35:7A:E1";
-        //MAC_BT_02 = "20:16:08:10:64:80";
-        //MAC_BT_03 = "00:00:00:00:00:00";
+        MAC_BT_01 = "00:15:83:35:7A:E1";
+        MAC_BT_02 = "20:16:08:10:64:80";
+        MAC_BT_03 = "00:00:00:00:00:00";
 
         // PRUEBA CROVISA 02
 
-        MAC_BT_01 = "20:16:08:10:65:03";
-        MAC_BT_02 = "00:15:83:35:79:C9";
-        MAC_BT_03 = "00:00:00:00:00:00";
+        //MAC_BT_01 = "20:16:08:10:65:03";
+        //MAC_BT_02 = "00:15:83:35:79:C9";
+        //MAC_BT_03 = "00:00:00:00:00:00";
 
 
 
@@ -991,6 +998,7 @@ public class ActivityPrincipal extends Activity {
         switch(patronAcceso) {
             case "123432":
                 txvMensajePantalla.setText("PASE SU TARJETA");
+                manageAccessButtons(false);
                 Intent intent01 = new Intent(ActivityPrincipal.this, ActivityLogin.class);
                 intent01.putExtra("llave", "valor");
                 startActivityForResult(intent01, 1);
@@ -1070,9 +1078,21 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "4421324":
-                Intent i = new Intent("android.intent.action.ACTION_REQUEST_SHUTDOWN");
-                i.putExtra("android.intent.extra.KEY_CONFIRM", true);
-                startActivity(i);
+                try {
+                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
+                    proc.waitFor();
+                } catch (Exception e) {
+                    Log.wtf("WTF",e.getMessage());
+                }
+                break;
+
+            case "33334334":
+                // OTG (QUITAR CARGA)
+                AdministrarOTG(btSocket01.getOutputStream(),"0");
+                break;
+            case "33334331":
+                // CARGAR
+                AdministrarOTG(btSocket01.getOutputStream(),"1");
                 break;
 
             default:
@@ -1300,17 +1320,12 @@ public class ActivityPrincipal extends Activity {
     }
 
     public void AdministrarOTG(OutputStream out, String parametro) {
-        String p = "30";
-        if (parametro.equalsIgnoreCase("1")){
-            p = "31";
-        }
-
-
         Log.v(TAG, "AdministrarOTG");
         try {
-            out.write(util.hexStringToByteArray("244F41584100134231313131"+p+"313131000041"));
+            Log.wtf("AdministrarOTG","244F41584100134231313131313"+parametro+"3131");
+            out.write(util.hexStringToByteArray("244F41584100134231313131313"+parametro+"3131"));
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.wtf("AdministrarOTG",e.getMessage());
         }
     }
 
@@ -2144,7 +2159,7 @@ public class ActivityPrincipal extends Activity {
 
                 } else {
                     c = 100;
-                    detail = detail + "\n... ";
+                    detail = detail + "\n";
                     showMsgBoot(true,"Reconectando Interfaces \n"+detail+"]");
                 }
 
@@ -2457,9 +2472,75 @@ public class ActivityPrincipal extends Activity {
         @Override
         public void run() {
 
-            util.sleep(120000); // 1 min
+            Log.d("ETH_HILO","INICIO");
+
+            util.sleep(60000); // 1 min
 
             while (true){
+
+                Log.d("ETH_HILO","CICLO ... ");
+
+                DBManager db = new DBManager(ActivityPrincipal.context);
+                String resultado = db.valexecSQL("SELECT PARAMETRO FROM TERMINAL_CONFIGURACION");
+                String valor = resultado.split(",")[1];
+
+                if (valor.equalsIgnoreCase("1")){
+                    Log.d("ETH_HILO","Eth0 Enabled ... ");
+                    String tmp = "";
+
+                    try {
+                        tmp = db.valexecSQL("SELECT " +
+                                "(SELECT COUNT(*) FROM MARCACIONES WHERE SINCRONIZADO = 0) + " +
+                                "(SELECT COUNT(*) FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE SINCRONIZADO = 2) " +
+                                "AS DATAXENVIAR;");
+                    } catch(Exception e) {
+                        Log.wtf("ETH_HILO","ERROR EN VAL EXEC ... "+e.getMessage());
+                    }
+
+                    int cant = 0;
+
+                    try {
+                        cant = Integer.parseInt(tmp);
+                    } catch (Exception e){
+                        Log.wtf("ETH_HILO","ERROR EN CONVERSION ... "+e.getMessage());
+                    }
+
+                    if ( cant == 0 ){ // SI NO HAY NADA POR ENVIAR
+                        Log.d("ETH_HILO","Eth0 Enabled ... Sin data por enviar ...");
+                        AdministrarOTG(btSocket01.getOutputStream(),"1"); // CARGAR
+                        util.sleep(5000);
+                    } else { // SI HAY ALGO POR ENVIAR
+
+                        // Preguntamos por servidor
+                        boolean res = false;
+
+                        Connectivity c = new Connectivity();
+                        res = c.isValidConnection();
+
+                        if (res) {
+                            // Si hay conexion al servidor, sigo cargando
+                            AdministrarOTG(btSocket01.getOutputStream(),"1"); //CARGAR
+                            util.sleep(12000);
+                        } else {
+                            // Si no hay conexion al servidor, activo otg por 5 seg
+                            Log.d("ETH_HILO","Eth0 Enabled ... Activando ... ");
+                            AdministrarOTG(btSocket01.getOutputStream(),"0"); //PRENDER ETHERNET
+                            util.sleep(5000);
+                            // Activado por 5 seg luego cargo por 12 seg
+                            AdministrarOTG(btSocket01.getOutputStream(),"1"); //CARGAR
+                            util.sleep(12000);
+                        }
+                    }
+                } else {
+                    Log.d("ETH_HILO","Eth0 Disabled ... ");
+                    AdministrarOTG(btSocket01.getOutputStream(),"1"); //CARGAR
+                    util.sleep(5000);
+                }
+
+
+
+                /*
+
                 DBManager db = new DBManager(ActivityPrincipal.context);
                 String resultado = db.valexecSQL("SELECT PARAMETRO FROM TERMINAL_CONFIGURACION");
                 String valor = resultado.split(",")[1];
@@ -2475,6 +2556,8 @@ public class ActivityPrincipal extends Activity {
                     AdministrarOTG(btSocket01.getOutputStream(),"0");
                     util.sleep(600000); // 10min
                 }
+
+                */
 
             }
         }

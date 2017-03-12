@@ -125,7 +125,7 @@
     <ImageButton
         android:layout_width="@dimen/acMenu_btnOpcAll_width"
         android:layout_height="@dimen/acMenu_btnOpcAll_height"
-        android:src="@drawable/icon4"
+        android:src="@drawable/icon7"
         android:scaleType="fitXY"
         android:background="@color/colorFondoCuerpo"
         android:padding="@dimen/acMenu_btnOpcAllPadding"
@@ -248,7 +248,7 @@
         android:id="@+id/itxv03" />
 
     <TextView
-        android:text="HISTORIAL"
+        android:text="ACTUALIZACIÓN"
         android:layout_width="@dimen/acMenu_lblOpcAll_width"
         android:layout_height="@dimen/acMenu_lblOpcAll_height"
         android:textColor="@color/colorTexto"

@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tempus.proyectos.data.ConexionServidor;
+import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Servicios;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.servicios.OverlayShowingService;
@@ -61,6 +62,7 @@ public class ActivitySincronizacion extends Activity {
     Button btnTest;
     TextView txvInternet;
     TextView txvOrigen;
+    TextView txvOrigenConnection;
 
     Button btnSyncGuardar;
 
@@ -72,6 +74,7 @@ public class ActivitySincronizacion extends Activity {
 
     boolean internet = false;
     boolean servidor = false;
+    boolean basedatos = false;
 
 
     @Override
@@ -98,6 +101,7 @@ public class ActivitySincronizacion extends Activity {
         btnTest = (Button) findViewById(R.id.btnTest);
         txvInternet = (TextView) findViewById(R.id.txvInternet);
         txvOrigen = (TextView) findViewById(R.id.txvOrigen);
+        txvOrigenConnection = (TextView) findViewById(R.id.txvOrigenConnection);
 
         btnSyncGuardar = (Button) findViewById(R.id.btnSyncGuardar);
 
@@ -217,12 +221,18 @@ public class ActivitySincronizacion extends Activity {
 
                 Log.d("SYNC SAVE",host+" "+database+" "+port+" "+user+" "+pass);
 
-                QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
-                queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",host,host,"",database,port,user,pass);
+                if (host.isEmpty() || database.isEmpty() || port.isEmpty() || user.isEmpty()){
+                    Toast.makeText(getApplicationContext(),"Debe llenar correctamente los campos", Toast.LENGTH_SHORT).show();
+                } else {
+                    QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+                    queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",host,host,"",database,port,user,pass);
 
-                Toast.makeText(getApplicationContext(),"Actualizado", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Actualizado", Toast.LENGTH_SHORT).show();
 
-                Log.d("SYNC SAVE","EXITO!");
+                    Log.d("SYNC SAVE","EXITO!");
+                }
+
+
 
             }
         });
@@ -230,6 +240,134 @@ public class ActivitySincronizacion extends Activity {
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Thread thread = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        try  {
+                            internet = false;
+                            servidor = false;
+                            basedatos = false;
+
+                            try {
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(),"Probando conexión ... ", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                                try {
+                                    Log.d("IP_TEST","http://www.google.com");
+                                    internet = connectivity.isURLReachable(getApplicationContext(),"http://www.google.com","url");
+                                } catch(Exception e) {
+                                    Log.wtf("IP_TEST","http://www.google.com");
+                                }
+
+                                // Ping Servidor
+
+                                String servidorDatos = "";
+
+                                try {
+                                    Log.d("IP_TEST","entrando");
+                                    QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+                                    List<Servicios> servidor_datos_principal = queriesServicios.BuscarServicios("SERVIDOR_DATOS_PRINCIPAL");
+                                    Log.d("IP_TEST","tam: "+servidor_datos_principal.size());
+                                    for (int i = 0; i < servidor_datos_principal.size(); i++){
+                                        servidorDatos = servidor_datos_principal.get(i).getHost();
+                                        break;
+                                    }
+                                    Log.d("IP_TEST","datos: "+ servidorDatos);
+                                    servidor = connectivity.isURLReachable(getApplicationContext(),servidorDatos,"ip");
+                                } catch(Exception e) {
+                                    Log.wtf("IP_TEST",servidorDatos);
+                                }
+
+
+
+                                // Ping Base de Datos
+
+                                try {
+                                    basedatos = connectivity.isValidConnection();
+                                } catch(Exception e){
+                                    Log.wtf("IP_TEST","basedatos "+e);
+                                }
+
+
+
+                                Log.d("PING","LINEA"+internet+servidor+basedatos);
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(),"Terminó", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (internet){
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    txvInternet.setBackgroundColor(Color.GREEN);
+                                                }
+                                            });
+
+                                        } else {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    txvInternet.setBackgroundColor(Color.RED);
+                                                }
+                                            });
+                                        }
+
+                                        if (servidor){
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    txvOrigen.setBackgroundColor(Color.GREEN);
+                                                }
+                                            });
+                                        } else {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    txvOrigen.setBackgroundColor(Color.RED);
+                                                }
+                                            });
+                                        }
+
+                                        if (basedatos){
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    txvOrigenConnection.setBackgroundColor(Color.GREEN);
+                                                }
+                                            });
+                                        } else {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    txvOrigenConnection.setBackgroundColor(Color.RED);
+                                                }
+                                            });
+                                        }
+                                    }
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
                 thread.start();
             }
         });
@@ -276,79 +414,4 @@ public class ActivitySincronizacion extends Activity {
             break;
         }
     }
-
-    Thread thread = new Thread(new Runnable() {
-
-        @Override
-        public void run() {
-            try  {
-                internet = false;
-                servidor = false;
-
-                try {
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),"Probando conexión ... ", Toast.LENGTH_LONG).show();
-                        }
-                    });
-
-                    internet = connectivity.isURLReachable(getApplicationContext(),"http://www.google.com","url");
-                    servidor = connectivity.isURLReachable(getApplicationContext(),ConexionServidor.getHost(),"ip");
-
-                    Log.d("PING","LINEA"+internet+servidor);
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),"Terminó", Toast.LENGTH_LONG).show();
-                        }
-                    });
-
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (internet){
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        txvInternet.setBackgroundColor(Color.GREEN);
-                                    }
-                                });
-
-                            } else {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        txvInternet.setBackgroundColor(Color.RED);
-                                    }
-                                });
-                            }
-
-                            if (servidor){
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        txvOrigen.setBackgroundColor(Color.GREEN);
-                                    }
-                                });
-                            } else {
-                                runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        txvOrigen.setBackgroundColor(Color.RED);
-                                    }
-                                });
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    });
 }

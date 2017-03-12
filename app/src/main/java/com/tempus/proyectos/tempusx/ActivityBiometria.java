@@ -214,7 +214,7 @@ public class ActivityBiometria extends Activity {
                 String numero = edtHuellaDocumento.getText().toString();
 
                 if (numero.isEmpty()){
-                    ui.showAlert(ActivityBiometria.this,"info","Debe ingresar un número de válido");
+                    ui.showAlert(ActivityBiometria.this,"info","Debe ingresar un número válido");
                 } else {
 
                     List<String> lista = new ArrayList<String>();
