@@ -2,6 +2,8 @@ package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -10,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
@@ -761,6 +764,17 @@ public class ActivityPrincipal extends Activity {
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        try {
+            ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
+        } catch(Exception e) {
+            Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
+        }
+
+    }
+
     public boolean isForeground(String myPackage) {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
@@ -777,7 +791,7 @@ public class ActivityPrincipal extends Activity {
     public void reboot() {
 
         try {
-            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot" });
+            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot -p" });
             proc.waitFor();
         } catch (Exception ex) {
             Log.i("TEMPUS: ", "No se puede reiniciar!!!!!!!!!!!!!!!!", ex);
@@ -892,9 +906,33 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_PASADO_BT03 = new Date();
 
 
-        //CORPAC
-        MAC_BT_01 = "98:D3:32:20:5B:7E";
-        MAC_BT_02 = "98:D3:34:90:7D:C0";
+        // PRUEBA CROVISA 01 9c
+
+        //MAC_BT_01 = "00:15:83:35:7A:E1";
+        //MAC_BT_02 = "20:16:08:10:64:80";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // PRUEBA CROVISA 02 2a
+
+        MAC_BT_01 = "20:16:08:10:65:03";
+        MAC_BT_02 = "00:15:83:35:79:C9";
+        MAC_BT_03 = "00:00:00:00:00:00";
+
+
+
+        // DIRESA ID 100
+        //MAC_BT_01 = "20:16:08:10:42:38";
+        //MAC_BT_02 = "20:16:08:09:04:41";
+
+        // DIRESA ID 101
+        //MAC_BT_01 = "20:16:08:10:83:58";
+        //MAC_BT_02 = "20:16:08:10:60:73";
+
+
+        // PRUEBA EDITORA
+        //MAC_BT_01 = "00:15:83:35:6C:85";
+        //MAC_BT_02 = "98:D3:33:80:91:98";
+        //MAC_BT_03 = "00:00:00:00:00:00";
 
 
 
@@ -1002,7 +1040,7 @@ public class ActivityPrincipal extends Activity {
                 startActivityForResult(intent02, 1);
                 patronAcceso = "";
                 try {
-                    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOff",null);
+                    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
                 } catch(Exception e) {
                     Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
                 }
@@ -2075,12 +2113,13 @@ public class ActivityPrincipal extends Activity {
         if (c1 && c2 && c3){ // Si todos los seriales estan conectados podemos hacer algo
             if (isBooting){
                 isBooting = false;
-                //util.sleep(1000);
-                //try {
-                //    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
-                //} catch(Exception e) {
-                //    Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
-                //}
+                util.sleep(1000);
+                try {
+                    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
+                } catch(Exception e) {
+                    Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
+                }
+
             }
             Log.v(TAG,"SERIALES OK");
             ctrlThreadPantallaEnabled = true;
@@ -2484,7 +2523,15 @@ public class ActivityPrincipal extends Activity {
 
             while (true){
 
+                //runOnUiThread(new Runnable() {
+                //    @Override
+                //    public void run() {
+                //        Toast.makeText(getApplicationContext(), "CICLO ... ",Toast.LENGTH_SHORT).show();
+                //    }
+                //});
+
                 Log.d("ETH_HILO","CICLO ... ");
+
 
                 DBManager db = new DBManager(ActivityPrincipal.context);
                 String resultado = db.valexecSQL("SELECT PARAMETRO FROM TERMINAL_CONFIGURACION");
@@ -2515,51 +2562,91 @@ public class ActivityPrincipal extends Activity {
 
                     if ( cant == 0 ){ // SI NO HAY NADA POR ENVIAR
                         Log.d("ETH_HILO","Eth0 Enabled ... Sin data por enviar ...");
-                        if (!isCharging){
-                            AdministrarOTG(btSocket01.getOutputStream(),false); // CARGAR
-                        }
 
-                        util.sleep(5000);
+
+                        AdministrarOTG(btSocket01.getOutputStream(),false); // CARGAR
+
+
+                        util.sleep(10000);
                     } else { // SI HAY ALGO POR ENVIAR
                         Log.d("ETH_HILO","Eth0 Enabled ... Con data por enviar ... ");
 
                         // Preguntamos por servidor
                         boolean res = false;
-
                         Connectivity c = new Connectivity();
-                        res = c.isValidConnection();
 
-                        if (res) {
-                            Log.d("ETH_HILO","Conexion valida (1) ... ");
-                            // Si hay conexion al servidor, sigo cargando
-                            if (!isCharging) {
-                                AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
-                            }
-                            util.sleep(12000);
-                        } else {
-                            Log.d("ETH_HILO","Conexion inválida (1) ... ");
-                            // Si no hay conexion al servidor, activo otg por 5 seg
-                            Log.d("ETH_HILO","Eth0 Enabled ... Activando ... ");
-                            AdministrarOTG(btSocket01.getOutputStream(),true); //PRENDER ETHERNET
-                            util.sleep(1000);
-                            // Testear Si conexion es ok
-                            res = c.isValidConnection();
-                            if (res){
-                                util.sleep(5000);
-                            }
-                            // Activado por 5 seg luego cargo por 12 seg
-                            if (!isCharging) {
-                                AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
-                            }
-                            util.sleep(12000);
+
+                        String servidorDatos = "";
+
+                        Log.d("IP_TEST","entrando");
+                        QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+                        List<Servicios> servidor_datos_principal = queriesServicios.BuscarServicios("SERVIDOR_DATOS_PRINCIPAL");
+                        Log.d("IP_TEST","tam: "+servidor_datos_principal.size());
+                        for (int i = 0; i < servidor_datos_principal.size(); i++){
+                            servidorDatos = servidor_datos_principal.get(i).getHost();
+                            break;
                         }
+                        Log.d("ETH_HILO","datos: "+ servidorDatos);
+                        res = c.isURLReachable(getApplicationContext(),servidorDatos,"ip");
+
+                        if (!res) {
+                            //res = c.isValidConnection();
+
+                            Log.d("ETH_HILO", "Conexion inválida (1) ... ");
+
+                            // Si no hay conexion al servidor, activo otg por 5 seg
+                            Log.d("ETH_HILO", "Eth0 Enabled ... Activando ... ");
+
+                            AdministrarOTG(btSocket01.getOutputStream(), true); //PRENDER ETHERNET
+                            Log.d("ETH_HILO", "Eth0 Enabled ... Activado ... ");
+
+                            util.sleep(8000);
+                            // Testear Si conexion es ok
+
+                            res = c.isURLReachable(getApplicationContext(),servidorDatos,"ip");
+                            Log.d("ETH_HILO", "Eth0 Enabled ... Procesado ... ");
+
+
+                            if (res) {
+                                Log.d("ETH_HILO", "Conexion válida (1) ... ");
+
+                                //res = c.isValidConnection();
+                                //if (res) {
+                                    util.sleep(10000);
+                                //}
+                                // Activado por 5 seg luego cargo por 12 seg
+
+                                AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
+
+                                util.sleep(36000);
+                            } else {
+                                Log.d("ETH_HILO", "No hay Ping Activando ETH0 ... ");
+
+                                // Si hay conexion al servidor, sigo cargando
+
+                                AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
+
+                                util.sleep(36000);
+                            }
+
+                        } else {
+                            Log.d("ETH_HILO", "Conexion valida (1) ... ");
+
+                            // Si hay conexion al servidor, sigo cargando
+
+                            AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
+
+                            util.sleep(36000);
+                        }
+
                     }
                 } else {
                     Log.d("ETH_HILO","Eth0 Disabled ... ");
-                    if (!isCharging) {
-                        AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
-                    }
-                    util.sleep(5000);
+
+
+                    AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
+
+                    util.sleep(10000);
                 }
 
 
@@ -2587,5 +2674,6 @@ public class ActivityPrincipal extends Activity {
             }
         }
     });
+
 
 }
