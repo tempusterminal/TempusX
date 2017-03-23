@@ -162,7 +162,7 @@
         android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
         android:textColor="@color/colorTexto"
         android:textSize="@dimen/cuerpo_min_textSize"
-        android:background="@color/colorFondoBarra"
+        android:background="@color/colorGris"
         android:gravity="center_horizontal|center_vertical"
         android:id="@+id/edtSistIdTerminal" />
 
@@ -243,7 +243,7 @@
         android:layout_width="100dp"
         android:layout_height="34dp"
         android:layout_marginTop="54dp"
-        android:layout_marginLeft="400dp"
+        android:layout_marginLeft="350dp"
         android:textSize="15sp"
         android:id="@+id/btnActualizarID" />
 

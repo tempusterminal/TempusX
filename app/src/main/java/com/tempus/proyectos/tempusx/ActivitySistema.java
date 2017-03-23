@@ -129,7 +129,7 @@ public class ActivitySistema extends Activity {
         String eth = " - ";
 
         for (int i = 0 ; i < arreglo.length; i++){
-            if (arreglo[i].contains("wlan0")){
+            if (ActivityPrincipal.INTERFACE_WLAN && arreglo[i].contains("wlan0")){
                 try {
                     wifi = arreglo[i+1].toLowerCase().trim().split(":")[1].replace("bcast","");
                 } catch(Exception e){
@@ -138,7 +138,7 @@ public class ActivitySistema extends Activity {
 
             }
 
-            if (arreglo[i].contains("eth0")){
+            if (ActivityPrincipal.INTERFACE_ETH && arreglo[i].contains("eth0")){
                 try {
                     eth = arreglo[i+1].toLowerCase().trim().split(":")[1].replace("bcast","");
                 } catch(Exception e){
@@ -147,7 +147,18 @@ public class ActivitySistema extends Activity {
             }
         }
 
-        resultadoIP = "wlan:" + wifi + " / eth:" + eth;
+        String var1 = "";
+        String var2 = "";
+
+        if (ActivityPrincipal.INTERFACE_WLAN){
+            var1 = "wlan:" + wifi;
+        }
+
+        if (ActivityPrincipal.INTERFACE_ETH){
+            var2 = "eth:" + eth;
+        }
+
+        resultadoIP = var1 + "/" + var2;
 
         runOnUiThread(new Runnable() {
             @Override
@@ -162,8 +173,10 @@ public class ActivitySistema extends Activity {
         txvSistFirmware.setText("J");
         txvSistSoftware.setText("E");
         txvSistIp.setText("");
-        txvSistTec1.setText("DNI");
-        txvSistTec2.setText("HUELLA");
-        txvSistTec3.setText("TECLADO");
+        //txvSistTec1.setText("DNI");
+        txvSistTec1.setText("HUELLA");
+        //txvSistTec3.setText("TECLADO");
+        txvSistTec2.setVisibility(View.INVISIBLE);
+        txvSistTec3.setVisibility(View.INVISIBLE);
     }
 }
