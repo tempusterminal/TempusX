@@ -107,370 +107,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-
-
                 <RelativeLayout
                     android:id="@+id/tab1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorFondoCuerpo"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:text="Estado de Interfaz (Wlan0):"
-                        android:layout_width="350dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/txvStatusWlan0" />
-
-                    <Switch
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginLeft="475dp"
-                        android:id="@+id/swtStatusWlan0"
-                        android:track="@drawable/switchshape"
-                        android:thumb="@drawable/switchbutton"
-                        android:textColor="@color/colorBlanco"
-                        android:textOff="Off "
-                        android:textOn=" On "/>
-
-
-                    <ListView
-                        android:background="@color/colorTabNonFocusedNone"
-                        android:layout_width="150dp"
-                        android:layout_height="125dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="40dp"
-                        android:id="@+id/lstWifi"/>
-
-
-                    <TextView
-                        android:text="SSID: -"
-                        android:layout_width="200dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="185dp"
-                        android:layout_marginTop="45dp"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/txvWifiState" />
-
-                    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <RadioButton
-                            android:text="Static"
-                            android:layout_width="100dp"
-                            android:layout_height="25dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginLeft="190dp"
-                            android:layout_marginTop="90dp"
-                            android:buttonTint="@color/colorTexto"
-                            android:textColor="@color/colorTexto"
-                            android:textSize="12sp"
-                            android:id="@+id/rbnWifiStatic" />
-
-                        <RadioButton
-                            android:text="Dynamic"
-                            android:layout_width="100dp"
-                            android:layout_height="25dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginLeft="190dp"
-                            android:layout_marginTop="00dp"
-                            android:buttonTint="@color/colorTexto"
-                            android:textColor="@color/colorTexto"
-                            android:textSize="12sp"
-                            android:id="@+id/rbnWifiDynamic" />
-                    </RadioGroup>
-
-
-
-                    <TextView
-                        android:text="Dirección IP"
-                        android:layout_width="120dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="70dp"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="14sp"
-                        android:id="@+id/wifitextView10" />
-
-                    <TextView
-                        android:text="Máscara"
-                        android:layout_width="120dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="100dp"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="14sp"
-                        android:id="@+id/wifitextView12" />
-
-                    <TextView
-                        android:text="Puerta de Enlace"
-                        android:layout_width="120dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="130dp"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="14sp"
-                        android:id="@+id/wifitextView13" />
-
-                    <!--
-
-
-
-
-                    -->
-
-                    <TextView
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="70dp"
-                        android:layout_width="150dp"
-                        android:layout_height="25dp"
-                        android:background="@color/colorGris"
-                        android:id="@+id/wbackground101"/>
-
-                    <TextView
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="100dp"
-                        android:layout_width="150dp"
-                        android:layout_height="25dp"
-                        android:background="@color/colorGris"
-                        android:id="@+id/wbackground102" />
-
-                    <TextView
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="130dp"
-                        android:layout_width="150dp"
-                        android:layout_height="25dp"
-                        android:background="@color/colorGris"
-                        android:id="@+id/wbackground103" />
-
-
-                    <EditText
-                        android:layout_width="150dp"
-                        android:layout_height="28dp"
-                        android:inputType="number|phone"
-                        android:text=""
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="70dp"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/edtWlanIp"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="5dp"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:imeOptions="actionDone"/>
-
-                    <EditText
-                        android:layout_width="150dp"
-                        android:layout_height="28dp"
-                        android:inputType="number|phone"
-                        android:text=""
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="100dp"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/edtWlanMascara"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="5dp"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:imeOptions="actionDone"/>
-
-                    <EditText
-                        android:layout_width="150dp"
-                        android:layout_height="28dp"
-                        android:inputType="phone"
-                        android:text=""
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="130dp"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/edtWlanPuerta"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="5dp"
-                        android:textCursorDrawable="@color/colorTexto"
-                        android:imeOptions="actionDone"/>
-
-
-                    <Button
-                        android:text="Guardar"
-                        android:layout_width="100dp"
-                        android:layout_height="35dp"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginTop="175dp"
-                        android:layout_marginLeft="472dp"
-                        android:id="@+id/btnConfRed" />
-
-
-
-
-                    <!-- -->
-                    <TextView
-                        android:id="@+id/txvWifiConfigArea"
-                        android:layout_width="390dp"
-                        android:layout_height="170dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="185dp"
-                        android:layout_marginTop="40dp"
-                        android:background="@color/colorHint"/>
-
-                    <TextView
-                        android:id="@+id/txvWifiConfigSSID"
-                        android:text="Loren Ipsum"
-                        android:textSize="20sp"
-                        android:textColor="@color/colorTexto"
-                        android:textStyle="bold"
-                        android:gravity="center_vertical"
-                        android:layout_width="250dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="210dp"
-                        android:layout_marginTop="50dp"/>
-
-                    <TextView
-                        android:id="@+id/txvWifiConfigCapab"
-                        android:text="Lorem Ipsum"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorTexto"
-                        android:textStyle="normal"
-                        android:gravity="center_vertical"
-                        android:layout_width="335dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="210dp"
-                        android:layout_marginTop="76dp"/>
-
-                    <TextView
-                        android:id="@+id/txvWifiConfigPass"
-                        android:text="Contraseña:"
-                        android:textSize="14sp"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:layout_width="90dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="210dp"
-                        android:layout_marginTop="120dp"/>
-
-                    <EditText
-                        android:id="@+id/edtWifiConfigPass"
-                        android:layout_width="250dp"
-                        android:layout_height="30dp"
-                        android:inputType="textPassword"
-                        android:backgroundTint="@color/colorNegro"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="15sp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="120dp"
-                        android:text=""
-                        android:paddingBottom="4dp"
-                        android:imeOptions="actionDone"/>
-
-                    <Button
-                        android:text="Cancelar"
-                        android:layout_width="100dp"
-                        android:layout_height="35dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="340dp"
-                        android:layout_marginTop="165dp"
-                        android:textSize="15sp"
-                        android:id="@+id/btnWifiConfigCancelar" />
-
-                    <Button
-                        android:text="Conectar"
-                        android:layout_width="100dp"
-                        android:layout_height="35dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="452dp"
-                        android:layout_marginTop="165dp"
-                        android:textSize="15sp"
-                        android:id="@+id/btnWifiConfigConectar" />
-
-                    <Button
-                        android:text="Buscar"
-                        android:layout_width="150dp"
-                        android:layout_height="35dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="175dp"
-                        android:textSize="13sp"
-                        android:id="@+id/buttonWifi" />
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
-                    android:id="@+id/tab2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorFondoCuerpo"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:text="Estado de Interfaz (Ppp0):"
-                        android:layout_width="350dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="10dp"
-                        android:gravity="center_vertical"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/txvStatusPpp0" />
-
-                    <Switch
-                        android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginLeft="475dp"
-                        android:id="@+id/swtStatusPpp0"
-                        android:track="@drawable/switchshape"
-                        android:thumb="@drawable/switchbutton"
-                        android:textColor="@color/colorBlanco"
-                        android:textOff="Off "
-                        android:textOn=" On "/>
-
-                    <TextView
-                        android:layout_width="450dp"
-                        android:layout_height="50dp"
-                        android:layout_alignParentLeft="true"
-                        android:layout_marginLeft="75dp"
-                        android:layout_marginTop="85dp"
-                        android:text="Prueba"
-                        android:textColor="@color/colorNegro"
-                        android:textSize="@dimen/cuerpo_textSize"
-                        android:gravity="center_vertical|center_horizontal"
-                        android:id="@+id/txvIndicador"/>
-
-                </RelativeLayout>
-
-
-                <RelativeLayout
-                    android:id="@+id/tab3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/colorFondoCuerpo"
@@ -492,7 +130,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="25dp"
                         android:layout_marginTop="10dp"
-                        android:layout_marginLeft="475dp"
+                        android:layout_marginLeft="415dp"
                         android:id="@+id/swtStatusEth0"
                         android:track="@drawable/switchshape"
                         android:thumb="@drawable/switchbutton"
@@ -601,7 +239,7 @@
                         android:gravity="center_vertical"
                         android:id="@+id/textView25" />
 
-                    -->
+
 
                     <TextView
                         android:layout_alignParentTop="true"
@@ -628,7 +266,7 @@
                         android:layout_width="200dp"
                         android:layout_height="25dp"
                         android:background="@color/colorGris"
-                        android:id="@+id/background103" />
+                        android:id="@+id/background103" />-->
 
                     <!--
                     <TextView
@@ -657,7 +295,7 @@
                         android:inputType="textPersonName"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
+                        android:layout_marginLeft="240dp"
                         android:layout_marginTop="57dp"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -671,7 +309,7 @@
                         android:inputType="textPersonName"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
+                        android:layout_marginLeft="240dp"
                         android:layout_marginTop="97dp"
                         android:backgroundTint="@color/colorNegro"
                         android:textColor="@color/colorTexto"
@@ -684,7 +322,7 @@
                         android:inputType="textPersonName"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
+                        android:layout_marginLeft="240dp"
                         android:layout_marginTop="137dp"
                         android:backgroundTint="@color/colorNegro"
                         android:textColor="@color/colorTexto"
@@ -719,6 +357,390 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtEthDns2" />
                     -->
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/tab2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:text="Estado de Interfaz (Ppp0):"
+                        android:layout_width="350dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/txvStatusPpp0" />
+
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="415dp"
+                        android:id="@+id/swtStatusPpp0"
+                        android:track="@drawable/switchshape"
+                        android:thumb="@drawable/switchbutton"
+                        android:textColor="@color/colorBlanco"
+                        android:textOff="Off "
+                        android:textOn=" On "/>
+
+                    <TextView
+                        android:layout_width="450dp"
+                        android:layout_height="50dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="85dp"
+                        android:text="..."
+                        android:textColor="@color/colorNegro"
+                        android:textSize="@dimen/cuerpo_textSize"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/txvIndicador"/>
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/tab3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:text="Estado de Interfaz (Wlan0):"
+                        android:layout_width="350dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="10dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/txvStatusWlan0" />
+
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="415dp"
+                        android:id="@+id/swtStatusWlan0"
+                        android:track="@drawable/switchshape"
+                        android:thumb="@drawable/switchbutton"
+                        android:textColor="@color/colorBlanco"
+                        android:textOff="Off "
+                        android:textOn=" On "/>
+
+
+                    <ListView
+                        android:background="@color/colorTabNonFocusedNone"
+                        android:layout_width="150dp"
+                        android:layout_height="120dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="40dp"
+                        android:id="@+id/lstWifi"/>
+
+
+                    <TextView
+                        android:text="SSID: -"
+                        android:layout_width="200dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="185dp"
+                        android:layout_marginTop="45dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/txvWifiState" />
+
+                    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RadioButton
+                            android:text="Static"
+                            android:layout_width="100dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginLeft="175dp"
+                            android:layout_marginTop="90dp"
+                            android:buttonTint="@color/colorTexto"
+                            android:textColor="@color/colorTexto"
+                            android:textSize="12sp"
+                            android:id="@+id/rbnWifiStatic" />
+
+                        <RadioButton
+                            android:text="Dynamic"
+                            android:layout_width="100dp"
+                            android:layout_height="25dp"
+                            android:layout_alignParentTop="true"
+                            android:layout_marginLeft="175dp"
+                            android:layout_marginTop="00dp"
+                            android:buttonTint="@color/colorTexto"
+                            android:textColor="@color/colorTexto"
+                            android:textSize="12sp"
+                            android:id="@+id/rbnWifiDynamic" />
+                    </RadioGroup>
+
+
+
+                    <TextView
+                        android:text="Dirección IP"
+                        android:layout_width="120dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="265dp"
+                        android:layout_marginTop="70dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="14sp"
+                        android:id="@+id/wifitextView10" />
+
+                    <TextView
+                        android:text="Máscara"
+                        android:layout_width="120dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="265dp"
+                        android:layout_marginTop="100dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="14sp"
+                        android:id="@+id/wifitextView12" />
+
+                    <TextView
+                        android:text="Puerta de Enlace"
+                        android:layout_width="120dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="265dp"
+                        android:layout_marginTop="130dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="14sp"
+                        android:id="@+id/wifitextView13" />
+
+                    <!--
+
+
+
+
+
+
+                    <TextView
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="420dp"
+                        android:layout_marginTop="70dp"
+                        android:layout_width="150dp"
+                        android:layout_height="25dp"
+                        android:background="@color/colorGris"
+                        android:id="@+id/wbackground101"/>
+
+                    <TextView
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="420dp"
+                        android:layout_marginTop="100dp"
+                        android:layout_width="150dp"
+                        android:layout_height="25dp"
+                        android:background="@color/colorGris"
+                        android:id="@+id/wbackground102" />
+
+                    <TextView
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="420dp"
+                        android:layout_marginTop="130dp"
+                        android:layout_width="150dp"
+                        android:layout_height="25dp"
+                        android:background="@color/colorGris"
+                        android:id="@+id/wbackground103" />-->
+
+
+                    <EditText
+                        android:layout_width="130dp"
+                        android:layout_height="28dp"
+                        android:inputType="number|phone"
+                        android:text=""
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="375dp"
+                        android:layout_marginTop="70dp"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/edtWlanIp"
+                        android:paddingBottom="5dp"
+                        android:paddingLeft="5dp"
+                        android:textCursorDrawable="@color/colorTexto"
+                        android:backgroundTint="@color/colorNegro"
+                        android:imeOptions="actionDone"/>
+
+                    <EditText
+                        android:layout_width="130dp"
+                        android:layout_height="28dp"
+                        android:inputType="number|phone"
+                        android:text=""
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="375dp"
+                        android:layout_marginTop="100dp"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/edtWlanMascara"
+                        android:paddingBottom="5dp"
+                        android:paddingLeft="5dp"
+                        android:textCursorDrawable="@color/colorTexto"
+                        android:backgroundTint="@color/colorNegro"
+                        android:imeOptions="actionDone"/>
+
+                    <EditText
+                        android:layout_width="130dp"
+                        android:layout_height="28dp"
+                        android:inputType="phone"
+                        android:text=""
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="375dp"
+                        android:layout_marginTop="130dp"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/edtWlanPuerta"
+                        android:paddingBottom="5dp"
+                        android:paddingLeft="5dp"
+                        android:textCursorDrawable="@color/colorTexto"
+                        android:backgroundTint="@color/colorNegro"
+                        android:imeOptions="actionDone"/>
+
+
+                    <Button
+                        android:text="Guardar"
+                        android:layout_width="100dp"
+                        android:layout_height="32dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="160dp"
+                        android:layout_marginLeft="405dp"
+                        android:id="@+id/btnConfRed" />
+
+
+
+
+                    <!-- -->
+                    <TextView
+                        android:id="@+id/txvWifiConfigArea"
+                        android:layout_width="330dp"
+                        android:layout_height="155dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="185dp"
+                        android:layout_marginTop="40dp"
+                        android:background="@color/colorHint"/>
+
+                    <TextView
+                        android:id="@+id/txvWifiConfigSSID"
+                        android:text="Loren Ipsum"
+                        android:textSize="20sp"
+                        android:textColor="@color/colorTexto"
+                        android:textStyle="bold"
+                        android:gravity="center_vertical"
+                        android:layout_width="250dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="195dp"
+                        android:layout_marginTop="50dp"/>
+
+                    <TextView
+                        android:id="@+id/txvWifiConfigCapab"
+                        android:text="Lorem Ipsum"
+                        android:textSize="12sp"
+                        android:textColor="@color/colorTexto"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:layout_width="310dp"
+                        android:layout_height="25dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="195dp"
+                        android:layout_marginTop="76dp"/>
+
+                    <TextView
+                        android:id="@+id/txvWifiConfigPass"
+                        android:text="Contraseña:"
+                        android:textSize="14sp"
+                        android:textColor="@color/colorTexto"
+                        android:gravity="center_vertical"
+                        android:layout_width="90dp"
+                        android:layout_height="30dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="195dp"
+                        android:layout_marginTop="120dp"/>
+
+                    <EditText
+                        android:id="@+id/edtWifiConfigPass"
+                        android:layout_width="200dp"
+                        android:layout_height="30dp"
+                        android:inputType="textPassword"
+                        android:backgroundTint="@color/colorNegro"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="15sp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="280dp"
+                        android:layout_marginTop="120dp"
+                        android:text=""
+                        android:paddingBottom="4dp"
+                        android:imeOptions="actionDone"/>
+
+                    <Button
+                        android:text="Cancelar"
+                        android:layout_width="100dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="290dp"
+                        android:layout_marginTop="155dp"
+                        android:textSize="15sp"
+                        android:id="@+id/btnWifiConfigCancelar" />
+
+                    <Button
+                        android:text="Conectar"
+                        android:layout_width="100dp"
+                        android:layout_height="32dp"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="402dp"
+                        android:layout_marginTop="155dp"
+                        android:textSize="15sp"
+                        android:id="@+id/btnWifiConfigConectar" />
+
+                    <Button
+                        android:text="Buscar"
+                        android:layout_width="150dp"
+                        android:layout_height="35dp"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="162dp"
+                        android:textSize="13sp"
+                        android:id="@+id/buttonWifi" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
                 </RelativeLayout>
 

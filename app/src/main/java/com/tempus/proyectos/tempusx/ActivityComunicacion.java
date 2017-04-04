@@ -219,22 +219,35 @@ public class ActivityComunicacion extends Activity {
         host.setup();
 
         //Tab 1
-        TabHost.TabSpec spec = host.newTabSpec("Tab1");
-        spec.setContent(R.id.tab1);
-        spec.setIndicator("WIFI");
-        host.addTab(spec);
+
+
+        TabHost.TabSpec spec;
+
+        if (ActivityPrincipal.INTERFACE_WLAN){
+            spec = host.newTabSpec("Tab1");
+            spec.setContent(R.id.tab3);
+            spec.setIndicator("WIFI");
+            host.addTab(spec);
+        }
+
 
         //Tab 2
-        spec = host.newTabSpec("Tab2");
-        spec.setContent(R.id.tab2);
-        spec.setIndicator("GPRS");
-        host.addTab(spec);
+        if (ActivityPrincipal.INTERFACE_PPP){
+            spec = host.newTabSpec("Tab2");
+            spec.setContent(R.id.tab2);
+            spec.setIndicator("GPRS");
+            host.addTab(spec);
+        }
+
 
         //Tab 3
-        spec = host.newTabSpec("Tab3");
-        spec.setContent(R.id.tab3);
-        spec.setIndicator("ETHERNET");
-        host.addTab(spec);
+        if (ActivityPrincipal.INTERFACE_ETH){
+            spec = host.newTabSpec("Tab3");
+            spec.setContent(R.id.tab1);
+            spec.setIndicator("ETHERNET");
+            host.addTab(spec);
+        }
+
 
         TabWidget widget = host.getTabWidget();
         for(int i = 0; i < widget.getChildCount(); i++) {
@@ -593,7 +606,7 @@ public class ActivityComunicacion extends Activity {
 
 
         Shell sh = new Shell();
-        String params[] = {"su","-c","ifconfig"};
+        String params[] = {"su","-c","busybox ifconfig"};
         String cadena = sh.exec(params);
 
         checkEthernetConfig(cadena);
@@ -760,7 +773,7 @@ public class ActivityComunicacion extends Activity {
             s_serverAddress=String.valueOf(intToIp(dinfo.serverAddress));
 
             Shell sh = new Shell();
-            String params[] = {"su", "-c", "ifconfig"};
+            String params[] = {"su", "-c", "busybox ifconfig"};
             String data = sh.exec(params);
             //Log.v(TAG,"checkDataWifiConnection: " + data);
 

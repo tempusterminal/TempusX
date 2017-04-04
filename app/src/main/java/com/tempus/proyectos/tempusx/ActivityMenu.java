@@ -254,6 +254,14 @@ public class ActivityMenu extends Activity {
     }
 
     public void goToMain(){
+
+        Intent i = new Intent(ActivityMenu.this, ActivityPrincipal.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(i);
+        finish();
+
+
+
         try {
             ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOn",null);
         } catch(Exception e) {
@@ -266,5 +274,7 @@ public class ActivityMenu extends Activity {
         intent.putExtra("llave","valor");
         setResult(ActivityPrincipal.RESULT_OK, intent);
         finish();
+
+
     }
 }

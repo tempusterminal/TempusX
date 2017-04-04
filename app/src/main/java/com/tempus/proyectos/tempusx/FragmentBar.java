@@ -71,6 +71,9 @@ public class FragmentBar extends Fragment {
         btnRestart = (Button) v.findViewById(R.id.btnRestart);
         btnRestart.setVisibility(View.INVISIBLE);
 
+        txvINivelBateria.setVisibility(View.INVISIBLE);
+        imgViewIBat.setVisibility(View.INVISIBLE);
+
         btnRestart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -179,6 +182,7 @@ public class FragmentBar extends Fragment {
 
         //Log.v("TEMPUS: ",String.valueOf(rBatteryLevel)+"%");
 
+        /*
         try {
             if (rIsCharging || rUSBCharge) {
                 int imageresource = getResources().getIdentifier("@drawable/b5", "drawable", getActivity().getPackageName());
@@ -213,7 +217,7 @@ public class FragmentBar extends Fragment {
             Log.e("FALLA",e.getMessage());
         }
 
-
+        */
     }
 
 

@@ -370,11 +370,9 @@ public class Connectivity {
     }
 
     public void turnGPSOn(Activity activity) {
-        final Intent poke = new Intent();
-        poke.setClassName("com.android.settings", "com.android.settings.widget.SettingsAppWidgetProvider");
-        poke.addCategory(Intent.CATEGORY_ALTERNATIVE);
-        poke.setData(Uri.parse("3"));
-        activity.sendBroadcast(poke);
+        Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
+        intent.putExtra("enabled", true);
+        activity.sendBroadcast(intent);
     }
 
     public void turnGPSOff(Activity activity) {

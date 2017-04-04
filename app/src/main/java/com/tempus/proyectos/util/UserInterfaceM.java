@@ -26,19 +26,19 @@ public class UserInterfaceM {
 
     public void initScreen(Activity activity) {
 
-        //activity.setRequestedOrientation(SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
-        //activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        activity.setRequestedOrientation(SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        //View decorView = activity.getWindow().getDecorView();
+        View decorView = activity.getWindow().getDecorView();
 
-        //decorView.setSystemUiVisibility(
-        //        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        //                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        //                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        //                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-        //                | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-        //                | View.SYSTEM_UI_FLAG_IMMERSIVE);
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
 
 
         final PowerManager pm = (PowerManager) activity.getSystemService(activity.getApplicationContext().POWER_SERVICE);
@@ -61,7 +61,7 @@ public class UserInterfaceM {
 
         v.setTextColor(Color.WHITE);
         v.setTextSize(22);
-        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 80);
+        toast.setGravity(Gravity.BOTTOM|Gravity.CENTER, 0, 50);
 
         View view = toast.getView();
 

@@ -1,7 +1,11 @@
 package com.tempus.proyectos.tempusx;
 
+// utimo
+
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.Application;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -10,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
@@ -142,6 +147,10 @@ public class ActivityPrincipal extends Activity {
     public static boolean ctrlThreadReplicadoEnabled;
 
     public static String flag;
+
+    public static boolean INTERFACE_WLAN;
+    public static boolean INTERFACE_ETH;
+    public static boolean INTERFACE_PPP;
 
 
     Map<String, String> Lectoras;
@@ -407,8 +416,18 @@ public class ActivityPrincipal extends Activity {
         btSocket02 = new BluetoothSuperAdmin(MAC_BT_02);
 
 
-        threadControlSerial01.start();
-        threadControlSerial02.start();
+        if (BT_01_ENABLED){
+            threadControlSerial01.start();
+        }
+
+        if (BT_02_ENABLED){
+            threadControlSerial02.start();
+        }
+
+        if (BT_03_ENABLED){
+            threadControlSerial03.start();
+        }
+
 
         conectarSeriales();
         threadControlPrincipal.start();
@@ -434,9 +453,9 @@ public class ActivityPrincipal extends Activity {
         ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
         processMarcas.start(this);
 
-
-        checkETH0.start();
-
+        if (INTERFACE_ETH){
+            checkETH0.start();
+        }
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
 
@@ -462,6 +481,8 @@ public class ActivityPrincipal extends Activity {
                     manageAccessButtons(true);
 
                     if (MODO_EVENTO) {
+                        Date date = new Date();
+                        tiempoPasado = date;
                         actualizarFlag(null, null);
                     }
 
@@ -469,6 +490,8 @@ public class ActivityPrincipal extends Activity {
 
                     //Date date = new Date();
                     //tiempoPasado = date;
+
+                    txvMensajePantalla.setText("MODO PATRON");
 
                     MODO_PATRON = true;
 
@@ -481,6 +504,11 @@ public class ActivityPrincipal extends Activity {
         btnAccess1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AccessManager("1");
+                if (MODO_EVENTO) {
+                    Date date = new Date();
+                    tiempoPasado = date;
+                    actualizarFlag(null, null);
+                }
             }
         });
 
@@ -488,6 +516,11 @@ public class ActivityPrincipal extends Activity {
         btnAccess2.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AccessManager("2");
+                if (MODO_EVENTO) {
+                    Date date = new Date();
+                    tiempoPasado = date;
+                    actualizarFlag(null, null);
+                }
             }
         });
 
@@ -495,6 +528,11 @@ public class ActivityPrincipal extends Activity {
         btnAccess3.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AccessManager("3");
+                if (MODO_EVENTO) {
+                    Date date = new Date();
+                    tiempoPasado = date;
+                    actualizarFlag(null, null);
+                }
             }
         });
 
@@ -502,6 +540,11 @@ public class ActivityPrincipal extends Activity {
         btnAccess4.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AccessManager("4");
+                if (MODO_EVENTO) {
+                    Date date = new Date();
+                    tiempoPasado = date;
+                    actualizarFlag(null, null);
+                }
             }
         });
 
@@ -535,7 +578,12 @@ public class ActivityPrincipal extends Activity {
         btnEvent03.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flag = "3";
+                flag = "003";
+                Log.v(TAG, "Flg_Actividad: " + flag);
+                txvMensajePantalla.setText("PASE SU TARJ/BIOM");
+                actualizarFlag("003", btnEvent03);
+                Date date = new Date();
+                tiempoPasado = date;
             }
         });
 
@@ -543,7 +591,12 @@ public class ActivityPrincipal extends Activity {
         btnEvent04.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flag = "4";
+                flag = "004";
+                Log.v(TAG, "Flg_Actividad: " + flag);
+                txvMensajePantalla.setText("PASE SU TARJ/BIOM");
+                actualizarFlag("004", btnEvent04);
+                Date date = new Date();
+                tiempoPasado = date;
             }
         });
 
@@ -551,7 +604,12 @@ public class ActivityPrincipal extends Activity {
         btnEvent05.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flag = "5";
+                flag = "005";
+                Log.v(TAG, "Flg_Actividad: " + flag);
+                txvMensajePantalla.setText("PASE SU TARJ/BIOM");
+                actualizarFlag("005", btnEvent05);
+                Date date = new Date();
+                tiempoPasado = date;
             }
         });
 
@@ -559,7 +617,12 @@ public class ActivityPrincipal extends Activity {
         btnEvent06.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flag = "6";
+                flag = "006";
+                Log.v(TAG, "Flg_Actividad: " + flag);
+                txvMensajePantalla.setText("PASE SU TARJ/BIOM");
+                actualizarFlag("006", btnEvent06);
+                Date date = new Date();
+                tiempoPasado = date;
             }
         });
 
@@ -567,7 +630,12 @@ public class ActivityPrincipal extends Activity {
         btnEvent07.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flag = "7";
+                flag = "007";
+                Log.v(TAG, "Flg_Actividad: " + flag);
+                txvMensajePantalla.setText("PASE SU TARJ/BIOM");
+                actualizarFlag("007", btnEvent07);
+                Date date = new Date();
+                tiempoPasado = date;
             }
         });
 
@@ -575,7 +643,12 @@ public class ActivityPrincipal extends Activity {
         btnEvent08.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flag = "8";
+                flag = "008";
+                Log.v(TAG, "Flg_Actividad: " + flag);
+                txvMensajePantalla.setText("PASE SU TARJ/BIOM");
+                actualizarFlag("008", btnEvent08);
+                Date date = new Date();
+                tiempoPasado = date;
             }
         });
 
@@ -761,6 +834,19 @@ public class ActivityPrincipal extends Activity {
 
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        try {
+            ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
+        } catch(Exception e) {
+            Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
+        }
+
+
+    }
+
     public boolean isForeground(String myPackage) {
         ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
@@ -777,7 +863,7 @@ public class ActivityPrincipal extends Activity {
     public void reboot() {
 
         try {
-            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot" });
+            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot -p" });
             proc.waitFor();
         } catch (Exception ex) {
             Log.i("TEMPUS: ", "No se puede reiniciar!!!!!!!!!!!!!!!!", ex);
@@ -788,7 +874,6 @@ public class ActivityPrincipal extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         int eventaction = event.getAction();
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:
@@ -800,20 +885,17 @@ public class ActivityPrincipal extends Activity {
                 break;
         }
         return true;
-
     }
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-
         super.onWindowFocusChanged(hasFocus);
-        //getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-        //        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-        //        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-        //        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-        //        | View.SYSTEM_UI_FLAG_FULLSCREEN
-        //        | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
     }
 
     @Override
@@ -822,19 +904,19 @@ public class ActivityPrincipal extends Activity {
 
         manageLayerMarcacion(false);
         manageAccessButtons(false);
+
         areaAccessEnabled = false;
 
         if (requestCode == 1) {
             if (resultCode == ActivityLogin.RESULT_OK) {
                 Bundle b = data.getExtras();
                 if (b != null) {
-                    Log.v(TAG, String.valueOf(b.getSerializable("llave")));
+                    Log.v("TEMPUS: ", String.valueOf(b.getSerializable("llave")));
                 }
             } else if (resultCode == 0) {
                 System.out.println("RESULT CANCELLED");
             }
         }
-
     }
 
     public void turnOnScreen(){
@@ -857,11 +939,26 @@ public class ActivityPrincipal extends Activity {
 
         idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL");
 
+        MODO_EVENTO = true;
+
+        // Interfaces de RED
+
+        INTERFACE_ETH = false;
+        INTERFACE_PPP = false;
+        INTERFACE_WLAN = true;
+
         contadorEventoPantalla = 0;
 
+
+
         if (MODO_EVENTO) {
+
+            boolean buttonsVisibility[] = {true,true,true,true,true,true,true,true};
+            String buttonsText[] = {"ENT","SAL","3","4","5","6","7","8"};
+
             flag = null;
             txvMensajePantalla.setText("SELECCIONE UN EVENTO");
+            initEventsButtons(buttonsVisibility, buttonsText);
         } else {
             flag = "127";
             txvMensajePantalla.setText("PASE SU TARJETA");
@@ -880,8 +977,6 @@ public class ActivityPrincipal extends Activity {
         Lectoras.put("07","HUELLA SUPREMA");
         //Lectoras.put("09","DNI");
 
-        MODO_EVENTO = false;
-
         TIEMPO_PRESENTE_BT01 = new Date();
         TIEMPO_PASADO_BT01 = new Date();
 
@@ -892,10 +987,56 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_PASADO_BT03 = new Date();
 
 
-        //CORPAC
+        // PRUEBA CROVISA 01 9c
+
+        //MAC_BT_01 = "00:15:83:35:7A:E1";
+        //MAC_BT_02 = "20:16:08:10:64:80";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // PRUEBA CROVISA 02 2a
+
+        //MAC_BT_01 = "20:16:08:10:65:03";
+        //MAC_BT_02 = "00:15:83:35:79:C9";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+
+
+        // DIRESA ID 100
+        //MAC_BT_01 = "20:16:08:10:42:38";
+        //MAC_BT_02 = "20:16:08:09:04:41";
+
+        // DIRESA ID 101
+        //MAC_BT_01 = "20:16:08:10:83:58";
+        //MAC_BT_02 = "20:16:08:10:60:73";
+
+
+        // PRUEBA EDITORA
+        //MAC_BT_01 = "00:15:83:35:6C:85";
+        //MAC_BT_02 = "98:D3:33:80:91:98";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+
+
+        // Plenum 01
+        //MAC_BT_01 = "20:16:08:10:64:87";
+        //MAC_BT_02 = "00:00:00:00:00:00";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // Plenum 02
+        //MAC_BT_01 = "20:16:07:18:34:68";
+        //MAC_BT_02 = "00:00:00:00:00:00";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // Plenum 03
+        //MAC_BT_01 = "00:15:83:35:7A:1D";
+        //MAC_BT_02 = "00:00:00:00:00:00";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+
+        // CORPAC
         MAC_BT_01 = "98:D3:32:20:5B:7E";
         MAC_BT_02 = "98:D3:34:90:7D:C0";
-
+        MAC_BT_03 = "00:00:00:00:00:00";
 
 
         BT_01_ENABLED = true;   //Arduino
@@ -990,9 +1131,9 @@ public class ActivityPrincipal extends Activity {
                 startActivityForResult(intent01, 1);
                 patronAcceso = "";
                 try {
-                    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOff",null);
+                    ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOff",null);
                 } catch(Exception e) {
-                    Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
+                    Log.v("TEMPUS: ","ERROR ESTABLECIENDO CONEXION CON HUELLERO");
                 }
                 break;
 
@@ -1002,7 +1143,7 @@ public class ActivityPrincipal extends Activity {
                 startActivityForResult(intent02, 1);
                 patronAcceso = "";
                 try {
-                    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOff",null);
+                    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
                 } catch(Exception e) {
                     Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
                 }
@@ -1365,7 +1506,9 @@ public class ActivityPrincipal extends Activity {
                     btnEvent06.setBackgroundColor(Color.GRAY);
                     btnEvent07.setBackgroundColor(Color.GRAY);
                     btnEvent08.setBackgroundColor(Color.GRAY);
-                    txvMensajePantalla.setText("SELECCIONE EVENTO");
+                    if (!areaAccessEnabled) {
+                        txvMensajePantalla.setText("SELECCIONE EVENTO");
+                    }
                 }
             });
         }
@@ -1400,6 +1543,65 @@ public class ActivityPrincipal extends Activity {
 
 
     /* -------------------- ADMINISTRACIÓN DE USER INTERFACE --------------------- */
+
+    public void initEventsButtons(boolean visible[], String nombre[]){
+        if (visible[0]){
+            btnEvent01.setVisibility(View.VISIBLE);
+            btnEvent01.setText(nombre[0]);
+        } else {
+            btnEvent01.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[1]){
+            btnEvent02.setVisibility(View.VISIBLE);
+            btnEvent02.setText(nombre[1]);
+        } else {
+            btnEvent02.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[2]){
+            btnEvent03.setVisibility(View.VISIBLE);
+            btnEvent03.setText(nombre[2]);
+        } else {
+            btnEvent03.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[3]){
+            btnEvent04.setVisibility(View.VISIBLE);
+            btnEvent04.setText(nombre[3]);
+        } else {
+            btnEvent04.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[4]){
+            btnEvent05.setVisibility(View.VISIBLE);
+            btnEvent05.setText(nombre[4]);
+        } else {
+            btnEvent05.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[5]){
+            btnEvent06.setVisibility(View.VISIBLE);
+            btnEvent06.setText(nombre[5]);
+        } else {
+            btnEvent06.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[6]){
+            btnEvent07.setVisibility(View.VISIBLE);
+            btnEvent07.setText(nombre[6]);
+        } else {
+            btnEvent07.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[7]){
+            btnEvent08.setVisibility(View.VISIBLE);
+            btnEvent08.setText(nombre[7]);
+        } else {
+            btnEvent08.setVisibility(View.INVISIBLE);
+        }
+
+    }
 
     public void manageKeyboard(boolean visible){
         tarjetaKey = "";
@@ -1488,12 +1690,12 @@ public class ActivityPrincipal extends Activity {
         if (visible) {
             btnEvent01.setVisibility(View.VISIBLE);
             btnEvent02.setVisibility(View.VISIBLE);
-            btnEvent03.setVisibility(View.INVISIBLE);
-            btnEvent04.setVisibility(View.INVISIBLE);
-            btnEvent05.setVisibility(View.INVISIBLE);
-            btnEvent06.setVisibility(View.INVISIBLE);
-            btnEvent07.setVisibility(View.INVISIBLE);
-            btnEvent08.setVisibility(View.INVISIBLE);
+            btnEvent03.setVisibility(View.VISIBLE);
+            btnEvent04.setVisibility(View.VISIBLE);
+            btnEvent05.setVisibility(View.VISIBLE);
+            btnEvent06.setVisibility(View.VISIBLE);
+            btnEvent07.setVisibility(View.VISIBLE);
+            btnEvent08.setVisibility(View.VISIBLE);
 
         } else {
             btnEvent01.setVisibility(View.INVISIBLE);
@@ -1822,6 +2024,7 @@ public class ActivityPrincipal extends Activity {
                                     });
                                 } else {
                                     Log.d("TEMPUS: ","DEBE SELEECIONAR UN EVENTO");
+                                    MarcacionKO(btSocket01.getOutputStream());
 
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -2075,12 +2278,13 @@ public class ActivityPrincipal extends Activity {
         if (c1 && c2 && c3){ // Si todos los seriales estan conectados podemos hacer algo
             if (isBooting){
                 isBooting = false;
-                //util.sleep(1000);
-                //try {
-                //    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
-                //} catch(Exception e) {
-                //    Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
-                //}
+                util.sleep(1000);
+                try {
+                    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
+                } catch(Exception e) {
+                    Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
+                }
+
             }
             Log.v(TAG,"SERIALES OK");
             ctrlThreadPantallaEnabled = true;
@@ -2402,14 +2606,18 @@ public class ActivityPrincipal extends Activity {
 
                     // Control de Marcación
 
+                    Log.d("threadControlPantalla: ","Flag: " + flag);
+
                     try {
                         Date date = new Date();
                         tiempoPresente = date;
                         long dif = (tiempoPresente.getTime() - tiempoPasado.getTime()) / 1000;
 
-                        Log.v("TEMPUS: ","dif normal: " + dif);
+                        Log.v("threadControlPantalla: ","dif normal: " + dif);
 
                         if (dif >= tiempoMarcacion) {
+
+                            Log.v("threadControlPantalla: ","1");
 
                             runOnUiThread(new Runnable() {
                                 @Override
@@ -2417,10 +2625,12 @@ public class ActivityPrincipal extends Activity {
                                     manageKeyboard(false);
                                     manageLayerMarcacion(false);
 
-                                    Log.d("TEMPUS: ","Flag: " + flag);
-
                                     if ( MODO_EVENTO ){
+
+                                        Log.v("threadControlPantalla: ","2");
+
                                         if((tiempoPresente.getTime() - tiempoPasado.getTime()) / 1000 >= tiempoFlag){
+                                            Log.v("threadControlPantalla: ","3");
                                             actualizarFlag(null,null);
                                             manageAccessButtons(false);
                                             txvMensajePantalla.setText("SELECCIONE EVENTO");
@@ -2484,7 +2694,15 @@ public class ActivityPrincipal extends Activity {
 
             while (true){
 
+                //runOnUiThread(new Runnable() {
+                //    @Override
+                //    public void run() {
+                //        Toast.makeText(getApplicationContext(), "CICLO ... ",Toast.LENGTH_SHORT).show();
+                //    }
+                //});
+
                 Log.d("ETH_HILO","CICLO ... ");
+
 
                 DBManager db = new DBManager(ActivityPrincipal.context);
                 String resultado = db.valexecSQL("SELECT PARAMETRO FROM TERMINAL_CONFIGURACION");
@@ -2515,51 +2733,91 @@ public class ActivityPrincipal extends Activity {
 
                     if ( cant == 0 ){ // SI NO HAY NADA POR ENVIAR
                         Log.d("ETH_HILO","Eth0 Enabled ... Sin data por enviar ...");
-                        if (!isCharging){
-                            AdministrarOTG(btSocket01.getOutputStream(),false); // CARGAR
-                        }
 
-                        util.sleep(5000);
+
+                        AdministrarOTG(btSocket01.getOutputStream(),false); // CARGAR
+
+
+                        util.sleep(10000);
                     } else { // SI HAY ALGO POR ENVIAR
                         Log.d("ETH_HILO","Eth0 Enabled ... Con data por enviar ... ");
 
                         // Preguntamos por servidor
                         boolean res = false;
-
                         Connectivity c = new Connectivity();
-                        res = c.isValidConnection();
 
-                        if (res) {
-                            Log.d("ETH_HILO","Conexion valida (1) ... ");
-                            // Si hay conexion al servidor, sigo cargando
-                            if (!isCharging) {
-                                AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
-                            }
-                            util.sleep(12000);
-                        } else {
-                            Log.d("ETH_HILO","Conexion inválida (1) ... ");
-                            // Si no hay conexion al servidor, activo otg por 5 seg
-                            Log.d("ETH_HILO","Eth0 Enabled ... Activando ... ");
-                            AdministrarOTG(btSocket01.getOutputStream(),true); //PRENDER ETHERNET
-                            util.sleep(1000);
-                            // Testear Si conexion es ok
-                            res = c.isValidConnection();
-                            if (res){
-                                util.sleep(5000);
-                            }
-                            // Activado por 5 seg luego cargo por 12 seg
-                            if (!isCharging) {
-                                AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
-                            }
-                            util.sleep(12000);
+
+                        String servidorDatos = "";
+
+                        Log.d("IP_TEST","entrando");
+                        QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+                        List<Servicios> servidor_datos_principal = queriesServicios.BuscarServicios("SERVIDOR_DATOS_PRINCIPAL");
+                        Log.d("IP_TEST","tam: "+servidor_datos_principal.size());
+                        for (int i = 0; i < servidor_datos_principal.size(); i++){
+                            servidorDatos = servidor_datos_principal.get(i).getHost();
+                            break;
                         }
+                        Log.d("ETH_HILO","datos: "+ servidorDatos);
+                        res = c.isURLReachable(getApplicationContext(),servidorDatos,"ip");
+
+                        if (!res) {
+                            //res = c.isValidConnection();
+
+                            Log.d("ETH_HILO", "Conexion inválida (1) ... ");
+
+                            // Si no hay conexion al servidor, activo otg por 5 seg
+                            Log.d("ETH_HILO", "Eth0 Enabled ... Activando ... ");
+
+                            AdministrarOTG(btSocket01.getOutputStream(), true); //PRENDER ETHERNET
+                            Log.d("ETH_HILO", "Eth0 Enabled ... Activado ... ");
+
+                            util.sleep(8000);
+                            // Testear Si conexion es ok
+
+                            res = c.isURLReachable(getApplicationContext(),servidorDatos,"ip");
+                            Log.d("ETH_HILO", "Eth0 Enabled ... Procesado ... ");
+
+
+                            if (res) {
+                                Log.d("ETH_HILO", "Conexion válida (1) ... ");
+
+                                //res = c.isValidConnection();
+                                //if (res) {
+                                    util.sleep(10000);
+                                //}
+                                // Activado por 5 seg luego cargo por 12 seg
+
+                                AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
+
+                                util.sleep(36000);
+                            } else {
+                                Log.d("ETH_HILO", "No hay Ping Activando ETH0 ... ");
+
+                                // Si hay conexion al servidor, sigo cargando
+
+                                AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
+
+                                util.sleep(36000);
+                            }
+
+                        } else {
+                            Log.d("ETH_HILO", "Conexion valida (1) ... ");
+
+                            // Si hay conexion al servidor, sigo cargando
+
+                            AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
+
+                            util.sleep(36000);
+                        }
+
                     }
                 } else {
                     Log.d("ETH_HILO","Eth0 Disabled ... ");
-                    if (!isCharging) {
-                        AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
-                    }
-                    util.sleep(5000);
+
+
+                    AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
+
+                    util.sleep(10000);
                 }
 
 
@@ -2587,5 +2845,6 @@ public class ActivityPrincipal extends Activity {
             }
         }
     });
+
 
 }

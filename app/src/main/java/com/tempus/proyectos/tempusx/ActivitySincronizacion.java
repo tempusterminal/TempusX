@@ -121,9 +121,9 @@ public class ActivitySincronizacion extends Activity {
 
         //Tab 1
         TabHost.TabSpec spec = host.newTabSpec("Tab1");
-        spec.setContent(R.id.tabSync1);
-        spec.setIndicator("SERVICIOS");
-        host.addTab(spec);
+        //spec.setContent(R.id.tabSync1);
+        //spec.setIndicator("SERVICIOS");
+        //host.addTab(spec);
 
         //Tab 2
         spec = host.newTabSpec("Tab2");
