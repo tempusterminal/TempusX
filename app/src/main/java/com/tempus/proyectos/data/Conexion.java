@@ -17,6 +17,7 @@ import com.tempus.proyectos.data.tables.TableEmpresas;
 import com.tempus.proyectos.data.tables.TableEstados;
 import com.tempus.proyectos.data.tables.TableLlamadas;
 import com.tempus.proyectos.data.tables.TableMarcaciones;
+import com.tempus.proyectos.data.tables.TableParameters;
 import com.tempus.proyectos.data.tables.TablePerTipolectTerm;
 import com.tempus.proyectos.data.tables.TablePersonal;
 import com.tempus.proyectos.data.tables.TablePersonalTipolectoraBiometria;
@@ -60,7 +61,7 @@ public class Conexion extends SQLiteOpenHelper{
         TablePersonal tablePersonal = new TablePersonal();
         TablePersonalTipolectoraBiometria tablePersonalTipolectoraBiometria = new TablePersonalTipolectoraBiometria();
         TablePerTipolectTerm tablePerTipolectTerm = new TablePerTipolectTerm();
-        TableServicios  tableServicios = new TableServicios();
+        TableServicios tableServicios = new TableServicios();
         TableTarjetaPersonalTipolectora tableTarjetaPersonalTipolectora = new TableTarjetaPersonalTipolectora();
         TableTerminal tableTerminal = new TableTerminal();
         TableTerminalConfiguracion tableTerminalConfiguracion = new TableTerminalConfiguracion();
@@ -70,6 +71,7 @@ public class Conexion extends SQLiteOpenHelper{
         TableTipoLectora tableTipoLectora = new TableTipoLectora();
         TableLlamadas tableLlamadas = new TableLlamadas();
         TableTerminalSerial terminalSerial = new TableTerminalSerial();
+        TableParameters tableParameters = new TableParameters();
 
 
         // -----------------------------------------------------
@@ -78,6 +80,7 @@ public class Conexion extends SQLiteOpenHelper{
         // CREATE tableEmpresas
         Log.d("Autorizaciones",tableEmpresas.CREATE_TABLE);
         try{
+            db.execSQL(tableEmpresas.DROP_TABLE);
             db.execSQL(tableEmpresas.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -86,6 +89,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableEstados.CREATE_TABLE);
         // CREATE tableEstados
         try{
+            db.execSQL(tableEstados.DROP_TABLE);
             db.execSQL(tableEstados.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -94,6 +98,8 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableMarcaciones.CREATE_TABLE);
         // CREATE tableMarcaciones
         try{
+            //No Elimina Tabla por Seguridad
+            //db.execSQL(tableMarcaciones.DROP_TABLE);
             db.execSQL(tableMarcaciones.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -102,6 +108,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tablePersonal.CREATE_TABLE);
         // CREATE tablePersonal
         try{
+            db.execSQL(tablePersonal.DROP_TABLE);
             db.execSQL(tablePersonal.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -110,6 +117,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tablePersonalTipolectoraBiometria.CREATE_TABLE);
         // CREATE TtblePersonalTipolectoraBiometria
         try{
+            db.execSQL(tablePersonalTipolectoraBiometria.DROP_TABLE);
             db.execSQL(tablePersonalTipolectoraBiometria.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -118,6 +126,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tablePerTipolectTerm.CREATE_TABLE);
         // CREATE tablePerTipolectTerm
         try{
+            db.execSQL(tablePerTipolectTerm.DROP_TABLE);
             db.execSQL(tablePerTipolectTerm.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -126,6 +135,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableServicios.CREATE_TABLE);
         // CREATE tableServicios
         try{
+            db.execSQL(tableServicios.DROP_TABLE);
             db.execSQL(tableServicios.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -134,6 +144,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableTarjetaPersonalTipolectora.CREATE_TABLE);
         // CREATE tableTarjetaPersonalTipolectora
         try{
+            db.execSQL(tableTarjetaPersonalTipolectora.DROP_TABLE);
             db.execSQL(tableTarjetaPersonalTipolectora.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -142,6 +153,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableTerminal.CREATE_TABLE);
         // CREATE tableTerminal
         try{
+            //db.execSQL(tableTerminal.DROP_TABLE);
             db.execSQL(tableTerminal.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -150,6 +162,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableTerminalConfiguracion.CREATE_TABLE);
         // CREATE tableTerminalConfiguracion
         try{
+            db.execSQL(tableTerminalConfiguracion.DROP_TABLE);
             db.execSQL(tableTerminalConfiguracion.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -158,6 +171,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableTerminalServicios.CREATE_TABLE);
         // CREATE tableTerminalServicios
         try{
+            db.execSQL(tableTerminalServicios.DROP_TABLE);
             db.execSQL(tableTerminalServicios.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -166,6 +180,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableTerminalTipolect.CREATE_TABLE);
         // CREATE tableTerminalTipolect
         try{
+            db.execSQL(tableTerminalTipolect.DROP_TABLE);
             db.execSQL(tableTerminalTipolect.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -174,6 +189,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableTipoDetalleBiometria.CREATE_TABLE);
         // CREATE tableTipoDetalleBiometria
         try{
+            db.execSQL(tableTipoDetalleBiometria.DROP_TABLE);
             db.execSQL(tableTipoDetalleBiometria.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -182,6 +198,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableTipoLectora.CREATE_TABLE);
         // CREATE tableTipoLectora
         try{
+            db.execSQL(tableTipoLectora.DROP_TABLE);
             db.execSQL(tableTipoLectora.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -193,6 +210,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",tableLlamadas.CREATE_TABLE);
         // CREATE tableTipoLectora
         try{
+            db.execSQL(tableLlamadas.DROP_TABLE);
             db.execSQL(tableLlamadas.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -204,6 +222,7 @@ public class Conexion extends SQLiteOpenHelper{
         Log.d("Autorizaciones",terminalSerial.CREATE_TABLE);
         // CREATE tableTipoLectora
         try{
+            db.execSQL(terminalSerial.DROP_TABLE);
             db.execSQL(terminalSerial.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
@@ -211,6 +230,16 @@ public class Conexion extends SQLiteOpenHelper{
         // ------------------------------------------------------
 
 
+        // ------------------------------------------------------
+        Log.d("Autorizaciones",tableParameters.CREATE_TABLE);
+        // CREATE tableTipoLectora
+        try{
+            db.execSQL(tableParameters.DROP_TABLE);
+            db.execSQL(tableParameters.CREATE_TABLE);
+        }catch (SQLException e){
+            //Log.d("Autorizaciones",e.getMessage());
+        }
+        // ------------------------------------------------------
 
     }
 

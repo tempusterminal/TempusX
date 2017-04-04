@@ -17,6 +17,7 @@ import com.tempus.proyectos.data.model.Estados;
 import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
 import com.tempus.proyectos.data.queries.QueriesBiometrias;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
+import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.data.queries.QueriesTerminalConfiguracion;
 import com.tempus.proyectos.data.tables.TableEstados;
@@ -108,11 +109,6 @@ public class DBManager {
 
         String[] lotearray = lote.split(",");
 
-        DBManager dbManager = new DBManager(context);
-        if(dbManager.valexecSQL("SELECT COUNT(*) FROM TERMINAL").equals("0")){
-            dbManager.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES (0)");
-        }
-
         if(lotearray[0].equals("1")){
             // Crear la BD TEMPUSPLUS.db
             this.create();
@@ -145,7 +141,7 @@ public class DBManager {
         }
 
         if(lotearray[5].equals("1")){
-            // Poblar Tablar Iniciales
+            // Poblar Tablas Iniciales
 
             // Tabla Llamadas para sincronizar autorizaciones
             QueriesLlamadas queriesLlamadas = new QueriesLlamadas(context);
@@ -159,6 +155,15 @@ public class DBManager {
             QueriesTerminalConfiguracion queriesTerminalConfiguracion = new QueriesTerminalConfiguracion(context);
             queriesTerminalConfiguracion.poblar();
 
+            // Tabla Parameters
+            QueriesParameters queriesParameters = new QueriesParameters(context);
+            queriesParameters.poblar();
+
+        }
+
+        DBManager dbManager = new DBManager(context);
+        if(dbManager.valexecSQL("SELECT COUNT(*) FROM TERMINAL").equals("0")){
+            dbManager.execSQL("INSERT INTO TERMINAL(IDTERMINAL) VALUES (0)");
         }
         // //////////////////////////////////
 

@@ -66,7 +66,7 @@ public class ProcessSyncTS extends Thread{
                     }
                 }
 
-                Thread.sleep(2000);
+                Thread.sleep(3000);
 
 
             }catch (SQLException e){

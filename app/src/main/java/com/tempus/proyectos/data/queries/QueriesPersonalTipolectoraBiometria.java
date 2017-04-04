@@ -8,10 +8,13 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import com.tempus.proyectos.data.Conexion;
+import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Biometrias;
+import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.tables.TablePersonalTipolectoraBiometria;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
@@ -21,6 +24,7 @@ import com.tempus.proyectos.util.Utilities;
 import org.apache.commons.net.io.Util;
 
 import static com.tempus.proyectos.tempusx.ActivityPrincipal.btSocket02;
+import static com.tempus.proyectos.tempusx.ActivityPrincipal.context;
 import static com.tempus.proyectos.tempusx.ActivityPrincipal.isReplicating;
 import static com.tempus.proyectos.tempusx.ActivityPrincipal.isReplicatingTemplate;
 import static com.tempus.proyectos.tempusx.ActivityPrincipal.objSuprema;
@@ -51,7 +55,7 @@ public class QueriesPersonalTipolectoraBiometria {
 
     public void insert(PersonalTipolectoraBiometria personalTipolectoraBiometria){
 
-        conexion.onCreate(database);
+        //conexion.onCreate(database);
 
         ContentValues contentValues = new ContentValues();
 
@@ -230,7 +234,6 @@ public class QueriesPersonalTipolectoraBiometria {
 
     }
 
-
     public String CompletarBiometria(String template){
 
         String ValorBiometria = "";
@@ -305,12 +308,7 @@ public class QueriesPersonalTipolectoraBiometria {
         return personalTipolectoraBiometriaList;
     }
 
-
-
-
-
     public void ReplicarBiometria(){
-        // TERMINAR SCRIPTS
 
         int biometriasPorReplicar = 0;
         int biometriasReplicadas = 0;
@@ -331,7 +329,6 @@ public class QueriesPersonalTipolectoraBiometria {
             }catch(Exception e){
                 Log.v("TEMPUS: ","QueriesPersonalTipolectoraBiometria.ReplicarBiometria Error apagando Huella: " + e.getMessage());
             }
-
 
 
             do{
@@ -423,6 +420,70 @@ public class QueriesPersonalTipolectoraBiometria {
         this.close();
 
         //return 1;
+    }
+
+
+    public int iniciarReplicado(){
+        //Esta función o método tiene como objetivo detectar las horas de replicado
+        //La consulta se realiza a la tabla PARAMETERS, IDPARAMETER = HORA_REPLICADO_1, HORA_REPLICADO_2, HORA_REPLICADO_3, HORA_REPLICADO_4
+        //this.open();
+        //Se declaran variables para la hora actual y para la hora de replica
+        int hora = 0;
+        int minuto = 0;
+        int segundo = 0;
+
+        int horar = 0;
+        int minutor = 0;
+        int segundor = 0;
+
+        String idparameters = "HORA_REPLICADO_1,HORA_REPLICADO_2,HORA_REPLICADO_3,HORA_REPLICADO_4";
+        String[] idparametersarray = idparameters.split(",");
+
+        //Log.d("Autorizaciones","idparametersarray[i] : " + idparametersarray[0] + " - " + idparametersarray[1] + " - " + idparametersarray[2] + " - " + idparametersarray[3]);
+
+        Fechahora fechahora = new Fechahora();
+        QueriesParameters queriesParameters = new QueriesParameters(context);
+
+        for(int i = 0; i < idparametersarray.length; i++){
+            //Log.d("Autorizaciones","idparametersarray[i] : " + idparametersarray[i]);
+
+            //List<Parameters> parametersList = new ArrayList<Parameters>();
+            List<Parameters> parametersList = queriesParameters.select_one_row(idparametersarray[i]);
+
+            //fechahora.getHora(fechahora.getFechahora());
+            //parametersList.get(0).getIdparameter();
+
+            hora = Integer.parseInt(fechahora.getHora(fechahora.getFechahora()).substring(0,2));
+            minuto = Integer.parseInt(fechahora.getHora(fechahora.getFechahora()).substring(3,5));
+            segundo = Integer.parseInt(fechahora.getHora(fechahora.getFechahora()).substring(6));
+
+            horar = Integer.parseInt(parametersList.get(0).getValue().substring(0,2));
+            minutor = Integer.parseInt(parametersList.get(0).getValue().substring(3,5));
+            segundor = Integer.parseInt(parametersList.get(0).getValue().substring(6));
+
+            //Log.d("Autorizaciones","Hora Actual: " + hora + " " + minuto + " " + segundo);
+            //Log.d("Autorizaciones","Hora Replica: " + horar + " " + minutor + " " + segundor);
+
+
+            if(parametersList.get(0).getEnable() == 1){
+                if(hora == horar){
+                    if(minuto == minutor){
+                        ///Log.d("Autorizaciones","REPLICA ACTIVA");
+                        return 1;
+                    /*
+                    if((segundo - segundor) >= 0 || (segundo - segundor) <= 10){
+                        //Log.d("Autorizaciones","REPLICA ACTIVA");
+                    }
+                    */
+                    }
+                }
+            }
+
+
+        }
+
+        //this.close();
+        return 0;
     }
 
 
