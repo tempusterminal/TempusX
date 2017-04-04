@@ -2,7 +2,11 @@ package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -10,16 +14,21 @@ import android.database.SQLException;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.Switch;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.tempus.proyectos.data.ConexionServidor;
@@ -76,6 +85,22 @@ public class ActivitySincronizacion extends Activity {
     boolean servidor = false;
     boolean basedatos = false;
 
+    TextView lblHora1;
+    TextView lblHora2;
+    TextView lblHora3;
+    TextView lblHora4;
+
+    ImageButton btnConfHora1;
+    ImageButton btnConfHora2;
+    ImageButton btnConfHora3;
+    ImageButton btnConfHora4;
+
+    Switch swtHoraConf1;
+    Switch swtHoraConf2;
+    Switch swtHoraConf3;
+    Switch swtHoraConf4;
+
+    Button btnReplicar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +136,25 @@ public class ActivitySincronizacion extends Activity {
         edtSyncUser = (EditText) findViewById(R.id.edtSyncUser);
         edtSyncPass = (EditText) findViewById(R.id.edtSyncPass);
 
+        btnReplicar = (Button) findViewById(R.id.btnReplicar);
+
+        lblHora1 = (TextView) findViewById(R.id.lblHora1);
+        lblHora2 = (TextView) findViewById(R.id.lblHora2);
+        lblHora3 = (TextView) findViewById(R.id.lblHora3);
+        lblHora4 = (TextView) findViewById(R.id.lblHora4);
+
+        btnConfHora1 = (ImageButton) findViewById(R.id.btnConfHora1);
+        btnConfHora2 = (ImageButton) findViewById(R.id.btnConfHora2);
+        btnConfHora3 = (ImageButton) findViewById(R.id.btnConfHora3);
+        btnConfHora4 = (ImageButton) findViewById(R.id.btnConfHora4);
+
+        swtHoraConf1 = (Switch) findViewById(R.id.swtHoraConf1);
+        swtHoraConf2 = (Switch) findViewById(R.id.swtHoraConf2);
+        swtHoraConf3 = (Switch) findViewById(R.id.swtHoraConf3);
+        swtHoraConf4 = (Switch) findViewById(R.id.swtHoraConf4);
+
+        btnReplicar = (Button) findViewById(R.id.btnReplicar);
+
         /* --- Inicialización de Métodos --- */
 
         ui.initScreen(this);
@@ -121,21 +165,30 @@ public class ActivitySincronizacion extends Activity {
 
         //Tab 1
         TabHost.TabSpec spec = host.newTabSpec("Tab1");
-        //spec.setContent(R.id.tabSync1);
-        //spec.setIndicator("SERVICIOS");
-        //host.addTab(spec);
+        spec.setContent(R.id.tabSync1);
+        spec.setIndicator("REPLICA");
+        host.addTab(spec);
 
         //Tab 2
         spec = host.newTabSpec("Tab2");
         spec.setContent(R.id.tabSync2);
-        spec.setIndicator("ORIGEN DE DATOS");
+        spec.setIndicator("SERVICIOS");
         host.addTab(spec);
 
         //Tab 3
         spec = host.newTabSpec("Tab3");
         spec.setContent(R.id.tabSync3);
+        spec.setIndicator("SERVIDOR");
+        host.addTab(spec);
+
+        //Tab 4
+        spec = host.newTabSpec("Tab4");
+        spec.setContent(R.id.tabSync4);
         spec.setIndicator("TEST");
         host.addTab(spec);
+
+
+
 
         TabWidget widget = host.getTabWidget();
         for(int i = 0; i < widget.getChildCount(); i++) {
@@ -372,6 +425,121 @@ public class ActivitySincronizacion extends Activity {
             }
         });
 
+        btnConfHora1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int h = 0;
+                int m = 0;
+                String val = lblHora1.getText().toString();
+                if (!val.contains("-")){
+                    h = Integer.parseInt(val.split(":")[0]);
+                    m = Integer.parseInt(val.split(":")[1]);
+                }
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(ActivitySincronizacion.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        setTimeLabel(lblHora1,selectedHour,selectedMinute);
+                    }
+                }, h, m, true);
+                mTimePicker.setTitle("Horario 1");
+                mTimePicker.show();
+            }
+        });
+
+        btnConfHora2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int h = 0;
+                int m = 0;
+                String val = lblHora2.getText().toString();
+                if (!val.contains("-")){
+                    h = Integer.parseInt(val.split(":")[0]);
+                    m = Integer.parseInt(val.split(":")[1]);
+                }
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(ActivitySincronizacion.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        setTimeLabel(lblHora2,selectedHour,selectedMinute);
+                    }
+                }, h, m, true);
+                mTimePicker.setTitle("Horario 2");
+                mTimePicker.show();
+            }
+        });
+
+        btnConfHora3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int h = 0;
+                int m = 0;
+                String val = lblHora3.getText().toString();
+                if (!val.contains("-")){
+                    h = Integer.parseInt(val.split(":")[0]);
+                    m = Integer.parseInt(val.split(":")[1]);
+                }
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(ActivitySincronizacion.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        setTimeLabel(lblHora3,selectedHour,selectedMinute);
+                    }
+                }, h, m, true);
+                mTimePicker.setTitle("Horario 3");
+                mTimePicker.show();
+            }
+        });
+
+        btnConfHora4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                int h = 0;
+                int m = 0;
+                String val = lblHora4.getText().toString();
+                if (!val.contains("-")){
+                    h = Integer.parseInt(val.split(":")[0]);
+                    m = Integer.parseInt(val.split(":")[1]);
+                }
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(ActivitySincronizacion.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        setTimeLabel(lblHora4,selectedHour,selectedMinute);
+                    }
+                }, h, m, true);
+                mTimePicker.setTitle("Horario 4");
+                mTimePicker.show();
+            }
+        });
+
+        btnReplicar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivitySincronizacion.this, R.style.AlertDialogCustom));
+
+                builder
+                        .setTitle("Replicado a Demanda")
+                        .setMessage("¿Desea intentar replicar ahora mismo?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                ActivityPrincipal.isReplicating = true;
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
+
+            }
+        });
+
+
+
         boolean internet = util.isOnline(this);
         Log.e("Tempus: ", "Coneccion Test -> " + String.valueOf(internet));
 
@@ -382,10 +550,6 @@ public class ActivitySincronizacion extends Activity {
         }
 
     }
-
-
-
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -414,4 +578,37 @@ public class ActivitySincronizacion extends Activity {
             break;
         }
     }
+
+    public void setTimeLabel(TextView txvHora, int hora, int minuto) {
+        String h = String.valueOf(hora);
+        if (h.length()==1){
+            h = "0"+h;
+        }
+
+        String m = String.valueOf(minuto);
+        if (m.length()==1){
+            m = "0"+m;
+        }
+        txvHora.setText(h+":"+m);
+    }
+
+    public void cargarHorario() {
+        setTimeLabel(lblHora1,0,0);
+        setTimeLabel(lblHora2,0,0);
+        setTimeLabel(lblHora3,0,0);
+        setTimeLabel(lblHora4,0,0);
+    }
+
+    public void guardarHorario(String horario, TextView txv) {// Especifica horario (1,2.3,4)
+        String hora = txv.getText().toString();
+    }
+
+    public void administrarHorario(String horario, boolean enabled) {// Especifica horario (1,2.3,4)
+        if (enabled) {
+
+        } else {
+
+        }
+    }
+
 }

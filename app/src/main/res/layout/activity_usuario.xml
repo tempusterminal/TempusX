@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_actualizar"
+    android:id="@+id/activity_usuario"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.tempus.proyectos.tempusx.ActivityActualizar">
+    tools:context="com.tempus.proyectos.tempusx.ActivityUsuario">
 
     <!-- Fondos -->
 
@@ -59,6 +59,7 @@
         android:background="@color/colorLinea"
         android:id="@+id/linea2" />
 
+
     <!-- Titulo -->
 
     <ImageView
@@ -68,49 +69,95 @@
         android:layout_marginLeft="@dimen/logo_marginLeft"
         android:layout_alignParentLeft="true"
         android:src="@drawable/logo"
-        android:id="@+id/btnMasterActualizar" />
+        android:id="@+id/btnMasterUsuario" />
 
     <TextView
         android:layout_width="@dimen/titulo_width"
         android:layout_height="@dimen/titulo_height"
         android:layout_marginTop="@dimen/titulo_marginTop"
         android:layout_marginLeft="@dimen/titulo_marginLeft"
-        android:text="@string/titulo_actualizar"
+        android:text="@string/titulo_usuario"
         android:textSize="@dimen/titulo_textSize"
         android:textColor="@color/colorTexto"
+        android:gravity="center_vertical"
         android:textStyle="bold"
         android:id="@+id/Titulo" />
 
     <TextView
-        android:text="Verificar si existen actualizaciones disponibles"
-        android:layout_width="@dimen/fondo2_width"
-        android:layout_height="80dp"
-        android:layout_marginTop="80dp"
-        android:layout_marginLeft="0dp"
+        android:text="Usuario"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
         android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_textSize"
-        android:gravity="center_vertical|center_horizontal"
-        android:id="@+id/textView24" />
+        android:textSize="20sp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="110dp"
+        android:id="@+id/txvUser" />
+
+    <TextView
+        android:text="Cntraseña"
+        android:layout_width="150dp"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/colorTexto"
+        android:textSize="20sp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="170dp"
+        android:id="@+id/txvPassword" />
+
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="110dp"
+        android:background="@color/colorGris"
+        />
+
+    <TextView
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="170dp"
+        android:background="@color/colorGris"
+        />
+
+    <EditText
+        android:imeOptions="actionDone"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/cuerpo_min_textSize"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="110dp"
+        android:textColorHint="@color/colorTexto"
+        android:textColor="@color/colorTexto"
+        android:id="@+id/edtUsuarioNuevo" />
+
+    <EditText
+        android:imeOptions="actionDone"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:gravity="center_vertical"
+        android:textSize="@dimen/cuerpo_min_textSize"
+        android:layout_marginLeft="240dp"
+        android:layout_marginTop="170dp"
+        android:textColorHint="@color/colorTexto"
+        android:textColor="@color/colorTexto"
+        android:inputType="textPassword"
+        android:id="@+id/edtContraseñaNuevo" />
 
     <Button
-        android:text="Comprobar"
-        android:layout_width="200dp"
+        android:text="Actualizar"
+        android:textAlignment="center"
+        android:layout_width="150dp"
         android:layout_height="40dp"
-        android:id="@+id/btnInstallAPK"
-        android:layout_marginLeft="200.5dp"
-        android:layout_marginTop="200dp"/>
+        android:gravity="center_vertical"
+        android:textSize="@dimen/cuerpo_min_textSize"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="230dp"
+        android:id="@+id/btnActualizarUsuario" />
 
-    <ImageButton
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@drawable/icon9"
-        android:scaleType="fitXY"
-        android:padding="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginBottom="35dp"
-        android:layout_marginRight="10dp"
-        android:id="@+id/imageButton" />
 
+    <!-- Componentes -->
 
 </RelativeLayout>

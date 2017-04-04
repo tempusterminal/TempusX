@@ -115,6 +115,216 @@
                     android:background="@color/colorFondoCuerpo"
                     android:orientation="vertical">
 
+
+                    <TextView
+                        android:text="Forzar Replica:"
+                        android:layout_width="150dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblrep1" />
+
+                    <Button
+                        android:text="Iniciar"
+                        android:layout_width="100dp"
+                        android:layout_height="40dp"
+                        android:layout_marginLeft="440dp"
+                        android:layout_marginTop="7.5dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnReplicar" />
+
+                    <TextView
+                        android:text="Horario 1:"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="60dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblrep2" />
+
+                    <TextView
+                        android:text="Horario 2:"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="100dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblrep3" />
+
+                    <TextView
+                        android:text="Horario 3:"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="140dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblrep4" />
+
+                    <TextView
+                        android:text="Horario 4:"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="180dp"
+                        android:layout_marginLeft="40dp"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblrep5" />
+
+                    <TextView
+                        android:text="-"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="60dp"
+                        android:layout_marginLeft="150dp"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblHora1" />
+
+                    <TextView
+                        android:text="-"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="100dp"
+                        android:layout_marginLeft="150dp"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblHora2" />
+
+                    <TextView
+                        android:text="-"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="140dp"
+                        android:layout_marginLeft="150dp"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblHora3" />
+
+                    <TextView
+                        android:text="-"
+                        android:layout_width="100dp"
+                        android:layout_height="25dp"
+                        android:layout_marginTop="180dp"
+                        android:layout_marginLeft="150dp"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/lblHora4" />
+
+
+                    <ImageButton
+                        android:layout_width="45dp"
+                        android:layout_height="37dp"
+                        android:layout_marginLeft="320dp"
+                        android:layout_marginTop="52.5dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/setting"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnConfHora1" />
+
+                    <ImageButton
+                        android:layout_width="45dp"
+                        android:layout_height="37dp"
+                        android:layout_marginLeft="320dp"
+                        android:layout_marginTop="92.5dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/setting"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnConfHora2" />
+
+                    <ImageButton
+                        android:layout_width="45dp"
+                        android:layout_height="37dp"
+                        android:layout_marginLeft="320dp"
+                        android:layout_marginTop="132.5dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/setting"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnConfHora3" />
+
+                    <ImageButton
+                        android:layout_width="45dp"
+                        android:layout_height="37dp"
+                        android:layout_marginLeft="320dp"
+                        android:layout_marginTop="172.5dp"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/setting"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnConfHora4" />
+
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="440dp"
+                        android:layout_marginTop="57.5dp"
+                        android:track="@drawable/switchshape"
+                        android:thumb="@drawable/switchbutton"
+                        android:textColor="@color/colorBlanco"
+                        android:textOff="Off "
+                        android:textOn=" On "
+                        android:id="@+id/swtHoraConf1" />
+
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="440dp"
+                        android:layout_marginTop="97.5dp"
+                        android:track="@drawable/switchshape"
+                        android:thumb="@drawable/switchbutton"
+                        android:textColor="@color/colorBlanco"
+                        android:textOff="Off "
+                        android:textOn=" On "
+                        android:id="@+id/swtHoraConf2" />
+
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="440dp"
+                        android:layout_marginTop="137.5dp"
+                        android:track="@drawable/switchshape"
+                        android:thumb="@drawable/switchbutton"
+                        android:textColor="@color/colorBlanco"
+                        android:textOff="Off "
+                        android:textOn=" On "
+                        android:id="@+id/swtHoraConf3" />
+
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="440dp"
+                        android:layout_marginTop="177.5dp"
+                        android:track="@drawable/switchshape"
+                        android:thumb="@drawable/switchbutton"
+                        android:textColor="@color/colorBlanco"
+                        android:textOff="Off "
+                        android:textOn=" On "
+                        android:id="@+id/swtHoraConf4" />
+
+
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tabSync2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
                     <TextView
                         android:text="Acceso a VPN"
                         android:layout_width="150dp"
@@ -139,7 +349,7 @@
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:id="@+id/tabSync2"
+                    android:id="@+id/tabSync3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/colorFondoCuerpo"
@@ -211,7 +421,7 @@
                     <TextView
                         android:layout_width="280dp"
                         android:layout_height="29dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="20dp"
                         android:background="@color/colorGris"
                         />
@@ -219,7 +429,7 @@
                     <TextView
                         android:layout_width="280dp"
                         android:layout_height="29dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="55dp"
                         android:background="@color/colorGris"
                         />
@@ -227,7 +437,7 @@
                     <TextView
                         android:layout_width="280dp"
                         android:layout_height="29dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="90dp"
                         android:background="@color/colorGris"
                         />
@@ -235,7 +445,7 @@
                     <TextView
                         android:layout_width="280dp"
                         android:layout_height="29dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="125dp"
                         android:background="@color/colorGris"
                         />
@@ -243,7 +453,7 @@
                     <TextView
                         android:layout_width="280dp"
                         android:layout_height="29dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="160dp"
                         android:background="@color/colorGris"
                         />
@@ -255,7 +465,7 @@
                         android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="20dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/edtSyncHost" />
@@ -266,7 +476,7 @@
                         android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="55dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/edtSyncDB" />
@@ -277,7 +487,7 @@
                         android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="90dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/edtSyncPort" />
@@ -288,7 +498,7 @@
                         android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="125dp"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/edtSyncUser" />
@@ -299,9 +509,10 @@
                         android:layout_height="29dp"
                         android:text=""
                         android:textSize="14dp"
-                        android:layout_marginLeft="140dp"
+                        android:layout_marginLeft="190dp"
                         android:layout_marginTop="160dp"
                         android:textColor="@color/colorTexto"
+                        android:inputType="textPassword"
                         android:id="@+id/edtSyncPass" />
 
 
@@ -309,16 +520,16 @@
                     <Button
                         android:text="Guardar"
                         android:layout_width="80dp"
-                        android:layout_height="40dp"
+                        android:layout_height="50dp"
                         android:textSize="15sp"
-                        android:layout_marginLeft="440dp"
+                        android:layout_marginLeft="500dp"
                         android:layout_marginTop="80dp"
                         android:id="@+id/btnSyncGuardar" />
 
                 </RelativeLayout>
 
                 <RelativeLayout
-                    android:id="@+id/tabSync3"
+                    android:id="@+id/tabSync4"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/colorFondoCuerpo"
@@ -362,7 +573,7 @@
                         android:text="KO"
                         android:layout_width="60dp"
                         android:layout_height="30dp"
-                        android:layout_marginLeft="380dp"
+                        android:layout_marginLeft="460dp"
                         android:layout_marginTop="35dp"
                         android:gravity="center_vertical|center_horizontal"
                         android:textColor="@color/colorBlanco"
@@ -373,7 +584,7 @@
                         android:text="KO"
                         android:layout_width="60dp"
                         android:layout_height="30dp"
-                        android:layout_marginLeft="380dp"
+                        android:layout_marginLeft="460dp"
                         android:layout_marginTop="70dp"
                         android:gravity="center_vertical|center_horizontal"
                         android:textColor="@color/colorBlanco"
@@ -384,7 +595,7 @@
                         android:text="KO"
                         android:layout_width="60dp"
                         android:layout_height="30dp"
-                        android:layout_marginLeft="380dp"
+                        android:layout_marginLeft="460dp"
                         android:layout_marginTop="105dp"
                         android:gravity="center_vertical|center_horizontal"
                         android:textColor="@color/colorBlanco"
@@ -403,7 +614,10 @@
                 </RelativeLayout>
 
 
+
+
             </FrameLayout>
         </LinearLayout>
     </TabHost>
+
 </RelativeLayout>

@@ -244,6 +244,9 @@ public class ActivityMenu extends Activity {
             case "ADMINISTRAR":
                 ui.goToActivity(ActivityMenu.this,ActivityConfigini.class,"","");
                 break;
+            case "USUARIO":
+                ui.goToActivity(ActivityMenu.this,ActivityUsuario.class,"","");
+                break;
             case "NONE":
                 ui.goToActivity(ActivityMenu.this,ActivityProduccion.class,"","");
                 break;

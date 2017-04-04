@@ -125,7 +125,7 @@
     <ImageButton
         android:layout_width="@dimen/acMenu_btnOpcAll_width"
         android:layout_height="@dimen/acMenu_btnOpcAll_height"
-        android:src="@drawable/icon7"
+        android:src="@drawable/icon10"
         android:scaleType="fitXY"
         android:background="@color/colorFondoCuerpo"
         android:padding="@dimen/acMenu_btnOpcAllPadding"
@@ -161,7 +161,7 @@
     <ImageButton
         android:layout_width="@dimen/acMenu_btnOpcAll_width"
         android:layout_height="@dimen/acMenu_btnOpcAll_height"
-        android:src="@drawable/icon7"
+        android:src="@drawable/icon10"
         android:scaleType="fitXY"
         android:background="@color/colorFondoCuerpo"
         android:padding="@dimen/acMenu_btnOpcAllPadding"
@@ -248,7 +248,7 @@
         android:id="@+id/itxv03" />
 
     <TextView
-        android:text="ACTUALIZACIÓN"
+        android:text="USUARIO"
         android:layout_width="@dimen/acMenu_lblOpcAll_width"
         android:layout_height="@dimen/acMenu_lblOpcAll_height"
         android:textColor="@color/colorTexto"
@@ -287,7 +287,7 @@
         android:id="@+id/itxv06" />
 
     <TextView
-        android:text="ACTUALIZACIÓN"
+        android:text="USUARIO"
         android:layout_width="@dimen/acMenu_lblOpcAll_width"
         android:layout_height="@dimen/acMenu_lblOpcAll_height"
         android:textColor="@color/colorTexto"

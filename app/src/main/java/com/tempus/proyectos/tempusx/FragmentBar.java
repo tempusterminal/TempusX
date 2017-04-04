@@ -1,5 +1,6 @@
 package com.tempus.proyectos.tempusx;
 
+import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Fragment;
 import android.app.PendingIntent;
@@ -12,6 +13,7 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.Process;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,6 +48,9 @@ public class FragmentBar extends Fragment {
     ImageView imgViewIBat;
     TextView txvIdDesc;
     TextView txvIdterminal;
+    ImageView imgViewReplica;
+
+    int i = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -65,6 +70,7 @@ public class FragmentBar extends Fragment {
 
         txvINivelBateria = (TextView) v.findViewById(R.id.txvINivelBateria);
         imgViewIBat = (ImageView) v.findViewById(R.id.imgViewIBat);
+        imgViewReplica = (ImageView) v.findViewById(R.id.imgViewReplica);
 
         txvIdterminal = (TextView) v.findViewById(R.id.txvIdterminal);
 
@@ -100,9 +106,46 @@ public class FragmentBar extends Fragment {
         //mIntentFilter.addAction(WifiManager.SUPPLICANT_STATE_CHANGED_ACTION);
         //getActivity().registerReceiver(receiverWifi, mIntentFilter);
 
+        activo = true;
+
+
+        Thread routineIndicators = new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                while (activo) {
+                    try {
+                        Thread.sleep(1000);
+
+                        Thread t = Thread.currentThread();
+                        long id = t.getId();
+                        Log.d("PID THREAD", String.valueOf(id));
+
+
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                fnBatteryManager();
+                                fnReplicaManager(ActivityPrincipal.isReplicating);
+                            }
+                        });
+
+                        Log.d("FragmentBar", "Ciclo");
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                Thread.currentThread().interrupt();
+
+                Log.d("PID THREAD", "DETENIENDO HILO " + Thread.currentThread().getId());
+
+
+            }
+        });
 
         routineIndicators.start();
-        activo = true;
 
         return v;
     }
@@ -110,12 +153,19 @@ public class FragmentBar extends Fragment {
     @Override
     public void onDestroyView(){
         super.onDestroyView();
-        activo = false;
         getActivity().unregisterReceiver(mYourBroadcastReceiver);
+        activo = false;
+        Log.e("FragmentBar","ONDESTROY");
     }
 
     public void onPause() {
         super.onPause();
+        Log.e("FragmentBar","ONPAUSE");
+    }
+
+    public void onResume() {
+        super.onResume();
+        Log.e("FragmentBar","ONRESUME");
     }
 
 
@@ -150,29 +200,36 @@ public class FragmentBar extends Fragment {
 
     /* ===================================== RUTINA ROOT ===================================== */
 
-    Thread routineIndicators = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            while (true) {
-                try {
-                    Thread.sleep(1000);
 
-                    if(activo){
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                fnBatteryManager();
-                            }
-                        });
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    });
 
     /* ===================================== INDICADORES ===================================== */
+
+    public void fnReplicaManager(boolean resultado) {
+        if (resultado) {
+
+            i += i;
+
+            if (i == 1) {
+                int imageresource = getResources().getIdentifier("@drawable/rep1", "drawable", getActivity().getPackageName());
+                imgViewReplica.setImageResource(imageresource);
+            } else if (i == 2){
+                int imageresource = getResources().getIdentifier("@drawable/rep2", "drawable", getActivity().getPackageName());
+                imgViewReplica.setImageResource(imageresource);
+            } else if (i == 3){
+                int imageresource = getResources().getIdentifier("@drawable/rep3", "drawable", getActivity().getPackageName());
+                imgViewReplica.setImageResource(imageresource);
+            } else if (i == 4){
+                int imageresource = getResources().getIdentifier("@drawable/rep4", "drawable", getActivity().getPackageName());
+                imgViewReplica.setImageResource(imageresource);
+                i = 0;
+            }
+
+        } else {
+            int imageresource = getResources().getIdentifier("@drawable/rep0", "drawable", getActivity().getPackageName());
+            imgViewReplica.setImageResource(imageresource);
+            i = 0;
+        }
+    }
 
     public void fnBatteryManager(){
 

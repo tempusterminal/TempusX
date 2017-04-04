@@ -103,7 +103,7 @@
         android:text="1"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="@dimen/botonAcceso_marginTop"
         android:layout_marginLeft="@dimen/botonAcceso1_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -114,7 +114,7 @@
         android:text="2"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="@dimen/botonAcceso_marginTop"
         android:layout_marginLeft="@dimen/botonAcceso2_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -125,7 +125,7 @@
         android:text="3"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="@dimen/botonAcceso_marginTop"
         android:layout_marginLeft="@dimen/botonAcceso3_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -136,7 +136,7 @@
         android:text="4"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="@dimen/botonAcceso_marginTop"
         android:layout_marginLeft="@dimen/botonAcceso4_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -144,18 +144,20 @@
         android:id="@+id/btnAccess4" />
 
     <ImageButton
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="@dimen/btnAccessKey_width"
+        android:layout_height="@dimen/btnAccessKey_height"
         android:src="@drawable/abc_ic_menu_selectall_mtrl_alpha"
         android:scaleType="fitXY"
         android:padding="10dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="240dp"
-        android:layout_marginLeft="480dp"
+        android:layout_marginTop="@dimen/btnAccessKey_marginTop"
+        android:layout_marginLeft="@dimen/btnAccessKey_marginLeft"
         android:id="@+id/btnAccessKey" />
 
 
+
+    <!-- Botones de Eventos-->
 
     <!-- Botones de Eventos-->
 
@@ -163,7 +165,7 @@
         android:text="1"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="@dimen/btnEvent_marginTopRow1"
         android:layout_marginLeft="@dimen/botonAcceso1_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -176,7 +178,7 @@
         android:text="2"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="@dimen/btnEvent_marginTopRow1"
         android:layout_marginLeft="@dimen/botonAcceso2_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -189,7 +191,7 @@
         android:text="3"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="@dimen/btnEvent_marginTopRow1"
         android:layout_marginLeft="@dimen/botonAcceso3_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -202,7 +204,7 @@
         android:text="4"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="85dp"
+        android:layout_marginTop="@dimen/btnEvent_marginTopRow1"
         android:layout_marginLeft="@dimen/botonAcceso4_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -215,7 +217,7 @@
         android:text="5"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="165dp"
+        android:layout_marginTop="@dimen/btnEvent_marginTopRow2"
         android:layout_marginLeft="@dimen/botonAcceso1_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -228,7 +230,7 @@
         android:text="6"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="165dp"
+        android:layout_marginTop="@dimen/btnEvent_marginTopRow2"
         android:layout_marginLeft="@dimen/botonAcceso2_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -241,7 +243,7 @@
         android:text="7"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="165dp"
+        android:layout_marginTop="@dimen/btnEvent_marginTopRow2"
         android:layout_marginLeft="@dimen/botonAcceso3_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -254,7 +256,7 @@
         android:text="8"
         android:layout_width="@dimen/botonAcceso_width"
         android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="165dp"
+        android:layout_marginTop="@dimen/btnEvent_marginTopRow2"
         android:layout_marginLeft="@dimen/botonAcceso4_marginLeft"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
@@ -264,30 +266,17 @@
         android:id="@+id/btnEvent08" />
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     <TextView
         android:text=""
         android:layout_width="@dimen/fondo2_width"
         android:layout_height="wrap_content"
         android:textColor="@color/colorTexto"
-        android:textSize="30dp"
+        android:textSize="@dimen/txvMensajePantalla_textSize"
         android:textStyle="bold"
         android:gravity="center_vertical|center_horizontal"
         android:id="@+id/txvMensajePantalla"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="245dp"/>
+        android:layout_marginLeft="@dimen/txvMensajePantalla_marginLeft"
+        android:layout_marginTop="@dimen/txvMensajePantalla_marginTop"/>
 
 
     <!-- Teclado -->
@@ -303,50 +292,50 @@
 
     <TextView
         android:text=""
-        android:layout_width="495dp"
-        android:layout_height="55dp"
-        android:layout_marginTop="85dp"
-        android:layout_marginLeft="20dp"
+        android:layout_width="@dimen/txvKeyPantalla_width"
+        android:layout_height="@dimen/txvKeyPantalla_height"
+        android:layout_marginTop="@dimen/txvKeyPantalla_marginTop"
+        android:layout_marginLeft="@dimen/txvKeyPantalla_marginLeft"
         android:background="@color/colorGrisOscuro"
         android:textColor="@color/colorBlanco"
         android:gravity="center_vertical|center_horizontal"
-        android:textSize="40sp"
+        android:textSize="@dimen/txvKeyPantalla_textSize"
         android:textStyle="bold"
         android:id="@+id/txvKeyPantalla" />
 
     <Button
         android:text="1"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginLeft="20dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row1"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col1"
         android:textStyle="bold"
         android:id="@+id/btnKey1" />
 
     <Button
         android:text="2"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginLeft="145dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row1"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col2"
         android:textStyle="bold"
         android:id="@+id/btnKey2" />
 
     <Button
         android:text="3"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginLeft="270dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row1"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col3"
         android:textStyle="bold"
         android:id="@+id/btnKey3" />
 
     <Button
         android:text="BORRAR"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="150dp"
-        android:layout_marginLeft="395dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row1"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col4"
         android:textStyle="bold"
         android:id="@+id/btnKeyBorrar" />
 
@@ -354,37 +343,37 @@
 
     <Button
         android:text="4"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="195dp"
-        android:layout_marginLeft="20dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row2"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col1"
         android:textStyle="bold"
         android:id="@+id/btnKey4" />
 
     <Button
         android:text="5"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="195dp"
-        android:layout_marginLeft="145dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row2"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col2"
         android:textStyle="bold"
         android:id="@+id/btnKey5" />
 
     <Button
         android:text="6"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="195dp"
-        android:layout_marginLeft="270dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row2"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col3"
         android:textStyle="bold"
         android:id="@+id/btnKey6" />
 
     <Button
         android:text="0"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="195dp"
-        android:layout_marginLeft="395dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row2"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col4"
         android:textStyle="bold"
         android:id="@+id/btnKey0" />
 
@@ -392,37 +381,37 @@
 
     <Button
         android:text="7"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="240dp"
-        android:layout_marginLeft="20dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row3"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col1"
         android:textStyle="bold"
         android:id="@+id/btnKey7" />
 
     <Button
         android:text="8"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="240dp"
-        android:layout_marginLeft="145dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row3"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col2"
         android:textStyle="bold"
         android:id="@+id/btnKey8" />
 
     <Button
         android:text="9"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="240dp"
-        android:layout_marginLeft="270dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row3"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col3"
         android:textStyle="bold"
         android:id="@+id/btnKey9" />
 
     <Button
         android:text="INTRO"
-        android:layout_width="120dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="240dp"
-        android:layout_marginLeft="395dp"
+        android:layout_width="@dimen/btnKey_width"
+        android:layout_height="@dimen/btnKey_height"
+        android:layout_marginTop="@dimen/btnKey_marginTop_row3"
+        android:layout_marginLeft="@dimen/btnKey_marginLeft_col4"
         android:textStyle="bold"
         android:id="@+id/btnKeyIntro" />
 
@@ -484,17 +473,15 @@
         android:gravity="center"
         android:textAlignment="center"/>
 
-
-
     <!-- AREA BOOT -->
 
     <TextView
         android:layout_width="@dimen/fondo2_width"
         android:layout_height="@dimen/fondo2_height"
         android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:layout_marginTop="@dimen/fondo2_marginTop"
         android:background="@color/colorFondoMarcacion"
         android:id="@+id/txvFondoInicial"
-        android:layout_below="@+id/txcHora"
         android:layout_alignParentStart="true" />
 
     <ProgressBar
@@ -517,44 +504,23 @@
 
     <Button
         android:text="Intentar otra vez"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/buttonWarning_width"
+        android:layout_height="@dimen/buttonWarning_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="240dp"
-        android:layout_marginLeft="50dp"
+        android:layout_marginTop="@dimen/buttonWarning_marginTop"
+        android:layout_marginLeft="@dimen/buttonWarning01_marginLeft"
         android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/buttonWarning01" />
 
     <Button
         android:text="Reiniciar Terminal"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/buttonWarning_width"
+        android:layout_height="@dimen/buttonWarning_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="240dp"
-        android:layout_marginLeft="325dp"
+        android:layout_marginTop="@dimen/buttonWarning_marginTop"
+        android:layout_marginLeft="@dimen/buttonWarning02_marginLeft"
         android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/buttonWarning02" />
-
-    <Button
-        android:text="Reiniciar Terminal"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="240dp"
-        android:layout_marginLeft="192dp"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:id="@+id/buttonWarning03" />
-
-    <Button
-        android:text="\?"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="80dp"
-        android:layout_marginLeft="480dp"
-        android:id="@+id/buttonWarningHelp" />
-
-
 
 
 </RelativeLayout>

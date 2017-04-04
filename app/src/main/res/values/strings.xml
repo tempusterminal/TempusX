@@ -13,6 +13,7 @@
     <string name="titulo_superadmin">SUPERADMIN</string>
     <string name="titulo_actualizar">ACTUALIZAR</string>
     <string name="titulo_configini">ADMINISTRAR</string>
+    <string name="titulo_usuario">USUARIO</string>
 
     <string-array name="planets_array">
         <item>Dni</item>

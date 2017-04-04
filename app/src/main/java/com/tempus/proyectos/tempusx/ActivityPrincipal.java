@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -53,10 +54,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ActivityPrincipal extends Activity {
 
@@ -202,6 +206,8 @@ public class ActivityPrincipal extends Activity {
 
     /* --- Declaración de Componentes de la Interfaz --- */
 
+    TextClock txcHora;
+
     ImageButton btnAccessKey;
 
     TextView txvKeyFondo;
@@ -233,8 +239,6 @@ public class ActivityPrincipal extends Activity {
 
     Button buttonWarning01;
     Button buttonWarning02;
-    Button buttonWarning03;
-    Button buttonWarningHelp;
 
     TextView txvMensajePantalla;
 
@@ -310,6 +314,8 @@ public class ActivityPrincipal extends Activity {
 
         // Inicializacion de componentes
 
+        txcHora = (TextClock) findViewById(R.id.txcHora);
+
         txvFondoInicial = (TextView) findViewById(R.id.txvFondoInicial);
         txvTextoInicial = (TextView) findViewById(R.id.txvTextoInicial);
         pbrCargaInicial = (ProgressBar) findViewById(R.id.pbrCargaInicial);
@@ -329,8 +335,6 @@ public class ActivityPrincipal extends Activity {
 
         buttonWarning01 = (Button) findViewById(R.id.buttonWarning01);
         buttonWarning02 = (Button) findViewById(R.id.buttonWarning02);
-        buttonWarning03 = (Button) findViewById(R.id.buttonWarning03);
-        buttonWarningHelp = (Button) findViewById(R.id.buttonWarningHelp);
 
         txvMensajePantalla = (TextView) findViewById(R.id.txvMensajePantalla);
 
@@ -392,8 +396,6 @@ public class ActivityPrincipal extends Activity {
 
         buttonWarning01.setVisibility(View.INVISIBLE);
         buttonWarning02.setVisibility(View.INVISIBLE);
-        buttonWarning03.setVisibility(View.INVISIBLE);
-        buttonWarningHelp.setVisibility(View.INVISIBLE);
 
         areaMarcaEnabled = false;
         areaAccessEnabled = false;
@@ -447,11 +449,16 @@ public class ActivityPrincipal extends Activity {
         // threadControlSerial02.start();
 
 
-        // Iniciar Rutinas en falso
-        ProcessSyncTS processSyncTS = new ProcessSyncTS("Hilo_SyncMarcas");
+        // Iniciar Rutinas en verdadero
+        ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
         processSyncTS.start(this);
-        ProcessMarcas processMarcas = new ProcessMarcas("Sync_Autorizacion");
-        processMarcas.start(this);
+        ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
+        processSyncST.start(this);
+        ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
+        processSyncDatetime.start(this);
+
+        threadFechahora.start();
+
 
         if (INTERFACE_ETH){
             checkETH0.start();
@@ -838,6 +845,8 @@ public class ActivityPrincipal extends Activity {
     public void onResume(){
         super.onResume();
 
+        activityActive = "Principal";
+
         try {
             ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
         } catch(Exception e) {
@@ -846,19 +855,6 @@ public class ActivityPrincipal extends Activity {
 
 
     }
-
-    public boolean isForeground(String myPackage) {
-        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
-        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
-        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
-        return componentInfo.getPackageName().equals(myPackage);
-    }
-
-
-
-
-
-
 
     public void reboot() {
 
@@ -890,12 +886,7 @@ public class ActivityPrincipal extends Activity {
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        ui.initScreen(this);
     }
 
     @Override
@@ -939,17 +930,15 @@ public class ActivityPrincipal extends Activity {
 
         idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL");
 
-        MODO_EVENTO = true;
+        MODO_EVENTO = false;
 
         // Interfaces de RED
 
-        INTERFACE_ETH = false;
-        INTERFACE_PPP = false;
+        INTERFACE_ETH = true;
+        INTERFACE_PPP = true;
         INTERFACE_WLAN = true;
 
         contadorEventoPantalla = 0;
-
-
 
         if (MODO_EVENTO) {
 
@@ -995,9 +984,9 @@ public class ActivityPrincipal extends Activity {
 
         // PRUEBA CROVISA 02 2a
 
-        //MAC_BT_01 = "20:16:08:10:65:03";
-        //MAC_BT_02 = "00:15:83:35:79:C9";
-        //MAC_BT_03 = "00:00:00:00:00:00";
+        MAC_BT_01 = "20:16:08:10:65:03";
+        MAC_BT_02 = "00:15:83:35:79:C9";
+        MAC_BT_03 = "00:00:00:00:00:00";
 
 
 
@@ -1034,9 +1023,9 @@ public class ActivityPrincipal extends Activity {
 
 
         // CORPAC
-        MAC_BT_01 = "98:D3:32:20:5B:7E";
-        MAC_BT_02 = "98:D3:34:90:7D:C0";
-        MAC_BT_03 = "00:00:00:00:00:00";
+        //MAC_BT_01 = "98:D3:32:20:5B:7E";
+        //MAC_BT_02 = "98:D3:34:90:7D:C0";
+        //MAC_BT_03 = "00:00:00:00:00:00";
 
 
         BT_01_ENABLED = true;   //Arduino
@@ -2545,11 +2534,14 @@ public class ActivityPrincipal extends Activity {
                             default:
                                 break;
                         }
+
+                        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+                        Log.d("THREAD_COUNT", String.valueOf(threadSet));
                     }
                 });
 
-
                 util.sleep(1000);
+
             }
         }
     });
@@ -2743,9 +2735,8 @@ public class ActivityPrincipal extends Activity {
                         Log.d("ETH_HILO","Eth0 Enabled ... Con data por enviar ... ");
 
                         // Preguntamos por servidor
-                        boolean res = false;
+                        boolean res;
                         Connectivity c = new Connectivity();
-
 
                         String servidorDatos = "";
 
@@ -2842,6 +2833,32 @@ public class ActivityPrincipal extends Activity {
 
                 */
 
+            }
+        }
+    });
+
+
+    Thread threadFechahora = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Calendar calendar = Calendar.getInstance();
+                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+                            txcHora.setText(simpleDateFormat.format(calendar.getTime()));
+//Log.d("Autorizaciones","Set Fechahora: " + simpleDateFormat.format(calendar.getTime()));
+                        } catch (Exception e) {
+                            Log.wtf("Fechahora_HILO","ERROR EN SET TEXT txcHora... " +e.getMessage());
+                        }
+                    }
+                });
+
+//txcHora.setText(simpleDateFormat.format(calendar.getTime()));
+                util.sleep(250);
             }
         }
     });

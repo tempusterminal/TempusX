@@ -112,14 +112,16 @@
         android:layout_height="@dimen/acLogin_txtUser_height"
         android:layout_marginLeft="@dimen/acLogin_txtUser_marginLeft"
         android:layout_marginTop="@dimen/acLogin_txtUser_marginTop"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:background="@color/colorBlanco"/>
 
     <TextView
         android:layout_width="@dimen/acLogin_txtPass_width"
         android:layout_height="@dimen/acLogin_txtPass_height"
         android:layout_marginLeft="@dimen/acLogin_txtPass_marginLeft"
         android:layout_marginTop="@dimen/acLogin_txtPass_marginTop"
-        android:layout_alignParentTop="true"/>
+        android:layout_alignParentTop="true"
+        android:background="@color/colorBlanco"/>
 
     <EditText
         android:layout_width="@dimen/acLogin_txtUser_width"

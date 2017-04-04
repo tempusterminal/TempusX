@@ -11,6 +11,10 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.provider.Settings;
+import android.telephony.CellInfo;
+import android.telephony.CellInfoLte;
+import android.telephony.CellLocation;
+import android.telephony.CellSignalStrengthLte;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
@@ -141,39 +145,48 @@ public class Connectivity {
         }
     }
 
-    public String getMobileDataAPN(Activity activity){
-        //path to APN table
-        final Uri APN_TABLE_URI = Uri.parse("content://telephony/carriers");
-
-        //path to preffered APNs
-        final Uri PREFERRED_APN_URI = Uri.parse("content://telephony/carriers/preferapn");
-
-        //receiving cursor to preffered APN table
-        Cursor c = activity.getContentResolver().query(PREFERRED_APN_URI, null, null, null, null);
-
-        //moving the cursor to beggining of the table
-        c.moveToFirst();
-
-        //now the cursor points to the first preffered APN and we can get some
-        //information about it
-        //for example first preffered APN id
-        int index = c.getColumnIndex("_id");    //getting index of required column
-        Short id = c.getShort(index);           //getting APN's id from
-
-        //we can get APN name by the same way
-        index = c.getColumnIndex("name");
-        String name = "";
-
-        try {
-            name = c.getString(index);
-        } catch (Exception e) {
-            Log.v("TEMPUS: ",e.getMessage());
+    public String getMobileTypeConnection(int type) {
+        switch(type){
+            case TelephonyManager.NETWORK_TYPE_1xRTT:
+                return "1xRTT"; // ~ 50-100 kbps
+            case TelephonyManager.NETWORK_TYPE_CDMA:
+                return "CDMA"; // ~ 14-64 kbps
+            case TelephonyManager.NETWORK_TYPE_EDGE:
+                return "EDGE"; // ~ 50-100 kbps
+            case TelephonyManager.NETWORK_TYPE_EVDO_0:
+                return "EVDO 0"; // ~ 400-1000 kbps
+            case TelephonyManager.NETWORK_TYPE_EVDO_A:
+                return "EVDO A"; // ~ 600-1400 kbps
+            case TelephonyManager.NETWORK_TYPE_GPRS:
+                return "GPRS"; // ~ 100 kbps
+            case TelephonyManager.NETWORK_TYPE_HSDPA:
+                return "HSDPA"; // ~ 2-14 Mbps
+            case TelephonyManager.NETWORK_TYPE_HSPA:
+                return "HSPA"; // ~ 700-1700 kbps
+            case TelephonyManager.NETWORK_TYPE_HSUPA:
+                return "HSUPA"; // ~ 1-23 Mbps
+            case TelephonyManager.NETWORK_TYPE_UMTS:
+                return "UMTS"; // ~ 400-7000 kbps
+            /*
+             * Above API level 7, make sure to set android:targetSdkVersion
+             * to appropriate level to use these
+             */
+            case TelephonyManager.NETWORK_TYPE_EHRPD: // API level 11
+                return "EHRPD"; // ~ 1-2 Mbps
+            case TelephonyManager.NETWORK_TYPE_EVDO_B: // API level 9
+                return "EVDO B"; // ~ 5 Mbps
+            case TelephonyManager.NETWORK_TYPE_HSPAP: // API level 13
+                return "HSPAP"; // ~ 10-20 Mbps
+            case TelephonyManager.NETWORK_TYPE_IDEN: // API level 8
+                return "IDEN"; // ~25 kbps
+            case TelephonyManager.NETWORK_TYPE_LTE: // API level 11
+                return "LTE"; // ~ 10+ Mbps
+            // Unknown
+            case TelephonyManager.NETWORK_TYPE_UNKNOWN:
+                return "DESCONOCIDO"; // ~ 10+ Mbps
+            default:
+                return "UNKNOWN";
         }
-
-        //and any other APN properties: numeric, mcc, mnc, apn, user, server,
-        //password, proxy, port, mmsproxy, mmsport, mmsc, type, current
-
-        return name;
     }
 
     public void setMobileDataState(Activity activity, boolean mobileDataEnabled){
@@ -385,4 +398,67 @@ public class Connectivity {
             activity.getApplicationContext().sendBroadcast(poke);
         }
     }
+
+    public String[] TelephoneManager(Activity activity){
+
+        String data[]={"",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                ""};
+
+        TelephonyManager mTelephonyMgr = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE);
+
+        try { data[0] = mTelephonyMgr.getDeviceId(); } catch (Exception e) {};
+        try { data[1] = mTelephonyMgr.getLine1Number(); } catch (Exception e) {};
+        try { data[2] = mTelephonyMgr.getCellLocation().toString(); } catch (Exception e) {};
+        try { data[3] = String.valueOf(mTelephonyMgr.getDataState()); } catch (Exception e) {};
+        try { data[4] = mTelephonyMgr.getDeviceSoftwareVersion(); } catch (Exception e) {};
+        try { data[5] = mTelephonyMgr.getMmsUAProfUrl(); } catch (Exception e) {};
+        try { data[6] = mTelephonyMgr.getMmsUserAgent(); } catch (Exception e) {};
+        try { data[7] = mTelephonyMgr.getNetworkCountryIso(); } catch (Exception e) {};
+        try { data[8] = mTelephonyMgr.getNetworkOperator(); } catch (Exception e) {};
+        try { data[9] = mTelephonyMgr.getNetworkOperatorName(); } catch (Exception e) {};
+        try { data[10] = getMobileTypeConnection(mTelephonyMgr.getNetworkType()); } catch (Exception e) {};
+        try { data[11] = mTelephonyMgr.getSimCountryIso(); } catch (Exception e) {};
+        try { data[12] = mTelephonyMgr.getSimOperator(); } catch (Exception e) {};
+        try { data[13] = mTelephonyMgr.getSimOperatorName(); } catch (Exception e) {};
+        try { data[14] = String.valueOf(mTelephonyMgr.getSimState()); } catch (Exception e) {};
+        try { data[15] = mTelephonyMgr.getSimSerialNumber(); } catch (Exception e) {};
+
+        String output = "---->\n" +
+                "deviceId: " + data[0] + "\n" +
+                "line1Number: " + data[1] + "\n" +
+                "cellLocation: " + data[2] + "\n" +
+                "dataState: " + data[3] + "\n" +
+                "deviceSoftwareVersion: " + data[4] + "\n" +
+                "mmsUAProfUrl: " + data[5] + "\n" +
+                "mmsUserAgent: " + data[6] + "\n" +
+                "networkCountryIso: " + data[7] + "\n" +
+                "networkOperator: " + data[8] + "\n" +
+                "networkOperatorName: " + data[9] + "\n" +
+                "networkType (String): " + data[10] + "\n" +
+                "simCountryIso: " + data[11] + "\n" +
+                "simOperator: " + data[12] + "\n" +
+                "simOperatorName: " + data[13] + "\n" +
+                "simState: " + data[14] + "\n" +
+                "simSerialNumber: " + data[15];
+
+        Log.d("GPRS DATA", output);
+
+        return data;
+    }
+
+
 }

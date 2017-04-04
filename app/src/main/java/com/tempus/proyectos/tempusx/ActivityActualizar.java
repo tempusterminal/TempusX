@@ -208,6 +208,67 @@ public class ActivityActualizar extends Activity {
 
     }
 
+
+
+    class DownloadFileFromDevice extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            System.out.println("Starting install");
+
+            pDialog = new ProgressDialog(ActivityActualizar.this);
+            pDialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE, WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+            pDialog.setMessage("Verificando actualizaciones ...");
+            pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.show();
+        }
+
+        /**
+         * Downloading file in background thread
+         * */
+        @Override
+        protected String doInBackground(String... f_url) {
+            try {
+
+                publishProgress("Verificando actualizaciones ...");
+
+                InstallAPK(Environment.getExternalStorageDirectory().toString()  + "/Download/tempusx_v1.apk");
+
+                Log.e("Tempus: ", "Instalado");
+
+                publishProgress("Sistema actualizado ... reiniciando ...");
+
+                reboot();
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+            return null;
+        }
+
+
+
+        @Override
+        protected void onPostExecute(String file_url) {
+            System.out.println("Downloaded");
+
+            pDialog.dismiss();
+        }
+
+        protected void onProgressUpdate(String... progress) {
+            pDialog.setMessage(progress[0]);
+        }
+
+    }
+
+
+
+
     public void InstallAPK(String filename){
         File file = new File(filename);
         if(file.exists()){

@@ -107,6 +107,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
+
+
                 <RelativeLayout
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
@@ -116,11 +118,11 @@
 
                     <TextView
                         android:text="Estado de Interfaz (Eth0):"
-                        android:layout_width="350dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_txvStatus_width"
+                        android:layout_height="@dimen/acComunicacion_txvStatus_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginTop"
+                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginLeft"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -128,9 +130,9 @@
 
                     <Switch
                         android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginLeft="415dp"
+                        android:layout_height="@dimen/acComunicacion_swtStatus_height"
+                        android:layout_marginTop="@dimen/acComunicacion_swtStatus_marginTop"
+                        android:layout_marginLeft="@dimen/acComunicacion_swtStatus_marginLeft"
                         android:id="@+id/swtStatusEth0"
                         android:track="@drawable/switchshape"
                         android:thumb="@drawable/switchbutton"
@@ -138,165 +140,82 @@
                         android:textOff="Off "
                         android:textOn=" On " />
 
-                    <!--
-                    <RadioButton
-                        android:text="Static"
-                        android:layout_width="120dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="50dp"
-                        android:buttonTint="@color/colorTexto"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/rbnEthStatic" />
 
-                    <RadioButton
-                        android:text="Dynamic"
-                        android:layout_width="120dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="80dp"
-                        android:buttonTint="@color/colorTexto"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/rbnEthDynamic" />
-
-
-                    <TextView
-                        android:text="DNS"
-                        android:layout_width="60dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="50dp"
-                        android:layout_marginTop="155dp"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:id="@+id/textView22" />
-
-                    -->
 
                     <TextView
                         android:text="Dirección IP"
-                        android:layout_width="140dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_lblEth0_width"
+                        android:layout_height="@dimen/acComunicacion_lblEth0_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="100dp"
-                        android:layout_marginTop="60dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop1"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/textView10" />
+                        android:id="@+id/lblIpEth0" />
 
                     <TextView
                         android:text="Máscara"
-                        android:layout_width="140dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_lblEth0_width"
+                        android:layout_height="@dimen/acComunicacion_lblEth0_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="100dp"
-                        android:layout_marginTop="100dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop2"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/textView12" />
+                        android:id="@+id/lblMaskEth0" />
 
                     <TextView
                         android:text="Puerta de Enlace"
-                        android:layout_width="140dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_lblEth0_width"
+                        android:layout_height="@dimen/acComunicacion_lblEth0_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="100dp"
-                        android:layout_marginTop="140dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop3"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/textView13" />
-
-                    <!--
-                    <TextView
-                        android:text="Principal"
-                        android:layout_width="140dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="160dp"
-                        android:layout_marginTop="140dp"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:id="@+id/textView23" />
-
-                    <TextView
-                        android:text="Secundario"
-                        android:layout_width="140dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="160dp"
-                        android:layout_marginTop="170dp"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:id="@+id/textView25" />
+                        android:id="@+id/lblGwEth0" />
 
 
 
                     <TextView
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="60dp"
-                        android:layout_width="200dp"
-                        android:layout_height="25dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop1"
+                        android:layout_width="@dimen/acComunicacion_edtEth0_width"
+                        android:layout_height="@dimen/acComunicacion_edtEth0_height"
                         android:background="@color/colorGris"
                         android:id="@+id/background101"/>
 
                     <TextView
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="100dp"
-                        android:layout_width="200dp"
-                        android:layout_height="25dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop2"
+                        android:layout_width="@dimen/acComunicacion_edtEth0_width"
+                        android:layout_height="@dimen/acComunicacion_edtEth0_height"
                         android:background="@color/colorGris"
                         android:id="@+id/background102" />
 
                     <TextView
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="140dp"
-                        android:layout_width="200dp"
-                        android:layout_height="25dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop3"
+                        android:layout_width="@dimen/acComunicacion_edtEth0_width"
+                        android:layout_height="@dimen/acComunicacion_edtEth0_height"
                         android:background="@color/colorGris"
-                        android:id="@+id/background103" />-->
-
-                    <!--
-                    <TextView
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="140dp"
-                        android:layout_width="200dp"
-                        android:layout_height="25dp"
-                        android:background="@color/colorGris"
-                        android:id="@+id/background104" />
-
-                    <TextView
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="170dp"
-                        android:layout_width="200dp"
-                        android:layout_height="25dp"
-                        android:background="@color/colorGris"
-                        android:id="@+id/background105" />
-                    -->
+                        android:id="@+id/background103" />
 
 
                     <EditText
-                        android:layout_width="200dp"
-                        android:layout_height="30dp"
+                        android:layout_width="@dimen/acComunicacion_edtEth0_width"
+                        android:layout_height="@dimen/acComunicacion_edtEth0_height"
                         android:inputType="textPersonName"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="240dp"
-                        android:layout_marginTop="57dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop1"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:backgroundTint="@color/colorNegro"
@@ -304,59 +223,31 @@
                         android:id="@+id/edtEthIp" />
 
                     <EditText
-                        android:layout_width="200dp"
-                        android:layout_height="30dp"
+                        android:layout_width="@dimen/acComunicacion_edtEth0_width"
+                        android:layout_height="@dimen/acComunicacion_edtEth0_height"
                         android:inputType="textPersonName"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="240dp"
-                        android:layout_marginTop="97dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop2"
                         android:backgroundTint="@color/colorNegro"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtEthMascara" />
 
                     <EditText
-                        android:layout_width="200dp"
-                        android:layout_height="30dp"
+                        android:layout_width="@dimen/acComunicacion_edtEth0_width"
+                        android:layout_height="@dimen/acComunicacion_edtEth0_height"
                         android:inputType="textPersonName"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="240dp"
-                        android:layout_marginTop="137dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop3"
                         android:backgroundTint="@color/colorNegro"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtEthPuerta" />
 
-
-                    <!--
-                    <EditText
-                        android:layout_width="200dp"
-                        android:layout_height="30dp"
-                        android:inputType="textPersonName"
-                        android:text=""
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="137dp"
-                        android:backgroundTint="@color/colorNegro"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/edtEthDns1" />
-
-                    <EditText
-                        android:layout_width="200dp"
-                        android:layout_height="30dp"
-                        android:inputType="textPersonName"
-                        android:text=""
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="300dp"
-                        android:layout_marginTop="167dp"
-                        android:backgroundTint="@color/colorNegro"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/edtEthDns2" />
-                    -->
 
                 </RelativeLayout>
 
@@ -370,11 +261,11 @@
 
                     <TextView
                         android:text="Estado de Interfaz (Ppp0):"
-                        android:layout_width="350dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_txvStatus_width"
+                        android:layout_height="@dimen/acComunicacion_txvStatus_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginTop"
+                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginLeft"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -382,9 +273,9 @@
 
                     <Switch
                         android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginLeft="415dp"
+                        android:layout_height="@dimen/acComunicacion_swtStatus_height"
+                        android:layout_marginTop="@dimen/acComunicacion_swtStatus_marginTop"
+                        android:layout_marginLeft="@dimen/acComunicacion_swtStatus_marginLeft"
                         android:id="@+id/swtStatusPpp0"
                         android:track="@drawable/switchshape"
                         android:thumb="@drawable/switchbutton"
@@ -392,16 +283,149 @@
                         android:textOff="Off "
                         android:textOn=" On "/>
 
+
                     <TextView
-                        android:layout_width="450dp"
-                        android:layout_height="50dp"
-                        android:layout_centerHorizontal="true"
-                        android:layout_marginTop="85dp"
-                        android:text="..."
-                        android:textColor="@color/colorNegro"
-                        android:textSize="@dimen/cuerpo_textSize"
-                        android:gravity="center_vertical|center_horizontal"
-                        android:id="@+id/txvIndicador"/>
+                        android:text="Datos Móviles:"
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
+                        android:layout_marginTop="50dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblDataState" />
+
+                    <TextView
+                        android:text="SIM Card:"
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
+                        android:layout_marginTop="75dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblSimState" />
+
+                    <TextView
+                        android:text="Tipo de Red:"
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row3"
+                        android:layout_marginTop="75dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblNetworkType" />
+
+                    <TextView
+                        android:text="País Detectado: "
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
+                        android:layout_marginTop="110dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblCountryNetwork" />
+
+                    <TextView
+                        android:text="Red (Operador): "
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
+                        android:layout_marginTop="135dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblOperatorNetwork" />
+
+                    <TextView
+                        android:text="Señal: "
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
+                        android:layout_marginTop="170dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblSenial" />
+
+
+
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
+                        android:layout_marginTop="50dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblDescDataState" />
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
+                        android:layout_marginTop="75dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblDescSimState" />
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row4"
+                        android:layout_marginTop="75dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblDescNetworkType" />
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
+                        android:layout_marginTop="110dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblDescCountrySim" />
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
+                        android:layout_marginTop="135dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblDescOperatorSim" />
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="@dimen/acComunicacion_lblGPRS_width"
+                        android:layout_height="@dimen/acComunicacion_lblGPRS_height"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
+                        android:layout_marginTop="170dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/lblDescSenial" />
+
+
 
                 </RelativeLayout>
 
@@ -413,13 +437,14 @@
                     android:background="@color/colorFondoCuerpo"
                     android:orientation="vertical">
 
+
                     <TextView
                         android:text="Estado de Interfaz (Wlan0):"
-                        android:layout_width="350dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_txvStatus_width"
+                        android:layout_height="@dimen/acComunicacion_txvStatus_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginTop"
+                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginLeft"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -427,9 +452,9 @@
 
                     <Switch
                         android:layout_width="wrap_content"
-                        android:layout_height="25dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginLeft="415dp"
+                        android:layout_height="@dimen/acComunicacion_swtStatus_height"
+                        android:layout_marginTop="@dimen/acComunicacion_swtStatus_marginTop"
+                        android:layout_marginLeft="@dimen/acComunicacion_swtStatus_marginLeft"
                         android:id="@+id/swtStatusWlan0"
                         android:track="@drawable/switchshape"
                         android:thumb="@drawable/switchbutton"
@@ -437,308 +462,140 @@
                         android:textOff="Off "
                         android:textOn=" On "/>
 
-
-                    <ListView
-                        android:background="@color/colorTabNonFocusedNone"
-                        android:layout_width="150dp"
-                        android:layout_height="120dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="40dp"
-                        android:id="@+id/lstWifi"/>
-
-
                     <TextView
                         android:text="SSID: -"
-                        android:layout_width="200dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_lblWifi_width"
+                        android:layout_height="@dimen/acComunicacion_lblWifi_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="185dp"
-                        android:layout_marginTop="45dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblWifi_Left1"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop1"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/txvWifiState" />
 
-                    <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <RadioButton
-                            android:text="Static"
-                            android:layout_width="100dp"
-                            android:layout_height="25dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginLeft="175dp"
-                            android:layout_marginTop="90dp"
-                            android:buttonTint="@color/colorTexto"
-                            android:textColor="@color/colorTexto"
-                            android:textSize="12sp"
-                            android:id="@+id/rbnWifiStatic" />
-
-                        <RadioButton
-                            android:text="Dynamic"
-                            android:layout_width="100dp"
-                            android:layout_height="25dp"
-                            android:layout_alignParentTop="true"
-                            android:layout_marginLeft="175dp"
-                            android:layout_marginTop="00dp"
-                            android:buttonTint="@color/colorTexto"
-                            android:textColor="@color/colorTexto"
-                            android:textSize="12sp"
-                            android:id="@+id/rbnWifiDynamic" />
-                    </RadioGroup>
-
-
-
                     <TextView
                         android:text="Dirección IP"
-                        android:layout_width="120dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_lblWifi_width"
+                        android:layout_height="@dimen/acComunicacion_lblWifi_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="265dp"
-                        android:layout_marginTop="70dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblWifi_Left2"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop2"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         android:id="@+id/wifitextView10" />
 
                     <TextView
                         android:text="Máscara"
-                        android:layout_width="120dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_lblWifi_width"
+                        android:layout_height="@dimen/acComunicacion_lblWifi_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="265dp"
-                        android:layout_marginTop="100dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblWifi_Left2"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop3"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         android:id="@+id/wifitextView12" />
 
                     <TextView
                         android:text="Puerta de Enlace"
-                        android:layout_width="120dp"
-                        android:layout_height="25dp"
+                        android:layout_width="@dimen/acComunicacion_lblWifi_width"
+                        android:layout_height="@dimen/acComunicacion_lblWifi_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="265dp"
-                        android:layout_marginTop="130dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblWifi_Left2"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop4"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         android:id="@+id/wifitextView13" />
-
-                    <!--
-
-
-
-
 
 
                     <TextView
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="70dp"
-                        android:layout_width="150dp"
-                        android:layout_height="25dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtWifi_Left"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop2"
+                        android:layout_width="@dimen/acComunicacion_edtWifi_width"
+                        android:layout_height="@dimen/acComunicacion_edtWifi_height"
                         android:background="@color/colorGris"
                         android:id="@+id/wbackground101"/>
 
                     <TextView
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="100dp"
-                        android:layout_width="150dp"
-                        android:layout_height="25dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtWifi_Left"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop3"
+                        android:layout_width="@dimen/acComunicacion_edtWifi_width"
+                        android:layout_height="@dimen/acComunicacion_edtWifi_height"
                         android:background="@color/colorGris"
                         android:id="@+id/wbackground102" />
 
                     <TextView
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="130dp"
-                        android:layout_width="150dp"
-                        android:layout_height="25dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtWifi_Left"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop4"
+                        android:layout_width="@dimen/acComunicacion_edtWifi_width"
+                        android:layout_height="@dimen/acComunicacion_edtWifi_height"
                         android:background="@color/colorGris"
-                        android:id="@+id/wbackground103" />-->
+                        android:id="@+id/wbackground103" />
+
 
 
                     <EditText
-                        android:layout_width="130dp"
-                        android:layout_height="28dp"
+                        android:layout_width="@dimen/acComunicacion_edtWifi_width"
+                        android:layout_height="@dimen/acComunicacion_edtWifi_height"
                         android:inputType="number|phone"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="375dp"
-                        android:layout_marginTop="70dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtWifi_Left"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop2"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtWlanIp"
                         android:paddingBottom="5dp"
                         android:paddingLeft="5dp"
                         android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
                         android:imeOptions="actionDone"/>
 
                     <EditText
-                        android:layout_width="130dp"
-                        android:layout_height="28dp"
+                        android:layout_width="@dimen/acComunicacion_edtWifi_width"
+                        android:layout_height="@dimen/acComunicacion_edtWifi_height"
                         android:inputType="number|phone"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="375dp"
-                        android:layout_marginTop="100dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtWifi_Left"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop3"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtWlanMascara"
                         android:paddingBottom="5dp"
                         android:paddingLeft="5dp"
                         android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
                         android:imeOptions="actionDone"/>
 
                     <EditText
-                        android:layout_width="130dp"
-                        android:layout_height="28dp"
+                        android:layout_width="@dimen/acComunicacion_edtWifi_width"
+                        android:layout_height="@dimen/acComunicacion_edtWifi_height"
                         android:inputType="phone"
                         android:text=""
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="375dp"
-                        android:layout_marginTop="130dp"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtWifi_Left"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop4"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtWlanPuerta"
                         android:paddingBottom="5dp"
                         android:paddingLeft="5dp"
                         android:textCursorDrawable="@color/colorTexto"
-                        android:backgroundTint="@color/colorNegro"
                         android:imeOptions="actionDone"/>
 
-
                     <Button
-                        android:text="Guardar"
-                        android:layout_width="100dp"
-                        android:layout_height="32dp"
+                        android:text="Configurar"
+                        android:layout_width="@dimen/acComunicacion_Wifi_btnConf_width"
+                        android:layout_height="@dimen/acComunicacion_Wifi_btnConf_height"
+                        android:layout_marginLeft="@dimen/acComunicacion_Wifi_btnConf_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_btnConf_marginTop"
                         android:textSize="@dimen/cuerpo_min_textSize"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginTop="160dp"
-                        android:layout_marginLeft="405dp"
-                        android:id="@+id/btnConfRed" />
-
-
-
-
-                    <!-- -->
-                    <TextView
-                        android:id="@+id/txvWifiConfigArea"
-                        android:layout_width="330dp"
-                        android:layout_height="155dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="185dp"
-                        android:layout_marginTop="40dp"
-                        android:background="@color/colorHint"/>
-
-                    <TextView
-                        android:id="@+id/txvWifiConfigSSID"
-                        android:text="Loren Ipsum"
-                        android:textSize="20sp"
-                        android:textColor="@color/colorTexto"
-                        android:textStyle="bold"
-                        android:gravity="center_vertical"
-                        android:layout_width="250dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="195dp"
-                        android:layout_marginTop="50dp"/>
-
-                    <TextView
-                        android:id="@+id/txvWifiConfigCapab"
-                        android:text="Lorem Ipsum"
-                        android:textSize="12sp"
-                        android:textColor="@color/colorTexto"
-                        android:textStyle="normal"
-                        android:gravity="center_vertical"
-                        android:layout_width="310dp"
-                        android:layout_height="25dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="195dp"
-                        android:layout_marginTop="76dp"/>
-
-                    <TextView
-                        android:id="@+id/txvWifiConfigPass"
-                        android:text="Contraseña:"
-                        android:textSize="14sp"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:layout_width="90dp"
-                        android:layout_height="30dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="195dp"
-                        android:layout_marginTop="120dp"/>
-
-                    <EditText
-                        android:id="@+id/edtWifiConfigPass"
-                        android:layout_width="200dp"
-                        android:layout_height="30dp"
-                        android:inputType="textPassword"
-                        android:backgroundTint="@color/colorNegro"
-                        android:textColor="@color/colorTexto"
-                        android:textSize="15sp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="280dp"
-                        android:layout_marginTop="120dp"
-                        android:text=""
-                        android:paddingBottom="4dp"
-                        android:imeOptions="actionDone"/>
-
-                    <Button
-                        android:text="Cancelar"
-                        android:layout_width="100dp"
-                        android:layout_height="32dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="290dp"
-                        android:layout_marginTop="155dp"
-                        android:textSize="15sp"
-                        android:id="@+id/btnWifiConfigCancelar" />
-
-                    <Button
-                        android:text="Conectar"
-                        android:layout_width="100dp"
-                        android:layout_height="32dp"
-                        android:layout_alignParentTop="true"
-                        android:layout_marginLeft="402dp"
-                        android:layout_marginTop="155dp"
-                        android:textSize="15sp"
-                        android:id="@+id/btnWifiConfigConectar" />
-
-                    <Button
-                        android:text="Buscar"
-                        android:layout_width="150dp"
-                        android:layout_height="35dp"
-                        android:layout_marginLeft="20dp"
-                        android:layout_marginTop="162dp"
-                        android:textSize="13sp"
-                        android:id="@+id/buttonWifi" />
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                        android:id="@+id/btnWifi" />
 
 
 

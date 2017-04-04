@@ -37,8 +37,6 @@ public class ActivitySistema extends Activity {
     TextView txvSistSoftware;
     TextView txvSistIp;
     TextView txvSistTec1;
-    TextView txvSistTec2;
-    TextView txvSistTec3;
     Button btnActualizarID;
 
     ImageView btnMasterSistema;
@@ -68,8 +66,6 @@ public class ActivitySistema extends Activity {
         txvSistSoftware = (TextView) findViewById(R.id.txvSistSoftware);
         txvSistIp = (TextView) findViewById(R.id.txvSistIp);
         txvSistTec1 = (TextView) findViewById(R.id.txvSistTec1);
-        txvSistTec2 = (TextView) findViewById(R.id.txvSistTec2);
-        txvSistTec3 = (TextView) findViewById(R.id.txvSistTec3);
         btnActualizarID = (Button) findViewById(R.id.btnActualizarID);
 
         /* --- Inicialización de Métodos --- */
@@ -176,7 +172,5 @@ public class ActivitySistema extends Activity {
         //txvSistTec1.setText("DNI");
         txvSistTec1.setText("HUELLA");
         //txvSistTec3.setText("TECLADO");
-        txvSistTec2.setVisibility(View.INVISIBLE);
-        txvSistTec3.setVisibility(View.INVISIBLE);
     }
 }

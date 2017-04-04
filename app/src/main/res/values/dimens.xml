@@ -4,7 +4,7 @@
     <dimen name="activity_vertical_margin">0dp</dimen>
 
     <!-- Linea Parametros Generales -->
-    <dimen name="linea_width">533.33dp</dimen>
+    <dimen name="linea_width">598.33dp</dimen>
     <dimen name="linea_height">3.33dp</dimen>
 
 
@@ -30,7 +30,7 @@
 
 
     <!-- Fondo Superior -->
-    <dimen name="fondo1_width">533.33dp</dimen>
+    <dimen name="fondo1_width">598.33dp</dimen>
     <dimen name="fondo1_height">66.66dp</dimen>
     <dimen name="fondo1_marginTop">0dp</dimen>
     <dimen name="fondo1_marginLeft">0dp</dimen>
@@ -39,24 +39,24 @@
     <dimen name="fondo1alt_height">50dp</dimen>
 
     <!-- Fondo Medio -->
-    <dimen name="fondo2_width">533.33dp</dimen>
-    <dimen name="fondo2_height">226.66dp</dimen>
+    <dimen name="fondo2_width">598.33dp</dimen>
+    <dimen name="fondo2_height">240.33dp</dimen>
     <dimen name="fondo2_marginTop">66.66dp</dimen>
     <dimen name="fondo2_marginLeft">0dp</dimen>
 
     <!-- Fondo Medio Alternativo -->
-    <dimen name="fondo2alt_height">243.33dp</dimen>
+    <dimen name="fondo2alt_height">256.99dp</dimen>
     <dimen name="fondo2alt_marginTop">50dp</dimen>
 
     <!-- Fondo Inferior -->
-    <dimen name="fondo3_width">533.33dp</dimen>
+    <dimen name="fondo3_width">598.33dp</dimen>
     <dimen name="fondo3_height">26.66dp</dimen>
-    <dimen name="fondo3_marginTop">293.33dp</dimen>
+    <dimen name="fondo3_marginTop">307.33dp</dimen>
     <dimen name="fondo3_marginLeft">0dp</dimen>
 
 
     <!-- Fondo Flg -->
-    <dimen name="fondoFlg_width">533.33dp</dimen>
+    <dimen name="fondoFlg_width">598.33dp</dimen>
     <dimen name="fondoFlg_height">100dp</dimen>
     <dimen name="fondoFlg_marginTop">100dp</dimen>
     <dimen name="fondoFlg_marginLeft">0dp</dimen>
@@ -71,51 +71,47 @@
     <!-- Widget Fecha -->
     <dimen name="fecha_textSize">15sp</dimen>
     <dimen name="fecha_marginTop">43.33dp</dimen>
-    <dimen name="fecha_marginLeft">393.66dp</dimen>
+    <dimen name="fecha_marginLeft">453.66dp</dimen>
     <dimen name="fecha_width">133.33dp</dimen>
     <dimen name="fecha_height">16.66dp</dimen>
 
     <!-- Widget Logo -->
     <dimen name="logo_marginTop">6.66dp</dimen>
     <dimen name="logo_marginRight">6.66dp</dimen>
-    <dimen name="logo_marginLeft">430.66dp</dimen>
+    <dimen name="logo_marginLeft">495.66dp</dimen>
     <dimen name="logo_width">100dp</dimen>
     <dimen name="logo_height">36.66dp</dimen>
 
 
-    <!-- Widget Botones Flg Actividad -->
-    <dimen name="botonFlg_width">200dp</dimen>
-    <dimen name="botonFlg_height">100dp</dimen>
-    <dimen name="botonFlg_marginTop">0dp</dimen>
-    <dimen name="botonFlg_textSize">25sp</dimen>
-
+    <!-- ==================================================================== -->
+    <!-- PRINCIPAL -->
 
     <!-- Widget Botones Accesos General <dimen name="botonAcceso_width">100dp</dimen> -->
-    <dimen name="botonAcceso_width">100dp</dimen>
+    <dimen name="botonAcceso_width">135dp</dimen>
     <dimen name="botonAcceso_width_two">220dp</dimen>
-    <dimen name="botonAcceso_height">66.66dp</dimen>
+    <dimen name="botonAcceso_height">70.66dp</dimen>
     <dimen name="botonAcceso_marginTop">93.33dp</dimen>
     <dimen name="botonAcceso_textSize">25sp</dimen>
 
     <!-- Boton Acceso para 4 (1 fila) u 8 (2 filas) botones -->
     <!-- Boton Acceso 1 -->
-    <dimen name="botonAcceso1_marginLeft">26.66dp</dimen>
+    <dimen name="botonAcceso1_marginLeft">25dp</dimen>
 
     <!-- Boton Acceso 2 -->
-    <dimen name="botonAcceso2_marginLeft">153.33dp</dimen>
+    <dimen name="botonAcceso2_marginLeft">160dp</dimen>
 
     <!-- Boton Acceso 3 -->
-    <dimen name="botonAcceso3_marginLeft">280dp</dimen>
+    <dimen name="botonAcceso3_marginLeft">295dp</dimen>
 
     <!-- Boton Acceso 4 -->
-    <dimen name="botonAcceso4_marginLeft">406.66dp</dimen>
+    <dimen name="botonAcceso4_marginLeft">430dp</dimen>
 
     <!-- Boton Acceso para 2 (1 fila) o 4 (2 filas) botones -->
     <!-- Boton Acceso 1 -->
-    <dimen name="botonAcceso1_marginLeft_24">26.66dp</dimen>
+    <dimen name="botonAcceso1_marginLeft_24">25dp</dimen>
 
     <!-- Boton Acceso 2 -->
-    <dimen name="botonAcceso2_marginLeft_24">285dp</dimen>
+    <dimen name="botonAcceso2_marginLeft_24">295dp</dimen>
 
 
     <!-- Marcacion Nombre -->
@@ -146,10 +142,61 @@
     <dimen name="mProgressbar_height">66.66dp</dimen>
 
     <!-- Msj Sistema -->
-    <dimen name="msjSistema_height">60dp</dimen>
+    <dimen name="msjSistema_height">80dp</dimen>
     <dimen name="msjSistema_marginTop">165dp</dimen>
     <dimen name="msjSistema_textSize">18sp</dimen>
 
+    <!-- Botones Reintentos -->
+    <dimen name="buttonWarning_width">150dp</dimen>
+    <dimen name="buttonWarning_height">40dp</dimen>
+    <dimen name="buttonWarning_marginTop">240dp</dimen>
+    <dimen name="buttonWarning01_marginLeft">60dp</dimen>
+    <dimen name="buttonWarning02_marginLeft">385dp</dimen>
+
+
+    <!-- Boton Acceso Teclado -->
+    <dimen name="btnAccessKey_width">60dp</dimen>
+    <dimen name="btnAccessKey_height">60dp</dimen>
+    <dimen name="btnAccessKey_marginTop">230dp</dimen>
+    <dimen name="btnAccessKey_marginLeft">520dp</dimen>
+
+
+    <!-- Eventos -->
+    <dimen name="btnEvent_marginTopRow1">85dp</dimen>
+    <dimen name="btnEvent_marginTopRow2">165dp</dimen>
+
+
+    <!-- Teclado -->
+
+    <dimen name="txvKeyPantalla_width">555dp</dimen>
+    <dimen name="txvKeyPantalla_height">55dp</dimen>
+    <dimen name="txvKeyPantalla_marginTop">85dp</dimen>
+    <dimen name="txvKeyPantalla_marginLeft">20dp</dimen>
+    <dimen name="txvKeyPantalla_textSize">40sp</dimen>
+
+    <dimen name="btnKey_width">135dp</dimen>
+    <dimen name="btnKey_height">45dp</dimen>
+
+    <dimen name="btnKey_marginTop_row1">150dp</dimen>
+    <dimen name="btnKey_marginTop_row2">200dp</dimen>
+    <dimen name="btnKey_marginTop_row3">250dp</dimen>
+
+    <dimen name="btnKey_marginLeft_col1">25dp</dimen>
+    <dimen name="btnKey_marginLeft_col2">160dp</dimen>
+    <dimen name="btnKey_marginLeft_col3">295dp</dimen>
+    <dimen name="btnKey_marginLeft_col4">430dp</dimen>
+
+    <!-- Mensaje en Pantalla -->
+    <dimen name="txvMensajePantalla_marginLeft">0dp</dimen>
+    <dimen name="txvMensajePantalla_marginTop">245dp</dimen>
+    <dimen name="txvMensajePantalla_textSize">30sp</dimen>
+
+
+    <!-- ==================================================================== -->
+
+
+    <!-- ==================================================================== -->
+    <!-- GENERAL -->
 
     <!-- Titulo Menu -->
     <dimen name="titulo_textSize">30sp</dimen>
@@ -158,65 +205,65 @@
     <dimen name="titulo_width">333.33dp</dimen>
     <dimen name="titulo_height">36.66dp</dimen>
 
-
     <!-- Texto Estandar -->
     <dimen name="cuerpo_textSize">25sp</dimen>
     <dimen name="cuerpo_min_textSize">15sp</dimen>
 
+    <!-- ==================================================================== -->
 
-    <!-- ACTIVITY LOGIN INI -->
+
+    <!-- ==================================================================== -->
+    <!-- LOGIN -->
 
     <dimen name="acLogin_lblUser_width">160dp</dimen>
     <dimen name="acLogin_lblUser_height">40dp</dimen>
-    <dimen name="acLogin_lblUser_marginTop">110dp</dimen>
-    <dimen name="acLogin_lblUser_marginLeft">70dp</dimen>
+    <dimen name="acLogin_lblUser_marginTop">120dp</dimen>
+    <dimen name="acLogin_lblUser_marginLeft">90dp</dimen>
 
     <dimen name="acLogin_lblPass_width">160dp</dimen>
     <dimen name="acLogin_lblPass_height">40dp</dimen>
-    <dimen name="acLogin_lblPass_marginTop">155dp</dimen>
-    <dimen name="acLogin_lblPass_marginLeft">70dp</dimen>
+    <dimen name="acLogin_lblPass_marginTop">165dp</dimen>
+    <dimen name="acLogin_lblPass_marginLeft">90dp</dimen>
 
-    <dimen name="acLogin_txtUser_width">220dp</dimen>
+    <dimen name="acLogin_txtUser_width">250dp</dimen>
     <dimen name="acLogin_txtUser_height">40dp</dimen>
-    <dimen name="acLogin_txtUser_marginTop">110dp</dimen>
-    <dimen name="acLogin_txtUser_marginLeft">230dp</dimen>
+    <dimen name="acLogin_txtUser_marginTop">120dp</dimen>
+    <dimen name="acLogin_txtUser_marginLeft">250dp</dimen>
 
-    <dimen name="acLogin_txtPass_width">220dp</dimen>
+    <dimen name="acLogin_txtPass_width">250dp</dimen>
     <dimen name="acLogin_txtPass_height">40dp</dimen>
-    <dimen name="acLogin_txtPass_marginTop">155dp</dimen>
-    <dimen name="acLogin_txtPass_marginLeft">230dp</dimen>
+    <dimen name="acLogin_txtPass_marginTop">165dp</dimen>
+    <dimen name="acLogin_txtPass_marginLeft">250dp</dimen>
 
     <dimen name="acLogin_btnIntro_width">120dp</dimen>
     <dimen name="acLogin_btnIntro_height">40dp</dimen>
     <dimen name="acLogin_btnIntro_marginTop">220dp</dimen>
-    <dimen name="acLogin_btnIntro_marginLeft">130dp</dimen>
+    <dimen name="acLogin_btnIntro_marginLeft">160dp</dimen>
 
     <dimen name="acLogin_btnCancel_width">120dp</dimen>
     <dimen name="acLogin_btnCancel_height">40dp</dimen>
     <dimen name="acLogin_btnCancel_marginTop">220dp</dimen>
-    <dimen name="acLogin_btnCancel_marginLeft">280dp</dimen>
+    <dimen name="acLogin_btnCancel_marginLeft">310dp</dimen>
+
+    <!-- ==================================================================== -->
 
 
-    <!-- ACTIVITY LOGIN FIN -->
-
-
-
-
-    <!-- ACTIVITY MENU INI -->
+    <!-- ==================================================================== -->
+    <!-- MENU -->
 
     <dimen name="acMenu_btnOpcAllPadding">10dp</dimen>
 
     <dimen name="acMenu_btnOpcAll_width">66.66dp</dimen>
     <dimen name="acMenu_btnOpcAll_height">66.66dp</dimen>
 
-    <dimen name="acMenu_btnOpcSupAll_marginTop">68dp</dimen>
-    <dimen name="acMenu_btnOpcInfAll_marginTop">181.33dp</dimen>
+    <dimen name="acMenu_btnOpcSupAll_marginTop">73dp</dimen>
+    <dimen name="acMenu_btnOpcInfAll_marginTop">186.33dp</dimen>
 
-    <dimen name="acMenu_btnOpc1_marginLeft">28dp</dimen>
-    <dimen name="acMenu_btnOpc2_marginLeft">130.66dp</dimen>
-    <dimen name="acMenu_btnOpc3_marginLeft">233.33dp</dimen>
-    <dimen name="acMenu_btnOpc4_marginLeft">336dp</dimen>
-    <dimen name="acMenu_btnOpc5_marginLeft">438.66dp</dimen>
+    <dimen name="acMenu_btnOpc1_marginLeft">38dp</dimen>
+    <dimen name="acMenu_btnOpc2_marginLeft">150.66dp</dimen>
+    <dimen name="acMenu_btnOpc3_marginLeft">263.33dp</dimen>
+    <dimen name="acMenu_btnOpc4_marginLeft">376dp</dimen>
+    <dimen name="acMenu_btnOpc5_marginLeft">488.66dp</dimen>
 
 
     <dimen name="acMenu_lblOpc_textSize">11.5sp</dimen>
@@ -224,20 +271,21 @@
     <dimen name="acMenu_lblOpcAll_width">94.66dp</dimen>
     <dimen name="acMenu_lblOpcAll_height">20dp</dimen>
 
-    <dimen name="acMenu_lblOpcSupAll_marginTop">141.33dp</dimen>
-    <dimen name="acMenu_lblOpcInfAll_marginTop">254.66dp</dimen>
+    <dimen name="acMenu_lblOpcSupAll_marginTop">146.33dp</dimen>
+    <dimen name="acMenu_lblOpcInfAll_marginTop">259.66dp</dimen>
 
-    <dimen name="acMenu_lblOpc1_marginLeft">14dp</dimen>
-    <dimen name="acMenu_lblOpc2_marginLeft">116.66dp</dimen>
-    <dimen name="acMenu_lblOpc3_marginLeft">219.33dp</dimen>
-    <dimen name="acMenu_lblOpc4_marginLeft">322dp</dimen>
-    <dimen name="acMenu_lblOpc5_marginLeft">424.66dp</dimen>
+    <dimen name="acMenu_lblOpc1_marginLeft">24dp</dimen>
+    <dimen name="acMenu_lblOpc2_marginLeft">136.66dp</dimen>
+    <dimen name="acMenu_lblOpc3_marginLeft">249.33dp</dimen>
+    <dimen name="acMenu_lblOpc4_marginLeft">362dp</dimen>
+    <dimen name="acMenu_lblOpc5_marginLeft">474.66dp</dimen>
 
-    <!-- ACTIVITY MENU FIN -->
+    <!-- ==================================================================== -->
 
 
 
-    <!-- ACTIVITY SISTEMA INI -->
+    <!-- ==================================================================== -->
+    <!-- SISTEMA -->
 
     <dimen name="acSistema_lblItemAll_width">150dp</dimen>
     <dimen name="acSistema_lblItemAll_height">25dp</dimen>
@@ -245,48 +293,99 @@
     <dimen name="acSistema_lblItemAll_marginLeft">20dp</dimen>
 
     <dimen name="acSistema_lblItem1_marginTop">60dp</dimen>
-    <dimen name="acSistema_lblItem2_marginTop">90dp</dimen>
-    <dimen name="acSistema_lblItem3_marginTop">120dp</dimen>
-    <dimen name="acSistema_lblItem4_marginTop">150dp</dimen>
-    <dimen name="acSistema_lblItem5_marginTop">180dp</dimen>
-    <dimen name="acSistema_lblItem6_marginTop">210dp</dimen>
-
+    <dimen name="acSistema_lblItem2_marginTop">105dp</dimen>
+    <dimen name="acSistema_lblItem3_marginTop">135dp</dimen>
+    <dimen name="acSistema_lblItem4_marginTop">165dp</dimen>
+    <dimen name="acSistema_lblItem5_marginTop">215dp</dimen>
 
     <dimen name="acSistema_lblItemDescAll_width">200dp</dimen>
     <dimen name="acSistema_lblItemDescAll_height">25dp</dimen>
 
-    <dimen name="acSistema_lblItemDescAll_marginLeft">240dp</dimen>
-
-    <dimen name="acSistema_lblItemDesc2_marginTop">90dp</dimen>
-    <dimen name="acSistema_lblItemDesc3_marginTop">120dp</dimen>
-    <dimen name="acSistema_lblItemDesc4_marginTop">150dp</dimen>
-    <dimen name="acSistema_lblItemDesc5_marginTop">180dp</dimen>
-    <dimen name="acSistema_lblItemDesc6_marginTop">210dp</dimen>v
-    <dimen name="acSistema_lblItemDesc7_marginTop">235dp</dimen>
-    <dimen name="acSistema_lblItemDesc8_marginTop">260dp</dimen>
-
+    <dimen name="acSistema_lblItemDescAll_marginLeft">300dp</dimen>
 
     <dimen name="acSistema_txtItemDesc1_width">70dp</dimen>
     <dimen name="acSistema_txtItemDesc1_height">25dp</dimen>
 
-    <dimen name="acSistema_txtItemDesc1_marginTop">60dp</dimen>
+    <dimen name="acSistema_btnActualizarID_width">100dp</dimen>
+    <dimen name="acSistema_btnActualizarID_height">34dp</dimen>
+    <dimen name="acSistema_btnActualizarID_marginTop">54dp</dimen>
+    <dimen name="acSistema_btnActualizarID_marginLeft">400dp</dimen>
 
-    <!-- ACTIVITY SISTEMA FIN -->
+    <!-- ==================================================================== -->
 
 
+    <!-- ==================================================================== -->
+    <!-- ACTIVITY COMUNICACION -->
 
+    <dimen name="acComunicacion_txvStatus_width">350dp</dimen>
+    <dimen name="acComunicacion_txvStatus_height">25dp</dimen>
+    <dimen name="acComunicacion_txvStatus_marginTop">10dp</dimen>
+    <dimen name="acComunicacion_txvStatus_marginLeft">20dp</dimen>
+
+    <dimen name="acComunicacion_swtStatus_height">25dp</dimen>
+    <dimen name="acComunicacion_swtStatus_marginTop">10dp</dimen>
+    <dimen name="acComunicacion_swtStatus_marginLeft">475dp</dimen>
+
+    <!-- Ethernet -->
+    <dimen name="acComunicacion_lblEth0_width">140dp</dimen>
+    <dimen name="acComunicacion_lblEth0_height">25dp</dimen>
+
+    <dimen name="acComunicacion_edtEth0_width">200dp</dimen>
+    <dimen name="acComunicacion_edtEth0_height">25dp</dimen>
+
+    <dimen name="acComunicacion_lblEth0_marginLeft">100dp</dimen>
+    <dimen name="acComunicacion_edtEth0_marginLeft">300dp</dimen>
+
+    <dimen name="acComunicacion_Eth0_marginTop1">60dp</dimen>
+    <dimen name="acComunicacion_Eth0_marginTop2">100dp</dimen>
+    <dimen name="acComunicacion_Eth0_marginTop3">140dp</dimen>
+
+    <!-- Ppp -->
+    <dimen name="acComunicacion_lblGPRS_width">150dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_height">25dp</dimen>
+
+    <dimen name="acComunicacion_lblGPRS_marginLeft_row1">40dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginLeft_row2">170dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginLeft_row3">320dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginLeft_row4">430dp</dimen>
+
+
+    <dimen name="acComunicacion_lblGPRS_marginTop_1">50dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginTop_2">75dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginTop_3">110dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginTop_4">135dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginTop_5">170dp</dimen>
+
+    <!-- Wifi -->
+
+    <dimen name="acComunicacion_lblWifi_width">200dp</dimen>
+    <dimen name="acComunicacion_lblWifi_height">25dp</dimen>
+    <dimen name="acComunicacion_lblWifi_Left1">100dp</dimen>
+    <dimen name="acComunicacion_lblWifi_Left2">140dp</dimen>
+
+    <dimen name="acComunicacion_edtWifi_width">160dp</dimen>
+    <dimen name="acComunicacion_edtWifi_height">25dp</dimen>
+    <dimen name="acComunicacion_edtWifi_Left">280dp</dimen>
+
+    <dimen name="acComunicacion_Wifi_marginTop1">45dp</dimen>
+    <dimen name="acComunicacion_Wifi_marginTop2">75dp</dimen>
+    <dimen name="acComunicacion_Wifi_marginTop3">105dp</dimen>
+    <dimen name="acComunicacion_Wifi_marginTop4">135dp</dimen>
+
+
+    <dimen name="acComunicacion_Wifi_btnConf_width">150dp</dimen>
+    <dimen name="acComunicacion_Wifi_btnConf_height">35dp</dimen>
+    <dimen name="acComunicacion_Wifi_btnConf_marginLeft">225dp</dimen>
+    <dimen name="acComunicacion_Wifi_btnConf_marginTop">170dp</dimen>
+
+
+    <!-- ==================================================================== -->
 
 
     <!-- ACTIVITY LOGIN -->
 
 
-
     <!-- ACTIVITY LOGIN -->
-
-
-
-    <!-- ACTIVITY LOGIN -->
-
 
 
     <!-- ACTIVITY LOGIN -->
