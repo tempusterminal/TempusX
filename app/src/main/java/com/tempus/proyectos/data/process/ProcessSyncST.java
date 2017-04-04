@@ -2,9 +2,9 @@ package com.tempus.proyectos.data.process;
 
 import android.content.Context;
 import android.database.SQLException;
+import android.os.Looper;
 import android.util.Log;
 
-import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
@@ -13,7 +13,7 @@ import com.tempus.proyectos.util.Fechahora;
  * Created by gurrutiam on 12/12/2016.
  */
 
-public class ProcessMarcas extends Thread{
+public class ProcessSyncST extends Thread{
 
     private Thread hilo;
     private String nombreHilo;
@@ -23,7 +23,7 @@ public class ProcessMarcas extends Thread{
     private Context context;
 
 
-    public ProcessMarcas(String nombreHilo) {
+    public ProcessSyncST(String nombreHilo) {
         this.nombreHilo = nombreHilo;
         Log.d("Autorizaciones","Creando Hilo " + nombreHilo);
     }
@@ -34,16 +34,14 @@ public class ProcessMarcas extends Thread{
 
         while(true){
             try{
-                /*
-                queriesMarcaciones = new QueriesMarcaciones(context);
-                Autorizaciones autorizaciones = queriesMarcaciones.GestionarMarcaciones("46388059","4",2,"001",fechahora.getFechahora());
-                Log.d("Autorizaciones","Resultado de Busqueda de Autorizaciones: " + autorizaciones.toString());
-                */
 
-                ProcessSync processSync = new ProcessSync();
-                processSync.Process(context);
+                if(ActivityPrincipal.ctrlThreadSyncAutorizacionesEnabled){
+                    ProcessSync processSync = new ProcessSync();
+                    //processSync.ProcessLlamadas(context);
+                    processSync.syncSuprema(context);
+                }
 
-                Thread.sleep(1000);
+                Thread.sleep(3000);
             }catch (SQLException e){
                 Log.d("Autorizaciones","Error SQL Hilo " + nombreHilo + ": " + e.toString());
             }catch (InterruptedException e){
@@ -51,6 +49,7 @@ public class ProcessMarcas extends Thread{
             }catch (Exception e){
                 Log.d("Autorizaciones","Error General Hilo " + nombreHilo + ": " + e.toString());
             }
+
         }
 
         // //////////////////////////////////
@@ -59,6 +58,7 @@ public class ProcessMarcas extends Thread{
 
 
     public void start(Context context){
+        //Looper.prepare();
         Log.d("Autorizaciones","Iniciando Hilo " + nombreHilo);
         if(hilo == null){
             hilo = new Thread(nombreHilo);
