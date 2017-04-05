@@ -37,7 +37,9 @@ public class ProcessSyncST extends Thread{
 
                 if(ActivityPrincipal.ctrlThreadSyncAutorizacionesEnabled){
                     ProcessSync processSync = new ProcessSync();
-                    //processSync.ProcessLlamadas(context);
+                    // Llamadas para poblar autorizaciones
+                    processSync.ProcessLlamadas(context);
+                    // Consultar si se activa Replica
                     processSync.syncSuprema(context);
                 }
 

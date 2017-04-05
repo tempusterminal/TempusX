@@ -183,7 +183,7 @@ public class QueriesParameters {
         this.close();
     }
 
-    public int validateParameter(String parametersvalues, int validate){
+    public int validateParameterValue(String parametersvalues, int validate){
         /*
             INPUT
             IDPARAMETER,VALUE;IDPARAMETER,VALUE; ...
@@ -200,39 +200,53 @@ public class QueriesParameters {
             0 = value(s) NO coincide con PARAMETERS.VALUE
             1 = value(s) SI coincide con PARAMETERS.VALUE
             2 = PARAMETERS.ENABLE = 0 (solo en el caso que validate = 1 entonces se consulta PARAMETERS.ENABLE)
-
         */
+
         String[] parametervalue = parametersvalues.split(";");
+        String[] items = new String[2];
         List<Parameters> parametersList = new ArrayList<Parameters>();
         int[] outputs = new int[parametervalue.length];
         int output = 1;
 
+        String a = "";
+
         for(int i = 0; i < parametervalue.length; i++){
-            String[] items = parametervalue[i].split(",");
+
+            if(parametervalue[i].split(",").length == 1){
+                items[0] = parametervalue[i].substring(0,parametervalue[i].length() - 1);
+                items[1] = "";
+            }else if(parametervalue[i].split(",").length == 2){
+                items = parametervalue[i].split(",");
+            }
+
             parametersList = this.select_one_row(items[0]);
 
-            //Valida si se consulta ENABLE en la tabla PARAMETERS
-            if(validate == 1){
-                if(parametersList.get(0).getEnable() == 1){
+            //Log.d("Autorizaciones","IDPARAMETER: " + items[0]);
+            //Log.d("Autorizaciones","VALUE: " + parametersList.get(0).getValue() + " = " + items[1]);
+            //Log.d("Autorizaciones","validate: " + validate);
+
+            if(parametersList.size() > 0){
+                //Valida si se consulta ENABLE en la tabla PARAMETERS
+                if(validate == 1){
+                    if(parametersList.get(0).getEnable() == 1){
+                        if(parametersList.get(0).getValue().equals(items[1])){
+                            outputs[i] = 1;
+                        }else{
+                            outputs[i] = 0;
+                        }
+                    }else{
+                        outputs[i] = 2;
+                    }
+                }else if(validate == 0){
                     if(parametersList.get(0).getValue().equals(items[1])){
                         outputs[i] = 1;
                     }else{
                         outputs[i] = 0;
                     }
-                }else{
-                    outputs[i] = 2;
                 }
-            }else if(validate == 0){
-                if(parametersList.get(0).getValue().equals(items[1])){
-                    outputs[i] = 1;
-                }else{
-                    outputs[i] = 0;
-                }
+            }else{
+                outputs[i] = 0;
             }
-
-            //Log.d("Autorizaciones","IDPARAMETER: " + items[0]);
-            //Log.d("Autorizaciones","VALUE: " + parametersList.get(0).getValue() + " = " + items[1]);
-            //Log.d("Autorizaciones","validate: " + validate);
 
         }
 
@@ -248,6 +262,60 @@ public class QueriesParameters {
         }
 
         return output;
+    }
+
+    public Parameters selectParameter(String idparameter){
+
+        // Select un registro de la tabla Parameters
+
+        Parameters parameters = new Parameters();
+
+        String query = TableParameters.SELECT_TABLE + " " +
+                "WHERE " + TableParameters.Idparameter + " = ? " +
+                " LIMIT 1;";
+
+        //Log.d("Autorizaciones","Parameters select_one_row: " + query + " - " + idparameter);
+
+        this.open();
+        Cursor cursor = database.rawQuery(query, new String[] { String.valueOf(idparameter)});
+        if(cursor.moveToNext()){
+            do{
+                parameters = new Parameters();
+                parameters.setIdparameter(cursor.getString(cursor.getColumnIndex(TableParameters.Idparameter)));
+                parameters.setParameter(cursor.getString(cursor.getColumnIndex(TableParameters.Parameter)));
+                parameters.setValue(cursor.getString(cursor.getColumnIndex(TableParameters.Value)));
+                parameters.setSubparameters(cursor.getString(cursor.getColumnIndex(TableParameters.Subparameters)));
+                parameters.setEnable(cursor.getInt(cursor.getColumnIndex(TableParameters.Enable)));
+                parameters.setFechaHoraSinc(cursor.getString(cursor.getColumnIndex(TableParameters.FechaHoraSinc)));
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        this.close();
+
+        return parameters;
+    }
+
+
+    public long updateParameter(Parameters parameters){
+
+        // Update un registro de la tabla Parameters
+
+        this.open();
+        long rowaffected = -1;
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(TableParameters.Parameter, parameters.Parameter);
+        contentValues.put(TableParameters.Value, parameters.Value);
+        contentValues.put(TableParameters.Subparameters, parameters.Subparameters);
+        contentValues.put(TableParameters.Enable, parameters.Enable);
+        contentValues.put(TableParameters.FechaHoraSinc, parameters.FechaHoraSinc);
+
+        rowaffected = database.update(TableParameters.TABLE_NAME,contentValues,TableParameters.Idparameter + " = ? ",new String[] { parameters.getIdparameter() });
+        this.close();
+
+        return rowaffected;
+
     }
 
 
