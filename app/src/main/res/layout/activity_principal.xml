@@ -66,7 +66,7 @@
     <TextClock
         android:layout_width="@dimen/hora_width"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
+        android:layout_marginTop="@dimen/hora_marginTop"
         android:layout_marginLeft="@dimen/hora_marginLeft"
         android:textSize="@dimen/hora_textSize"
         android:textColor="@color/colorTexto"
@@ -309,6 +309,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row1"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col1"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey1" />
 
@@ -318,6 +319,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row1"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col2"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey2" />
 
@@ -327,6 +329,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row1"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col3"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey3" />
 
@@ -336,6 +339,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row1"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col4"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKeyBorrar" />
 
@@ -347,6 +351,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row2"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col1"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey4" />
 
@@ -356,6 +361,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row2"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col2"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey5" />
 
@@ -365,6 +371,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row2"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col3"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey6" />
 
@@ -374,6 +381,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row2"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col4"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey0" />
 
@@ -385,6 +393,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row3"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col1"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey7" />
 
@@ -394,6 +403,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row3"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col2"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey8" />
 
@@ -403,6 +413,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row3"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col3"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKey9" />
 
@@ -412,6 +423,7 @@
         android:layout_height="@dimen/btnKey_height"
         android:layout_marginTop="@dimen/btnKey_marginTop_row3"
         android:layout_marginLeft="@dimen/btnKey_marginLeft_col4"
+        android:textSize="@dimen/btnKey_textSize"
         android:textStyle="bold"
         android:id="@+id/btnKeyIntro" />
 

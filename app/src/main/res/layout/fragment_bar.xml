@@ -24,31 +24,31 @@
     <!-- Componentes Footer -->
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/fragmentBar_txvIdLabel_width"
+        android:layout_height="@dimen/fragmentBar_txvIdLabel_height"
         android:text="ID:"
         android:id="@+id/txvIdLabel"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="3dp"
-        android:textSize="15sp"
+        android:layout_marginLeft="@dimen/fragmentBar_txvIdLabel_marginLeft"
+        android:layout_marginTop="@dimen/fragmentBar_txvIdLabel_marginTop"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:textColor="@color/colorTexto"/>
 
     <TextView
-        android:layout_width="40dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/fragmentBar_txvIdterminal_width"
+        android:layout_height="@dimen/fragmentBar_txvIdterminal_height"
         android:text=""
         android:id="@+id/txvIdterminal"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="3dp"
-        android:textSize="15sp"
+        android:layout_marginLeft="@dimen/fragmentBar_txvIdterminal_marginLeft"
+        android:layout_marginTop="@dimen/fragmentBar_txvIdterminal_marginTop"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:textColor="@color/colorTexto"/>
 
     <ImageView
-        android:layout_width="25dp"
-        android:layout_height="15dp"
+        android:layout_width="@dimen/fragmentBar_imgViewIBat_width"
+        android:layout_height="@dimen/fragmentBar_imgViewIBat_height"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginRight="@dimen/fragmentBar_imgViewIBat_marginRight"
+        android:layout_marginTop="@dimen/fragmentBar_imgViewIBat_marginTop"
         android:id="@+id/imgViewIBat" />
 
     <TextView
@@ -57,28 +57,17 @@
         android:text=""
         android:id="@+id/txvINivelBateria"
         android:textColor="@color/colorTexto"
-        android:textSize="15sp"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="47dp"
-        android:layout_marginTop="2dp"/>
-
-    <Button
-        android:visibility="invisible"
-        android:text="."
-        android:layout_width="30dp"
-        android:layout_height="15dp"
-        android:layout_alignParentLeft="true"
-        android:layout_marginTop="6dp"
-        android:layout_marginLeft="360dp"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/btnRestart" />
+        android:layout_marginRight="@dimen/fragmentBar_txvINivelBateria_marginRight"
+        android:layout_marginTop="@dimen/fragmentBar_txvINivelBateria_marginTop"/>
 
     <ImageView
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="@dimen/fragmentBar_imgViewReplica_width"
+        android:layout_height="@dimen/fragmentBar_imgViewReplica_height"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="6dp"
-        android:layout_marginTop="6dp"
+        android:layout_marginRight="@dimen/fragmentBar_imgViewReplica_marginRight"
+        android:layout_marginTop="@dimen/fragmentBar_imgViewReplica_marginTop"
         android:src="@drawable/rep0"
         android:id="@+id/imgViewReplica" />
 

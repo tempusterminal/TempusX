@@ -89,109 +89,107 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="70dp"
-        android:layout_marginLeft="40dp"
+        android:layout_marginTop="@dimen/acFechaHora_framelayout_marginTop"
+        android:layout_marginLeft="@dimen/acFechaHora_framelayout_marginLeft"
         android:id="@+id/frameLayout">
 
         <CalendarView
-            android:layout_width="300dp"
-            android:layout_height="220dp"
+            android:layout_width="@dimen/acFechaHora_calendarFechaHora_width"
+            android:layout_height="@dimen/acFechaHora_calendarFechaHora_height"
             android:id="@+id/calendarFechaHora"
             android:background="@color/colorLinea" />
     </FrameLayout>
 
     <TextClock
-        android:layout_width="120dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acFechaHora_textClock_width"
+        android:layout_height="@dimen/acFechaHora_textClock_height"
         android:textColor="@color/colorBlanco"
-        android:textSize="30sp"
+        android:textSize="@dimen/cuerpo_textSize"
         android:format24Hour="HH:mm"
         android:textAlignment="center"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="70dp"
-        android:layout_marginLeft="415dp"
+        android:layout_marginTop="@dimen/acFechaHora_textClock_marginTop"
+        android:layout_marginLeft="@dimen/acFechaHora_textClock_marginLeft"
         android:background="@color/colorGrisOscuro"
         android:gravity="center_horizontal|center_vertical"
         android:id="@+id/textClock2" />
 
     <EditText
-        android:layout_width="50dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acFechaHora_edtConfHora_width"
+        android:layout_height="@dimen/acFechaHora_edtConfHora_height"
         android:inputType="number"
-        android:ems="10"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="170dp"
-        android:layout_marginLeft="410dp"
+        android:layout_marginTop="@dimen/acFechaHora_edtConfHora_marginTop"
+        android:layout_marginLeft="@dimen/acFechaHora_edtConfHora_marginLeft"
         android:background="@color/colorGrisOscuro"
         android:padding="2dp"
-        android:textSize="15sp"
-        android:text="10"
+        android:textSize="@dimen/cuerpo_min_textSize"
+        android:text=""
         android:textAlignment="center"
         android:id="@+id/edtConfHora" />
 
     <EditText
-        android:layout_width="50dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acFechaHora_edtConfMinuto_width"
+        android:layout_height="@dimen/acFechaHora_edtConfMinuto_height"
         android:inputType="number"
-        android:ems="10"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="170dp"
-        android:layout_marginLeft="490dp"
+        android:layout_marginTop="@dimen/acFechaHora_edtConfMinuto_marginTop"
+        android:layout_marginLeft="@dimen/acFechaHora_edtConfMinuto_marginLeft"
         android:background="@color/colorGrisOscuro"
         android:padding="2dp"
-        android:textSize="15sp"
-        android:text="10"
+        android:textSize="@dimen/cuerpo_min_textSize"
+        android:text=""
         android:textAlignment="center"
         android:id="@+id/edtConfMinuto" />
 
     <Button
         android:text="^"
-        android:layout_width="50dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acFechaHora_btnConf_width"
+        android:layout_height="@dimen/acFechaHora_btnConf_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="130dp"
-        android:layout_marginLeft="410dp"
-        android:textSize="15sp"
+        android:layout_marginTop="@dimen/acFechaHora_btnConf_marginTop_row1"
+        android:layout_marginLeft="@dimen/acFechaHora_btnConf_marginLeft_col1"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/btnConfHoraUp" />
 
     <Button
         android:text="^"
-        android:layout_width="50dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acFechaHora_btnConf_width"
+        android:layout_height="@dimen/acFechaHora_btnConf_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="130dp"
-        android:layout_marginLeft="490dp"
-        android:textSize="15sp"
+        android:layout_marginTop="@dimen/acFechaHora_btnConf_marginTop_row1"
+        android:layout_marginLeft="@dimen/acFechaHora_btnConf_marginLeft_col2"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/btnConfMinutoUp" />
 
     <Button
         android:text="v"
-        android:layout_width="50dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acFechaHora_btnConf_width"
+        android:layout_height="@dimen/acFechaHora_btnConf_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="210dp"
-        android:layout_marginLeft="410dp"
-        android:textSize="15sp"
+        android:layout_marginTop="@dimen/acFechaHora_btnConf_marginTop_row2"
+        android:layout_marginLeft="@dimen/acFechaHora_btnConf_marginLeft_col1"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/btnConfHoraDown" />
 
     <Button
         android:text="v"
-        android:layout_width="50dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acFechaHora_btnConf_width"
+        android:layout_height="@dimen/acFechaHora_btnConf_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="210dp"
-        android:layout_marginLeft="490dp"
-        android:textSize="15sp"
+        android:layout_marginTop="@dimen/acFechaHora_btnConf_marginTop_row2"
+        android:layout_marginLeft="@dimen/acFechaHora_btnConf_marginLeft_col2"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/btnConfMinutoDown" />
 
     <Button
         android:text="Guardar"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acFechaHora_btnGuardarFechaHora_width"
+        android:layout_height="@dimen/acFechaHora_btnGuardarFechaHora_height"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="253dp"
-        android:layout_marginLeft="400dp"
-        android:textSize="15sp"
+        android:layout_marginTop="@dimen/acFechaHora_btnGuardarFechaHora_marginTop"
+        android:layout_marginLeft="@dimen/acFechaHora_btnGuardarFechaHora_marginLeft"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/btnGuardarFechaHora" />
 
 

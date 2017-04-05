@@ -121,8 +121,8 @@
                         android:layout_width="@dimen/acComunicacion_txvStatus_width"
                         android:layout_height="@dimen/acComunicacion_txvStatus_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginTop"
-                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginLeft"
+                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginTop"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -264,8 +264,8 @@
                         android:layout_width="@dimen/acComunicacion_txvStatus_width"
                         android:layout_height="@dimen/acComunicacion_txvStatus_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginTop"
-                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginLeft"
+                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginTop"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -292,7 +292,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
-                        android:layout_marginTop="50dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_1"
                         android:gravity="center_vertical"
                         android:id="@+id/lblDataState" />
 
@@ -304,7 +304,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
-                        android:layout_marginTop="75dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_2"
                         android:gravity="center_vertical"
                         android:id="@+id/lblSimState" />
 
@@ -316,7 +316,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row3"
-                        android:layout_marginTop="75dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_2"
                         android:gravity="center_vertical"
                         android:id="@+id/lblNetworkType" />
 
@@ -328,7 +328,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
-                        android:layout_marginTop="110dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_3"
                         android:gravity="center_vertical"
                         android:id="@+id/lblCountryNetwork" />
 
@@ -340,7 +340,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
-                        android:layout_marginTop="135dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_4"
                         android:gravity="center_vertical"
                         android:id="@+id/lblOperatorNetwork" />
 
@@ -352,7 +352,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row1"
-                        android:layout_marginTop="170dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_5"
                         android:gravity="center_vertical"
                         android:id="@+id/lblSenial" />
 
@@ -366,7 +366,7 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
-                        android:layout_marginTop="50dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_1"
                         android:gravity="center_vertical"
                         android:id="@+id/lblDescDataState" />
 
@@ -377,7 +377,7 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
-                        android:layout_marginTop="75dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_2"
                         android:gravity="center_vertical"
                         android:id="@+id/lblDescSimState" />
 
@@ -388,7 +388,7 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row4"
-                        android:layout_marginTop="75dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_2"
                         android:gravity="center_vertical"
                         android:id="@+id/lblDescNetworkType" />
 
@@ -399,7 +399,7 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
-                        android:layout_marginTop="110dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_3"
                         android:gravity="center_vertical"
                         android:id="@+id/lblDescCountrySim" />
 
@@ -410,7 +410,7 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
-                        android:layout_marginTop="135dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_4"
                         android:gravity="center_vertical"
                         android:id="@+id/lblDescOperatorSim" />
 
@@ -421,7 +421,7 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:layout_marginLeft="@dimen/acComunicacion_lblGPRS_marginLeft_row2"
-                        android:layout_marginTop="170dp"
+                        android:layout_marginTop="@dimen/acComunicacion_lblGPRS_marginTop_5"
                         android:gravity="center_vertical"
                         android:id="@+id/lblDescSenial" />
 
@@ -443,8 +443,8 @@
                         android:layout_width="@dimen/acComunicacion_txvStatus_width"
                         android:layout_height="@dimen/acComunicacion_txvStatus_height"
                         android:layout_alignParentTop="true"
-                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginTop"
-                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginLeft"
+                        android:layout_marginLeft="@dimen/acComunicacion_txvStatus_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_txvStatus_marginTop"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
@@ -483,7 +483,7 @@
                         android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop2"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/wifitextView10" />
 
                     <TextView
@@ -495,7 +495,7 @@
                         android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop3"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/wifitextView12" />
 
                     <TextView
@@ -507,7 +507,7 @@
                         android:layout_marginTop="@dimen/acComunicacion_Wifi_marginTop4"
                         android:gravity="center_vertical"
                         android:textColor="@color/colorTexto"
-                        android:textSize="15sp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/wifitextView13" />
 
 
@@ -551,8 +551,8 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtWlanIp"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="5dp"
+                        android:paddingBottom="2dp"
+                        android:paddingLeft="2dp"
                         android:textCursorDrawable="@color/colorTexto"
                         android:imeOptions="actionDone"/>
 
@@ -567,8 +567,8 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtWlanMascara"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="5dp"
+                        android:paddingBottom="2dp"
+                        android:paddingLeft="2dp"
                         android:textCursorDrawable="@color/colorTexto"
                         android:imeOptions="actionDone"/>
 
@@ -583,8 +583,8 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtWlanPuerta"
-                        android:paddingBottom="5dp"
-                        android:paddingLeft="5dp"
+                        android:paddingBottom="2dp"
+                        android:paddingLeft="2dp"
                         android:textCursorDrawable="@color/colorTexto"
                         android:imeOptions="actionDone"/>
 

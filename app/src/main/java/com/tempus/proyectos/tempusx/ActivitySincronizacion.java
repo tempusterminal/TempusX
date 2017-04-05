@@ -20,6 +20,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -33,7 +34,9 @@ import android.widget.Toast;
 
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
+import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
+import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.servicios.OverlayShowingService;
 import com.tempus.proyectos.util.Connectivity;
@@ -55,6 +58,14 @@ public class ActivitySincronizacion extends Activity {
     UserInterfaceM ui;
     Utilities util;
     Connectivity connectivity;
+
+    Parameters parameters1;
+    Parameters parameters2;
+    Parameters parameters3;
+    Parameters parameters4;
+
+    QueriesParameters queriesParameters;
+
 
     /* --- Declaración de Variables Globales --- */
 
@@ -112,6 +123,13 @@ public class ActivitySincronizacion extends Activity {
         ui = new UserInterfaceM();
         util = new Utilities();
 
+        parameters1 = new Parameters();
+        parameters2 = new Parameters();
+        parameters3 = new Parameters();
+        parameters4 = new Parameters();
+
+        queriesParameters = new QueriesParameters(ActivityPrincipal.context);
+
         /* --- Inicialización de Variables Globales --- */
 
         ActivityPrincipal.activityActive = "Sincronizacion";
@@ -158,6 +176,8 @@ public class ActivitySincronizacion extends Activity {
         /* --- Inicialización de Métodos --- */
 
         ui.initScreen(this);
+
+        cargarHorario();
 
 
         host = (TabHost)findViewById(R.id.tabHostSync);
@@ -440,7 +460,7 @@ public class ActivitySincronizacion extends Activity {
                 mTimePicker = new TimePickerDialog(ActivitySincronizacion.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        setTimeLabel(lblHora1,selectedHour,selectedMinute);
+                        actualizarHorario(parameters1,"HORA_REPLICADO_1", selectedHour, selectedMinute, 0, lblHora1);
                     }
                 }, h, m, true);
                 mTimePicker.setTitle("Horario 1");
@@ -463,7 +483,7 @@ public class ActivitySincronizacion extends Activity {
                 mTimePicker = new TimePickerDialog(ActivitySincronizacion.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        setTimeLabel(lblHora2,selectedHour,selectedMinute);
+                        actualizarHorario(parameters2,"HORA_REPLICADO_2", selectedHour, selectedMinute, 0, lblHora2);
                     }
                 }, h, m, true);
                 mTimePicker.setTitle("Horario 2");
@@ -486,7 +506,7 @@ public class ActivitySincronizacion extends Activity {
                 mTimePicker = new TimePickerDialog(ActivitySincronizacion.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        setTimeLabel(lblHora3,selectedHour,selectedMinute);
+                        actualizarHorario(parameters3,"HORA_REPLICADO_3", selectedHour, selectedMinute, 0, lblHora3);
                     }
                 }, h, m, true);
                 mTimePicker.setTitle("Horario 3");
@@ -509,11 +529,69 @@ public class ActivitySincronizacion extends Activity {
                 mTimePicker = new TimePickerDialog(ActivitySincronizacion.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        setTimeLabel(lblHora4,selectedHour,selectedMinute);
+                        actualizarHorario(parameters4,"HORA_REPLICADO_4", selectedHour, selectedMinute, 0, lblHora4);
                     }
                 }, h, m, true);
                 mTimePicker.setTitle("Horario 4");
                 mTimePicker.show();
+            }
+        });
+
+        swtHoraConf1.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+                int hora = Integer.parseInt(lblHora1.getText().toString().split(":")[0]);
+                int min = Integer.parseInt(lblHora1.getText().toString().split(":")[1]);
+
+                if (isChecked){
+                    actualizarHorario(parameters1,"HORA_REPLICADO_1", hora, min, 1, lblHora1);;
+                } else {
+                    actualizarHorario(parameters1,"HORA_REPLICADO_1", hora, min, 0, lblHora1);;
+                }
+
+            }
+        });
+
+        swtHoraConf2.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int hora = Integer.parseInt(lblHora2.getText().toString().split(":")[0]);
+                int min = Integer.parseInt(lblHora2.getText().toString().split(":")[1]);
+
+                if (isChecked){
+                    actualizarHorario(parameters2,"HORA_REPLICADO_2", hora, min, 1, lblHora2);;
+                } else {
+                    actualizarHorario(parameters2,"HORA_REPLICADO_2", hora, min, 0, lblHora2);;
+                }
+            }
+        });
+
+        swtHoraConf3.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int hora = Integer.parseInt(lblHora3.getText().toString().split(":")[0]);
+                int min = Integer.parseInt(lblHora3.getText().toString().split(":")[1]);
+
+                if (isChecked){
+                    actualizarHorario(parameters3,"HORA_REPLICADO_3", hora, min, 1, lblHora3);;
+                } else {
+                    actualizarHorario(parameters3,"HORA_REPLICADO_3", hora, min, 0, lblHora3);;
+                }
+            }
+        });
+
+        swtHoraConf4.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                int hora = Integer.parseInt(lblHora4.getText().toString().split(":")[0]);
+                int min = Integer.parseInt(lblHora4.getText().toString().split(":")[1]);
+
+                if (isChecked){
+                    actualizarHorario(parameters4,"HORA_REPLICADO_4", hora, min, 1, lblHora4);;
+                } else {
+                    actualizarHorario(parameters4,"HORA_REPLICADO_4", hora, min, 0, lblHora4);;
+                }
             }
         });
 
@@ -579,7 +657,7 @@ public class ActivitySincronizacion extends Activity {
         }
     }
 
-    public void setTimeLabel(TextView txvHora, int hora, int minuto) {
+    public String getTimeLabel(int hora, int minuto) {
         String h = String.valueOf(hora);
         if (h.length()==1){
             h = "0"+h;
@@ -589,26 +667,69 @@ public class ActivitySincronizacion extends Activity {
         if (m.length()==1){
             m = "0"+m;
         }
-        txvHora.setText(h+":"+m);
+        return h+":"+m;
     }
 
     public void cargarHorario() {
-        setTimeLabel(lblHora1,0,0);
-        setTimeLabel(lblHora2,0,0);
-        setTimeLabel(lblHora3,0,0);
-        setTimeLabel(lblHora4,0,0);
-    }
+        String h1, h2, h3, h4;
+        int b1, b2, b3, b4;
 
-    public void guardarHorario(String horario, TextView txv) {// Especifica horario (1,2.3,4)
-        String hora = txv.getText().toString();
-    }
+        try {
+            List<Parameters> listParameterses1 = queriesParameters.select_one_row("HORA_REPLICADO_1");
+            List<Parameters> listParameterses2 = queriesParameters.select_one_row("HORA_REPLICADO_2");
+            List<Parameters> listParameterses3 = queriesParameters.select_one_row("HORA_REPLICADO_3");
+            List<Parameters> listParameterses4 = queriesParameters.select_one_row("HORA_REPLICADO_4");
 
-    public void administrarHorario(String horario, boolean enabled) {// Especifica horario (1,2.3,4)
-        if (enabled) {
+            h1 = listParameterses1.get(0).getValue();
+            h2 = listParameterses2.get(0).getValue();
+            h3 = listParameterses3.get(0).getValue();
+            h4 = listParameterses4.get(0).getValue();
 
-        } else {
+            b1 = listParameterses1.get(0).getEnable();
+            b2 = listParameterses2.get(0).getEnable();
+            b3 = listParameterses3.get(0).getEnable();
+            b4 = listParameterses4.get(0).getEnable();
+
+            lblHora1.setText(h1.substring(0,5));
+            lblHora2.setText(h2.substring(0,5));
+            lblHora3.setText(h3.substring(0,5));
+            lblHora4.setText(h4.substring(0,5));
+
+            if (b1 == 1){ swtHoraConf1.setChecked(true); } else { swtHoraConf1.setChecked(false); }
+
+            if (b2 == 1){ swtHoraConf2.setChecked(true); } else { swtHoraConf2.setChecked(false); }
+
+            if (b3 == 1){ swtHoraConf3.setChecked(true); } else { swtHoraConf3.setChecked(false); }
+
+            if (b4 == 1){ swtHoraConf4.setChecked(true); } else { swtHoraConf4.setChecked(false); }
+
+        } catch(Exception e){
 
         }
+
+
+    }
+
+    public void actualizarHorario(Parameters parameter, String idParameter, int hora, int minuto, int activo, TextView txv) {// Especifica horario (1,2.3,4) BOTON CONFIG
+        String horario = getTimeLabel(hora,minuto);
+        parameter.setIdparameter(idParameter);
+        parameter.setValue(horario + ":00");
+        parameter.setEnable(activo);
+        queriesParameters.update(parameter);
+        txv.setText(horario);
+    }
+
+    public void administrarHorario(Parameters parameter, String idParameter, boolean enabled) {// Especifica horario (1,2.3,4) SWITCH
+        Log.d("administrarHorario",parameter + "-" + idParameter + "-" + enabled);
+        parameter.setIdparameter(idParameter);
+        parameter.setValue(parameter.getValue());
+        //if (enabled) {
+        //    parameter.setEnable(1);
+        //    queriesParameters.update(parameter);
+        //} else {
+        //    parameter.setEnable(0);
+        //    queriesParameters.update(parameter);
+        //}
     }
 
 }

@@ -156,7 +156,7 @@
         android:layout_marginTop="@dimen/acLogin_btnIntro_marginTop"
         android:id="@+id/btnAceptar"
         android:layout_alignParentTop="true"
-        android:textSize="15sp"/>
+        android:textSize="@dimen/cuerpo_min_textSize"/>
 
     <Button
         android:text="CANCELAR"
@@ -166,7 +166,7 @@
         android:layout_marginTop="@dimen/acLogin_btnCancel_marginTop"
         android:id="@+id/btnCancelar"
         android:layout_alignParentTop="true"
-        android:textSize="15sp"/>
+        android:textSize="@dimen/cuerpo_min_textSize"/>
 
 
 </RelativeLayout>

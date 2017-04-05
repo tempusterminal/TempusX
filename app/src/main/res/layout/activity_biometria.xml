@@ -86,11 +86,11 @@
 
     <TextView
         android:id="@+id/spnDocuments"
-        android:layout_width="140dp"
-        android:layout_height="35dp"
+        android:layout_width="@dimen/acBiometria_spnDocuments_width"
+        android:layout_height="@dimen/acBiometria_spnDocuments_height"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginLeft="@dimen/acBiometria_spnDocuments_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_spnDocuments_marginTop"
         android:text="Código ó Nro Doc."
         android:textStyle="bold"
         android:gravity="center_vertical"
@@ -100,25 +100,25 @@
 
 
     <TextView
-        android:layout_width="120dp"
-        android:layout_height="35dp"
+        android:layout_width="@dimen/acBiometria_edtHuellaDocumento_width"
+        android:layout_height="@dimen/acBiometria_edtHuellaDocumento_height"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginLeft="@dimen/acBiometria_edtHuellaDocumento_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_edtHuellaDocumento_marginTop"
         android:background="@color/colorGris"
         android:id="@+id/textView21" />
 
     <EditText
-        android:layout_width="120dp"
-        android:layout_height="35dp"
+        android:layout_width="@dimen/acBiometria_edtHuellaDocumento_width"
+        android:layout_height="@dimen/acBiometria_edtHuellaDocumento_height"
         android:inputType="textPersonName"
         android:text=""
         android:ems="10"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="170dp"
-        android:layout_marginTop="70dp"
+        android:layout_marginLeft="@dimen/acBiometria_edtHuellaDocumento_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_edtHuellaDocumento_marginTop"
         android:id="@+id/edtHuellaDocumento"
-        android:textSize="15sp"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:textAlignment="center"
         android:textColor="@color/colorTexto"
         android:hint="00000000"
@@ -129,19 +129,19 @@
         android:text="Consultar  > "
         android:textStyle="bold"
         android:textSize="@dimen/cuerpo_min_textSize"
-        android:layout_width="120dp"
-        android:layout_height="35dp"
-        android:layout_marginLeft="300dp"
-        android:layout_marginTop="70dp"
+        android:layout_width="@dimen/acBiometria_btnConsultarHuella_width"
+        android:layout_height="@dimen/acBiometria_btnConsultarHuella_height"
+        android:layout_marginLeft="@dimen/acBiometria_btnConsultarHuella_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_btnConsultarHuella_marginTop"
         android:id="@+id/btnConsultarHuella" />
 
     <TextView
         android:text=""
-        android:layout_width="557dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acBiometria_txvHuellaNombrePersonal_width"
+        android:layout_height="@dimen/acBiometria_txvHuellaNombrePersonal_height"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="110dp"
+        android:layout_marginLeft="@dimen/acBiometria_txvHuellaNombrePersonal_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvHuellaNombrePersonal_marginTop"
         android:background="@color/colorGris"
         android:textSize="20sp"
         android:gravity="center_horizontal|center_vertical"
@@ -150,136 +150,109 @@
 
 
 
-
-    <!--
-    <TextView
-        android:text="Estado de Biometría:"
-        android:layout_width="300dp"
-        android:layout_height="30dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="320dp"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:id="@+id/textView29" />
-
-    <TextView
-        android:layout_width="622dp"
-        android:layout_height="50dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="360dp"
-        android:layout_marginTop="310dp"
-        android:background="@color/colorGris"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:textColor="@color/colorTexto"
-        android:gravity="center_vertical"
-        android:id="@+id/txvHuellaEstado" />
-    -->
-
-
     <TextView
         android:background="@color/colorNegro"
-        android:layout_width="557dp"
-        android:layout_height="122dp"
+        android:layout_width="@dimen/acBiometria_txvHuellaEmpA1_width"
+        android:layout_height="@dimen/acBiometria_txvHuellaEmpA1_height"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="19dp"
-        android:layout_marginTop="149dp"
+        android:layout_marginLeft="@dimen/acBiometria_txvHuellaEmpA1_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvHuellaEmpA1_marginTop"
         android:id="@+id/txvHuellaEmpA1" />
 
 
     <TextView
         android:background="@color/colorHint"
-        android:layout_width="555dp"
-        android:layout_height="120dp"
+        android:layout_width="@dimen/acBiometria_txvHuellaEmpA2_width"
+        android:layout_height="@dimen/acBiometria_txvHuellaEmpA2_height"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginLeft="@dimen/acBiometria_txvHuellaEmpA2_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvHuellaEmpA2_marginTop"
         android:id="@+id/txvHuellaEmpA2" />
 
 
     <Button
         android:text="Biometria 1"
-        android:layout_width="170dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acBiometria_btnAcHuella_width"
+        android:layout_height="@dimen/acBiometria_btnAcHuella_height"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="35dp"
-        android:layout_marginTop="160dp"
-        android:textSize="15dp"
+        android:layout_marginLeft="@dimen/acBiometria_btnAcHuella1_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_btnAcHuella_marginTop"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:textStyle="bold"
         android:id="@+id/btnAcHuella1" />
 
     <Button
         android:text="Biometria 2"
-        android:layout_width="170dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acBiometria_btnAcHuella_width"
+        android:layout_height="@dimen/acBiometria_btnAcHuella_height"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="212.5dp"
-        android:layout_marginTop="160dp"
-        android:textSize="15dp"
+        android:layout_marginLeft="@dimen/acBiometria_btnAcHuella2_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_btnAcHuella_marginTop"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:textStyle="bold"
         android:id="@+id/btnAcHuella2" />
 
     <Button
         android:text="Eliminar"
-        android:layout_width="170dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acBiometria_btnAcHuella_width"
+        android:layout_height="@dimen/acBiometria_btnAcHuella_height"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="390dp"
-        android:layout_marginTop="160dp"
-        android:textSize="15dp"
+        android:layout_marginLeft="@dimen/acBiometria_btnAcHuella3_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_btnAcHuella_marginTop"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:textStyle="bold"
         android:id="@+id/btnAcHuella3" />
 
 
     <TextView
         android:text=" ENROLAMIENTO DISPONIBLE"
-        android:layout_width="170dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acBiometria_btnAcHuella_width"
+        android:layout_height="@dimen/acBiometria_btnAcHuella_height"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="35dp"
-        android:layout_marginTop="210dp"
+        android:layout_marginLeft="@dimen/acBiometria_btnAcHuella1_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvAcHuella_marginTop"
         android:textColor="@color/colorTexto"
-        android:textSize="15sp"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:gravity="center"
         android:id="@+id/txvAcHuella1" />
 
     <TextView
         android:text=" ENROLAMIENTO DISPONIBLE"
-        android:layout_width="170dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acBiometria_btnAcHuella_width"
+        android:layout_height="@dimen/acBiometria_btnAcHuella_height"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="212.5dp"
-        android:layout_marginTop="210dp"
+        android:layout_marginLeft="@dimen/acBiometria_btnAcHuella2_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvAcHuella_marginTop"
         android:textColor="@color/colorTexto"
-        android:textSize="15sp"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:gravity="center"
         android:id="@+id/txvAcHuella2" />
 
     <TextView
         android:text="Empresa"
         android:textColor="@color/colorBlanco"
-        android:textSize="15sp"
+        android:textSize="@dimen/acBiometria_txvDescCustomer_textSize"
         android:textAlignment="center"
         android:gravity="center"
         android:background="@color/colorNegro"
-        android:layout_width="150dp"
-        android:layout_height="20dp"
+        android:layout_width="@dimen/acBiometria_txvHuellaEmpresaCorner_width"
+        android:layout_height="@dimen/acBiometria_txvHuellaEmpresaCorner_height"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="425dp"
-        android:layout_marginTop="250dp"
+        android:layout_marginLeft="@dimen/acBiometria_txvHuellaEmpresaCorner_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvHuellaEmpresaCorner_marginTop"
         android:id="@+id/txvHuellaEmpresaCorner" />
 
     <TextView
         android:text="(*) Recuerde que el ENROLAMIENTO es SECUENCIAL, debe enrolar primero la Biometria 1."
-        android:layout_width="557dp"
-        android:layout_height="25dp"
+        android:layout_width="@dimen/acBiometria_txvDescCustomer_width"
+        android:layout_height="@dimen/acBiometria_txvDescCustomer_height"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="275dp"
-        android:textSize="12sp"
+        android:layout_marginLeft="@dimen/acBiometria_txvDescCustomer_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvDescCustomer_marginTop"
+        android:textSize="@dimen/acBiometria_txvDescCustomer_textSize"
         android:textColor="@color/colorTexto"
         android:gravity="center"
-        android:id="@+id/textView27" />
+        android:id="@+id/txvDescCustomer" />
 
 
 
@@ -294,44 +267,44 @@
         android:id="@+id/txvHuellaFondo" />
 
     <pl.droidsonroids.gif.GifTextView
-        android:layout_width="140dp"
-        android:layout_height="180dp"
+        android:layout_width="@dimen/acBiometria_txvHuellaGif_width"
+        android:layout_height="@dimen/acBiometria_txvHuellaGif_height"
         android:background="@drawable/huella"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="87dp"
+        android:layout_marginLeft="@dimen/acBiometria_txvHuellaGif_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvHuellaGif_marginTop"
         android:id="@+id/txvHuellaGif" />
 
     <ImageView
-        android:layout_width="140dp"
-        android:layout_height="140dp"
+        android:layout_width="@dimen/acBiometria_imgViewResult_width"
+        android:layout_height="@dimen/acBiometria_imgViewResult_height"
         android:src="@drawable/sist2"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="107dp"
+        android:layout_marginLeft="@dimen/acBiometria_imgViewResult_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_imgViewResult_marginTop"
         android:id="@+id/imgViewResultOK" />
 
     <ImageView
-        android:layout_width="140dp"
-        android:layout_height="140dp"
+        android:layout_width="@dimen/acBiometria_imgViewResult_width"
+        android:layout_height="@dimen/acBiometria_imgViewResult_height"
         android:src="@drawable/sist0"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="107dp"
+        android:layout_marginLeft="@dimen/acBiometria_imgViewResult_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_imgViewResult_marginTop"
         android:id="@+id/imgViewResultKO" />
 
 
 
     <TextView
         android:text=""
-        android:textSize="20dp"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:textStyle="bold"
-        android:layout_width="260dp"
-        android:layout_height="60dp"
+        android:layout_width="@dimen/acBiometria_txvHuellaTexto_width"
+        android:layout_height="@dimen/acBiometria_txvHuellaTexto_height"
         android:gravity="center_vertical"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="250dp"
-        android:layout_marginTop="147dp"
+        android:layout_marginLeft="@dimen/acBiometria_txvHuellaTexto_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvHuellaTexto_marginTop"
         android:id="@+id/txvHuellaTexto" />
 
 
@@ -342,37 +315,37 @@
     <TextView
         android:text=""
         android:layout_width="@dimen/fondo1_width"
-        android:layout_height="333.99dp"
+        android:layout_height="@dimen/acBiometria_txvLayerLstHuella_height"
         android:background="#aa000000"
         android:id="@+id/txvLayerLstHuella" />
 
     <ListView
-        android:layout_width="460dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/acBiometria_lstHuella_width"
+        android:layout_height="@dimen/acBiometria_lstHuella_height"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
+        android:layout_marginTop="@dimen/acBiometria_lstHuella_marginTop"
         android:background="@color/colorNegro"
         android:id="@+id/lstHuella" />
 
     <TextView
         android:text="         EMPRESA        CÓDIGO       DOCUMEN     PERSONAL"
-        android:layout_width="460dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acBiometria_txvCabeceraLstHuella_width"
+        android:layout_height="@dimen/acBiometria_txvCabeceraLstHuella_height"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="43dp"
+        android:layout_marginTop="@dimen/acBiometria_txvCabeceraLstHuella_marginTop"
         android:textColor="@color/colorBlanco"
-        android:textSize="16sp"
+        android:textSize="@dimen/cuerpo_min_textSize"
         android:gravity="center_vertical"
         android:background="@color/colorNegro"
         android:id="@+id/txvCabeceraLstHuella" />
 
     <Button
         android:text="x"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acBiometria_btnExitLstHuella_width"
+        android:layout_height="@dimen/acBiometria_btnExitLstHuella_height"
         android:layout_alignBottom="@+id/btnConsultarHuella"
         android:layout_alignEnd="@+id/lstHuella"
-        android:layout_marginBottom="23dp"
+        android:layout_marginBottom="@dimen/acBiometria_btnExitLstHuella_marginBotton"
         android:id="@+id/btnExitLstHuella" />
 
 
