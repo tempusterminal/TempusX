@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.tempus.proyectos.util.UserInterfaceM;
@@ -21,6 +23,10 @@ public class ActivityUsuario extends Activity {
     /* --- Declaración de Componentes de la Interfaz --- */
 
     ImageView btnMasterUsuario;
+
+    Button btnActualizarUsuario;
+    EditText edtUsuarioNuevo;
+    EditText edtContraseñaNuevo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +47,15 @@ public class ActivityUsuario extends Activity {
 
         btnMasterUsuario = (ImageView) findViewById(R.id.btnMasterUsuario);
 
+        btnActualizarUsuario = (Button) findViewById(R.id.btnActualizarUsuario);
+        edtUsuarioNuevo = (EditText) findViewById(R.id.edtUsuarioNuevo);
+        edtContraseñaNuevo = (EditText) findViewById(R.id.edtContraseñaNuevo);
+
         /* --- Inicialización de Métodos --- */
 
         ui.initScreen(this);
+
+        CargarUsuario();
 
         /* --- Inicialización de Parametros Generales --- */
 
@@ -54,5 +66,55 @@ public class ActivityUsuario extends Activity {
                 ui.goToActivity(ActivityUsuario.this, ActivityMenu.class , "","");
             }
         });
+
+        btnActualizarUsuario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ActualizarUsuario();
+            }
+        });
     }
-}
+
+
+    public void ActualizarUsuario(){
+        String usuario = edtUsuarioNuevo.getText().toString();
+        String contra = edtContraseñaNuevo.getText().toString();
+    }
+
+    public void CargarUsuario(){
+
+        edtUsuarioNuevo.setText("");
+        edtContraseñaNuevo.setText("");
+
+    }
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

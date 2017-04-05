@@ -40,8 +40,6 @@ public class FragmentBar extends Fragment {
     boolean rUSBCharge;
     boolean rACCharge;
 
-    Button btnRestart;
-
     boolean activo;
 
     TextView txvINivelBateria;
@@ -74,27 +72,8 @@ public class FragmentBar extends Fragment {
 
         txvIdterminal = (TextView) v.findViewById(R.id.txvIdterminal);
 
-        btnRestart = (Button) v.findViewById(R.id.btnRestart);
-        btnRestart.setVisibility(View.INVISIBLE);
-
         txvINivelBateria.setVisibility(View.INVISIBLE);
         imgViewIBat.setVisibility(View.INVISIBLE);
-
-        btnRestart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    PendingIntent intent = PendingIntent.getActivity(getActivity().getBaseContext(), 0, new Intent(getActivity().getIntent()), 0);
-                    AlarmManager manager = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-                    manager.set(AlarmManager.RTC, System.currentTimeMillis() + 100, intent);
-                    System.exit(2);
-                } catch (Exception e) {
-                    Log.v("TEMPUS: ",e.getMessage());
-                }
-
-            }
-        });
-
 
         //getActivity().registerReceiver(recieveObj, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 

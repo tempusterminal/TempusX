@@ -85,62 +85,64 @@
 
     <TextView
         android:text="Usuario"
-        android:layout_width="150dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acUsuario_txvUser_width"
+        android:layout_height="@dimen/acUsuario_txvUser_height"
         android:gravity="center_vertical"
         android:textColor="@color/colorTexto"
-        android:textSize="20sp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="110dp"
+        android:textSize="@dimen/cuerpo_textSize"
+        android:layout_marginTop="@dimen/acUsuario_txvUser_marginTop"
+        android:layout_marginLeft="@dimen/acUsuario_txvUser_marginLeft"
         android:id="@+id/txvUser" />
 
     <TextView
-        android:text="Cntraseña"
-        android:layout_width="150dp"
-        android:layout_height="30dp"
+        android:text="Contraseña"
+        android:layout_width="@dimen/acUsuario_txvPassword_width"
+        android:layout_height="@dimen/acUsuario_txvPassword_height"
         android:gravity="center_vertical"
         android:textColor="@color/colorTexto"
-        android:textSize="20sp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginTop="170dp"
+        android:textSize="@dimen/cuerpo_textSize"
+        android:layout_marginTop="@dimen/acUsuario_txvPassword_marginTop"
+        android:layout_marginLeft="@dimen/acUsuario_txvPassword_marginLeft"
         android:id="@+id/txvPassword" />
 
     <TextView
-        android:layout_width="250dp"
-        android:layout_height="30dp"
-        android:layout_marginLeft="240dp"
-        android:layout_marginTop="110dp"
+        android:layout_width="@dimen/acUsuario_edtUsuarioNuevo_width"
+        android:layout_height="@dimen/acUsuario_edtUsuarioNuevo_height"
+        android:layout_marginLeft="@dimen/acUsuario_edtUsuarioNuevo_marginLeft"
+        android:layout_marginTop="@dimen/acUsuario_edtUsuarioNuevo_marginTop"
         android:background="@color/colorGris"
         />
 
     <TextView
-        android:layout_width="250dp"
-        android:layout_height="30dp"
-        android:layout_marginLeft="240dp"
-        android:layout_marginTop="170dp"
+        android:layout_width="@dimen/acUsuario_edtContraseñaNuevo_width"
+        android:layout_height="@dimen/acUsuario_edtContraseñaNuevo_height"
+        android:layout_marginLeft="@dimen/acUsuario_edtUsuarioNuevo_marginLeft"
+        android:layout_marginTop="@dimen/acUsuario_edtContraseñaNuevo_marginTop"
         android:background="@color/colorGris"
         />
 
     <EditText
         android:imeOptions="actionDone"
-        android:layout_width="250dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acUsuario_edtUsuarioNuevo_width"
+        android:layout_height="@dimen/acUsuario_edtUsuarioNuevo_height"
         android:gravity="center_vertical"
         android:textSize="@dimen/cuerpo_min_textSize"
-        android:layout_marginLeft="240dp"
-        android:layout_marginTop="110dp"
+        android:paddingBottom="5dp"
+        android:layout_marginTop="@dimen/acUsuario_edtUsuarioNuevo_marginTop"
+        android:layout_marginLeft="@dimen/acUsuario_edtUsuarioNuevo_marginLeft"
         android:textColorHint="@color/colorTexto"
         android:textColor="@color/colorTexto"
         android:id="@+id/edtUsuarioNuevo" />
 
     <EditText
         android:imeOptions="actionDone"
-        android:layout_width="250dp"
-        android:layout_height="30dp"
+        android:layout_width="@dimen/acUsuario_edtContraseñaNuevo_width"
+        android:layout_height="@dimen/acUsuario_edtContraseñaNuevo_height"
         android:gravity="center_vertical"
         android:textSize="@dimen/cuerpo_min_textSize"
-        android:layout_marginLeft="240dp"
-        android:layout_marginTop="170dp"
+        android:paddingBottom="5dp"
+        android:layout_marginTop="@dimen/acUsuario_edtContraseñaNuevo_marginTop"
+        android:layout_marginLeft="@dimen/acUsuario_edtUsuarioNuevo_marginLeft"
         android:textColorHint="@color/colorTexto"
         android:textColor="@color/colorTexto"
         android:inputType="textPassword"
@@ -149,12 +151,12 @@
     <Button
         android:text="Actualizar"
         android:textAlignment="center"
-        android:layout_width="150dp"
-        android:layout_height="40dp"
+        android:layout_width="@dimen/acUsuario_btnActualizarUsuario_width"
+        android:layout_height="@dimen/acUsuario_btnActualizarUsuario_height"
         android:gravity="center_vertical"
         android:textSize="@dimen/cuerpo_min_textSize"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="230dp"
+        android:layout_marginTop="@dimen/acUsuario_btnActualizarUsuario_marginTop"
         android:id="@+id/btnActualizarUsuario" />
 
 
