@@ -140,6 +140,8 @@ public class QueriesParameters {
         return parametersList;
     }
 
+
+
     public int count(){
 
         int count = 0;
@@ -179,6 +181,73 @@ public class QueriesParameters {
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('PASS_TERMINAL','','tempus','','0','" + fechahora.getFechahora() + "');");
         //database.endTransaction();
         this.close();
+    }
+
+    public int validateParameter(String parametersvalues, int validate){
+        /*
+            INPUT
+            IDPARAMETER,VALUE;IDPARAMETER,VALUE; ...
+            example: USUARIO_TERMINAL,tempus;PASS_TERMINAL,tempus
+
+            PROCESS
+            Compara cada value de parameter con PARAMETERS.VALUE (solo en el caso que validate = 1 entonces se consulta PARAMETERS.ENABLE)
+            Procesa los outputs de cada comparación para dar un solo output
+                si todos los outputs[] = 0 entonces output = 0
+                si todos los outputs[] = 1 entonces output = 1
+                si alguno de los outputs[] = 2 entonces output = 2
+
+            OUTPUT
+            0 = value(s) NO coincide con PARAMETERS.VALUE
+            1 = value(s) SI coincide con PARAMETERS.VALUE
+            2 = PARAMETERS.ENABLE = 0 (solo en el caso que validate = 1 entonces se consulta PARAMETERS.ENABLE)
+
+        */
+        String[] parametervalue = parametersvalues.split(";");
+        List<Parameters> parametersList = new ArrayList<Parameters>();
+        int[] outputs = new int[parametervalue.length];
+        int output = 1;
+
+        for(int i = 0; i < parametervalue.length; i++){
+            String[] items = parametervalue[i].split(",");
+            parametersList = this.select_one_row(items[0]);
+
+            //Valida si se consulta ENABLE en la tabla PARAMETERS
+            if(validate == 1){
+                if(parametersList.get(0).getEnable() == 1){
+                    if(parametersList.get(0).getValue().equals(items[1])){
+                        outputs[i] = 1;
+                    }else{
+                        outputs[i] = 0;
+                    }
+                }else{
+                    outputs[i] = 2;
+                }
+            }else if(validate == 0){
+                if(parametersList.get(0).getValue().equals(items[1])){
+                    outputs[i] = 1;
+                }else{
+                    outputs[i] = 0;
+                }
+            }
+
+            //Log.d("Autorizaciones","IDPARAMETER: " + items[0]);
+            //Log.d("Autorizaciones","VALUE: " + parametersList.get(0).getValue() + " = " + items[1]);
+            //Log.d("Autorizaciones","validate: " + validate);
+
+        }
+
+        //Procesar respuesta final
+        for(int i = 0; i < outputs.length; i++){
+            if(outputs[i] == 0){
+                output = output * outputs[i];
+            }else if(outputs[i] == 1){
+                output = output * outputs[i];
+            }else if(outputs[i] == 2){
+                output = 2;
+            }
+        }
+
+        return output;
     }
 
 
