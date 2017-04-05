@@ -281,6 +281,8 @@ public class ActivityComunicacion extends Activity {
             public void onSignalStrengthsChanged(SignalStrength sStrength) {
                 signalStrength = sStrength;
 
+                Log.e("mListener INICIO", String.valueOf(mSignalStrength));
+
                 //Log.e("SIGNAL 1", String.valueOf(signalStrength.getCdmaDbm()));
                 //Log.e("SIGNAL 2", String.valueOf(signalStrength.getCdmaEcio()));
                 //Log.e("SIGNAL 3", String.valueOf(signalStrength.getEvdoDbm()));
@@ -322,7 +324,12 @@ public class ActivityComunicacion extends Activity {
 
 
         Log.wtf("POINT","PUNTO 5");
-        telephonyManager.listen(mListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+        try {
+            telephonyManager.listen(mListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
+        } catch (Exception e) {
+            Log.e("registerListener", e.getMessage());
+        }
+
 
         /* --- Inicialización de Parametros Generales --- */
 
