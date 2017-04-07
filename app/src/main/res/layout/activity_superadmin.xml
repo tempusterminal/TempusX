@@ -106,21 +106,142 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@color/colorFondoCuerpo"
                     android:orientation="vertical">
 
+
+                    <Button
+                        android:text="Bluetooth"
+                        android:layout_width="350dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="630dp"
+                        android:layout_marginTop="40dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnSA01"/>
+
+                    <Button
+                        android:text="Test Serial"
+                        android:layout_width="350dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="630dp"
+                        android:layout_marginTop="100dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnSA02"/>
+
+                    <Button
+                        android:text="Refrescar"
+                        android:layout_width="350dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="630dp"
+                        android:layout_marginTop="160dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnSA03"/>
+
+                    <Button
+                        android:text="Limpiar"
+                        android:layout_width="350dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="630dp"
+                        android:layout_marginTop="220dp"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnSA04"/>
+
+
+                    <Button
+                        android:text="GUARDAR CAMBIOS"
+                        android:layout_width="400dp"
+                        android:layout_height="50dp"
+                        android:layout_marginTop="320dp"
+                        android:layout_centerHorizontal="true"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/btnSA05"/>
+
                     <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="This is tab 1" />
+                        android:text="Cantidad Seriales:"
+                        android:layout_width="220dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginTop="40dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textColor="@color/colorTexto"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvSA00" />
 
-                </LinearLayout>
+                    <TextView
+                        android:text="Serial 01:"
+                        android:layout_width="220dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginTop="100dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textColor="@color/colorTexto"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvSA01" />
 
-                <LinearLayout
+                    <TextView
+                        android:text="Serial 02:"
+                        android:layout_width="220dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginTop="160dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textColor="@color/colorTexto"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvSA02" />
+
+                    <TextView
+                        android:text="Serial 03:"
+                        android:layout_width="220dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="50dp"
+                        android:layout_marginTop="220dp"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textColor="@color/colorTexto"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvSA03" />
+
+                    <Spinner
+                        android:layout_width="100dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="420dp"
+                        android:layout_marginTop="40dp"
+                        android:id="@+id/spnSA00" />
+
+                    <Spinner
+                        android:layout_width="300dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="220dp"
+                        android:layout_marginTop="100dp"
+                        android:id="@+id/spnSA01" />
+
+                    <Spinner
+                        android:layout_width="300dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="220dp"
+                        android:layout_marginTop="160dp"
+                        android:id="@+id/spnSA02" />
+
+                    <Spinner
+                        android:layout_width="300dp"
+                        android:layout_height="50dp"
+                        android:layout_marginLeft="220dp"
+                        android:layout_marginTop="220dp"
+                        android:id="@+id/spnSA03" />
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
                     android:id="@+id/tab2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -131,9 +252,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="This is tab 2" />
-                </LinearLayout>
+                </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/tab3"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -144,9 +265,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="This is tab 3" />
-                </LinearLayout>
+                </RelativeLayout>
 
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/tab4"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -157,33 +278,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="This is tab 4" />
-                </LinearLayout>
+                </RelativeLayout>
 
-                <LinearLayout
-                    android:id="@+id/tab5"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorFondoCuerpo"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="This is tab 5" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab6"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorFondoCuerpo"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="This is tab 6" />
-                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
     </TabHost>

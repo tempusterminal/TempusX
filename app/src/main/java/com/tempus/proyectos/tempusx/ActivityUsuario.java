@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.queries.QueriesParameters;
+import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.UserInterfaceM;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class ActivityUsuario extends Activity {
     Parameters parameters1;
     Parameters parameters2;
     QueriesParameters queriesParameters;
+    Fechahora fechahora;
 
     /* --- Declaración de Variables Globales --- */
 
@@ -46,6 +48,7 @@ public class ActivityUsuario extends Activity {
         parameters1 = new Parameters();
         parameters2 = new Parameters();
         queriesParameters = new QueriesParameters(ActivityPrincipal.context);
+        fechahora = new Fechahora();
 
         /* --- Inicialización de Variables Globales --- */
 
@@ -91,28 +94,31 @@ public class ActivityUsuario extends Activity {
         String contra = edtContraseñaNuevo.getText().toString();
 
         parameters1.setIdparameter("USUARIO_TERMINAL");
+        parameters1.setParameter("");
         parameters1.setValue(usuario);
-        parameters1.setEnable(0);
-        queriesParameters.update(parameters1);
+        parameters1.setSubparameters("");
+        parameters1.setEnable(1);
+        parameters1.setFechaHoraSinc(fechahora.getFechahora());
+        //queriesParameters.updateParameter(parameters1);
 
         parameters2.setIdparameter("PASS_TERMINAL");
+        parameters2.setParameter("");
         parameters2.setValue(contra);
-        parameters2.setEnable(0);
-        queriesParameters.update(parameters2);
+        parameters2.setSubparameters("");
+        parameters2.setEnable(1);
+        parameters2.setFechaHoraSinc(fechahora.getFechahora());
+        //queriesParameters.updateParameter(parameters2);
 
-        ui.showAlert(this,"info","Datos actualizados");
+        ui.showAlert(this,"info","Datos actualizados, " + "Usuario:" + queriesParameters.updateParameter(parameters1) + " Contraseña:" + queriesParameters.updateParameter(parameters2));
     }
 
     public void CargarUsuario(){
 
-        List<Parameters> listParameterses1 = queriesParameters.select_one_row("USUARIO_TERMINAL");
-        List<Parameters> listParameterses2 = queriesParameters.select_one_row("PASS_TERMINAL");
+        parameters1 = queriesParameters.selectParameter("USUARIO_TERMINAL");
+        parameters2 = queriesParameters.selectParameter("PASS_TERMINAL");
 
-        String dato1 = listParameterses1.get(0).getValue();
-        String dato2 = listParameterses2.get(0).getValue();
-
-        edtUsuarioNuevo.setText(dato1);
-        edtContraseñaNuevo.setText(dato2);
+        edtUsuarioNuevo.setText(parameters1.getValue());
+        edtContraseñaNuevo.setText(parameters2.getValue());
 
     }
  }

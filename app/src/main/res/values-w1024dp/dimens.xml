@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <!-- ==================================================================== -->
+    <dimen name="txvSecret_width">130dp</dimen>
+    <dimen name="txvSecret_height">108dp</dimen>
+    <dimen name="txvSecret_marginTop">6dp</dimen>
+
+    <dimen name="txvSecret01_marginLeft">10dp</dimen>
+    <dimen name="txvSecret02_marginLeft">140dp</dimen>
+    <dimen name="txvSecret03_marginLeft">270dp</dimen>
+    <!-- ==================================================================== -->
+
     <dimen name="activity_horizontal_margin">0dp</dimen>
     <dimen name="activity_vertical_margin">0dp</dimen>
 
@@ -179,7 +190,7 @@
 
     <dimen name="btnKey_marginTop_row1">270dp</dimen>
     <dimen name="btnKey_marginTop_row2">365dp</dimen>
-    <dimen name="btnKey_marginTop_row3">470dp</dimen>
+    <dimen name="btnKey_marginTop_row3">460dp</dimen>
 
     <dimen name="btnKey_marginLeft_col1">50dp</dimen>
     <dimen name="btnKey_marginLeft_col2">294dp</dimen>
@@ -669,28 +680,6 @@
     <dimen name="fragmentBar_imgViewReplica_height">20dp</dimen>
     <dimen name="fragmentBar_imgViewReplica_marginTop">10dp</dimen>
     <dimen name="fragmentBar_imgViewReplica_marginRight">10dp</dimen>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </resources>

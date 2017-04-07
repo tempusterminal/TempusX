@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 
+import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.util.UserInterfaceM;
 
@@ -73,15 +74,20 @@ public class ActivityLogin extends Activity {
                 String contra = edtContraseña.getText().toString();
                 try {
                     QueriesParameters queriesParameters = new QueriesParameters(ActivityPrincipal.context);
-                    int i = queriesParameters.validateParameter("USUARIO_TERMINAL," + usuario + ";PASS_TERMINAL,"+contra, 0);// Obvia validaciones
+                    int i = queriesParameters.validateParameterValue("USUARIO_TERMINAL" + "," + usuario + ";" + "PASS_TERMINAL" + "," + contra, 0);// Obvia validaciones
                     // 0 = no coincide en base de datos
                     // 1 = todos son iguales
                     // 2 = devuelve si alguno de los parametros esta deshabilitado
 
+                    //Parameters parameters = queriesParameters.selectParameter("USUARIO_TERMINAL");
+                    //Parameters parameters1 = queriesParameters.selectParameter("PASS_TERMINAL");
+                    //Log.d("Autorizaciones","Usuario " + parameters.toString());
+                    //Log.d("Autorizaciones","Pass " + parameters1.toString());
+
                     if (i == 1){
                         ui.goToActivity(ActivityLogin.this, ActivityMenu.class, "","");
                     } else {
-                        ui.showAlert(ActivityLogin.this,"warning","Usuario o Contrasela errado (s)");
+                        ui.showAlert(ActivityLogin.this,"warning","Usuario o Contrasena errado(s) " + i);
                     }
                 } catch(Exception e){
                     ui.showAlert(ActivityLogin.this,"warning","No se puede acceder.");

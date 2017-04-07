@@ -11,16 +11,24 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -35,6 +43,7 @@ import com.tempus.proyectos.crash.TXExceptionHandler;
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Autorizaciones;
+import com.tempus.proyectos.data.model.Llamadas;
 import com.tempus.proyectos.data.model.Servicios;
 import com.tempus.proyectos.data.process.ProcessSyncDatetime;
 import com.tempus.proyectos.data.process.ProcessSyncST;
@@ -51,11 +60,13 @@ import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -104,6 +115,9 @@ public class ActivityPrincipal extends Activity {
 
 
     boolean MODO_PATRON = false;
+
+    String PATRON_SECRET = "";
+
 
     int CONTROL_MASTER_ETHERNET_MARCAS = 0; // 0 = CARGA    1 = ETHERNET
 
@@ -256,13 +270,14 @@ public class ActivityPrincipal extends Activity {
     TextView txvTextoInicial;
     ProgressBar pbrCargaInicial;
 
+    TextView txvSecret01;
+    TextView txvSecret02;
+    TextView txvSecret03;
+
 
     /* Declaración de fragment_bar */
 
     TextView txvIdterminal;
-
-    long lastDown;
-    long lastDuration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -367,6 +382,10 @@ public class ActivityPrincipal extends Activity {
 
         txvIdterminal = (TextView) findViewById(R.id.txvIdterminal);
 
+        txvSecret01 = (TextView) findViewById(R.id.txvSecret01);
+        txvSecret02 = (TextView) findViewById(R.id.txvSecret02);
+        txvSecret03 = (TextView) findViewById(R.id.txvSecret03);
+
         // Objetos
         tiempoPresente = new Date();
         tiempoPasado = new Date();
@@ -448,7 +467,8 @@ public class ActivityPrincipal extends Activity {
         // threadControlSerial01.start();
         //
         // threadControlSerial02.start();
-
+        queriesLlamadas = new QueriesLlamadas(context);
+        queriesLlamadas.poblar();
 
         // Iniciar Rutinas en verdadero
         ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
@@ -470,6 +490,9 @@ public class ActivityPrincipal extends Activity {
         // Boton Master (Logo)
         btnMaster.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+
+                PATRON_SECRET = "";
+
                 if (areaAccessEnabled) {
                     patronAcceso = "";
                     areaAccessEnabled = false;
@@ -820,6 +843,30 @@ public class ActivityPrincipal extends Activity {
             }
         });
 
+        txvSecret01.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AccesoSecreto("1");
+                Log.d("PATRON_SECRET",PATRON_SECRET);
+            }
+        });
+
+        txvSecret02.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AccesoSecreto("2");
+                Log.d("PATRON_SECRET",PATRON_SECRET);
+            }
+        });
+
+        txvSecret03.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AccesoSecreto("3");
+                Log.d("PATRON_SECRET",PATRON_SECRET);
+            }
+        });
+
         //} else {
         //    Log.wtf("PID WTF","FINALIZANDOOOOO");
 
@@ -838,8 +885,6 @@ public class ActivityPrincipal extends Activity {
         }
         */
         //}
-
-
     }
 
     @Override
@@ -911,6 +956,97 @@ public class ActivityPrincipal extends Activity {
         }
     }
 
+    private void AccesoSecreto(String dato) {
+        PATRON_SECRET = PATRON_SECRET + dato;
+        if (PATRON_SECRET.equalsIgnoreCase("1111111232132122")){
+            //ui.showAlert(ActivityPrincipal.this,"success","MODO DIOS ACTIVADO");
+            try {
+                showLoginDialog();
+            } catch (Exception e) {
+                Log.e("MODO_DIOS", e.getMessage() );
+            }
+
+            PATRON_SECRET = "";
+        }
+    }
+
+    private void showLoginDialog() {
+
+        LayoutInflater li = LayoutInflater.from(context);
+        final View promptsView = li.inflate(R.layout.searchprompt, null);
+
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(new ContextThemeWrapper(ActivityPrincipal.this, R.style.AlertDialogCustom));
+
+        builder
+                .setView(promptsView);
+        final EditText input = (EditText) promptsView.findViewById(R.id.edtPasswordMain);
+        builder
+                .setCancelable(false)
+                .setTitle("CONFIGURACIÓN DE FÁBRICA")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+
+                        if (input.getText().toString().equalsIgnoreCase("tempus123+.")) {
+                            try {
+                                Log.d("SYSTEM_SUPERADMIN","INICIANDO");
+                                manageAccessButtons(false);
+                                Intent intent01 = new Intent(ActivityPrincipal.this, ActivitySuperadmin.class);
+                                startActivityForResult(intent01, 1);
+                                patronAcceso = "";
+                                hideSoftKeyboard(promptsView);
+                            } catch(Exception e) {
+                                Log.e("hideSoftKeyboard", e.getMessage());
+                            }
+                        } else {
+                            ui.showAlert(ActivityPrincipal.this,"warning","Acceso Denegado!");
+                        }
+
+
+                    }})
+                .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            hideSoftKeyboard(promptsView);
+                        } catch(Exception e) {
+                            Log.e("hideSoftKeyboard", e.getMessage());
+                        }
+
+                    }
+                }).show();
+    }
+
+    public void hideSoftKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+
+
+    private void hideNavigationBar(boolean hide){
+        try {
+            Process process = Runtime.getRuntime().exec("su");
+            DataOutputStream os = new DataOutputStream(process.getOutputStream());
+            if (hide){
+                os.writeBytes("pm disable com.android.systemui\n");
+            } else {
+                os.writeBytes("pm enable com.android.systemui\n");
+            }
+            os.flush();
+            os.writeBytes("exit\n");
+            os.flush();
+            process.waitFor();
+            //////////////////////////////////////
+        } catch (InterruptedException e) {
+            Log.d("SYSTEM_MAIN hideNavBar1",e.getMessage());
+        } catch (IOException e) {
+            Log.d("SYSTEM_MAIN hideNavBar2",e.getMessage());
+        }
+    }
+
+
     public void turnOnScreen(){
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
@@ -921,10 +1057,8 @@ public class ActivityPrincipal extends Activity {
     }
 
     public void crearBD() {
-
-        dbManager = new DBManager(this);
+        dbManager = new DBManager(context);
         dbManager.all("1,1,1,1,1,1");
-
     }
 
     public void cargarDatosIniciales(){
@@ -991,6 +1125,13 @@ public class ActivityPrincipal extends Activity {
 
 
 
+
+        // CARRION 01
+        //MAC_BT_01 = "20:16:08:10:66:91";
+        //MAC_BT_02 = "00:12:03:16:02:08";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+
         // DIRESA ID 100
         //MAC_BT_01 = "20:16:08:10:42:38";
         //MAC_BT_02 = "20:16:08:09:04:41";
@@ -1032,6 +1173,7 @@ public class ActivityPrincipal extends Activity {
         BT_01_ENABLED = true;   //Arduino
         BT_02_ENABLED = true;   //Suprema
         BT_03_ENABLED = false;  //Handpunch
+
 
     }
 
@@ -1114,6 +1256,7 @@ public class ActivityPrincipal extends Activity {
 
         switch(patronAcceso) {
             case "123432":
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: INGRESAR LOGIN");
                 txvMensajePantalla.setText("PASE SU TARJETA");
                 manageAccessButtons(false);
                 Intent intent01 = new Intent(ActivityPrincipal.this, ActivityLogin.class);
@@ -1123,93 +1266,125 @@ public class ActivityPrincipal extends Activity {
                 try {
                     ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOff",null);
                 } catch(Exception e) {
-                    Log.v("TEMPUS: ","ERROR ESTABLECIENDO CONEXION CON HUELLERO");
-                }
-                break;
-
-            case "42143231":
-                Intent intent02 = new Intent(ActivityPrincipal.this, ActivityConfigini.class);
-                intent02.putExtra("llave", "valor");
-                startActivityForResult(intent02, 1);
-                patronAcceso = "";
-                try {
-                    ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
-                } catch(Exception e) {
-                    Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
+                    Log.e("ERROR_SYSTEM_MAIN: ","COMANDO: INGRESAR LOGIN -> " + e.getMessage());
                 }
                 break;
 
             case "444432":
-                Log.d(TAG,"Patron 4444");
-                objSuprema.writeToSuprema(btSocket02.getOutputStream(),"Cancel",null);
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: SUPREMA (CANCEL)");
+                try {
+                    objSuprema.writeToSuprema(btSocket02.getOutputStream(),"Cancel",null);
+                } catch(Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN: ","COMANDO: SUPREMA (CANCEL) -> " + e.getMessage());
+                }
+
                 break;
 
             case "222232":
-                Log.d(TAG,"Patron 2222");
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: SUPREMA (DELETE_ALL_TEMPLATES)");
                 try{
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"DeleteAllTemplates",null);
                     util.sleep(250);
                 }catch(Exception e){
-                    Log.d("Autorizaciones","Error Enrolamiento: " + e.getMessage());
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: SUPREMA (DELETE_ALL_TEMPLATES) -> " + e.getMessage());
                 }
                 objSuprema.limpiarTramaSuprema();
                 break;
 
             case "333332":
-                Log.d(TAG,"Patron 3333");
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: SUPREMA (NUMBER_TEMPLATES)");
                 try{
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"NumberTemplate",null);
                     util.sleep(800);
+                    objSuprema.limpiarTramaSuprema();
                 }catch(Exception e){
-                    Log.d(TAG,"Error Enrolamiento: " + e.getMessage());
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: SUPREMA (NUMBER_TEMPLATES) -> " + e.getMessage());
                 }
-                objSuprema.limpiarTramaSuprema();
+
                 break;
 
             case "111132":
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: INTENTAR HABILITAR REPLICADO");
                 isReplicating = true;
                 break;
 
-            case "42423123":
-                Shell sh1 = new Shell();
-                String comando1[]={"su","-c","busybox","ifconfig","eth0","172.20.1.119","up"};
-                try{
-                    sh1.exec(comando1);
-                }catch(Exception e){
-                    Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
-                }
-                break;
-
-            case "42421111":
-                Shell sh2 = new Shell();
-                String comando2[]={"su","-c","busybox","route","add","default","gw","172.20.0.1","eth0"};
-                try{
-                    sh2.exec(comando2);
-                }catch(Exception e){
-                    Toast.makeText(this,e.getMessage(),Toast.LENGTH_SHORT);
-                }
-                break;
-
             case "1324111":
-                crearBD();          // Iniciar Base de Datos desde Cero
-                break;
-
-            case "4421324":
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: REINICIALIZAR BD");
                 try {
-                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
-                    proc.waitFor();
+                    crearBD();
                 } catch (Exception e) {
-                    Log.wtf("WTF",e.getMessage());
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: REINICIALIZAR BD -> " + e.getMessage());
                 }
                 break;
 
             case "33334334":
                 // OTG (QUITAR CARGA)
-                AdministrarOTG(btSocket01.getOutputStream(),true);
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: OTG - QUITAR CARGA");
+                try {
+                    AdministrarOTG(btSocket01.getOutputStream(),true);
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: OTG - QUITAR CARGA -> " + e.getMessage());
+                }
+
                 break;
             case "33334331":
                 // CARGAR
-                AdministrarOTG(btSocket01.getOutputStream(),false);
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: OTG - CARGAR");
+                try {
+                    AdministrarOTG(btSocket01.getOutputStream(),false);
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: OTG - CARGAR -> " + e.getMessage());
+                }
+                break;
+
+            case "113322443241321": // OCULTAR SYSTEMUI
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: OCULTAR SYSTEMUI");
+                try {
+                    hideNavigationBar(true);
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: OCULTAR SYSTEMUI -> " + e.getMessage());
+                }
+                break;
+
+            case "113322443241322": // MOSTRAR SYSTEMUI
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: MOSTRAR SYSTEMUI");
+                try {
+                    hideNavigationBar(false);
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: MOSTRAR SYSTEMUI -> " + e.getMessage());
+                }
+                break;
+
+            case "113322443241323": // REINICIAR
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: REINICIAR");
+                try {
+                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot"});
+                    proc.waitFor();
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: REINICIAR -> " + e.getMessage());
+                }
+                break;
+
+            case "113322443241324": // APAGAR
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: APAGAR");
+                try {
+                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
+                    proc.waitFor();
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: APAGAR -> " + e.getMessage());
+                }
+                break;
+
+            case "113322443241311": // ABRIR CONFIGURACION DE ANDROID
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: CONFIGURACION DE ANDROID");
+                try {
+                    startActivity(new Intent(Settings.ACTION_SETTINGS));
+                    Intent startMain = getPackageManager().getLaunchIntentForPackage("com.tempus.ecernar.overlaywifi");
+                    startActivity(startMain);
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: CONFIGURACION DE ANDROID -> " + e.getMessage());
+                }
+
                 break;
 
             default:

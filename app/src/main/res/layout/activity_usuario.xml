@@ -132,6 +132,7 @@
         android:layout_marginLeft="@dimen/acUsuario_edtUsuarioNuevo_marginLeft"
         android:textColorHint="@color/colorTexto"
         android:textColor="@color/colorTexto"
+        android:inputType="textPersonName"
         android:id="@+id/edtUsuarioNuevo" />
 
     <EditText

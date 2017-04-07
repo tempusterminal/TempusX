@@ -466,16 +466,19 @@
                         android:text=""
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:paddingBottom="5dp"
+                        android:inputType="textPersonName"
                         android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
                         android:layout_marginTop="@dimen/acSincronizacion_Sync1_marginTop"
                         android:textColor="@color/colorTexto"
                         android:id="@+id/edtSyncHost" />
+
 
                     <EditText
                         android:imeOptions="actionDone"
                         android:layout_width="@dimen/acSincronizacion_edtSync_width"
                         android:layout_height="@dimen/acSincronizacion_edtSync_height"
                         android:text=""
+                        android:inputType="textPersonName"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:paddingBottom="5dp"
                         android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
@@ -490,6 +493,7 @@
                         android:text=""
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:paddingBottom="5dp"
+                        android:inputType="textPersonName"
                         android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
                         android:layout_marginTop="@dimen/acSincronizacion_Sync3_marginTop"
                         android:textColor="@color/colorTexto"
@@ -502,6 +506,7 @@
                         android:text=""
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:paddingBottom="5dp"
+                        android:inputType="textPersonName"
                         android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
                         android:layout_marginTop="@dimen/acSincronizacion_Sync4_marginTop"
                         android:textColor="@color/colorTexto"

@@ -1,8 +1,10 @@
 package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,7 +41,7 @@ public class ActivitySuperadmin extends Activity {
 
         /* --- Inicialización de Variables Globales --- */
 
-        ActivityPrincipal.activityActive = "Produccion";
+        ActivityPrincipal.activityActive = "Superadmin";
 
         /* --- Inicialización de Variables Locales --- */
 
@@ -55,7 +57,7 @@ public class ActivitySuperadmin extends Activity {
 
         btnMasterSuperadmin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ui.goToActivity(ActivitySuperadmin.this, ActivityMenu.class , "","");
+                goToMain();
             }
         });
 
@@ -63,39 +65,27 @@ public class ActivitySuperadmin extends Activity {
         host.setup();
 
         //Tab 1
-        TabHost.TabSpec spec = host.newTabSpec("Tab One");
+        TabHost.TabSpec spec = host.newTabSpec("Tab1");
         spec.setContent(R.id.tab1);
-        spec.setIndicator("Tab One");
+        spec.setIndicator("Bluetooth");
         host.addTab(spec);
 
         //Tab 2
-        spec = host.newTabSpec("Tab Two");
+        spec = host.newTabSpec("Tab2");
         spec.setContent(R.id.tab2);
-        spec.setIndicator("Tab Two");
+        spec.setIndicator("Suprema");
         host.addTab(spec);
 
         //Tab 3
-        spec = host.newTabSpec("Tab Three");
+        spec = host.newTabSpec("Tab3");
         spec.setContent(R.id.tab3);
-        spec.setIndicator("Tab Three");
+        spec.setIndicator("Acciones");
         host.addTab(spec);
 
         //Tab 4
-        spec = host.newTabSpec("Tab Four");
-        spec.setContent(R.id.tab4);
-        spec.setIndicator("Tab Four");
-        host.addTab(spec);
-
-        //Tab 5
-        spec = host.newTabSpec("Tab Five");
-        spec.setContent(R.id.tab5);
-        spec.setIndicator("Tab Five");
-        host.addTab(spec);
-
-        //Tab 6
-        spec = host.newTabSpec("Tab Six");
+        spec = host.newTabSpec("Tab6");
         spec.setContent(R.id.tab6);
-        spec.setIndicator("Tab Six");
+        spec.setIndicator("SQL");
         host.addTab(spec);
 
 
@@ -126,6 +116,20 @@ public class ActivitySuperadmin extends Activity {
                 break;
         }
         return true;
+    }
+
+    public void goToMain(){
+        try {
+            ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOn",null);
+        } catch(Exception e) {
+            Log.e("Error",e.getMessage());
+        }
+
+        ActivityPrincipal.activityActive = "Principal";
+        Intent intent = new Intent();
+        intent.putExtra("llave","valor");
+        setResult(ActivityPrincipal.RESULT_OK, intent);
+        finish();
     }
 
 }

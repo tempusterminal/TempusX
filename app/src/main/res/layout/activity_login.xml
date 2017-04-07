@@ -133,6 +133,7 @@
         android:layout_alignParentTop="true"
         android:textSize="@dimen/cuerpo_textSize"
         android:backgroundTint="@color/colorNegro"
+        android:imeOptions="actionDone"
         android:id="@+id/edtUsuario" />
 
     <EditText
@@ -145,6 +146,7 @@
         android:layout_alignParentTop="true"
         android:textSize="@dimen/cuerpo_textSize"
         android:backgroundTint="@color/colorNegro"
+        android:imeOptions="actionDone"
         android:id="@+id/edtContraseña" />
 
 

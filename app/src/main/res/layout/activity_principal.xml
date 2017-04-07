@@ -63,6 +63,30 @@
 
     <!-- Componentes -->
 
+    <TextView
+        android:text=""
+        android:layout_width="@dimen/txvSecret_width"
+        android:layout_height="@dimen/txvSecret_height"
+        android:layout_marginTop="@dimen/txvSecret_marginTop"
+        android:layout_marginLeft="@dimen/txvSecret01_marginLeft"
+        android:id="@+id/txvSecret01" />
+
+    <TextView
+        android:text=""
+        android:layout_width="@dimen/txvSecret_width"
+        android:layout_height="@dimen/txvSecret_height"
+        android:layout_marginTop="@dimen/txvSecret_marginTop"
+        android:layout_marginLeft="@dimen/txvSecret02_marginLeft"
+        android:id="@+id/txvSecret02" />
+
+    <TextView
+        android:text=""
+        android:layout_width="@dimen/txvSecret_width"
+        android:layout_height="@dimen/txvSecret_height"
+        android:layout_marginTop="@dimen/txvSecret_marginTop"
+        android:layout_marginLeft="@dimen/txvSecret03_marginLeft"
+        android:id="@+id/txvSecret03" />
+
     <TextClock
         android:layout_width="@dimen/hora_width"
         android:layout_height="wrap_content"
@@ -533,6 +557,8 @@
         android:layout_marginLeft="@dimen/buttonWarning02_marginLeft"
         android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/buttonWarning02" />
+
+
 
 
 </RelativeLayout>
