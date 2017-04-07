@@ -168,7 +168,7 @@ public class QueriesParameters {
         this.open();
         //database.beginTransaction();
 
-        database.execSQL("DELETE FROM LLAMADAS");
+        database.execSQL("DELETE FROM PARAMETERS");
 
         // Parametros Horas de Replicado
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('HORA_REPLICADO_1','','00:00:00','','0','" + fechahora.getFechahora() + "');");
