@@ -84,7 +84,7 @@ public class ActivitySuperadmin extends Activity {
 
         //Tab 4
         spec = host.newTabSpec("Tab6");
-        spec.setContent(R.id.tab6);
+        spec.setContent(R.id.tab4);
         spec.setIndicator("SQL");
         host.addTab(spec);
 
