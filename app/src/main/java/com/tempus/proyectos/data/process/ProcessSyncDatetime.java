@@ -30,7 +30,7 @@ public class ProcessSyncDatetime extends Thread{
         while(true){
             try{
                 ProcessSync processSync = new ProcessSync();
-                //processSync.syncFechahora();
+                processSync.syncFechahora();
                 Thread.sleep(1000);
             }catch (SQLException e){
                 Log.d("Autorizaciones","Error SQL Hilo " + nombreHilo + ": " + e.toString());
