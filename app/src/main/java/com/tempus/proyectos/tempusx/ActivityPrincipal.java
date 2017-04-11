@@ -454,7 +454,7 @@ public class ActivityPrincipal extends Activity {
         conectarSeriales();
         threadControlPrincipal.start();
         threadControlPantalla.start();
-        threadReplicado.start();
+
 
         try {
             connectivity.turnGPSOn(this);
@@ -467,8 +467,6 @@ public class ActivityPrincipal extends Activity {
         // threadControlSerial01.start();
         //
         // threadControlSerial02.start();
-        queriesLlamadas = new QueriesLlamadas(context);
-        queriesLlamadas.poblar();
 
         // Iniciar Rutinas en verdadero
         ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
@@ -1069,8 +1067,8 @@ public class ActivityPrincipal extends Activity {
 
         // Interfaces de RED
 
-        INTERFACE_ETH = true;
-        INTERFACE_PPP = true;
+        INTERFACE_ETH = false;
+        INTERFACE_PPP = false;
         INTERFACE_WLAN = true;
 
         contadorEventoPantalla = 0;
@@ -1119,9 +1117,9 @@ public class ActivityPrincipal extends Activity {
 
         // PRUEBA CROVISA 02 2a
 
-        MAC_BT_01 = "20:16:08:10:65:03";
-        MAC_BT_02 = "00:15:83:35:79:C9";
-        MAC_BT_03 = "00:00:00:00:00:00";
+        //MAC_BT_01 = "20:16:08:10:65:03";
+        //MAC_BT_02 = "00:15:83:35:79:C9";
+        //MAC_BT_03 = "00:00:00:00:00:00";
 
 
 
@@ -1130,6 +1128,13 @@ public class ActivityPrincipal extends Activity {
         //MAC_BT_01 = "20:16:08:10:66:91";
         //MAC_BT_02 = "00:12:03:16:02:08";
         //MAC_BT_03 = "00:00:00:00:00:00";
+
+
+
+        // CARRION 02
+        MAC_BT_01 = "20:16:05:03:24:64";
+        MAC_BT_02 = "20:16:08:10:42:29";
+        MAC_BT_03 = "00:00:00:00:00:00";
 
 
         // DIRESA ID 100
@@ -1394,7 +1399,24 @@ public class ActivityPrincipal extends Activity {
 
     /* ---------------------- FUNCION MARCACION MASTER --------------------------- */
 
-    public void MarcacionMaster(String nroLectora, String tarjeta){
+    public String getNroLectora(String name){
+        switch (name) {
+            case "DNI":
+                return "02";
+            case "PROXIMIDAD CHINA":
+                return "04";
+            case "HUELLA SUPREMA":
+                return "07";
+            case "DNI ELECTRONICO":
+                return "04";
+            case "TECLADO":
+                return "01";
+            default:
+                return "00";
+        }
+    }
+
+    public void MarcacionMaster(String lectoraName, String tarjeta){
 
         runOnUiThread(new Runnable() {
             @Override
@@ -1412,8 +1434,8 @@ public class ActivityPrincipal extends Activity {
             tiempoPasado = date;
 
             LimpiarDatosMarcacion();
-            String lectora = Lectoras.get(nroLectora);
-            Log.d(TAG,"nroLectora: " + nroLectora);
+            String lectora = lectoraName;
+            Log.d(TAG,"Lectora: " + lectora);
 
             Autorizaciones autorizaciones = new Autorizaciones();
             if(lectora != null){
@@ -1423,7 +1445,6 @@ public class ActivityPrincipal extends Activity {
                     //tarjeta = String.valueOf(util.convertHexToDecimal(tarjeta.substring(6,8) + tarjeta.substring(4,6) + tarjeta.substring(2,4) + tarjeta.substring(0,2)));
                 } else {
                     if (lectora == "PROXIMIDAD CHINA"){
-                        Log.d(TAG,"MUNDO");
                         tarjeta = hexToDecimalStringProx(tarjeta);
                     } else {
                         if (lectora != "TECLADO") {
@@ -1436,7 +1457,13 @@ public class ActivityPrincipal extends Activity {
 
                 try {
                     queriesMarcaciones = new QueriesMarcaciones(this);
-                    autorizaciones = queriesMarcaciones.GestionarMarcaciones(tarjeta,idTerminal,Integer.parseInt(nroLectora),flag,fechahora.getFechahora());
+                    Log.v(TAG, "MarcacionMaster Exec >");
+                    Log.v(TAG, " > Tarjeta: " + tarjeta);
+                    Log.v(TAG, " > ID Terminal: " +idTerminal);
+                    Log.v(TAG, " > ID Lectora: " +getNroLectora(lectora));
+                    Log.v(TAG, " > Flag: " +flag);
+                    Log.v(TAG, " > FechaHora: " +fechahora.getFechahora());
+                    autorizaciones = queriesMarcaciones.GestionarMarcaciones(tarjeta,idTerminal,Integer.parseInt(getNroLectora(lectora)),flag,fechahora.getFechahora());
 
 
                     Log.d(TAG,"Resultado de Busqueda de Autorizaciones: " + autorizaciones.toString());
@@ -1894,94 +1921,10 @@ public class ActivityPrincipal extends Activity {
         }
     }
 
-    public void manageVisibilityKeyboard(boolean visible){
-        tarjetaKey = "";
-
-        if (visible) {
-            txvKeyFondo.setVisibility(View.VISIBLE);
-            txvKeyPantalla.setVisibility(View.VISIBLE);
-            btnKey0.setVisibility(View.VISIBLE);
-            btnKey1.setVisibility(View.VISIBLE);
-            btnKey2.setVisibility(View.VISIBLE);
-            btnKey3.setVisibility(View.VISIBLE);
-            btnKey4.setVisibility(View.VISIBLE);
-            btnKey5.setVisibility(View.VISIBLE);
-            btnKey6.setVisibility(View.VISIBLE);
-            btnKey7.setVisibility(View.VISIBLE);
-            btnKey8.setVisibility(View.VISIBLE);
-            btnKey9.setVisibility(View.VISIBLE);
-            btnKeyBorrar.setVisibility(View.VISIBLE);
-            btnKeyIntro.setVisibility(View.VISIBLE);
-
-            visibleKey = true;
-
-            Date date = new Date();
-            tiempoPasado = date;
-        } else {
-            txvKeyFondo.setVisibility(View.INVISIBLE);
-            txvKeyPantalla.setVisibility(View.INVISIBLE);
-            btnKey0.setVisibility(View.INVISIBLE);
-            btnKey1.setVisibility(View.INVISIBLE);
-            btnKey2.setVisibility(View.INVISIBLE);
-            btnKey3.setVisibility(View.INVISIBLE);
-            btnKey4.setVisibility(View.INVISIBLE);
-            btnKey5.setVisibility(View.INVISIBLE);
-            btnKey6.setVisibility(View.INVISIBLE);
-            btnKey7.setVisibility(View.INVISIBLE);
-            btnKey8.setVisibility(View.INVISIBLE);
-            btnKey9.setVisibility(View.INVISIBLE);
-            btnKeyBorrar.setVisibility(View.INVISIBLE);
-            btnKeyIntro.setVisibility(View.INVISIBLE);
-            //actualizarFlag(null,null);
-            visibleKey = false;
-        }
-        txvKeyPantalla.setText(tarjetaKey);
-    }
-
-    public void manageVisibilityLayerMarcacion(boolean visible){
-        if(flag == null || flag == ""){
-            if(visible){
-                txvMarcacionNombre.setVisibility(View.INVISIBLE);
-                txvMarcacionTarjeta.setVisibility(View.INVISIBLE);
-                txvMarcacionMsjPrincipal.setVisibility(View.VISIBLE);
-                txvMarcacionFondo.setVisibility(View.VISIBLE);
-                txvMarcacionMsjPrincipal.setText("SELECIONE EVENTO");
-                txvMarcacionMsjSecundario.setVisibility(View.INVISIBLE);
-
-            }else{
-                txvMarcacionNombre.setVisibility(View.INVISIBLE);
-                txvMarcacionTarjeta.setVisibility(View.INVISIBLE);
-                txvMarcacionFondo.setVisibility(View.INVISIBLE);
-                txvMarcacionMsjPrincipal.setVisibility(View.INVISIBLE);
-                txvMarcacionMsjSecundario.setVisibility(View.INVISIBLE);
-                actualizarFlag(null,null);
-
-            }
-        }else{
-            if (visible) {
-                txvMarcacionNombre.setVisibility(View.VISIBLE);
-                txvMarcacionTarjeta.setVisibility(View.VISIBLE);
-                txvMarcacionFondo.setVisibility(View.VISIBLE);
-                txvMarcacionMsjPrincipal.setVisibility(View.VISIBLE);
-                txvMarcacionMsjSecundario.setVisibility(View.VISIBLE);
-
-            } else {
-                txvMarcacionNombre.setVisibility(View.INVISIBLE);
-                txvMarcacionTarjeta.setVisibility(View.INVISIBLE);
-                txvMarcacionFondo.setVisibility(View.INVISIBLE);
-                txvMarcacionMsjPrincipal.setVisibility(View.INVISIBLE);
-                txvMarcacionMsjSecundario.setVisibility(View.INVISIBLE);
-
-            }
-        }
-
-
-    }
-
     public void keyboard(String dato){
         if (dato.equalsIgnoreCase("intro")) {
             if (tarjetaKey.length()==8){
-                MarcacionMaster("01",tarjetaKey);
+                MarcacionMaster("TECLADO",tarjetaKey);
                 Date date = new Date();
                 tiempoPasado = date;
 
@@ -2022,7 +1965,7 @@ public class ActivityPrincipal extends Activity {
                     tiempoPasado = date;
                     tarjetaKey = tarjetaKey + dato;
                     txvKeyPantalla.setText(tarjetaKey);
-                    MarcacionMaster("01",tarjetaKey);
+                    MarcacionMaster("TECLADO",tarjetaKey);
 
                     runOnUiThread(new Runnable() {
                         @Override
@@ -2058,10 +2001,10 @@ public class ActivityPrincipal extends Activity {
                             if( MODO_EVENTO ){
                                 // no ace==ptamos nada de marcaciones
                                 if (flag!="" || flag!=null){
-                                    String nroLector = "02";
+                                    String flagRead = objArduino.getFlagRead();
                                     String tarjeta = objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin());
                                     Log.v("TEMPUS: ",tarjeta);
-                                    MarcacionMaster(nroLector,tarjeta);
+                                    MarcacionMaster(flagRead,tarjeta);
 
                                     // Marcando
                                     runOnUiThread(new Runnable() {
@@ -2092,10 +2035,10 @@ public class ActivityPrincipal extends Activity {
 
                                 }
                             } else {
-                                String nroLector = "02";
+                                String flagRead = objArduino.getFlagRead();
                                 String tarjeta = objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin());
                                 Log.v("TEMPUS: ",tarjeta);
-                                MarcacionMaster(nroLector,tarjeta);
+                                MarcacionMaster(flagRead,tarjeta);
 
                                 // Marcando
                                 runOnUiThread(new Runnable() {
@@ -2147,6 +2090,7 @@ public class ActivityPrincipal extends Activity {
                         break;
                     case "07": // EnrollByTemplate
                         Log.v("TEMPUS: ","EnrollByTemplate >>>");
+                        Log.v("TEMPUS: ","EnrollByTemplate >>>" + objSuprema.getTrama());
                         if (isReplicatingTemplate) {
                             //llega la respuesta de enrolamiento ok y ko
                             try{
@@ -2158,7 +2102,6 @@ public class ActivityPrincipal extends Activity {
                             }catch(Exception e){
                                 Log.v("TEMPUS: ","Error EnrollByTemplate >>> " + e.getMessage());
                             }
-
                         }
                         break;
                     case "11": // IdentifyByScan
@@ -2170,14 +2113,14 @@ public class ActivityPrincipal extends Activity {
 
                             if ( MODO_EVENTO ){
                                 if (flag == "" || flag!=null) {
-                                    String nroLector = "07";
+                                    String flagRead = "HUELLA SUPREMA";
                                     String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
                                     if (objSuprema.getFlag().equalsIgnoreCase("69")){
                                         tarjeta = "00000000";
                                     }
                                     Log.v("TEMPUS: ",tarjeta);
                                     //Log.v("TEMPUS: ",String.valueOf(Integer.parseInt(tarjeta)));
-                                    MarcacionMaster(nroLector,String.valueOf(Integer.parseInt(tarjeta)));
+                                    MarcacionMaster(flagRead,String.valueOf(Integer.parseInt(tarjeta)));
                                     // Marcando
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -2208,14 +2151,14 @@ public class ActivityPrincipal extends Activity {
                                     });
                                 }
                             } else {
-                                String nroLector = "07";
+                                String flagRead = "HUELLA SUPREMA";
                                 String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
                                 if (objSuprema.getFlag().equalsIgnoreCase("69")){
                                     tarjeta = "00000000";
                                 }
                                 Log.v("TEMPUS: ",tarjeta);
                                 //Log.v("TEMPUS: ",String.valueOf(Integer.parseInt(tarjeta)));
-                                MarcacionMaster(nroLector,String.valueOf(Integer.parseInt(tarjeta)));
+                                MarcacionMaster(flagRead,String.valueOf(Integer.parseInt(tarjeta)));
                                 // Marcando
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -2718,50 +2661,6 @@ public class ActivityPrincipal extends Activity {
 
                 util.sleep(1000);
 
-            }
-        }
-    });
-
-    Thread threadReplicado = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            while (true) {
-                if (ctrlThreadReplicadoEnabled){
-                    if(isReplicating){
-                        try{
-                            Log.v(TAG,"REPLICADO INICIADO");
-                            queriesPersonalTipolectoraBiometria.ReplicarBiometria();
-                        }catch(Exception e){
-                            Log.v(TAG,"");
-                            isReplicating = false;
-                        }
-
-                    }else{
-                        Log.v(TAG,"REPLICADO ESPERANDO");
-                        if(tiempoPresente.getHours() == 1){
-                            if(tiempoPresente.getMinutes() == 29){
-                                if(tiempoPresente.getSeconds() > 50){
-
-                                    try{
-                                        objSuprema.writeToSuprema(btSocket02.getOutputStream(),"DeleteAllTemplates",null);
-                                        util.sleep(1000);
-                                    }catch(Exception e){
-                                        Log.d(TAG,"Error Enrolamiento: " + e.getMessage());
-                                    }
-                                    objSuprema.limpiarTramaSuprema();
-
-                                    DBManager db = new DBManager(ActivityPrincipal.this);
-                                    db.execSQL("UPDATE PERSONAL_TIPOLECTORA_BIOMETRIA SET SINCRONIZADO = 0 WHERE 1 = 1;");
-
-                                    Log.v(TAG,"HABILITANDO REPLICADO");
-                                    isReplicating = true;
-                                }
-
-                            }
-                        }
-                    }
-                }
-                util.sleep(1000);
             }
         }
     });

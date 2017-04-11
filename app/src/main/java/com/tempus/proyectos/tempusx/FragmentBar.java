@@ -98,7 +98,7 @@ public class FragmentBar extends Fragment {
 
                         Thread t = Thread.currentThread();
                         long id = t.getId();
-                        Log.d("PID THREAD", String.valueOf(id));
+                        Log.d("PID THREAD", String.valueOf(id) + " isreplicating: " + ActivityPrincipal.isReplicating);
 
 
                         getActivity().runOnUiThread(new Runnable() {

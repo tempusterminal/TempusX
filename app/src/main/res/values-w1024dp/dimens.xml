@@ -82,8 +82,8 @@
     <!-- Widget Fecha -->
     <dimen name="fecha_textSize">30sp</dimen>
     <dimen name="fecha_marginTop">70dp</dimen>
-    <dimen name="fecha_marginLeft">880dp</dimen>
-    <dimen name="fecha_width">130dp</dimen>
+    <dimen name="fecha_marginLeft">850dp</dimen>
+    <dimen name="fecha_width">160dp</dimen>
     <dimen name="fecha_height">35dp</dimen>
 
     <!-- Widget Logo -->

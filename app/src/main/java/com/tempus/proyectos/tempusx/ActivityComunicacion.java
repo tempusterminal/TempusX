@@ -222,7 +222,7 @@ public class ActivityComunicacion extends Activity {
 
         TabHost.TabSpec spec;
 
-        if (true){
+        if (ActivityPrincipal.INTERFACE_WLAN){
             spec = host.newTabSpec("Tab1");
             spec.setContent(R.id.tab3);
             spec.setIndicator("WIFI");
@@ -231,7 +231,7 @@ public class ActivityComunicacion extends Activity {
 
 
         //Tab 2
-        if (true){
+        if (ActivityPrincipal.INTERFACE_PPP){
             spec = host.newTabSpec("Tab2");
             spec.setContent(R.id.tab2);
             spec.setIndicator("GPRS");
@@ -240,7 +240,7 @@ public class ActivityComunicacion extends Activity {
 
 
         //Tab 3
-        if (true){
+        if (ActivityPrincipal.INTERFACE_ETH){
             spec = host.newTabSpec("Tab3");
             spec.setContent(R.id.tab1);
             spec.setIndicator("ETHERNET");
