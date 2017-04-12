@@ -956,16 +956,33 @@ public class ActivityPrincipal extends Activity {
 
     private void AccesoSecreto(String dato) {
         PATRON_SECRET = PATRON_SECRET + dato;
-        if (PATRON_SECRET.equalsIgnoreCase("1111111232132122")){
-            //ui.showAlert(ActivityPrincipal.this,"success","MODO DIOS ACTIVADO");
-            try {
-                showLoginDialog();
-            } catch (Exception e) {
-                Log.e("MODO_DIOS", e.getMessage() );
-            }
+        Log.d("AccesoSecreto",PATRON_SECRET);
 
-            PATRON_SECRET = "";
+        switch (PATRON_SECRET) {
+            case "1111111232132122":
+                Log.d("AccesoSecreto","COMANDO: MODO DIOS");
+                try {
+                    showLoginDialog();
+                } catch (Exception e) {
+                    Log.e("MODO_DIOS", e.getMessage() );
+                }
+                PATRON_SECRET = "";
+                break;
+            case "3333333123123":
+                Log.d("AccesoSecreto","COMANDO: REINICIAR");
+                try {
+                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot"});
+                    proc.waitFor();
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: REINICIAR -> " + e.getMessage());
+                }
+                PATRON_SECRET = "";
+                break;
+            default:
+                break;
         }
+
+
     }
 
     private void showLoginDialog() {
@@ -1124,14 +1141,14 @@ public class ActivityPrincipal extends Activity {
 
 
 
-        // CARRION 01
+        // CARRION 02
         //MAC_BT_01 = "20:16:08:10:66:91";
         //MAC_BT_02 = "00:12:03:16:02:08";
         //MAC_BT_03 = "00:00:00:00:00:00";
 
 
 
-        // CARRION 02
+        // CARRION 01
         MAC_BT_01 = "20:16:05:03:24:64";
         MAC_BT_02 = "20:16:08:10:42:29";
         MAC_BT_03 = "00:00:00:00:00:00";

@@ -33,17 +33,17 @@ public class UserInterfaceM {
         //activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        if (isTablet(activity)) {
-            View decorView = activity.getWindow().getDecorView();
 
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE);
-        }
+        View decorView = activity.getWindow().getDecorView();
+
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION // hide nav bar
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                        | View.SYSTEM_UI_FLAG_IMMERSIVE);
+
 
         final PowerManager pm = (PowerManager) activity.getSystemService(activity.getApplicationContext().POWER_SERVICE);
         this.mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");

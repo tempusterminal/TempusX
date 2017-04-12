@@ -34,10 +34,10 @@ public class ProcessSyncST extends Thread{
 
         while(true){
             try{
-                Log.d("Autorizaciones","Hilo " + nombreHilo + " - Ciclo");
+                //Log.d("Autorizaciones","Hilo " + nombreHilo + " - Ciclo");
 
                 if(ActivityPrincipal.ctrlThreadSyncAutorizacionesEnabled){
-                    Log.d("Autorizaciones","Hilo " + nombreHilo + " - - > ctrlThread Habilitado");
+                    //Log.d("Autorizaciones","Hilo " + nombreHilo + " - - > ctrlThread Habilitado");
                     ProcessSync processSync = new ProcessSync();
                     // Llamadas para poblar autorizaciones
                     processSync.ProcessLlamadas(context);

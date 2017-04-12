@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorLinea">#e55837</color>
-    <color name="colorFondoBarra">#f7e2dd</color>
+    <color name="colorLinea">#009933</color>
+    <color name="colorFondoBarra">#d0dfdb</color>
     <color name="colorFondoCuerpo">#ffffff</color>
     <color name="colorTexto">#000000</color>
     <color name="colorBlanco">#ffffff</color>
@@ -17,10 +17,10 @@
     <color name="colorVerdeClaro">#cbd9c1</color>
     <color name="colorNegro">#000000</color>
 
-    <color name="colorTabNonFocusedSelect">#e55837</color>
-    <color name="colorTabNonFocusedNone">#f78165</color>
-    <color name="colorTabFocusedSelect">#de4622</color>
-    <color name="colorTabFocusedNone">#de3711</color>
+    <color name="colorTabNonFocusedSelect">#009933</color>
+    <color name="colorTabNonFocusedNone">#1ebf54</color>
+    <color name="colorTabFocusedSelect">#026b25</color>
+    <color name="colorTabFocusedNone">#027027</color>
 
     <color name="colorInfo">#5cc0de</color>
     <color name="colorSuccess">#5db85d</color>
