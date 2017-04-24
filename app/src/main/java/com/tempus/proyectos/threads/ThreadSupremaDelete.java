@@ -67,7 +67,7 @@ public class ThreadSupremaDelete implements Runnable {
 
                         Biometrias objBiometria = ActivityBiometria.objEspacio02;
 
-                        // Insertamos template en base de datos
+                        // Borramos template
                         queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this.activity);
                         String respuesta = queriesPersonalTipolectoraBiometria.EliminarBiometrias(objBiometria);
 
@@ -79,10 +79,11 @@ public class ThreadSupremaDelete implements Runnable {
                             exito = false;
                         }
 
-                        DBManager dbManager = new DBManager(this.activity);
-                        dbManager.open();
-                        dbManager.execSQL("UPDATE PERSONAL_TIPOLECTORA_BIOMETRIA SET VALOR_BIOMETRIA = NULL WHERE INDICE_BIOMETRIA = "+valorIndice+"");
-                        dbManager.close();
+                        // Codigo Antiguo Para Eliminar
+                        //DBManager dbManager = new DBManager(this.activity);
+                        //dbManager.open();
+                        //dbManager.execSQL("UPDATE PERSONAL_TIPOLECTORA_BIOMETRIA SET VALOR_BIOMETRIA = NULL WHERE INDICE_BIOMETRIA = "+valorIndice+"");
+                        //dbManager.close();
 
                         control1 = false;
                         cancelarEnroll();

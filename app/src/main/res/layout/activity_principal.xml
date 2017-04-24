@@ -462,6 +462,17 @@
         android:background="@color/colorFondoMarcacion"
         android:id="@+id/txvMarcacionFondo" />
 
+    <!--
+    <pl.droidsonroids.gif.GifTextView
+        android:layout_width="120dp"
+        android:layout_height="150dp"
+        android:background="@drawable/logo_"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="90dp"
+        android:id="@+id/txvHuellaGif" />
+     -->
+
     <TextView
         android:layout_width="@dimen/fondo2_width"
         android:layout_height="@dimen/mWidgetNombre_height"

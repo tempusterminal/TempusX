@@ -38,12 +38,14 @@ import android.widget.Toast;
 
 import com.tempus.proyectos.bluetoothSerial.BluetoothSuperAdmin;
 import com.tempus.proyectos.bluetoothSerial.MainArduino;
+import com.tempus.proyectos.bluetoothSerial.MainHandPunch;
 import com.tempus.proyectos.bluetoothSerial.MainSuprema;
 import com.tempus.proyectos.crash.TXExceptionHandler;
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.model.Llamadas;
+import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
 import com.tempus.proyectos.data.process.ProcessSyncDatetime;
 import com.tempus.proyectos.data.process.ProcessSyncST;
@@ -52,6 +54,7 @@ import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
 import com.tempus.proyectos.data.queries.QueriesBiometrias;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
+import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.util.Connectivity;
@@ -83,7 +86,7 @@ public class ActivityPrincipal extends Activity {
 
     int c = 100;
 
-    boolean MODO_EVENTO = false;
+    boolean MODO_EVENTO = true;
 
     int TIEMPO_CONN_BT = 120;
     Date TIEMPO_PRESENTE_BT01;
@@ -107,8 +110,6 @@ public class ActivityPrincipal extends Activity {
     boolean STATUS_CONNECT_02 = false;
     boolean STATUS_CONNECT_03 = false;
 
-    int TIPO_TERMINAL = 2; // A=1; A+H=2; A+M=3; A+H+M=4
-
     boolean HARD_FAIL_01 = false;
     boolean HARD_FAIL_02 = false;
     boolean HARD_FAIL_03 = false;
@@ -117,6 +118,8 @@ public class ActivityPrincipal extends Activity {
     boolean MODO_PATRON = false;
 
     String PATRON_SECRET = "";
+
+
 
 
     int CONTROL_MASTER_ETHERNET_MARCAS = 0; // 0 = CARGA    1 = ETHERNET
@@ -135,12 +138,15 @@ public class ActivityPrincipal extends Activity {
 
     /* --- ACCESO ESTÁTICO --- */
 
+    static int TIPO_TERMINAL = 3; // A=1; A+H=2; A+M=3; A+H+M=4
+
     public static boolean activo;
     public static Context context;
     public static boolean controlFlagSyncAutorizaciones;
 
     public static MainArduino objArduino;
     public static MainSuprema objSuprema;
+    public static MainHandPunch objHandPunch;
 
     public static boolean isEnrolling;
     public static boolean isReplicating;
@@ -436,6 +442,7 @@ public class ActivityPrincipal extends Activity {
 
         btSocket01 = new BluetoothSuperAdmin(MAC_BT_01);
         btSocket02 = new BluetoothSuperAdmin(MAC_BT_02);
+        btSocket03 = new BluetoothSuperAdmin(MAC_BT_03);
 
 
         if (BT_01_ENABLED){
@@ -469,12 +476,12 @@ public class ActivityPrincipal extends Activity {
         // threadControlSerial02.start();
 
         // Iniciar Rutinas en verdadero
-        ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
-        processSyncTS.start(this);
-        ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
-        processSyncST.start(this);
-        ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
-        processSyncDatetime.start(this);
+        ////////////ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
+        ////////////processSyncTS.start(this);
+        ////////////ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
+        ////////////processSyncST.start(this);
+        ////////////ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
+        ////////////processSyncDatetime.start(this);
 
         threadFechahora.start();
 
@@ -587,6 +594,14 @@ public class ActivityPrincipal extends Activity {
                 actualizarFlag("001", btnEvent01);
                 Date date = new Date();
                 tiempoPasado = date;
+
+                try {
+                    boolean b = ActivityPrincipal.objHandPunch.handRecognizer_VerificarMano(btSocket03.getOutputStream(), "5e8b79816f806d7059");
+                } catch (Exception e) {
+                    Log.e("XDXDXD",e.getMessage());
+                }
+
+
             }
         });
 
@@ -1080,6 +1095,7 @@ public class ActivityPrincipal extends Activity {
 
         idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL");
 
+
         MODO_EVENTO = false;
 
         // Interfaces de RED
@@ -1149,9 +1165,9 @@ public class ActivityPrincipal extends Activity {
 
 
         // CARRION 01
-        MAC_BT_01 = "20:16:05:03:24:64";
-        MAC_BT_02 = "20:16:08:10:42:29";
-        MAC_BT_03 = "00:00:00:00:00:00";
+        //MAC_BT_01 = "20:16:05:03:24:64";
+        //MAC_BT_02 = "20:16:08:10:42:29";
+        //MAC_BT_03 = "00:00:00:00:00:00";
 
 
         // DIRESA ID 100
@@ -1191,10 +1207,15 @@ public class ActivityPrincipal extends Activity {
         //MAC_BT_02 = "98:D3:34:90:7D:C0";
         //MAC_BT_03 = "00:00:00:00:00:00";
 
+        //RANSA
+        MAC_BT_01 = "20:16:08:10:64:87";
+        MAC_BT_02 = "00:00:00:00:00:00";
+        MAC_BT_03 = "20:16:08:10:65:94";
+
 
         BT_01_ENABLED = true;   //Arduino
-        BT_02_ENABLED = true;   //Suprema
-        BT_03_ENABLED = false;  //Handpunch
+        BT_02_ENABLED = false;   //Suprema
+        BT_03_ENABLED = true;  //Handpunch
 
 
     }
@@ -1219,7 +1240,6 @@ public class ActivityPrincipal extends Activity {
             Log.i(TAG,"INICIANDO BT 03");
             //btSocket03 = new BluetoothManager(MAC_BT_03,getApplicationContext());
             threadSerial03.start();
-            threadControlSerial03.start();
         }
 
     }
@@ -1247,7 +1267,7 @@ public class ActivityPrincipal extends Activity {
         }
 
         if (BT_03_ENABLED) {
-
+            objHandPunch = new MainHandPunch();
         }
     }
 
@@ -2372,6 +2392,7 @@ public class ActivityPrincipal extends Activity {
     Thread threadSerial03 = new Thread(new Runnable() {
         @Override
         public void run() {
+            /*
             while (true) {
                 try {
                     byte[] rawBytes = new byte[1];
@@ -2391,6 +2412,7 @@ public class ActivityPrincipal extends Activity {
                     }
                 }
             }
+            */
         }
     });
 
@@ -2417,6 +2439,7 @@ public class ActivityPrincipal extends Activity {
             ctrlThreadSyncAutorizacionesEnabled = true;
             ctrlThreadSerial01Enabled = true;
             ctrlThreadSerial02Enabled = true;
+            ctrlThreadSerial03Enabled = true;
             ctrlThreadReplicadoEnabled = true;
             showMsgBoot(false,"");
             buttonWarning01.setVisibility(View.INVISIBLE);
@@ -2653,7 +2676,7 @@ public class ActivityPrincipal extends Activity {
                                 break;
                             case 3:
                                 controlGeneral(STATUS_CONNECT_01,true,STATUS_CONNECT_03);
-                                if (HARD_FAIL_01 || STATUS_CONNECT_03) {
+                                if (HARD_FAIL_01 || HARD_FAIL_03) {
                                     buttonWarning01.setVisibility(View.VISIBLE);
                                     buttonWarning02.setVisibility(View.VISIBLE);
                                 }
@@ -2661,7 +2684,7 @@ public class ActivityPrincipal extends Activity {
                                 break;
                             case 4:
                                 controlGeneral(STATUS_CONNECT_01,STATUS_CONNECT_02,STATUS_CONNECT_03);
-                                if (HARD_FAIL_01 || STATUS_CONNECT_02 || STATUS_CONNECT_03) {
+                                if (HARD_FAIL_01 || HARD_FAIL_02 || HARD_FAIL_03) {
                                     buttonWarning01.setVisibility(View.VISIBLE);
                                     buttonWarning02.setVisibility(View.VISIBLE);
                                 }
@@ -2866,7 +2889,7 @@ public class ActivityPrincipal extends Activity {
 
                                 //res = c.isValidConnection();
                                 //if (res) {
-                                    util.sleep(10000);
+                                util.sleep(10000);
                                 //}
                                 // Activado por 5 seg luego cargo por 12 seg
 

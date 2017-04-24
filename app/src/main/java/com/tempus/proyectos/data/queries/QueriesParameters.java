@@ -179,6 +179,34 @@ public class QueriesParameters {
         //Parametros Usuario y Password
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('USUARIO_TERMINAL','','tempus','','0','" + fechahora.getFechahora() + "');");
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('PASS_TERMINAL','','tempus','','0','" + fechahora.getFechahora() + "');");
+
+        //Parametros Bluetooth
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BT_01','','00:00:00:00:00:00','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BT_02','','00:00:00:00:00:00','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BT_03','','00:00:00:00:00:00','','0','" + fechahora.getFechahora() + "');");
+
+        //Parametros Operacion del Terminal
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('TIPO_TERMINAL','','0','','0','" + fechahora.getFechahora() + "');");
+
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('MODO_EVENTO','','0','','0','" + fechahora.getFechahora() + "');");
+
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BTN_EVENTO_1','','1','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BTN_EVENTO_2','','2','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BTN_EVENTO_3','','3','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BTN_EVENTO_4','','4','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BTN_EVENTO_5','','5','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BTN_EVENTO_6','','6','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BTN_EVENTO_7','','7','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('BTN_EVENTO_8','','8','','0','" + fechahora.getFechahora() + "');");
+
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('INTERFACE_ETH','','0','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('INTERFACE_WLAN','','0','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('INTERFACE_PPP','','0','','0','" + fechahora.getFechahora() + "');");
+
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('TIEMPO_MARCACION','','5','','0','" + fechahora.getFechahora() + "');");
+
+
+
         //database.endTransaction();
         this.close();
     }

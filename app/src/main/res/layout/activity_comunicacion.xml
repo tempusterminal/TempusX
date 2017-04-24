@@ -592,7 +592,7 @@
                         android:text="Configurar"
                         android:layout_width="@dimen/acComunicacion_Wifi_btnConf_width"
                         android:layout_height="@dimen/acComunicacion_Wifi_btnConf_height"
-                        android:layout_marginLeft="@dimen/acComunicacion_Wifi_btnConf_marginLeft"
+                        android:layout_centerHorizontal="true"
                         android:layout_marginTop="@dimen/acComunicacion_Wifi_btnConf_marginTop"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/btnWifi" />

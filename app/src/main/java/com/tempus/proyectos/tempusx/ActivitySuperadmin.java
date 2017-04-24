@@ -8,18 +8,28 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
+import com.tempus.proyectos.data.model.Parameters;
+import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.util.UserInterfaceM;
+import com.tempus.proyectos.util.Utilities;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ActivitySuperadmin extends Activity {
 
     /* --- Declaración de Objetos --- */
 
     UserInterfaceM ui;
+    QueriesParameters queriesParameters;
+    Utilities util;
 
     /* --- Declaración de Variables Globales --- */
 
@@ -38,6 +48,8 @@ public class ActivitySuperadmin extends Activity {
         /* --- Inicialización de Objetos --- */
 
         ui = new UserInterfaceM();
+        util = new Utilities();
+        queriesParameters = new QueriesParameters(getApplicationContext());
 
         /* --- Inicialización de Variables Globales --- */
 
@@ -67,25 +79,31 @@ public class ActivitySuperadmin extends Activity {
         //Tab 1
         TabHost.TabSpec spec = host.newTabSpec("Tab1");
         spec.setContent(R.id.tab1);
-        spec.setIndicator("Bluetooth");
+        spec.setIndicator("Parámetros");
         host.addTab(spec);
 
         //Tab 2
         spec = host.newTabSpec("Tab2");
         spec.setContent(R.id.tab2);
-        spec.setIndicator("Suprema");
+        spec.setIndicator("Lectoras");
         host.addTab(spec);
 
         //Tab 3
         spec = host.newTabSpec("Tab3");
         spec.setContent(R.id.tab3);
-        spec.setIndicator("Acciones");
+        spec.setIndicator("Máscaras");
         host.addTab(spec);
 
         //Tab 4
-        spec = host.newTabSpec("Tab6");
+        spec = host.newTabSpec("Tab4");
         spec.setContent(R.id.tab4);
         spec.setIndicator("SQL");
+        host.addTab(spec);
+
+        //Tab 5
+        spec = host.newTabSpec("Tab5");
+        spec.setContent(R.id.tab5);
+        spec.setIndicator("Reserva");
         host.addTab(spec);
 
 
@@ -99,8 +117,16 @@ public class ActivitySuperadmin extends Activity {
                 continue;
             }
             v.setBackgroundResource(R.drawable.tabline);
-            tv.setTextSize(20);
+
+            if (ui.isTablet(getApplicationContext())){
+                tv.setTextSize(20);
+            } else {
+                tv.setTextSize(11);
+            }
+
         }
+
+        getParametersAll();
     }
 
     @Override
@@ -130,6 +156,23 @@ public class ActivitySuperadmin extends Activity {
         intent.putExtra("llave","valor");
         setResult(ActivityPrincipal.RESULT_OK, intent);
         finish();
+    }
+
+    public void getParametersAll(){
+        List<Parameters> parametersList = queriesParameters.select();
+        List<String> spinnerArray =  new ArrayList<String>();
+
+        for (int i = 0; i < parametersList.size(); i++){
+            spinnerArray.add(parametersList.get(i).Idparameter);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this, R.layout.spinner_item, spinnerArray);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        Spinner sItems = (Spinner) findViewById(R.id.spnSAPItem);
+        sItems.setAdapter(adapter);
+
     }
 
 }

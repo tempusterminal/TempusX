@@ -682,4 +682,16 @@
     <dimen name="fragmentBar_imgViewReplica_marginRight">10dp</dimen>
 
 
+    <!-- ==================================================================== -->
+
+    <dimen name="acSuperadmin_spnItem_width">350dp</dimen>
+    <dimen name="acSuperadmin_spnItem_height">60dp</dimen>
+    <dimen name="acSuperadmin_spnItem_marginTop">120dp</dimen>
+    <dimen name="acSuperadmin_spnItem_marginLeft">100dp</dimen>
+
+    <dimen name="acSuperadmin_edtItem_width">350dp</dimen>
+    <dimen name="acSuperadmin_edtItem_height">60dp</dimen>
+    <dimen name="acSuperadmin_edtItem_marginTop">120dp</dimen>
+    <dimen name="acSuperadmin_edtItem_marginLeft">574dp</dimen>
+
 </resources>

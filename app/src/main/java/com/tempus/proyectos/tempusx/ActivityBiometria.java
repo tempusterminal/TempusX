@@ -30,6 +30,8 @@ import java.util.List;
 import com.tempus.proyectos.data.model.Biometrias;
 import com.tempus.proyectos.data.queries.QueriesBiometrias;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
+import com.tempus.proyectos.threads.ThreadHandPunchDelete;
+import com.tempus.proyectos.threads.ThreadHandPunchEnroll;
 import com.tempus.proyectos.threads.ThreadSupremaDelete;
 import com.tempus.proyectos.threads.ThreadSupremaEnroll;
 import com.tempus.proyectos.util.UserInterfaceM;
@@ -313,45 +315,95 @@ public class ActivityBiometria extends Activity {
         btnAcHuella1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Registrando huella 1
-                idTipoDetaBio = 1;
-                ocupado = true;
-                ActivityPrincipal.isEnrolling = true;
-                txvHuellaTexto.setText("Escaneando ... \nPor favor coloque su dedo");
-                manageScreenEnroll(true);
-                Thread threadSupremaEnroll = new Thread(new ThreadSupremaEnroll(ActivityBiometria.this));
-                threadSupremaEnroll.start();
+                if (ActivityPrincipal.TIPO_TERMINAL == 2 ) {
+                    registrarHuella1();
+                }
+
+                if (ActivityPrincipal.TIPO_TERMINAL == 3 ) {
+                    registrarMano();
+                }
             }
         });
 
         btnAcHuella2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Registrando huella 2
-                idTipoDetaBio = 2;
-                ocupado = true;
-                ActivityPrincipal.isEnrolling = true;
-                txvHuellaTexto.setText("Escaneando ... \nPor favor coloque su dedo");
-                manageScreenEnroll(true);
-                Thread threadSupremaEnroll = new Thread(new ThreadSupremaEnroll(ActivityBiometria.this));
-                threadSupremaEnroll.start();
+                if (ActivityPrincipal.TIPO_TERMINAL == 2 ) {
+                    registrarHuella2();
+                }
+
+                if (ActivityPrincipal.TIPO_TERMINAL == 3 ) {
+                    registrarMano();
+                }
             }
         });
 
         btnAcHuella3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Eliminando huella
-                ocupado = true;
-                ActivityPrincipal.isDeleting = true;
-                txvHuellaTexto.setText("Borrando huella ... \nPor favor espere ...");
-                manageScreenEnroll(true);
-                Thread threadSupremaDelete = new Thread(new ThreadSupremaDelete(ActivityBiometria.this));
-                threadSupremaDelete.start();
+                if (ActivityPrincipal.TIPO_TERMINAL == 2 ) {
+                    eliminarHuellas();
+                }
+
+                if (ActivityPrincipal.TIPO_TERMINAL == 3 ) {
+                    eliminarMano();
+                }
             }
         });
 
     }
+
+
+    public void registrarHuella1() {
+        // Registrando huella 1
+        idTipoDetaBio = 1;
+        ocupado = true;
+        ActivityPrincipal.isEnrolling = true;
+        txvHuellaTexto.setText("Escaneando ... \nPor favor coloque su dedo");
+        manageScreenEnroll(true);
+        Thread threadSupremaEnroll = new Thread(new ThreadSupremaEnroll(ActivityBiometria.this));
+        threadSupremaEnroll.start();
+    }
+
+    public void registrarHuella2() {
+        // Registrando huella 2
+        idTipoDetaBio = 2;
+        ocupado = true;
+        ActivityPrincipal.isEnrolling = true;
+        txvHuellaTexto.setText("Escaneando ... \nPor favor coloque su dedo");
+        manageScreenEnroll(true);
+        Thread threadSupremaEnroll = new Thread(new ThreadSupremaEnroll(ActivityBiometria.this));
+        threadSupremaEnroll.start();
+    }
+
+    public void eliminarHuellas() {
+        // Eliminando huella
+        ocupado = true;
+        ActivityPrincipal.isDeleting = true;
+        txvHuellaTexto.setText("Borrando biometria ... \nPor favor espere ...");
+        manageScreenEnroll(true);
+        Thread threadSupremaDelete = new Thread(new ThreadSupremaDelete(ActivityBiometria.this));
+        threadSupremaDelete.start();
+    }
+
+
+    public void registrarMano() {
+        ocupado = true;
+        txvHuellaTexto.setText("Escaneando ... \nPor favor coloque su mano 3 veces");
+        manageScreenEnroll(true);
+        Thread threadHandPunchEnroll = new Thread(new ThreadHandPunchEnroll(ActivityBiometria.this));
+        threadHandPunchEnroll.start();
+    }
+
+
+    public void eliminarMano() {
+        ocupado = true;
+        txvHuellaTexto.setText("Borrando biometria ... \nPor favor espere ...");
+        manageScreenEnroll(true);
+        Thread threadHandPunchDelete = new Thread(new ThreadHandPunchDelete(ActivityBiometria.this));
+        threadHandPunchDelete.start();
+    }
+
 
 
     public static void analizarRegistroBiometriaList(Activity activity){

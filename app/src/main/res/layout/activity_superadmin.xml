@@ -114,129 +114,43 @@
                     android:orientation="vertical">
 
 
-                    <Button
-                        android:text="Bluetooth"
-                        android:layout_width="350dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="630dp"
-                        android:layout_marginTop="40dp"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/btnSA01"/>
-
-                    <Button
-                        android:text="Test Serial"
-                        android:layout_width="350dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="630dp"
-                        android:layout_marginTop="100dp"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/btnSA02"/>
-
-                    <Button
-                        android:text="Refrescar"
-                        android:layout_width="350dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="630dp"
-                        android:layout_marginTop="160dp"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/btnSA03"/>
-
-                    <Button
-                        android:text="Limpiar"
-                        android:layout_width="350dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="630dp"
-                        android:layout_marginTop="220dp"
-                        android:gravity="center_horizontal|center_vertical"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:id="@+id/btnSA04"/>
-
-
-                    <Button
-                        android:text="GUARDAR CAMBIOS"
-                        android:layout_width="400dp"
-                        android:layout_height="50dp"
-                        android:layout_marginTop="320dp"
+                    <TextView
+                        android:text="TITULO"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_textSize"
                         android:layout_centerHorizontal="true"
+                        android:id="@+id/txvSAPTitulo" />
+
+                    <Spinner
+                        android:spinnerMode="dialog"
+                        android:layout_width="@dimen/acSuperadmin_spnItem_width"
+                        android:layout_height="@dimen/acSuperadmin_spnItem_height"
+                        android:layout_marginLeft="@dimen/acSuperadmin_spnItem_marginLeft"
+                        android:layout_marginTop="@dimen/acSuperadmin_spnItem_marginTop"
+                        android:backgroundTint="@color/colorTexto"
+                        android:id="@+id/spnSAPItem"/>
+
+                    <EditText
+                        android:layout_width="@dimen/acSuperadmin_edtItem_width"
+                        android:layout_height="@dimen/acSuperadmin_edtItem_height"
+                        android:layout_marginLeft="@dimen/acSuperadmin_edtItem_marginLeft"
+                        android:layout_marginTop="@dimen/acSuperadmin_edtItem_marginTop"
+                        android:textColor="@color/colorTexto"
+                        android:id="@+id/edtSAPDescription" />
+
+                    <TextView
+                        android:text="Instrucciones\ny\nConfiguaciones"
+                        android:layout_width="@dimen/fondo1_width"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_marginBottom="5dp"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
                         android:gravity="center_horizontal|center_vertical"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:textStyle="bold"
-                        android:id="@+id/btnSA05"/>
-
-                    <TextView
-                        android:text="Cantidad Seriales:"
-                        android:layout_width="220dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="50dp"
-                        android:layout_marginTop="40dp"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:id="@+id/txvSA00" />
-
-                    <TextView
-                        android:text="Serial 01:"
-                        android:layout_width="220dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="50dp"
-                        android:layout_marginTop="100dp"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:id="@+id/txvSA01" />
-
-                    <TextView
-                        android:text="Serial 02:"
-                        android:layout_width="220dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="50dp"
-                        android:layout_marginTop="160dp"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:id="@+id/txvSA02" />
-
-                    <TextView
-                        android:text="Serial 03:"
-                        android:layout_width="220dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="50dp"
-                        android:layout_marginTop="220dp"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:textColor="@color/colorTexto"
-                        android:gravity="center_vertical"
-                        android:id="@+id/txvSA03" />
-
-                    <Spinner
-                        android:layout_width="100dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="420dp"
-                        android:layout_marginTop="40dp"
-                        android:id="@+id/spnSA00" />
-
-                    <Spinner
-                        android:layout_width="300dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="220dp"
-                        android:layout_marginTop="100dp"
-                        android:id="@+id/spnSA01" />
-
-                    <Spinner
-                        android:layout_width="300dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="220dp"
-                        android:layout_marginTop="160dp"
-                        android:id="@+id/spnSA02" />
-
-                    <Spinner
-                        android:layout_width="300dp"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="220dp"
-                        android:layout_marginTop="220dp"
-                        android:id="@+id/spnSA03" />
+                        android:id="@+id/textView10" />
 
 
                 </RelativeLayout>
@@ -278,6 +192,21 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:text="This is tab 4" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tab5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="This is tab 5" />
+
                 </RelativeLayout>
 
             </FrameLayout>

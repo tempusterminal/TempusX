@@ -10,6 +10,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -64,6 +65,17 @@ public class Utilities {
 
         crc &= 0xFFFF;
         return Integer.toHexString(crc).toUpperCase();
+    }
+
+    public String hexToBin(String s) {
+        String preBin = new BigInteger(s, 16).toString(2);
+        Integer length = preBin.length();
+        if (length < 8) {
+            for (int i = 0; i < 8 - length; i++) {
+                preBin = "0" + preBin;
+            }
+        }
+        return preBin;
     }
 
     public byte[] hexStringToByteArray(String s) {

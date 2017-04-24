@@ -53,10 +53,10 @@
             </intent-filter>
 
         </activity>
+
         <activity
             android:name=".ActivityLogin"
             android:screenOrientation="landscape" >
-
 
         </activity>
         <activity
@@ -91,7 +91,8 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".ActivitySuperadmin"
-            android:screenOrientation="landscape" />
+            android:screenOrientation="landscape">
+        </activity>
         <activity
             android:name=".ActivityActualizar"
             android:screenOrientation="landscape" />

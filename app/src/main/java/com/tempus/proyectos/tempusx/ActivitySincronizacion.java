@@ -386,6 +386,7 @@ public class ActivitySincronizacion extends Activity {
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    txvInternet.setText("OK");
                                                     txvInternet.setBackgroundColor(Color.GREEN);
                                                 }
                                             });
@@ -394,6 +395,7 @@ public class ActivitySincronizacion extends Activity {
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    txvInternet.setText("KO");
                                                     txvInternet.setBackgroundColor(Color.RED);
                                                 }
                                             });
@@ -403,6 +405,7 @@ public class ActivitySincronizacion extends Activity {
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    txvOrigen.setText("OK");
                                                     txvOrigen.setBackgroundColor(Color.GREEN);
                                                 }
                                             });
@@ -410,6 +413,7 @@ public class ActivitySincronizacion extends Activity {
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    txvOrigen.setText("KO");
                                                     txvOrigen.setBackgroundColor(Color.RED);
                                                 }
                                             });
@@ -419,6 +423,7 @@ public class ActivitySincronizacion extends Activity {
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    txvOrigenConnection.setText("OK");
                                                     txvOrigenConnection.setBackgroundColor(Color.GREEN);
                                                 }
                                             });
@@ -426,6 +431,7 @@ public class ActivitySincronizacion extends Activity {
                                             runOnUiThread(new Runnable() {
                                                 @Override
                                                 public void run() {
+                                                    txvOrigenConnection.setText("KO");
                                                     txvOrigenConnection.setBackgroundColor(Color.RED);
                                                 }
                                             });

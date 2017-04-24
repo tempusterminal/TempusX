@@ -45,9 +45,9 @@ public class UserInterfaceM {
                         | View.SYSTEM_UI_FLAG_IMMERSIVE);
 
 
-        final PowerManager pm = (PowerManager) activity.getSystemService(activity.getApplicationContext().POWER_SERVICE);
-        this.mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
-        this.mWakeLock.acquire();
+        //final PowerManager pm = (PowerManager) activity.getSystemService(activity.getApplicationContext().POWER_SERVICE);
+        //this.mWakeLock = pm.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "My Tag");
+        //this.mWakeLock.acquire();
     }
 
     public void goToActivity(Activity ActivityActual,Class ActivityDestino,String llave,String valor){
