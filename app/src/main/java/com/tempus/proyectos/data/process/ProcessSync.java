@@ -9,6 +9,7 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Calendar;
 import java.util.List;
@@ -65,6 +66,7 @@ public class ProcessSync {
         String[] allcolumnsarray = (primarykey + "," + columns).split(",");
         String[] primarykeyarray = primarykey.split(",");
         String[] columnsarray = columns.split(",");
+        int resultSetCount = 0;
 
         dbManager = new DBManager(context);
 
@@ -109,11 +111,12 @@ public class ProcessSync {
             preparedStatement = connection.prepareStatement(sql);
             resultSet = preparedStatement.executeQuery();
 
+            //resultSetCount = Integer.parseInt(connection.prepareStatement("SELECT @@ROWCOUNT AS ROWS").executeQuery().getString("ROWS"));
+
             while(resultSet.next()){
 
                 try{
-                    Log.d ("Autorizaciones","Insertando Tabla " + tablename + ":");
-
+                    //Log.d ("Autorizaciones","Insertando Tabla " + tablename + ":");
 
                     values = "";
                     for(int i = 0; i < resultSet.getMetaData().getColumnCount(); i++){
@@ -129,14 +132,14 @@ public class ProcessSync {
 
                     insert = "INSERT INTO " + tablename + "(" + primarykey + "," + columns + ") " +
                             "VALUES(" + values + ");";
-                    Log.d("Autorizaciones","RowInsert: " + insert);
+                    Log.d("Autorizaciones",resultSetCount + "/" + resultSet.getRow() + " - insert: " + insert);
 
 
                     try{
                         dbManager.execSQL(insert);
-                        Log.d("Autorizaciones","Registro insertado");
+                        //Log.d("Autorizaciones","Registro insertado");
                     }catch(SQLException e){
-                        Log.d("Autorizaciones","Actualizando Tabla " + tablename + ": " + e.getMessage());
+                        //Log.d("Autorizaciones","Actualizando Tabla " + tablename + ": " + e.getMessage());
 
                         set = "";
                         if(columnsarray.length > 0){
@@ -167,10 +170,10 @@ public class ProcessSync {
                                 " WHERE " + where +
                                 ";";
 
-                        Log.d("Autorizaciones","RowUpdate: " + update);
+                        Log.d("Autorizaciones",resultSetCount + "/" + resultSet.getRow() + " - update: " + insert);
                         try{
                             dbManager.execSQL(update);
-                            Log.d("Autorizaciones","Registro actualizado");
+                            //Log.d("Autorizaciones","Registro actualizado");
                         }catch(SQLException ex){
                             Log.d("Autorizaciones","Error SQL: " + ex.getMessage());
                         }
@@ -179,6 +182,8 @@ public class ProcessSync {
 
                 }catch(SQLException e){
                     Log.d("Autorizaciones","No se pudo realizar la inserción / actualización");
+                }finally {
+                    //resultSet.close();
                 }
 
             }
@@ -557,12 +562,21 @@ public class ProcessSync {
             }
         }
 
+    }
 
 
+    public int CountResultSet(ResultSet rs){
+        int resultSetCount = 0;
+        try{
+            while(rs.next()){
+                resultSetCount++;
+                Log.d("Autorizaciones","p: " + rs.getRow());
+            }
+            rs.beforeFirst();
+        }catch(Exception e){
 
-
-
-
+        }
+        return  resultSetCount;
     }
 
 
