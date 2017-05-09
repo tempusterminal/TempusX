@@ -8,13 +8,17 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 
+import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.util.UserInterfaceM;
@@ -40,6 +44,24 @@ public class ActivitySuperadmin extends Activity {
     ImageView btnMasterSuperadmin;
     TabHost host;
 
+    Button btnSAAccion1;
+    Button btnSAAccion2;
+    Button btnSAAccion3;
+    Button btnSAAccion4;
+    Button btnSAAccion5;
+    Button btnSAAccion6;
+    Button btnSAAccion7;
+    Button btnSAAccion8;
+    Button btnSAAccion9;
+
+    Spinner spnSAPItem;
+    TextView txvSAPTitulo;
+    EditText edtSAPDescription;
+
+    List<String> spinnerArray;
+    List<String> tituloArray;
+    List<String> valorArray;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,9 +69,12 @@ public class ActivitySuperadmin extends Activity {
 
         /* --- Inicialización de Objetos --- */
 
+        Log.d("ActivitySuperAdmin","Log1");
+
         ui = new UserInterfaceM();
         util = new Utilities();
         queriesParameters = new QueriesParameters(getApplicationContext());
+        Log.d("ActivitySuperAdmin","Log2");
 
         /* --- Inicialización de Variables Globales --- */
 
@@ -60,6 +85,23 @@ public class ActivitySuperadmin extends Activity {
         /* --- Inicialización de Componentes de la Interfaz --- */
 
         btnMasterSuperadmin = (ImageView) findViewById(R.id.btnMasterSuperadmin);
+
+        btnSAAccion1 = (Button) findViewById(R.id.btnSAAccion1);
+        btnSAAccion2 = (Button) findViewById(R.id.btnSAAccion2);
+        btnSAAccion3 = (Button) findViewById(R.id.btnSAAccion3);
+        btnSAAccion4 = (Button) findViewById(R.id.btnSAAccion4);
+        btnSAAccion5 = (Button) findViewById(R.id.btnSAAccion5);
+        btnSAAccion6 = (Button) findViewById(R.id.btnSAAccion6);
+        btnSAAccion7 = (Button) findViewById(R.id.btnSAAccion7);
+        btnSAAccion8 = (Button) findViewById(R.id.btnSAAccion8);
+        btnSAAccion9 = (Button) findViewById(R.id.btnSAAccion9);
+
+        spnSAPItem = (Spinner) findViewById(R.id.spnSAPItem);
+        txvSAPTitulo = (TextView) findViewById(R.id.txvSAPTitulo);
+        edtSAPDescription = (EditText) findViewById(R.id.edtSAPDescription);
+
+        Log.d("ActivitySuperAdmin","Log3");
+
 
         /* --- Inicialización de Métodos --- */
 
@@ -103,9 +145,10 @@ public class ActivitySuperadmin extends Activity {
         //Tab 5
         spec = host.newTabSpec("Tab5");
         spec.setContent(R.id.tab5);
-        spec.setIndicator("Reserva");
+        spec.setIndicator("Acciones");
         host.addTab(spec);
 
+        Log.d("ActivitySuperAdmin","Log4");
 
         TabWidget widget = host.getTabWidget();
         for(int i = 0; i < widget.getChildCount(); i++) {
@@ -126,7 +169,108 @@ public class ActivitySuperadmin extends Activity {
 
         }
 
-        getParametersAll();
+        spinnerArray =  new ArrayList<String>();
+        tituloArray =  new ArrayList<String>();
+        valorArray =  new ArrayList<String>();
+
+        spinnerArray.add("Seleccionar");
+        tituloArray.add("");
+        valorArray.add("");
+
+        Log.d("ActivitySuperAdmin","Log5");
+
+
+        // ====================================================================================== //
+
+        btnSAAccion1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DBManager dbManager = new DBManager(ActivitySuperadmin.this);
+                dbManager.all("1,1,1,1,1,1");
+            }
+        });
+
+        btnSAAccion2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnSAAccion3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnSAAccion4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnSAAccion5.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnSAAccion6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnSAAccion7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnSAAccion8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        btnSAAccion9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+
+        spnSAPItem.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                txvSAPTitulo.setText(tituloArray.get(position));
+                edtSAPDescription.setText(valorArray.get(position));
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        Log.d("ActivitySuperAdmin","Log6");
+
+
+        try {
+            getParametersAll();
+        } catch (Exception e) {
+            Log.e("ActivitySuperAdmin",e.getMessage());
+        }
+
+
+        Log.d("ActivitySuperAdmin","Log7");
     }
 
     @Override
@@ -160,10 +304,11 @@ public class ActivitySuperadmin extends Activity {
 
     public void getParametersAll(){
         List<Parameters> parametersList = queriesParameters.select();
-        List<String> spinnerArray =  new ArrayList<String>();
 
         for (int i = 0; i < parametersList.size(); i++){
             spinnerArray.add(parametersList.get(i).Idparameter);
+            tituloArray.add(parametersList.get(i).Parameter);
+            valorArray.add(parametersList.get(i).Value);
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(

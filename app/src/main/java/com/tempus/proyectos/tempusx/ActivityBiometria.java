@@ -315,39 +315,21 @@ public class ActivityBiometria extends Activity {
         btnAcHuella1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ActivityPrincipal.TIPO_TERMINAL == 2 ) {
-                    registrarHuella1();
-                }
-
-                if (ActivityPrincipal.TIPO_TERMINAL == 3 ) {
-                    registrarMano();
-                }
+                registrarHuella1();
             }
         });
 
         btnAcHuella2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ActivityPrincipal.TIPO_TERMINAL == 2 ) {
-                    registrarHuella2();
-                }
-
-                if (ActivityPrincipal.TIPO_TERMINAL == 3 ) {
-                    registrarMano();
-                }
+                registrarHuella2();
             }
         });
 
         btnAcHuella3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ActivityPrincipal.TIPO_TERMINAL == 2 ) {
-                    eliminarHuellas();
-                }
-
-                if (ActivityPrincipal.TIPO_TERMINAL == 3 ) {
-                    eliminarMano();
-                }
+                eliminarHuellas();
             }
         });
 

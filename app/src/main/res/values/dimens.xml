@@ -294,7 +294,6 @@
     <!-- ==================================================================== -->
 
 
-
     <!-- ==================================================================== -->
     <!-- SISTEMA -->
 
@@ -464,7 +463,6 @@
     <!-- ==================================================================== -->
 
 
-
     <!-- ==================================================================== -->
     <!-- ACTIVITY SINCRONIZACION -->
 
@@ -510,7 +508,6 @@
     <dimen name="acSincronizacion_swtHoraConf2_marginTop">97.5dp</dimen>
     <dimen name="acSincronizacion_swtHoraConf3_marginTop">137.5dp</dimen>
     <dimen name="acSincronizacion_swtHoraConf4_marginTop">177.5dp</dimen>
-
 
 
     <!-- SERVICIOS -->
@@ -679,7 +676,6 @@
     <dimen name="fragmentBar_imgViewReplica_height">15dp</dimen>
     <dimen name="fragmentBar_imgViewReplica_marginTop">6dp</dimen>
     <dimen name="fragmentBar_imgViewReplica_marginRight">6dp</dimen>
-
 
 
 </resources>

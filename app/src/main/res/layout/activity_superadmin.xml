@@ -142,11 +142,11 @@
                         android:id="@+id/edtSAPDescription" />
 
                     <TextView
-                        android:text="Instrucciones\ny\nConfiguaciones"
+                        android:text="Instrucciones\ny\nConfiguraciones"
                         android:layout_width="@dimen/fondo1_width"
                         android:layout_height="wrap_content"
                         android:layout_alignParentBottom="true"
-                        android:layout_marginBottom="5dp"
+                        android:layout_marginBottom="20dp"
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:gravity="center_horizontal|center_vertical"
@@ -202,10 +202,103 @@
                     android:background="@color/colorFondoCuerpo"
                     android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:text="This is tab 5" />
+                    <Button
+                        android:text="Reset DB"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="20dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion1" />
+
+                    <Button
+                        android:text="Restart APP"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="20dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion2" />
+
+                    <Button
+                        android:text=""
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentTop="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion3" />
+
+
+
+                    <Button
+                        android:text="UI ON"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="20dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion4" />
+
+                    <Button
+                        android:text="UI OFF"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion5" />
+
+                    <Button
+                        android:text="Salir APP"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion6" />
+
+
+
+                    <Button
+                        android:text="Config"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="20dp"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentBottom="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion7" />
+
+                    <Button
+                        android:text="Reiniciar"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="20dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentBottom="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion8" />
+
+                    <Button
+                        android:text="Apagar"
+                        android:layout_width="150dp"
+                        android:layout_height="40dp"
+                        android:layout_margin="20dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_alignParentBottom="true"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:id="@+id/btnSAAccion9" />
+
+
+
+
+
 
                 </RelativeLayout>
 

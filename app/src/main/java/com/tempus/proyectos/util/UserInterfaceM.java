@@ -29,7 +29,7 @@ public class UserInterfaceM {
 
     public void initScreen(Activity activity) {
 
-        activity.setRequestedOrientation(SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
+        //activity.setRequestedOrientation(SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
         //activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 

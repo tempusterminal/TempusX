@@ -32,11 +32,11 @@ public class ThreadHandPunchEnroll implements Runnable {
         boolean resultado = false;
         int idDetaBio = ActivityBiometria.idTipoDetaBio;
 
-        try {
-            resultado = ActivityPrincipal.objHandPunch.handRecognizer_EnrolarMano(ActivityPrincipal.btSocket03.getOutputStream(), idDetaBio);
-        } catch (Exception e) {
-            Log.d("ThreadHandPunchEnroll", e.getMessage());
-        }
+        //try {
+        //    resultado = ActivityPrincipal.objHandPunch.handRecognizer_EnrolarMano(ActivityPrincipal.btSocket03.getOutputStream(), idDetaBio);
+        //} catch (Exception e) {
+        //    Log.d("ThreadHandPunchEnroll", e.getMessage());
+        //}
 
         if (resultado) {
             mensajeRespuesta = "BIOMETRIA ENROLADA CON EXITO";

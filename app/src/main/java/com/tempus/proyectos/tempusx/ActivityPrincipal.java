@@ -86,7 +86,7 @@ public class ActivityPrincipal extends Activity {
 
     int c = 100;
 
-    boolean MODO_EVENTO = true;
+    boolean MODO_EVENTO = false;
 
     int TIEMPO_CONN_BT = 120;
     Date TIEMPO_PRESENTE_BT01;
@@ -96,6 +96,7 @@ public class ActivityPrincipal extends Activity {
     Date TIEMPO_PRESENTE_BT03;
     Date TIEMPO_PASADO_BT03;
 
+    String MAC_BT_00 = "";
     String MAC_BT_01 = "";
     String MAC_BT_02 = "";
     String MAC_BT_03 = "";
@@ -106,6 +107,7 @@ public class ActivityPrincipal extends Activity {
 
     boolean REINTENTO_INFINITO = false;
 
+    boolean STATUS_ETHERNET = false;
     boolean STATUS_CONNECT_01 = false;
     boolean STATUS_CONNECT_02 = false;
     boolean STATUS_CONNECT_03 = false;
@@ -127,6 +129,7 @@ public class ActivityPrincipal extends Activity {
 
     /* --- BLUETOOTH SOCKET ESTÁTICO --- */
 
+    public static BluetoothSuperAdmin btEthernet;
     public static BluetoothSuperAdmin btSocket01;
     public static BluetoothSuperAdmin btSocket02;
     public static BluetoothSuperAdmin btSocket03;
@@ -138,7 +141,7 @@ public class ActivityPrincipal extends Activity {
 
     /* --- ACCESO ESTÁTICO --- */
 
-    static int TIPO_TERMINAL = 3; // A=1; A+H=2; A+M=3; A+H+M=4
+    static int TIPO_TERMINAL = 0; // A=1; A+H=2; A+M=3; A+H+M=4
 
     public static boolean activo;
     public static Context context;
@@ -440,10 +443,12 @@ public class ActivityPrincipal extends Activity {
         //restartBluetooth();
         //util.sleep(1000);
 
+        btEthernet = new BluetoothSuperAdmin(MAC_BT_00);
         btSocket01 = new BluetoothSuperAdmin(MAC_BT_01);
         btSocket02 = new BluetoothSuperAdmin(MAC_BT_02);
         btSocket03 = new BluetoothSuperAdmin(MAC_BT_03);
 
+        threadEthernet.start();
 
         if (BT_01_ENABLED){
             threadControlSerial01.start();
@@ -476,12 +481,12 @@ public class ActivityPrincipal extends Activity {
         // threadControlSerial02.start();
 
         // Iniciar Rutinas en verdadero
-        ////////////ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
-        ////////////processSyncTS.start(this);
-        ////////////ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
-        ////////////processSyncST.start(this);
-        ////////////ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
-        ////////////processSyncDatetime.start(this);
+        ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
+        processSyncTS.start(this);
+        ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
+        processSyncST.start(this);
+        ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
+        processSyncDatetime.start(this);
 
         threadFechahora.start();
 
@@ -594,14 +599,6 @@ public class ActivityPrincipal extends Activity {
                 actualizarFlag("001", btnEvent01);
                 Date date = new Date();
                 tiempoPasado = date;
-
-                try {
-                    boolean b = ActivityPrincipal.objHandPunch.handRecognizer_VerificarMano(btSocket03.getOutputStream(), "5e8b79816f806d7059");
-                } catch (Exception e) {
-                    Log.e("XDXDXD",e.getMessage());
-                }
-
-
             }
         });
 
@@ -838,6 +835,7 @@ public class ActivityPrincipal extends Activity {
                 HARD_FAIL_02 = false;
                 HARD_FAIL_03 = false;
 
+                STATUS_ETHERNET = false;
                 STATUS_CONNECT_01 = false;
                 STATUS_CONNECT_02 = false;
                 STATUS_CONNECT_03 = false;
@@ -1095,21 +1093,148 @@ public class ActivityPrincipal extends Activity {
 
         idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL");
 
+        QueriesParameters queriesParameters = new QueriesParameters(this);
+        Parameters parameters;
 
+        MAC_BT_00 = "";
+        MAC_BT_01 = "20:16:05:03:24:64"; // 20:16:08:04:87:50
+        MAC_BT_02 = "20:16:08:10:42:29"; // 20:16:08:10:62:98
+        MAC_BT_03 = "00:00:00:00:00:00";
+        TIPO_TERMINAL = 2;
         MODO_EVENTO = false;
-
-        // Interfaces de RED
-
         INTERFACE_ETH = false;
-        INTERFACE_PPP = false;
         INTERFACE_WLAN = true;
+        INTERFACE_PPP = false;
+
+        /*
+        try {
+            parameters = queriesParameters.selectParameter("BT_01");
+            MAC_BT_01 = parameters.getValue();
+        } catch(Exception e) {
+            MAC_BT_01 = "00:00:00:00:00:00";
+        }
+
+        try {
+            parameters = queriesParameters.selectParameter("BT_02");
+            MAC_BT_02 = parameters.getValue();
+        } catch(Exception e) {
+            MAC_BT_02 = "00:00:00:00:00:00";
+        }
+
+        try {
+            parameters = queriesParameters.selectParameter("BT_03");
+            MAC_BT_03 = parameters.getValue();
+        } catch(Exception e) {
+            MAC_BT_03 = "00:00:00:00:00:00";
+        }
+
+        try {
+            parameters = queriesParameters.selectParameter("TIPO_TERMINAL");
+            TIPO_TERMINAL = Integer.parseInt(parameters.getValue());
+        } catch(Exception e) {
+            TIPO_TERMINAL = 1;
+        }
+
+        try {
+            parameters = queriesParameters.selectParameter("MODO_EVENTO");
+            String enable_evento = parameters.getValue();
+            if ( enable_evento == "0" ) { MODO_EVENTO = false; } else { MODO_EVENTO = true; }
+        } catch(Exception e) {
+            MODO_EVENTO = false;
+        }
+
+        try {
+            parameters = queriesParameters.selectParameter("INTERFACE_ETH");
+            String enable_if01 = parameters.getValue();
+            if ( enable_if01 == "0" ) { INTERFACE_ETH = false; } else { INTERFACE_ETH = true; }
+        } catch(Exception e) {
+            INTERFACE_ETH = false;
+        }
+
+        try {
+            parameters = queriesParameters.selectParameter("INTERFACE_WLAN");
+            String enable_if02 = parameters.getValue();
+            if ( enable_if02 == "0" ) { INTERFACE_WLAN = false; } else { INTERFACE_WLAN = true; }
+        } catch(Exception e) {
+            INTERFACE_WLAN = true;
+        }
+
+        try {
+            parameters = queriesParameters.selectParameter("INTERFACE_PPP");
+            String enable_if03 = parameters.getValue();
+            if ( enable_if03 == "0" ) { INTERFACE_PPP = false; } else { INTERFACE_PPP = true; }
+        } catch(Exception e) {
+            INTERFACE_PPP = false;
+        }
+
+        */
+
 
         contadorEventoPantalla = 0;
 
         if (MODO_EVENTO) {
 
             boolean buttonsVisibility[] = {true,true,true,true,true,true,true,true};
-            String buttonsText[] = {"ENT","SAL","3","4","5","6","7","8"};
+            String buttonsText[] = {"1","2","3","4","5","6","7","8"};
+
+            /*
+            try {
+                parameters = queriesParameters.selectParameter("BTN_EVENTO_1");
+                int visible_0 = parameters.getEnable();
+                buttonsText[0] = parameters.getValue();
+                if (visible_0 == 0) { buttonsVisibility[0] = true; }
+            } catch(Exception e) {}
+
+            try {
+                parameters = queriesParameters.selectParameter("BTN_EVENTO_2");
+                int visible_1 = parameters.getEnable();
+                buttonsText[1] = parameters.getValue();
+                if (visible_1 == 0) { buttonsVisibility[1] = true; }
+            } catch(Exception e) {}
+
+            try {
+                parameters = queriesParameters.selectParameter("BTN_EVENTO_3");
+                int visible_2 = parameters.getEnable();
+                buttonsText[2] = parameters.getValue();
+                if (visible_2 == 0) { buttonsVisibility[2] = true; }
+            } catch(Exception e) {}
+
+            try {
+                parameters = queriesParameters.selectParameter("BTN_EVENTO_4");
+                int visible_3 = parameters.getEnable();
+                buttonsText[3] = parameters.getValue();
+                if (visible_3 == 0) { buttonsVisibility[3] = true; }
+            } catch(Exception e) {}
+
+            try {
+                parameters = queriesParameters.selectParameter("BTN_EVENTO_5");
+                int visible_4 = parameters.getEnable();
+                buttonsText[4] = parameters.getValue();
+                if (visible_4 == 0) { buttonsVisibility[4] = true; }
+            } catch(Exception e) {}
+
+            try {
+                parameters = queriesParameters.selectParameter("BTN_EVENTO_6");
+                int visible_5 = parameters.getEnable();
+                buttonsText[5] = parameters.getValue();
+                if (visible_5 == 0) { buttonsVisibility[5] = true; }
+            } catch(Exception e) {}
+
+            try {
+                parameters = queriesParameters.selectParameter("BTN_EVENTO_7");
+                int visible_6 = parameters.getEnable();
+                buttonsText[6] = parameters.getValue();
+                if (visible_6 == 0) { buttonsVisibility[6] = true; }
+            } catch(Exception e) {}
+
+            try {
+                parameters = queriesParameters.selectParameter("BTN_EVENTO_8");
+                int visible_7 = parameters.getEnable();
+                buttonsText[7] = parameters.getValue();
+                if (visible_7 == 0) { buttonsVisibility[7] = true; }
+            } catch(Exception e) {}
+
+            */
 
             flag = null;
             txvMensajePantalla.setText("SELECCIONE UN EVENTO");
@@ -1141,87 +1266,16 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_PRESENTE_BT03 = new Date();
         TIEMPO_PASADO_BT03 = new Date();
 
-
-        // PRUEBA CROVISA 01 9c
-
-        //MAC_BT_01 = "00:15:83:35:7A:E1";
-        //MAC_BT_02 = "20:16:08:10:64:80";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // PRUEBA CROVISA 02 2a
-
-        //MAC_BT_01 = "20:16:08:10:65:03";
-        //MAC_BT_02 = "00:15:83:35:79:C9";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-
-
-
-        // CARRION 02
-        //MAC_BT_01 = "20:16:08:10:66:91";
-        //MAC_BT_02 = "00:12:03:16:02:08";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-
-
-        // CARRION 01
-        //MAC_BT_01 = "20:16:05:03:24:64";
-        //MAC_BT_02 = "20:16:08:10:42:29";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-
-        // DIRESA ID 100
-        //MAC_BT_01 = "20:16:08:10:42:38";
-        //MAC_BT_02 = "20:16:08:09:04:41";
-
-        // DIRESA ID 101
-        //MAC_BT_01 = "20:16:08:10:83:58";
-        //MAC_BT_02 = "20:16:08:10:60:73";
-
-
-        // PRUEBA EDITORA
-        //MAC_BT_01 = "00:15:83:35:6C:85";
-        //MAC_BT_02 = "98:D3:33:80:91:98";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-
-
-        // Plenum 01
-        //MAC_BT_01 = "20:16:08:10:64:87";
-        //MAC_BT_02 = "00:00:00:00:00:00";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // Plenum 02
-        //MAC_BT_01 = "20:16:07:18:34:68";
-        //MAC_BT_02 = "00:00:00:00:00:00";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // Plenum 03
-        //MAC_BT_01 = "00:15:83:35:7A:1D";
-        //MAC_BT_02 = "00:00:00:00:00:00";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-
-        // CORPAC
-        //MAC_BT_01 = "98:D3:32:20:5B:7E";
-        //MAC_BT_02 = "98:D3:34:90:7D:C0";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        //RANSA
-        MAC_BT_01 = "20:16:08:10:64:87";
-        MAC_BT_02 = "00:00:00:00:00:00";
-        MAC_BT_03 = "20:16:08:10:65:94";
-
-
         BT_01_ENABLED = true;   //Arduino
-        BT_02_ENABLED = false;   //Suprema
-        BT_03_ENABLED = true;  //Handpunch
-
+        BT_02_ENABLED = true;   //Suprema
+        BT_03_ENABLED = false;  //Handpunch
 
     }
 
     public void conectarSeriales(){
         // Reseteamos la interfaz
+
+        threadEthernetRead.start();
 
 
         if (BT_01_ENABLED) {
@@ -1267,7 +1321,7 @@ public class ActivityPrincipal extends Activity {
         }
 
         if (BT_03_ENABLED) {
-            objHandPunch = new MainHandPunch();
+            objHandPunch = new MainHandPunch(this);
         }
     }
 
@@ -2263,8 +2317,6 @@ public class ActivityPrincipal extends Activity {
     }
 
 
-
-
     /* ------------------------- RUTINAS THREAD SERIALES ------------------------- */
 
     Thread threadSerial01 = new Thread(new Runnable() {
@@ -2272,7 +2324,6 @@ public class ActivityPrincipal extends Activity {
         public void run() {
 
             String acumulador = "";
-            int contador = 0;
 
             while (true) {
 
@@ -2327,7 +2378,6 @@ public class ActivityPrincipal extends Activity {
         public void run() {
 
             String acumulador = "";
-            int contador = 0;
             int tamano = 26;
 
             while (true) {
@@ -2540,6 +2590,7 @@ public class ActivityPrincipal extends Activity {
 
     /* --- RUTINAS THREAD CONTROL --- */
 
+
     Thread threadControlSerial01 = new Thread(new Runnable() {
         @Override
         public void run() {
@@ -2690,6 +2741,16 @@ public class ActivityPrincipal extends Activity {
                                 }
                                 //mostrarReparador(HARD_FAIL_01,HARD_FAIL_02,HARD_FAIL_03);
                                 break;
+
+                            case 5:
+                                controlGeneral(true,STATUS_CONNECT_02,true);
+                                if (HARD_FAIL_01 || HARD_FAIL_02 || HARD_FAIL_03) {
+                                    buttonWarning01.setVisibility(View.VISIBLE);
+                                    buttonWarning02.setVisibility(View.VISIBLE);
+                                }
+                                //mostrarReparador(HARD_FAIL_01,HARD_FAIL_02,HARD_FAIL_03);
+                                break;
+
                             default:
                                 break;
                         }
@@ -2979,4 +3040,64 @@ public class ActivityPrincipal extends Activity {
     });
 
 
+    Thread threadEthernet = new Thread(new Runnable() {
+        @Override
+        public void run() {
+
+            while (true) {
+                Date date = new Date();
+                TIEMPO_PRESENTE_BT01 = date;
+
+                if (STATUS_ETHERNET) {
+                    Log.v(TAG,"STATUS_ETHERNET: OK");
+                } else {
+                    STATUS_ETHERNET = btEthernet.Connect();
+                    util.sleep(1000);
+                }
+                util.sleep(1000);
+            }
+
+        }
+    });
+
+
+
+    Thread threadEthernetRead = new Thread(new Runnable() {
+        @Override
+        public void run() {
+
+            while (true) {
+
+                if (STATUS_ETHERNET) {
+                    try {
+                        byte[] rawBytes = new byte[20000000];
+                        btEthernet.getInputStream().read(rawBytes);
+                        Log.d(TAG,"LLEGO ETHERNET: " + rawBytes);
+                    } catch (Exception e) {
+                        Log.e(TAG,"btEthernet: " + e.getMessage());
+                    }
+                } else {
+                    Log.d(TAG,"STATUS_ETHERNET down");
+                    util.sleep(1000);
+                }
+
+            }
+
+        }
+    });
+
+
+    public static void WriteData(OutputStream out, String data) {
+        Log.v("ETHERNET", "Write Activado");
+        try {
+            byte[] a = data.getBytes();
+            out.write(a);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 }
+

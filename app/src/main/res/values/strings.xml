@@ -14,6 +14,7 @@
     <string name="titulo_actualizar">ACTUALIZAR</string>
     <string name="titulo_configini">ADMINISTRAR</string>
     <string name="titulo_usuario">USUARIO</string>
+    <string name="titulo_geomano">GEOMANO</string>
 
     <string-array name="planets_array">
         <item>Dni</item>

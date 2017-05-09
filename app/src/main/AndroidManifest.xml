@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.tempus.proyectos.tempusx">
 
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -43,28 +43,20 @@
         -->
         <activity
             android:name=".ActivityPrincipal"
-            android:screenOrientation="landscape"
-            android:launchMode="singleTask">
-
+            android:launchMode="singleTask"
+            android:screenOrientation="landscape">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".ActivityLogin"
-            android:screenOrientation="landscape" >
-
-        </activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name=".ActivityMenu"
-            android:screenOrientation="landscape">
-
-
-        </activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name=".ActivityComunicacion"
             android:screenOrientation="landscape" />
@@ -91,13 +83,20 @@
             android:screenOrientation="landscape" />
         <activity
             android:name=".ActivitySuperadmin"
-            android:screenOrientation="landscape">
-        </activity>
+            android:screenOrientation="landscape"></activity>
         <activity
             android:name=".ActivityActualizar"
-            android:screenOrientation="landscape" />
-        <activity android:name=".ActivityConfigini" />
-        <activity android:name=".ActivityUsuario"></activity>
+            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".ActivityConfigini"
+            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".ActivityUsuario"
+            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".ActivityGeomano"
+            android:screenOrientation="landscape">
+        </activity>
     </application>
 
 </manifest>

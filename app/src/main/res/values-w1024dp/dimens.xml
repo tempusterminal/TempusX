@@ -157,11 +157,11 @@
     <dimen name="msjSistema_textSize">30sp</dimen>
 
     <!-- Botones Reintentos -->
-    <dimen name="buttonWarning_height">1dp</dimen>
-    <dimen name="buttonWarning_width">1dp</dimen>
-    <dimen name="buttonWarning_marginTop">1dp</dimen>
-    <dimen name="buttonWarning01_marginLeft">1dp</dimen>
-    <dimen name="buttonWarning02_marginLeft">1dp</dimen>
+    <dimen name="buttonWarning_height">60dp</dimen>
+    <dimen name="buttonWarning_width">240dp</dimen>
+    <dimen name="buttonWarning_marginTop">460dp</dimen>
+    <dimen name="buttonWarning01_marginLeft">104dp</dimen>
+    <dimen name="buttonWarning02_marginLeft">704dp</dimen>
 
 
     <!-- Boton Acceso Teclado -->
