@@ -205,7 +205,10 @@ public class QueriesParameters {
 
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('TIEMPO_MARCACION','','5','','0','" + fechahora.getFechahora() + "');");
 
-
+        //Parametros
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('PARAMETERS_MARCACIONES','','TECLADO_MANO,DNI_MANO','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('TECLADO_MANO','','1,0;9,1','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('DNI_MANO','','2,0;9,1','','0','" + fechahora.getFechahora() + "');");
 
         //database.endTransaction();
         this.close();
@@ -344,6 +347,40 @@ public class QueriesParameters {
 
         return rowaffected;
 
+    }
+
+
+    public String idparameterToValue(String idparameter){
+
+        // Select un registro de la tabla Parameters
+
+        Parameters parameters = new Parameters();
+
+        String query = TableParameters.SELECT_TABLE + " " +
+                "WHERE " + TableParameters.Idparameter + " = ? " +
+                " LIMIT 1;";
+
+        Log.d("Autorizaciones","Parameters idparameterToValue: " + query + " - " + idparameter);
+
+        this.open();
+        Cursor cursor = database.rawQuery(query, new String[] { String.valueOf(idparameter)});
+        if(cursor.moveToNext()){
+            do{
+                parameters = new Parameters();
+                parameters.setIdparameter(cursor.getString(cursor.getColumnIndex(TableParameters.Idparameter)));
+                parameters.setParameter(cursor.getString(cursor.getColumnIndex(TableParameters.Parameter)));
+                parameters.setValue(cursor.getString(cursor.getColumnIndex(TableParameters.Value)));
+                parameters.setSubparameters(cursor.getString(cursor.getColumnIndex(TableParameters.Subparameters)));
+                parameters.setEnable(cursor.getInt(cursor.getColumnIndex(TableParameters.Enable)));
+                parameters.setFechaHoraSinc(cursor.getString(cursor.getColumnIndex(TableParameters.FechaHoraSinc)));
+                Log.d("Autorizaciones","parameters = " + parameters.toString());
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        this.close();
+
+        return parameters.getValue();
     }
 
 

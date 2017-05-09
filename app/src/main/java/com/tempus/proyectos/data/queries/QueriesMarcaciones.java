@@ -15,6 +15,7 @@ import com.tempus.proyectos.data.Conexion;
 import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.model.Marcaciones;
 import com.tempus.proyectos.data.tables.TableMarcaciones;
+import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 
 /**
@@ -174,7 +175,97 @@ public class QueriesMarcaciones {
 
     }
 
-    public Autorizaciones GestionarMarcaciones(String ValorTarjeta, String Idterminal, int IdTipoLect, String FlgActividad, String Fechahora){
+    public String ModoMarcacion(String ValorTarjeta, String Idterminal, int IdTipoLect, String FlgActividad, String Fechahora, String ModoMarcacion){
+
+        String output;
+        String apellidosnombres = "";
+        String valortarjeta = ValorTarjeta;
+        String mensaje = "";
+        String mensajedetalle = "";
+        String lectorasiguiente = "0";
+        boolean capturarlectorasiguiente = false;
+        int insert = 1;
+
+        String parametervalue;
+
+        QueriesParameters queriesParameters = new QueriesParameters(ActivityPrincipal.context);
+        Autorizaciones autorizaciones = new Autorizaciones();
+        String idparametersMarcaciones = "";
+
+        try{
+            if(ModoMarcacion.equals("")){
+                idparametersMarcaciones = queriesParameters.idparameterToValue("PARAMETERS_MARCACIONES");
+                // TECLADO_MANO,DNI_MANO
+            }else{
+                idparametersMarcaciones = ModoMarcacion;
+                // TECLADO_MANO
+            }
+        }catch(Exception e){
+            Log.d("Autorizaciones","ModoMarcacion Exception " + e.getMessage());
+        }
+
+        Log.d("Autorizaciones","idparametersMarcaciones = " + idparametersMarcaciones);
+
+        if(idparametersMarcaciones.equals("")){
+            autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,insert);
+            if(!autorizaciones.getMensaje().equalsIgnoreCase("null")){
+                apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                valortarjeta = autorizaciones.getValorTarjeta();
+                mensaje = autorizaciones.getMensaje();
+                mensajedetalle = autorizaciones.getMensajeDetalle();
+            }else{
+                mensaje = "MARCACION NO AUTORIZADA";
+            }
+            lectorasiguiente = "0";
+        }else{
+            Log.d("Autorizaciones","Marcacion por Modos ");
+            String[] idparametermarcacionarray = idparametersMarcaciones.split(",");
+            // TECLADO_MANO [0] - DNI_MANO [1]
+
+            for(int i = 0; i < idparametermarcacionarray.length; i++){
+                parametervalue = queriesParameters.idparameterToValue(idparametermarcacionarray[i]);
+                // 1,0;9,1  -> lectora,verifica;lectora,inserta
+                Log.d("Autorizaciones","parametervalue = " + parametervalue);
+                String[] modosmarcasarray = parametervalue.split(";");
+                // 1,0 [0] - 9,1 [1]
+
+                for(int y = 0; y < modosmarcasarray.length; y++){
+                    Log.d("Autorizaciones","modosmarcasarray[" + y + "] = " + modosmarcasarray[y]);
+                    String[] modomarcaarray = modosmarcasarray[y].split(",");
+                    // 1 [0] - 0 [1]
+                    Log.d("Autorizaciones","modomarcaarray[] = " + modomarcaarray[0] + " - " + modomarcaarray[1]);
+
+                    if(capturarlectorasiguiente){
+                        lectorasiguiente = modomarcaarray[0];
+                    }
+                    if(modomarcaarray[0].equals(IdTipoLect)){
+                        insert = Integer.parseInt(modomarcaarray[1]);
+                        // 0 = verifica/no inserta
+                        // 1 = inserta
+                        capturarlectorasiguiente = true;
+                        autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,insert);
+                        if(!autorizaciones.getMensaje().equalsIgnoreCase("null")){
+                            apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                            valortarjeta = autorizaciones.getValorTarjeta();
+                            mensaje = autorizaciones.getMensaje();
+                            mensajedetalle = autorizaciones.getMensajeDetalle();
+                        }else{
+                            mensaje = "MARCACION NO AUTORIZADA";
+                            lectorasiguiente = "0";
+                        }
+
+                    }
+
+                }
+            }
+        }
+
+        output = apellidosnombres + "," + valortarjeta + "," + mensaje + "," + mensajedetalle + "," + lectorasiguiente + "," + ModoMarcacion;
+        Log.d("Autorizaciones","output = " + output);
+        return output;
+    }
+
+    public Autorizaciones GestionarMarcaciones(String ValorTarjeta, String Idterminal, int IdTipoLect, String FlgActividad, String Fechahora, int Insert){
 
         int a = 0;
         int flagEnableidtipolect = 1;
@@ -227,9 +318,15 @@ public class QueriesMarcaciones {
                                 marcaciones.setSincronizado(0);
                                 //marcaciones.setDatos(null);
                                 //marcaciones.setValorDatoContenido(0);
-                                this.insert(marcaciones);
-                                Log.d("Autorizaciones","Marcacion: " + marcaciones.toString());
-                                Log.d("Autorizaciones","Marcacion Registrada");
+                                if(Insert == 1){
+                                    this.insert(marcaciones);
+                                    Log.d("Autorizaciones","Marcacion: " + marcaciones.toString());
+                                    Log.d("Autorizaciones","Marcacion Registrada");
+                                }else{
+                                    Log.d("Autorizaciones","Marcacion: " + marcaciones.toString());
+                                    Log.d("Autorizaciones","Marcacion Verificada");
+                                }
+
                             }else{
                                 autorizaciones.setNombres(autorizacionesList.get(a).getNombres());
                                 autorizaciones.setApellidoPaterno(autorizacionesList.get(a).getApellidoPaterno());
