@@ -238,7 +238,11 @@ public class QueriesMarcaciones {
                     if(capturarlectorasiguiente){
                         lectorasiguiente = modomarcaarray[0];
                     }
-                    if(modomarcaarray[0].equals(IdTipoLect)){
+
+                    Log.d("Autorizaciones","verificacion = " + modomarcaarray[0] + ":" + IdTipoLect);
+
+                    if(modomarcaarray[0].equals(String.valueOf(IdTipoLect))){
+                        Log.d("Autorizaciones","verificacion OK = " + modomarcaarray[0] + ":" + IdTipoLect);
                         insert = Integer.parseInt(modomarcaarray[1]);
                         // 0 = verifica/no inserta
                         // 1 = inserta
@@ -249,6 +253,7 @@ public class QueriesMarcaciones {
                             valortarjeta = autorizaciones.getValorTarjeta();
                             mensaje = autorizaciones.getMensaje();
                             mensajedetalle = autorizaciones.getMensajeDetalle();
+                            ModoMarcacion = idparametermarcacionarray[i];
                         }else{
                             mensaje = "MARCACION NO AUTORIZADA";
                             lectorasiguiente = "0";

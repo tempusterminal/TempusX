@@ -5,6 +5,12 @@ import android.content.Context;
 import android.database.SQLException;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +18,9 @@ import java.sql.ResultSet;
 import java.sql.SQLWarning;
 import java.sql.Statement;
 import java.util.Calendar;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
@@ -90,8 +98,9 @@ public class ProcessSync {
             }
         }
 
-        //Log.d ("Autorizaciones","Parametros: " + parametersnamesvalues);
 
+        //
+        //Log.d ("Autorizaciones","Parametros: " + parametersnamesvalues);
         ConexionServidor conexionServidor = new ConexionServidor();
         if(connection == null){
             connection = conexionServidor.getInstance().getConnection();
@@ -100,6 +109,10 @@ public class ProcessSync {
         String sql = llamada + " '" + idllamada + "'" + ",'','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'";
         //Log.d("Autorizaciones",sql);
         Log.d("Autorizaciones","Llamada: " + idllamada + " - " + parametersnamesvalues);
+
+
+
+
 
 
         try{
@@ -357,6 +370,13 @@ public class ProcessSync {
                     }
                 }
 
+
+
+
+
+
+
+
             }
         }
 
@@ -578,6 +598,60 @@ public class ProcessSync {
         }
         return  resultSetCount;
     }
+
+
+
+
+
+    public void callWebService(){
+
+        try{
+
+
+
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("OPCION","TERMINAL");
+            map.put("EMPRESA","LDS_TEMPUS");
+            map.put("USER","TEMPUS");
+            map.put("PASS","TEMPUSSCA");
+            map.put("IP","0.0.0.0");
+            map.put("MAC","00-00-00-00-00-00");
+            map.put("HOSTNAME","TERMINAL");
+
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Map.Entry<String, Object> param : map.entrySet()) {
+                if (stringBuilder.length() != 0) {
+                    stringBuilder.append('&');
+                }
+                stringBuilder.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                stringBuilder.append('=');
+                stringBuilder.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+            }
+            byte[] postDataBytes = stringBuilder.toString().getBytes("UTF-8");
+
+            URL url = new URL("http://192.168.0.42:80/Web_ServiceTempus/COntrolador/Direct_WS.php");
+            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+            httpURLConnection.setRequestMethod("POST");
+            httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            httpURLConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+            httpURLConnection.setDoOutput(true);
+            httpURLConnection.getOutputStream().write(postDataBytes);
+
+            Reader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
+            String respuesta = "";
+            for (int c; (c = in.read()) >= 0; respuesta = respuesta + (char) c){
+                Log.d("Autorizaciones","Sin horarios de Replicado");
+            }
+
+        }catch(Exception e){
+            Log.d("Autorizaciones","callWebService error: " + e.getMessage());
+        }
+
+    }
+
+
+
 
 
 
