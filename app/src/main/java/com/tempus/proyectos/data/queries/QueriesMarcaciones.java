@@ -272,6 +272,13 @@ public class QueriesMarcaciones {
 
     public Autorizaciones GestionarMarcaciones(String ValorTarjeta, String Idterminal, int IdTipoLect, String FlgActividad, String Fechahora, int Insert){
 
+        Log.d("Autorizaciones","GestionarMarcaciones: " + ValorTarjeta);
+        Log.d("Autorizaciones","GestionarMarcaciones: " + Idterminal);
+        Log.d("Autorizaciones","GestionarMarcaciones: " + IdTipoLect);
+        Log.d("Autorizaciones","GestionarMarcaciones: " + FlgActividad);
+        Log.d("Autorizaciones","GestionarMarcaciones: " + Fechahora);
+        Log.d("Autorizaciones","GestionarMarcaciones: " + Insert);
+
         int a = 0;
         int flagEnableidtipolect = 1;
         String nullvalortarjeta = "0";

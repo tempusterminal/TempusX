@@ -1,6 +1,7 @@
 package com.tempus.proyectos.util;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -9,7 +10,9 @@ import org.json.JSONException;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
@@ -72,5 +75,74 @@ public class InternalFile{
             e.printStackTrace();
         }
         return json;
+    }
+
+    public void validarDirectorio(String archivo) {
+        File f = new File(archivo);
+
+        if (f.exists() && f.isDirectory()) {
+            Log.d("validarDirectorio_PATH", "EXISTE");
+
+        } else {
+            Log.d("validarDirectorio_PATH", "NO EXISTE, CREANDO DIRECTORIO ... ");
+            try {
+                f.mkdir();
+                Log.d("validarDirectorio_PATH", "DIRECTORIO CREADO");
+            } catch (Exception e) {
+                Log.e("validarDirectorio_PATH", "Error " + e.getMessage());
+            }
+        }
+
+    }
+
+    public void validarArchivo(String archivo) {
+        File f = new File(archivo);
+
+        if (f.exists()) {
+            Log.d("validarArchivo_PATH", "EXISTE");
+
+        } else {
+            Log.d("validarArchivo_PATH", "NO EXISTE, CREANDO ARCHIVO ... ");
+            try {
+                f.getParentFile().mkdirs();
+                f.createNewFile();
+                Log.d("validarArchivo_PATH", "ARCHIVO CREADO");
+            } catch (Exception e) {
+                Log.e("validarArchivo_PATH", "Error " + e.getMessage());
+            }
+        }
+
+    }
+
+
+    public void writeToFileAppend(String directory, String filename, String data ){
+        File out;
+        OutputStreamWriter outStreamWriter = null;
+        FileOutputStream outStream = null;
+
+        out = new File(new File(directory), filename);
+
+        if ( out.exists() == false ){
+            try {
+                out.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            outStream = new FileOutputStream(out, false);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        outStreamWriter = new OutputStreamWriter(outStream);
+
+        try {
+            outStreamWriter.append(data);
+            outStreamWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

@@ -17,6 +17,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
@@ -36,6 +37,7 @@ import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tempus.proyectos.bluetoothSerial.Bluetooth;
 import com.tempus.proyectos.bluetoothSerial.BluetoothSuperAdmin;
 import com.tempus.proyectos.bluetoothSerial.MainArduino;
 import com.tempus.proyectos.bluetoothSerial.MainHandPunch;
@@ -57,15 +59,22 @@ import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
+import com.tempus.proyectos.log.LogManager;
+import com.tempus.proyectos.threads.ThreadConnectSerial;
 import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.Fechahora;
+import com.tempus.proyectos.util.InternalFile;
 import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -79,8 +88,18 @@ import java.util.Set;
 
 public class ActivityPrincipal extends Activity {
 
-
     /* Variables Globales */
+
+    boolean MARCACION_ACTIVA;
+    int TIEMPO_ACTIVO;
+    String MODO_MARCACION;
+    String TEMPLATE = "";
+    String INDICE = "";
+    String NOMBRE_PERSONAL_MANO;
+
+    LogManager logManager;
+
+    ThreadConnectSerial threadConnectSerial;
 
     String TAG = "TX-PTX-CAP";
 
@@ -88,7 +107,6 @@ public class ActivityPrincipal extends Activity {
 
     boolean MODO_EVENTO = false;
 
-    int TIEMPO_CONN_BT = 120;
     Date TIEMPO_PRESENTE_BT01;
     Date TIEMPO_PASADO_BT01;
     Date TIEMPO_PRESENTE_BT02;
@@ -101,12 +119,6 @@ public class ActivityPrincipal extends Activity {
     String MAC_BT_02 = "";
     String MAC_BT_03 = "";
 
-    boolean BT_01_ENABLED = false;
-    boolean BT_02_ENABLED = false;
-    boolean BT_03_ENABLED = false;
-
-    boolean REINTENTO_INFINITO = false;
-
     boolean STATUS_ETHERNET = false;
     boolean STATUS_CONNECT_01 = false;
     boolean STATUS_CONNECT_02 = false;
@@ -116,34 +128,31 @@ public class ActivityPrincipal extends Activity {
     boolean HARD_FAIL_02 = false;
     boolean HARD_FAIL_03 = false;
 
-
     boolean MODO_PATRON = false;
 
     String PATRON_SECRET = "";
 
 
-
-
-    int CONTROL_MASTER_ETHERNET_MARCAS = 0; // 0 = CARGA    1 = ETHERNET
-
-
-    /* --- BLUETOOTH SOCKET ESTÁTICO --- */
-
-    public static BluetoothSuperAdmin btEthernet;
-    public static BluetoothSuperAdmin btSocket01;
-    public static BluetoothSuperAdmin btSocket02;
-    public static BluetoothSuperAdmin btSocket03;
-
-    //public static BluetoothManager btSocket01;
-    //public static BluetoothManager btSocket02;
-    //public static BluetoothManager btSocket03;
-
-
     /* --- ACCESO ESTÁTICO --- */
+
+    public static boolean INICIADO;
 
     static int TIPO_TERMINAL = 0; // A=1; A+H=2; A+M=3; A+H+M=4
 
-    public static boolean activo;
+    public static boolean BT_00_ENABLED;
+    public static boolean BT_01_ENABLED;
+    public static boolean BT_02_ENABLED;
+    public static boolean BT_03_ENABLED;
+
+    public static boolean BT_01_IS_CONNECTED = false;
+    public static boolean BT_02_IS_CONNECTED = false;
+    public static boolean BT_03_IS_CONNECTED = false;
+
+    public static Bluetooth btSocketEthernet;
+    public static Bluetooth btSocket01;
+    public static Bluetooth btSocket02;
+    public static Bluetooth btSocket03;
+
     public static Context context;
     public static boolean controlFlagSyncAutorizaciones;
 
@@ -193,18 +202,9 @@ public class ActivityPrincipal extends Activity {
     boolean areaAccessEnabled;
     int tiempoMarcacion;
     int tiempoPatron;
-    int tiempoFlag;
-    int contadorEventoPantalla;
     boolean enableBoot;
     String msjBoot;
     boolean isBooting;
-
-    Date tiempoPresente;
-    Date tiempoPasado;
-
-    Date tiempoPresentePatron;
-    Date tiempoPasadoPatron;
-
 
     /* --- OBjetos --- */
     Utilities util;
@@ -216,10 +216,6 @@ public class ActivityPrincipal extends Activity {
     /* --- Variables de DATA --- */
 
     private DBManager dbManager;
-    private QueriesServicios queriesServicios;
-    private QueriesBiometrias queriesBiometrias;
-    private QueriesLlamadas queriesLlamadas;
-    private QueriesAutorizaciones queriesAutorizaciones;
     private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria;
     private QueriesMarcaciones queriesMarcaciones;
 
@@ -254,6 +250,11 @@ public class ActivityPrincipal extends Activity {
     TextView txvMarcacionTarjeta;
     TextView txvMarcacionMsjPrincipal;
     TextView txvMarcacionMsjSecundario;
+    ImageView imgViewMarcacionGeomano;
+    public static TextView txvMarcacionLed01;
+    public static TextView txvMarcacionLed02;
+    public static TextView txvMarcacionLed03;
+    public static TextView txvMarcacionLed04;
 
     ImageView btnMaster;
     Button btnAccess1;
@@ -261,8 +262,8 @@ public class ActivityPrincipal extends Activity {
     Button btnAccess3;
     Button btnAccess4;
 
-    Button buttonWarning01;
-    Button buttonWarning02;
+    public static Button buttonWarning01;
+    public static Button buttonWarning02;
 
     TextView txvMensajePantalla;
 
@@ -293,33 +294,15 @@ public class ActivityPrincipal extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
 
-        //if(savedInstanceState == null && (btSocket01 == null || btSocket02 == null)){
-
-        /*
-        if(activo == true) {
-            finish();
-        }
-
-        activo = true;
-        */
-
-        //boolean b = isForeground("com.tempus.proyectos.tempusx");
-        //Log.wtf("INITEMPUS", String.valueOf(b));
-
+        logManager = new LogManager();
+        logManager.RegisterLogTXT("INICIO TEMPUSX");
 
         int id = android.os.Process.myPid();
         Log.wtf("PID_ACTIVITIE", String.valueOf(id));
 
         if (btSocket01 != null || btSocket02 != null) {
             Log.wtf("OBJ_STATUS", "EXISTE");
-            //Intent intent = getIntent();
-            //finish();
-            //try {
-            //    Thread.sleep(1000);
-            //} catch (InterruptedException e) {
-            //    e.printStackTrace();
-            //}
-            //startActivity(intent);
+            //logManager.RegisterLogTXT("OBJ_STATUS EXISTE");
         } else {
             Log.wtf("OBJ_STATUS", "NO EXISTE");
         }
@@ -350,6 +333,11 @@ public class ActivityPrincipal extends Activity {
         txvMarcacionTarjeta = (TextView) findViewById(R.id.txvMarcacionTarjeta);
         txvMarcacionMsjPrincipal = (TextView) findViewById(R.id.txvMarcacionMsjPrincipal);
         txvMarcacionMsjSecundario = (TextView) findViewById(R.id.txvMarcacionMsjSecundario);
+        imgViewMarcacionGeomano = (ImageView) findViewById(R.id.imgViewMarcacionGeomano);
+        txvMarcacionLed01 = (TextView) findViewById(R.id.txvMarcacionLed01);
+        txvMarcacionLed02 = (TextView) findViewById(R.id.txvMarcacionLed02);
+        txvMarcacionLed03 = (TextView) findViewById(R.id.txvMarcacionLed03);
+        txvMarcacionLed04 = (TextView) findViewById(R.id.txvMarcacionLed04);
 
         btnMaster = (ImageView) findViewById(R.id.btnMaster);
 
@@ -395,13 +383,6 @@ public class ActivityPrincipal extends Activity {
         txvSecret02 = (TextView) findViewById(R.id.txvSecret02);
         txvSecret03 = (TextView) findViewById(R.id.txvSecret03);
 
-        // Objetos
-        tiempoPresente = new Date();
-        tiempoPasado = new Date();
-
-        tiempoPresentePatron = new Date();
-        tiempoPasadoPatron = new Date();
-
         ui = new UserInterfaceM();
         util = new Utilities();
         fechahora = new Fechahora();
@@ -416,69 +397,33 @@ public class ActivityPrincipal extends Activity {
         // Administramos UI
         manageLayerMarcacion(false);        // Ocultar Layer de Marcación
         manageAccessButtons(false);         // Ocultar Botones de Acceso
-        manageEventMode(MODO_EVENTO);     // Ocultar modo Evento
+        manageEventMode(false);             // Ocultar modo Evento
         manageKeyboard(false);              // Ocultar teclado
 
-        //restartBluetooth();
 
         showMsgBoot(true, "Iniciando sistema, por favor espere ...");    // Bloquear pantalla hasta conectar
 
         buttonWarning01.setVisibility(View.INVISIBLE);
         buttonWarning02.setVisibility(View.INVISIBLE);
 
+        imgViewMarcacionGeomano.setVisibility(View.INVISIBLE);
+        txvMarcacionLed01.setVisibility(View.INVISIBLE);
+        txvMarcacionLed02.setVisibility(View.INVISIBLE);
+        txvMarcacionLed03.setVisibility(View.INVISIBLE);
+        txvMarcacionLed04.setVisibility(View.INVISIBLE);
+
         areaMarcaEnabled = false;
         areaAccessEnabled = false;
 
-        // Creacion de BD
-        //crearBD();
+        CargarDatosInicialesUPD();
+        ConectarSerialesUPD();
 
-        // Cargar Datos
-        cargarDatosIniciales();
-
-        // Seriales
-        iniciarParametrosSeriales();
-        //
-
-        //Restart Bluetooth
-        //restartBluetooth();
-        //util.sleep(1000);
-
-        btEthernet = new BluetoothSuperAdmin(MAC_BT_00);
-        btSocket01 = new BluetoothSuperAdmin(MAC_BT_01);
-        btSocket02 = new BluetoothSuperAdmin(MAC_BT_02);
-        btSocket03 = new BluetoothSuperAdmin(MAC_BT_03);
-
-        threadEthernet.start();
-
-        if (BT_01_ENABLED){
-            threadControlSerial01.start();
-        }
-
-        if (BT_02_ENABLED){
-            threadControlSerial02.start();
-        }
-
-        if (BT_03_ENABLED){
-            threadControlSerial03.start();
-        }
-
-
-        conectarSeriales();
+        threadSerial01UPD.start();
+        threadSerial02UPD.start();
+//
         threadControlPrincipal.start();
         threadControlPantalla.start();
 
-
-        try {
-            connectivity.turnGPSOn(this);
-        } catch(Exception e) {
-            Log.wtf("GPS",e.getMessage());
-        }
-
-
-        //
-        // threadControlSerial01.start();
-        //
-        // threadControlSerial02.start();
 
         // Iniciar Rutinas en verdadero
         ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
@@ -489,11 +434,6 @@ public class ActivityPrincipal extends Activity {
         processSyncDatetime.start(this);
 
         threadFechahora.start();
-
-
-        if (INTERFACE_ETH){
-            checkETH0.start();
-        }
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
 
@@ -522,15 +462,15 @@ public class ActivityPrincipal extends Activity {
                     manageAccessButtons(true);
 
                     if (MODO_EVENTO) {
-                        Date date = new Date();
-                        tiempoPasado = date;
+                        //Date date = new Date();
+                        //tiempoPasado = date;
+
+                        TIEMPO_ACTIVO = 10;
+
                         actualizarFlag(null, null);
                     }
 
                     txvMensajePantalla.setText("");
-
-                    //Date date = new Date();
-                    //tiempoPasado = date;
 
                     txvMensajePantalla.setText("MODO PATRON");
 
@@ -546,8 +486,10 @@ public class ActivityPrincipal extends Activity {
             public void onClick(View v) {
                 AccessManager("1");
                 if (MODO_EVENTO) {
-                    Date date = new Date();
-                    tiempoPasado = date;
+                    //Date date = new Date();
+                    //tiempoPasado = date;
+
+                    TIEMPO_ACTIVO = 10;
                     actualizarFlag(null, null);
                 }
             }
@@ -558,8 +500,10 @@ public class ActivityPrincipal extends Activity {
             public void onClick(View v) {
                 AccessManager("2");
                 if (MODO_EVENTO) {
-                    Date date = new Date();
-                    tiempoPasado = date;
+                    //Date date = new Date();
+                    //tiempoPasado = date;
+
+                    TIEMPO_ACTIVO = 10;
                     actualizarFlag(null, null);
                 }
             }
@@ -570,8 +514,10 @@ public class ActivityPrincipal extends Activity {
             public void onClick(View v) {
                 AccessManager("3");
                 if (MODO_EVENTO) {
-                    Date date = new Date();
-                    tiempoPasado = date;
+                    //Date date = new Date();
+                    //tiempoPasado = date;
+
+                    TIEMPO_ACTIVO = 10;
                     actualizarFlag(null, null);
                 }
             }
@@ -582,8 +528,10 @@ public class ActivityPrincipal extends Activity {
             public void onClick(View v) {
                 AccessManager("4");
                 if (MODO_EVENTO) {
-                    Date date = new Date();
-                    tiempoPasado = date;
+                    //Date date = new Date();
+                    //tiempoPasado = date;
+
+                    TIEMPO_ACTIVO = 10;
                     actualizarFlag(null, null);
                 }
             }
@@ -597,8 +545,10 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                 actualizarFlag("001", btnEvent01);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 6;
             }
         });
 
@@ -606,12 +556,14 @@ public class ActivityPrincipal extends Activity {
         btnEvent02.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                flag = "009";
+                flag = "002";
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                 actualizarFlag("009", btnEvent02);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 6;
             }
         });
 
@@ -623,8 +575,10 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                 actualizarFlag("003", btnEvent03);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 6;
             }
         });
 
@@ -636,8 +590,10 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                 actualizarFlag("004", btnEvent04);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 6;
             }
         });
 
@@ -649,8 +605,10 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                 actualizarFlag("005", btnEvent05);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 6;
             }
         });
 
@@ -662,8 +620,10 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                 actualizarFlag("006", btnEvent06);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 6;
             }
         });
 
@@ -675,8 +635,10 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                 actualizarFlag("007", btnEvent07);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 6;
             }
         });
 
@@ -688,8 +650,10 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                 actualizarFlag("008", btnEvent08);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 6;
             }
         });
 
@@ -711,7 +675,6 @@ public class ActivityPrincipal extends Activity {
                 } else {
                     if (visibleKey) {
                         manageKeyboard(false);
-
                     } else {
                         manageKeyboard(true);
                     }
@@ -878,24 +841,6 @@ public class ActivityPrincipal extends Activity {
             }
         });
 
-        //} else {
-        //    Log.wtf("PID WTF","FINALIZANDOOOOO");
-
-        //System.exit(0);
-
-        //this.recreate();
-        /*
-        try {
-            Log.wtf("XD01","INICIO XD");
-            Intent homeIntent = getPackageManager().getLaunchIntentForPackage("com.tempus.proyectos.tempusx");
-            homeIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-            startActivity(homeIntent);
-            Log.wtf("XD02","FIN XD");
-        } catch (Exception e){
-            Log.wtf("XD03","ERROR XD " + e.getMessage());
-        }
-        */
-        //}
     }
 
     @Override
@@ -912,18 +857,6 @@ public class ActivityPrincipal extends Activity {
 
 
     }
-
-    public void reboot() {
-
-        try {
-            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot -p" });
-            proc.waitFor();
-        } catch (Exception ex) {
-            Log.i("TEMPUS: ", "No se puede reiniciar!!!!!!!!!!!!!!!!", ex);
-        }
-
-    }
-
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
@@ -967,36 +900,7 @@ public class ActivityPrincipal extends Activity {
         }
     }
 
-    private void AccesoSecreto(String dato) {
-        PATRON_SECRET = PATRON_SECRET + dato;
-        Log.d("AccesoSecreto",PATRON_SECRET);
 
-        switch (PATRON_SECRET) {
-            case "1111111232132122":
-                Log.d("AccesoSecreto","COMANDO: MODO DIOS");
-                try {
-                    showLoginDialog();
-                } catch (Exception e) {
-                    Log.e("MODO_DIOS", e.getMessage() );
-                }
-                PATRON_SECRET = "";
-                break;
-            case "3333333123123":
-                Log.d("AccesoSecreto","COMANDO: REINICIAR");
-                try {
-                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot"});
-                    proc.waitFor();
-                } catch (Exception e) {
-                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: REINICIAR -> " + e.getMessage());
-                }
-                PATRON_SECRET = "";
-                break;
-            default:
-                break;
-        }
-
-
-    }
 
     private void showLoginDialog() {
 
@@ -1051,8 +955,6 @@ public class ActivityPrincipal extends Activity {
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-
-
     private void hideNavigationBar(boolean hide){
         try {
             Process process = Runtime.getRuntime().exec("su");
@@ -1074,7 +976,6 @@ public class ActivityPrincipal extends Activity {
         }
     }
 
-
     public void turnOnScreen(){
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         PowerManager.WakeLock wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK
@@ -1084,161 +985,240 @@ public class ActivityPrincipal extends Activity {
         wakeLock.release();
     }
 
+    public void reboot() {
+
+        try {
+            Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot -p" });
+            proc.waitFor();
+        } catch (Exception ex) {
+            Log.i("TEMPUS: ", "No se puede reiniciar!!!!!!!!!!!!!!!!", ex);
+        }
+
+    }
+
+
+
     public void crearBD() {
         dbManager = new DBManager(context);
         dbManager.all("1,1,1,1,1,1");
     }
 
-    public void cargarDatosIniciales(){
+    public void CargarDatosInicialesUPD() {
 
-        idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL");
+        try {
+            idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL");
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
 
         QueriesParameters queriesParameters = new QueriesParameters(this);
         Parameters parameters;
 
-        MAC_BT_00 = "";
-        MAC_BT_01 = "20:16:05:03:24:64"; // 20:16:08:04:87:50
-        MAC_BT_02 = "20:16:08:10:42:29"; // 20:16:08:10:62:98
-        MAC_BT_03 = "00:00:00:00:00:00";
-        TIPO_TERMINAL = 2;
-        MODO_EVENTO = false;
-        INTERFACE_ETH = false;
-        INTERFACE_WLAN = true;
-        INTERFACE_PPP = false;
-
-        /*
         try {
             parameters = queriesParameters.selectParameter("BT_01");
             MAC_BT_01 = parameters.getValue();
-        } catch(Exception e) {
-            MAC_BT_01 = "00:00:00:00:00:00";
+            MAC_BT_01 = "20:16:08:10:42:63";
+            Log.d(TAG, "CargarDatosIniciales > MAC_BT_01 = OK");
+        } catch (Exception e) {
+            //MAC_BT_01 = "98:D3:34:90:87:DC";//CARRION
+            //MAC_BT_01 = "20:16:05:03:24:64"; carrion 11
+            MAC_BT_01 = "20:16:08:10:42:63";
         }
 
         try {
             parameters = queriesParameters.selectParameter("BT_02");
             MAC_BT_02 = parameters.getValue();
-        } catch(Exception e) {
+            MAC_BT_02 = "00:00:00:00:00:00";
+            Log.d(TAG, "CargarDatosIniciales > MAC_BT_02 = OK");
+        } catch (Exception e) {
+            //MAC_BT_02 = "00:12:03:16:02:08";//CARRION
+            //MAC_BT_02 = "20:16:08:10:42:29";// carrion 11
             MAC_BT_02 = "00:00:00:00:00:00";
         }
 
         try {
             parameters = queriesParameters.selectParameter("BT_03");
             MAC_BT_03 = parameters.getValue();
-        } catch(Exception e) {
-            MAC_BT_03 = "00:00:00:00:00:00";
+            Log.d(TAG, "CargarDatosIniciales > MAC_BT_03 = OK");
+            MAC_BT_03 = "20:16:08:10:46:09";//
+        } catch (Exception e) {
+            //MAC_BT_03 = "00:00:00:00:00:00";//CARRION
+            MAC_BT_03 = "20:16:08:10:46:09";//
+
         }
 
         try {
             parameters = queriesParameters.selectParameter("TIPO_TERMINAL");
             TIPO_TERMINAL = Integer.parseInt(parameters.getValue());
-        } catch(Exception e) {
-            TIPO_TERMINAL = 1;
+            Log.d(TAG, "CargarDatosIniciales > TIPO_TERMINAL = OK");
+        } catch (Exception e) {
+            TIPO_TERMINAL = 2;
         }
 
         try {
             parameters = queriesParameters.selectParameter("MODO_EVENTO");
             String enable_evento = parameters.getValue();
-            if ( enable_evento == "0" ) { MODO_EVENTO = false; } else { MODO_EVENTO = true; }
-        } catch(Exception e) {
+            if (enable_evento == "0") {
+                MODO_EVENTO = false;
+            } else {
+                MODO_EVENTO = true;
+            }
+            Log.d(TAG, "CargarDatosIniciales > MODO_EVENTO = OK");
+            MODO_EVENTO = false;
+        } catch (Exception e) {
             MODO_EVENTO = false;
         }
 
         try {
             parameters = queriesParameters.selectParameter("INTERFACE_ETH");
             String enable_if01 = parameters.getValue();
-            if ( enable_if01 == "0" ) { INTERFACE_ETH = false; } else { INTERFACE_ETH = true; }
-        } catch(Exception e) {
+            if (enable_if01 == "0") {
+                INTERFACE_ETH = false;
+            } else {
+                INTERFACE_ETH = true;
+            }
+            Log.d(TAG, "CargarDatosIniciales > INTERFACE_ETH = OK");
+        } catch (Exception e) {
             INTERFACE_ETH = false;
         }
 
         try {
             parameters = queriesParameters.selectParameter("INTERFACE_WLAN");
             String enable_if02 = parameters.getValue();
-            if ( enable_if02 == "0" ) { INTERFACE_WLAN = false; } else { INTERFACE_WLAN = true; }
-        } catch(Exception e) {
+            if (enable_if02 == "0") {
+                INTERFACE_WLAN = false;
+            } else {
+                INTERFACE_WLAN = true;
+            }
+            Log.d(TAG, "CargarDatosIniciales > INTERFACE_WLAN = OK");
+        } catch (Exception e) {
             INTERFACE_WLAN = true;
         }
 
         try {
             parameters = queriesParameters.selectParameter("INTERFACE_PPP");
             String enable_if03 = parameters.getValue();
-            if ( enable_if03 == "0" ) { INTERFACE_PPP = false; } else { INTERFACE_PPP = true; }
-        } catch(Exception e) {
+            if (enable_if03 == "0") {
+                INTERFACE_PPP = false;
+            } else {
+                INTERFACE_PPP = true;
+            }
+            Log.d(TAG, "CargarDatosIniciales > INTERFACE_PPP = OK");
+        } catch (Exception e) {
             INTERFACE_PPP = false;
         }
 
-        */
-
-
-        contadorEventoPantalla = 0;
+        MARCACION_ACTIVA = false;
+        TIEMPO_ACTIVO = 0;
+        MODO_MARCACION = "";
+        MAC_BT_00 = "00:00:00:00:00:00";
+        MAC_BT_01 = "20:16:08:10:42:63";
+        MAC_BT_02 = "00:00:00:00:00:00";
+        MAC_BT_03 = "20:16:08:10:46:09";
+        MODO_EVENTO = false;
+        TIPO_TERMINAL = 3;
+        INTERFACE_ETH = false;
+        INTERFACE_WLAN = true;
+        INTERFACE_PPP = true;
 
         if (MODO_EVENTO) {
 
-            boolean buttonsVisibility[] = {true,true,true,true,true,true,true,true};
-            String buttonsText[] = {"1","2","3","4","5","6","7","8"};
+            boolean buttonsVisibility[] = {true, true, true, true, false, false, false, false};
+            String buttonsText[] = {"1", "2", "3", "4", "5", "6", "7", "8"};
 
-            /*
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_1");
                 int visible_0 = parameters.getEnable();
                 buttonsText[0] = parameters.getValue();
-                if (visible_0 == 0) { buttonsVisibility[0] = true; }
-            } catch(Exception e) {}
+                if (visible_0 == 0) {
+                    buttonsVisibility[0] = true;
+                }
+                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_1 = OK");
+            } catch (Exception e) {
+            }
 
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_2");
                 int visible_1 = parameters.getEnable();
                 buttonsText[1] = parameters.getValue();
-                if (visible_1 == 0) { buttonsVisibility[1] = true; }
-            } catch(Exception e) {}
+                if (visible_1 == 0) {
+                    buttonsVisibility[1] = true;
+                }
+                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_2 = OK");
+            } catch (Exception e) {
+            }
 
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_3");
                 int visible_2 = parameters.getEnable();
                 buttonsText[2] = parameters.getValue();
-                if (visible_2 == 0) { buttonsVisibility[2] = true; }
-            } catch(Exception e) {}
+                if (visible_2 == 0) {
+                    buttonsVisibility[2] = true;
+                }
+                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_3 = OK");
+            } catch (Exception e) {
+            }
 
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_4");
                 int visible_3 = parameters.getEnable();
                 buttonsText[3] = parameters.getValue();
-                if (visible_3 == 0) { buttonsVisibility[3] = true; }
-            } catch(Exception e) {}
+                if (visible_3 == 0) {
+                    buttonsVisibility[3] = true;
+                }
+                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_4 = OK");
+            } catch (Exception e) {
+            }
 
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_5");
                 int visible_4 = parameters.getEnable();
                 buttonsText[4] = parameters.getValue();
-                if (visible_4 == 0) { buttonsVisibility[4] = true; }
-            } catch(Exception e) {}
+                if (visible_4 == 0) {
+                    buttonsVisibility[4] = true;
+                }
+                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_5 = OK");
+            } catch (Exception e) {
+            }
 
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_6");
                 int visible_5 = parameters.getEnable();
                 buttonsText[5] = parameters.getValue();
-                if (visible_5 == 0) { buttonsVisibility[5] = true; }
-            } catch(Exception e) {}
+                if (visible_5 == 0) {
+                    buttonsVisibility[5] = true;
+                }
+                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_6 = OK");
+            } catch (Exception e) {
+            }
 
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_7");
                 int visible_6 = parameters.getEnable();
                 buttonsText[6] = parameters.getValue();
-                if (visible_6 == 0) { buttonsVisibility[6] = true; }
-            } catch(Exception e) {}
+                if (visible_6 == 0) {
+                    buttonsVisibility[6] = true;
+                }
+                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_7 = OK");
+            } catch (Exception e) {
+            }
 
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_8");
                 int visible_7 = parameters.getEnable();
                 buttonsText[7] = parameters.getValue();
-                if (visible_7 == 0) { buttonsVisibility[7] = true; }
-            } catch(Exception e) {}
+                if (visible_7 == 0) {
+                    buttonsVisibility[7] = true;
+                }
+                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_8 = OK");
+            } catch (Exception e) {
+            }
 
-            */
 
             flag = null;
             txvMensajePantalla.setText("SELECCIONE UN EVENTO");
-            initEventsButtons(buttonsVisibility, buttonsText);
+            InicializarModoEvento(buttonsVisibility, buttonsText);
         } else {
             flag = "127";
             txvMensajePantalla.setText("PASE SU TARJETA");
@@ -1251,54 +1231,135 @@ public class ActivityPrincipal extends Activity {
         isBooting = true;
 
         Lectoras = new HashMap<String, String>();
-        Lectoras.put("01","TECLADO");
-        Lectoras.put("02","DNI");
-        Lectoras.put("04","PROXIMIDAD");
-        Lectoras.put("07","HUELLA SUPREMA");
-        //Lectoras.put("09","DNI");
+        Lectoras.put("01", "TECLADO");
+        Lectoras.put("02", "DNI");
+        Lectoras.put("04", "PROXIMIDAD");
+        Lectoras.put("07", "HUELLA SUPREMA");
 
-        TIEMPO_PRESENTE_BT01 = new Date();
-        TIEMPO_PASADO_BT01 = new Date();
-
-        TIEMPO_PRESENTE_BT02 = new Date();
-        TIEMPO_PASADO_BT02 = new Date();
-
-        TIEMPO_PRESENTE_BT03 = new Date();
-        TIEMPO_PASADO_BT03 = new Date();
-
-        BT_01_ENABLED = true;   //Arduino
-        BT_02_ENABLED = true;   //Suprema
-        BT_03_ENABLED = false;  //Handpunch
+        HabilitarBluetooth();
+        HabilitarBluetoothEthernet();
 
     }
 
-    public void conectarSeriales(){
-        // Reseteamos la interfaz
-
-        threadEthernetRead.start();
-
-
-        if (BT_01_ENABLED) {
-            Log.i(TAG,"INICIANDO BT 01");
-            //btSocket01 = new BluetoothManager(MAC_BT_01,getApplicationContext());
-            threadSerial01.start();
+    public void InicializarModoEvento(boolean visible[], String nombre[]) {
+        if (visible[0]) {
+            btnEvent01.setVisibility(View.VISIBLE);
+            btnEvent01.setText(nombre[0]);
+        } else {
+            btnEvent01.setVisibility(View.INVISIBLE);
         }
 
-        if (BT_02_ENABLED) {
-            Log.i(TAG,"INICIANDO BT 02");
-            //btSocket02 = new BluetoothManager(MAC_BT_02,getApplicationContext());
-            threadSerial02.start();
+        if (visible[1]) {
+            btnEvent02.setVisibility(View.VISIBLE);
+            btnEvent02.setText(nombre[1]);
+        } else {
+            btnEvent02.setVisibility(View.INVISIBLE);
         }
 
-        if (BT_03_ENABLED) {
-            Log.i(TAG,"INICIANDO BT 03");
-            //btSocket03 = new BluetoothManager(MAC_BT_03,getApplicationContext());
-            threadSerial03.start();
+        if (visible[2]) {
+            btnEvent03.setVisibility(View.VISIBLE);
+            btnEvent03.setText(nombre[2]);
+        } else {
+            btnEvent03.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[3]) {
+            btnEvent04.setVisibility(View.VISIBLE);
+            btnEvent04.setText(nombre[3]);
+        } else {
+            btnEvent04.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[4]) {
+            btnEvent05.setVisibility(View.VISIBLE);
+            btnEvent05.setText(nombre[4]);
+        } else {
+            btnEvent05.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[5]) {
+            btnEvent06.setVisibility(View.VISIBLE);
+            btnEvent06.setText(nombre[5]);
+        } else {
+            btnEvent06.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[6]) {
+            btnEvent07.setVisibility(View.VISIBLE);
+            btnEvent07.setText(nombre[6]);
+        } else {
+            btnEvent07.setVisibility(View.INVISIBLE);
+        }
+
+        if (visible[7]) {
+            btnEvent08.setVisibility(View.VISIBLE);
+            btnEvent08.setText(nombre[7]);
+        } else {
+            btnEvent08.setVisibility(View.INVISIBLE);
         }
 
     }
 
-    public void iniciarParametrosSeriales(){
+    public void HabilitarBluetooth() {
+        switch (TIPO_TERMINAL) {
+            case 1:
+                BT_01_ENABLED = true;
+                BT_02_ENABLED = false;
+                BT_03_ENABLED = false;
+                break;
+            case 2:
+                BT_01_ENABLED = true;
+                BT_02_ENABLED = true;
+                BT_03_ENABLED = false;
+                break;
+            case 3:
+                BT_01_ENABLED = true;
+                BT_02_ENABLED = false;
+                BT_03_ENABLED = true;
+                break;
+            case 4:
+                BT_01_ENABLED = true;
+                BT_02_ENABLED = true;
+                BT_03_ENABLED = true;
+                break;
+            case 5:
+                BT_01_ENABLED = false;
+                BT_02_ENABLED = true;
+                BT_03_ENABLED = false;
+                break;
+            default:
+                BT_01_ENABLED = false;
+                BT_02_ENABLED = false;
+                BT_03_ENABLED = false;
+                break;
+        }
+    }
+
+    public void HabilitarBluetoothEthernet() {
+        if (INTERFACE_ETH) {
+            BT_00_ENABLED = true;
+        } else {
+            BT_00_ENABLED = false;
+        }
+    }
+
+    public void ConectarSerialesUPD() {
+
+        InicializarObjetosSeriales();
+
+        btSocketEthernet = new Bluetooth(MAC_BT_00);
+        btSocket01 = new Bluetooth(MAC_BT_01);
+        btSocket02 = new Bluetooth(MAC_BT_02);
+        btSocket03 = new Bluetooth(MAC_BT_03);
+
+        //logManager.RegisterLogTXT("Seriales: " + MAC_BT_01 + " - " + MAC_BT_02 + " - " + MAC_BT_03);
+
+        threadConnectSerial = new ThreadConnectSerial(this);
+        threadConnectSerial.start();
+
+    }
+
+    public void InicializarObjetosSeriales() {
         if (BT_01_ENABLED) {
             objArduino = new MainArduino();
         }
@@ -1328,20 +1389,18 @@ public class ActivityPrincipal extends Activity {
     public void restartBluetooth(){
         BluetoothAdapter.getDefaultAdapter().disable();
         try {
-            Thread.sleep(500);
+            Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
         BluetoothAdapter.getDefaultAdapter().enable();
         try {
-            Thread.sleep(1000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
-
-
 
 
 
@@ -1353,6 +1412,7 @@ public class ActivityPrincipal extends Activity {
         switch(patronAcceso) {
             case "123432":
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: INGRESAR LOGIN");
+                //logManager.RegisterLogTXT("COMANDO: INGRESAR LOGIN");
                 txvMensajePantalla.setText("PASE SU TARJETA");
                 manageAccessButtons(false);
                 Intent intent01 = new Intent(ActivityPrincipal.this, ActivityLogin.class);
@@ -1368,6 +1428,7 @@ public class ActivityPrincipal extends Activity {
 
             case "444432":
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: SUPREMA (CANCEL)");
+                //logManager.RegisterLogTXT("COMANDO: SUPREMA (CANCEL)");
                 try {
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"Cancel",null);
                 } catch(Exception e) {
@@ -1378,6 +1439,7 @@ public class ActivityPrincipal extends Activity {
 
             case "222232":
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: SUPREMA (DELETE_ALL_TEMPLATES)");
+                //logManager.RegisterLogTXT("COMANDO: SUPREMA (DELETE_ALL_TEMPLATES)");
                 try{
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"DeleteAllTemplates",null);
                     util.sleep(250);
@@ -1389,6 +1451,7 @@ public class ActivityPrincipal extends Activity {
 
             case "333332":
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: SUPREMA (NUMBER_TEMPLATES)");
+                //logManager.RegisterLogTXT("COMANDO: SUPREMA (NUMBER_TEMPLATES)");
                 try{
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"NumberTemplate",null);
                     util.sleep(800);
@@ -1400,12 +1463,14 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "111132":
-                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: INTENTAR HABILITAR REPLICADO");
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: HABILITAR REPLICADO");
+                //logManager.RegisterLogTXT("COMANDO: HABILITAR REPLICADO");
                 isReplicating = true;
                 break;
 
             case "1324111":
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: REINICIALIZAR BD");
+                //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
                 try {
                     crearBD();
                 } catch (Exception e) {
@@ -1416,6 +1481,7 @@ public class ActivityPrincipal extends Activity {
             case "33334334":
                 // OTG (QUITAR CARGA)
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: OTG - QUITAR CARGA");
+                //logManager.RegisterLogTXT("COMANDO: OTG - QUITAR CARGA");
                 try {
                     AdministrarOTG(btSocket01.getOutputStream(),true);
                 } catch (Exception e) {
@@ -1426,6 +1492,7 @@ public class ActivityPrincipal extends Activity {
             case "33334331":
                 // CARGAR
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: OTG - CARGAR");
+                //logManager.RegisterLogTXT("COMANDO: OTG - CARGAR");
                 try {
                     AdministrarOTG(btSocket01.getOutputStream(),false);
                 } catch (Exception e) {
@@ -1435,6 +1502,7 @@ public class ActivityPrincipal extends Activity {
 
             case "113322443241321": // OCULTAR SYSTEMUI
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: OCULTAR SYSTEMUI");
+                //logManager.RegisterLogTXT("COMANDO: OCULTAR SYSTEMUI");
                 try {
                     hideNavigationBar(true);
                 } catch (Exception e) {
@@ -1444,6 +1512,7 @@ public class ActivityPrincipal extends Activity {
 
             case "113322443241322": // MOSTRAR SYSTEMUI
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: MOSTRAR SYSTEMUI");
+                //logManager.RegisterLogTXT("COMANDO: MOSTRAR SYSTEMUI");
                 try {
                     hideNavigationBar(false);
                 } catch (Exception e) {
@@ -1453,6 +1522,7 @@ public class ActivityPrincipal extends Activity {
 
             case "113322443241323": // REINICIAR
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: REINICIAR");
+                //logManager.RegisterLogTXT("COMANDO: REINICIAR");
                 try {
                     Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot"});
                     proc.waitFor();
@@ -1463,6 +1533,7 @@ public class ActivityPrincipal extends Activity {
 
             case "113322443241324": // APAGAR
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: APAGAR");
+                //logManager.RegisterLogTXT("COMANDO: APAGAR");
                 try {
                     Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
                     proc.waitFor();
@@ -1473,6 +1544,7 @@ public class ActivityPrincipal extends Activity {
 
             case "113322443241311": // ABRIR CONFIGURACION DE ANDROID
                 Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: CONFIGURACION DE ANDROID");
+                //logManager.RegisterLogTXT("COMANDO: CONFIGURACION DE ANDROID");
                 try {
                     startActivity(new Intent(Settings.ACTION_SETTINGS));
                     Intent startMain = getPackageManager().getLaunchIntentForPackage("com.tempus.ecernar.overlaywifi");
@@ -1487,6 +1559,41 @@ public class ActivityPrincipal extends Activity {
                 break;
         }
     }
+
+    private void AccesoSecreto(String dato) {
+        PATRON_SECRET = PATRON_SECRET + dato;
+        Log.d("AccesoSecreto",PATRON_SECRET);
+
+        switch (PATRON_SECRET) {
+            case "1111111232132122":
+                Log.d("AccesoSecreto","COMANDO: MODO DIOS");
+                //logManager.RegisterLogTXT("COMANDO: MODO DIOS");
+                try {
+                    showLoginDialog();
+                } catch (Exception e) {
+                    Log.e("MODO_DIOS", e.getMessage() );
+                }
+                PATRON_SECRET = "";
+                break;
+            case "3333333123123":
+                Log.d("AccesoSecreto","COMANDO: REINICIAR");
+                //logManager.RegisterLogTXT("COMANDO: REINICIAR");
+                try {
+                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot"});
+                    proc.waitFor();
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: REINICIAR -> " + e.getMessage());
+                }
+                PATRON_SECRET = "";
+                break;
+            default:
+                break;
+        }
+
+
+    }
+
+
 
     /* ---------------------- FUNCION MARCACION MASTER --------------------------- */
 
@@ -1509,6 +1616,8 @@ public class ActivityPrincipal extends Activity {
 
     public void MarcacionMaster(String lectoraName, String tarjeta){
 
+        String TAG = "MarcacionMasterTAG";
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1516,83 +1625,331 @@ public class ActivityPrincipal extends Activity {
             }
         });
 
-
-        if(flag == null || flag == ""){
-
-
-        }else{
-            Date date = new Date();
-            tiempoPasado = date;
-
-            LimpiarDatosMarcacion();
-            String lectora = lectoraName;
-            Log.d(TAG,"Lectora: " + lectora);
-
-            Autorizaciones autorizaciones = new Autorizaciones();
-            if(lectora != null){
-
-                Log.v(TAG, lectora);
-                if (lectora == "HUELLA SUPREMA") {
-                    //tarjeta = String.valueOf(util.convertHexToDecimal(tarjeta.substring(6,8) + tarjeta.substring(4,6) + tarjeta.substring(2,4) + tarjeta.substring(0,2)));
-                } else {
-                    if (lectora == "PROXIMIDAD CHINA"){
-                        tarjeta = hexToDecimalStringProx(tarjeta);
-                    } else {
-                        if (lectora != "TECLADO") {
-                            tarjeta = util.convertHexToString(tarjeta);
-                        }
-                    }
-                }
-
-                Log.v(TAG, "TARJETA " + tarjeta);
-
-                try {
-                    queriesMarcaciones = new QueriesMarcaciones(this);
-                    Log.v(TAG, "MarcacionMaster Exec >");
-                    Log.v(TAG, " > Tarjeta: " + tarjeta);
-                    Log.v(TAG, " > ID Terminal: " +idTerminal);
-                    Log.v(TAG, " > ID Lectora: " +getNroLectora(lectora));
-                    Log.v(TAG, " > Flag: " +flag);
-                    Log.v(TAG, " > FechaHora: " +fechahora.getFechahora());
-                    autorizaciones = queriesMarcaciones.GestionarMarcaciones(tarjeta,idTerminal,Integer.parseInt(getNroLectora(lectora)),flag,fechahora.getFechahora());
-
-
-                    Log.d(TAG,"Resultado de Busqueda de Autorizaciones: " + autorizaciones.toString());
-                    String autorizacion = autorizaciones.getMensaje();
-                    if (autorizacion.equalsIgnoreCase("marcacion autorizada")){
-                        MarcacionOK(btSocket01.getOutputStream());
-                        mNombre = autorizaciones.getApellidoPaterno() + " " +  autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
-                        mTarjeta = autorizaciones.getValorTarjeta();
-                        mMensajePrincipal = autorizaciones.getMensaje();
-                        mMensajeSecundario = autorizaciones.getMensajeDetalle();
-                        MarcacionUI();
-                    } else {
-                        MarcacionKO(btSocket01.getOutputStream());
-                        mNombre = autorizaciones.getApellidoPaterno() + " " +  autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
-                        mTarjeta = autorizaciones.getValorTarjeta();
-                        mMensajePrincipal = autorizaciones.getMensaje();
-                        mMensajeSecundario = autorizaciones.getMensajeDetalle();
-                        MarcacionUI();
-                    }
-
-                } catch (Exception e) {
-                    Log.d(TAG,e.getMessage());
-                    MarcacionKO(btSocket01.getOutputStream());
-                    mNombre = "";
-                    mTarjeta = tarjeta;
-                    mMensajePrincipal = autorizaciones.getMensaje();
-                    mMensajeSecundario = autorizaciones.getMensajeDetalle();
-                    MarcacionUI();
-                }
+        if (!lectoraName.equalsIgnoreCase("NO DATOS")) {
+            if (flag == null || flag == "") {
 
             } else {
-                Log.v(TAG, "LECTORA NO HABILITADA");
-                MarcacionKO(btSocket01.getOutputStream());
-                mNombre = "";
-                mTarjeta = "";
-                mMensajePrincipal = autorizaciones.getMensaje();
-                mMensajeSecundario = autorizaciones.getMensajeDetalle();
-                MarcacionUI();
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 5;
+
+                LimpiarDatosMarcacion();
+                String lectora = lectoraName;
+                Log.d(TAG, "Lectora: " + lectora);
+
+                if (lectora != null) {
+
+                    Log.v(TAG, lectora);
+                    if (lectora == "HUELLA SUPREMA") {
+                        //tarjeta = String.valueOf(util.convertHexToDecimal(tarjeta.substring(6,8) + tarjeta.substring(4,6) + tarjeta.substring(2,4) + tarjeta.substring(0,2)));
+                    } else {
+                        if (lectora == "PROXIMIDAD CHINA") {
+                            tarjeta = hexToDecimalStringProx(tarjeta);
+                        } else {
+                            if (lectora != "TECLADO") {
+                                tarjeta = util.convertHexToString(tarjeta);
+                            }
+                        }
+                    }
+
+                    Log.v(TAG, "TARJETA " + tarjeta);
+
+                    try {
+                        queriesMarcaciones = new QueriesMarcaciones(this);
+                        Log.v(TAG, "MarcacionMaster Exec >");
+                        Log.v(TAG, " > Tarjeta: " + tarjeta);
+                        Log.v(TAG, " > ID Terminal: " + idTerminal);
+                        Log.v(TAG, " > ID Lectora: " + getNroLectora(lectora));
+                        Log.v(TAG, " > Flag: " + flag);
+                        Log.v(TAG, " > FechaHora: " + fechahora.getFechahora());
+
+                        //autorizaciones = queriesMarcaciones.GestionarMarcaciones(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), flag, fechahora.getFechahora(), 1);
+                        String autorizacion = "";
+                        String array_autorizaciones[] = {};
+                        try {
+                            if (!MARCACION_ACTIVA) {
+                                MODO_MARCACION = "";
+                            }
+                            autorizacion = queriesMarcaciones.ModoMarcacion(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), flag, fechahora.getFechahora(), MODO_MARCACION);
+                            Log.d(TAG, "Resultado de ModoMarcacion: " + autorizacion);
+                            array_autorizaciones = autorizacion.split(",");
+                            Log.d(TAG, "Resultado de array_autorizaciones: " + array_autorizaciones.toString());
+                            NOMBRE_PERSONAL_MANO = array_autorizaciones[0];
+                        } catch (Exception e) { // Error NO EXISTE TARJETA
+                            Log.e(TAG, "Resultado de ModoMarcacion: " + autorizacion);
+                            Log.e(TAG, "Resultado de Busqueda de Autorizaciones: " + array_autorizaciones.toString());
+                            Log.e(TAG, "Error: " + e);
+                        }
+
+                        //String autorizacion = autorizaciones.getMensaje();
+
+                        if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
+
+                            if (array_autorizaciones[4].equals("0")){ // Finalizo Marcacion
+                                Log.d(TAG, "FINALIZO MARCACION");
+                                MARCACION_ACTIVA = false;
+                                MODO_MARCACION = "";
+                                TIEMPO_ACTIVO = 5;
+                                MarcacionOK(btSocket01.getOutputStream());
+                                mNombre = array_autorizaciones[0];
+                                mTarjeta = array_autorizaciones[1];
+                                mMensajePrincipal = array_autorizaciones[2];
+                                mMensajeSecundario = array_autorizaciones[3];
+                                MarcacionUI();
+
+                            } else { // Marcacion Continua
+                                Log.d(TAG, "CONTINUA MARCACION");
+                                String mensaje = analizarModoMarcacion(array_autorizaciones[4]);
+                                Log.d(TAG, "Mensaje ANALIZAR_MODO_MARCACION: " + mensaje);
+                                MARCACION_ACTIVA = true;
+                                MODO_MARCACION = array_autorizaciones[5];
+
+                                if (mensaje.contains("MANO")) {
+                                    TIEMPO_ACTIVO = 25;
+                                    mMensajePrincipal = "";
+                                    mMensajeSecundario = mensaje;
+
+                                    Log.d(TAG, "MANO TIEMPO_ACTIVO: " + TIEMPO_ACTIVO);
+
+                                    TEMPLATE = dbManager.valexecSQL("SELECT VALOR_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE VALOR_TARJETA = '72663345' AND ID_TIPO_LECT = 10;");
+                                    INDICE = dbManager.valexecSQL("SELECT INDICE_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE VALOR_TARJETA = '72663345' AND ID_TIPO_LECT = 10;");
+
+                                    if (TEMPLATE!=null || false) {
+
+                                        Log.d(TAG, "BIOMETRIA EXISTENTE ... INICIANDO GEOMANO");
+                                        // Existe Biometria
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                txvMarcacionLed01.setVisibility(View.VISIBLE);
+                                                txvMarcacionLed02.setVisibility(View.VISIBLE);
+                                                txvMarcacionLed03.setVisibility(View.VISIBLE);
+                                                txvMarcacionLed04.setVisibility(View.VISIBLE);
+                                                imgViewMarcacionGeomano.setVisibility(View.VISIBLE);
+                                            }
+                                        });
+
+                                        Thread verificarMano = new Thread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "ABORT", null);
+                                                util.sleep(50);
+
+                                                objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "VERIFY_ON_EXTERNAL_DATA", TEMPLATE);
+                                                util.sleep(50);
+
+                                                boolean continuar = true;
+                                                boolean fallo = false;
+
+                                                while (continuar) {
+                                                    String res = objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "SEND_STATUS_CRC", null);
+                                                    String tmp = objHandPunch.OperarStatus(res,"");
+
+                                                    if (tmp.equalsIgnoreCase("Exito")){
+                                                        Log.d("HandPunch","EXITO");
+                                                        continuar = false;
+                                                    }
+
+                                                    if (tmp.equalsIgnoreCase("Fallo")){
+                                                        Log.d("HandPunch","FALLO");
+                                                        fallo = true;
+                                                        // FALLO AL CAPTURAR MANO
+
+                                                        continuar = false;
+                                                    }
+
+                                                    util.sleep(50);
+                                                }
+
+                                                if (fallo) {
+
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            txvMarcacionLed01.setVisibility(View.INVISIBLE);
+                                                            txvMarcacionLed02.setVisibility(View.INVISIBLE);
+                                                            txvMarcacionLed03.setVisibility(View.INVISIBLE);
+                                                            txvMarcacionLed04.setVisibility(View.INVISIBLE);
+                                                            imgViewMarcacionGeomano.setVisibility(View.INVISIBLE);
+                                                        }
+                                                    });
+
+
+                                                    Log.d("MarcacionMasterTAG", "FINALIZO MARCACION");
+                                                    MARCACION_ACTIVA = false;
+                                                    MODO_MARCACION = "";
+                                                    TIEMPO_ACTIVO = 5;
+                                                    MarcacionKO(btSocket01.getOutputStream());
+                                                    mNombre = NOMBRE_PERSONAL_MANO;
+                                                    mTarjeta = INDICE;
+                                                    mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                                    mMensajeSecundario = "ERROR AL CAPTURAR MANO";
+                                                    MarcacionUI();
+
+                                                } else {
+                                                    TEMPLATE = "";
+                                                    String resultado = objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "SEND_TEMPLATE", null);
+                                                    util.sleep(50);
+
+                                                    Log.d("MarcacionMasterTAG", "OUTPUT: "+resultado);
+
+                                                    // Analizar Score
+                                                    if (resultado.length()>14) {
+                                                        Log.d("MarcacionMasterTAG", "SCORE OK");
+                                                        String SCORE_01 = resultado.substring(12,14);
+                                                        String SCORE_02 = resultado.substring(10,12);
+
+                                                        runOnUiThread(new Runnable() {
+                                                            @Override
+                                                            public void run() {
+                                                                txvMarcacionLed01.setVisibility(View.INVISIBLE);
+                                                                txvMarcacionLed02.setVisibility(View.INVISIBLE);
+                                                                txvMarcacionLed03.setVisibility(View.INVISIBLE);
+                                                                txvMarcacionLed04.setVisibility(View.INVISIBLE);
+                                                                imgViewMarcacionGeomano.setVisibility(View.INVISIBLE);
+                                                            }
+                                                        });
+
+                                                        int s = util.convertHexToDecimal(SCORE_01 + SCORE_02);
+                                                        String array_autorizaciones[] = {};
+                                                        if (s < 100) { // MARCACION AUTORIZADA
+                                                            Log.d("MarcacionMasterTAG", "S<100");
+                                                            String res_marcacion = queriesMarcaciones.ModoMarcacion(INDICE, idTerminal, 10, flag, fechahora.getFechahora(), MODO_MARCACION);
+                                                            array_autorizaciones = res_marcacion.split(",");
+                                                            if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
+
+                                                                Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 1");
+                                                                MARCACION_ACTIVA = false;
+                                                                MODO_MARCACION = "";
+                                                                TIEMPO_ACTIVO = 5;
+                                                                MarcacionOK(btSocket01.getOutputStream());
+                                                                mNombre = array_autorizaciones[0];
+                                                                mTarjeta = array_autorizaciones[1];
+                                                                mMensajePrincipal = array_autorizaciones[2];
+                                                                mMensajeSecundario = array_autorizaciones[3];
+                                                                Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 1");
+                                                                MarcacionUI();
+                                                            } else {
+                                                                Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 2");
+                                                                MARCACION_ACTIVA = false;
+                                                                MODO_MARCACION = "";
+                                                                TIEMPO_ACTIVO = 5;
+                                                                MarcacionKO(btSocket01.getOutputStream());
+                                                                mNombre = array_autorizaciones[0];
+                                                                mTarjeta = array_autorizaciones[1];
+                                                                mMensajePrincipal = array_autorizaciones[2];
+                                                                mMensajeSecundario = array_autorizaciones[3];
+                                                                Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 3");
+                                                                MarcacionUI();
+                                                            }
+
+                                                        } else { // MARCACION NO AUTORIZADA, BIOMETRIA NO COINCIDE
+                                                            Log.d("MarcacionMasterTAG", "S>100");
+                                                            Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 3");
+                                                            MARCACION_ACTIVA = false;
+                                                            MODO_MARCACION = "";
+                                                            TIEMPO_ACTIVO = 5;
+                                                            MarcacionKO(btSocket01.getOutputStream());
+                                                            mNombre = NOMBRE_PERSONAL_MANO;
+                                                            mTarjeta = INDICE;
+                                                            mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                                            mMensajeSecundario = "BIOMETRIA NO COINCIDE";
+                                                            Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 3");
+                                                            MarcacionUI();
+                                                        }
+                                                    }
+                                                }
+
+
+
+                                                Thread.currentThread().interrupt();
+                                            }
+                                        });
+
+                                        verificarMano.start();
+
+                                    } else {
+                                        Log.d(TAG, "BIOMETRIA NO EXISTENTE ... ");
+                                        // No Existe Biometria
+                                        Log.d(TAG, "FINALIZO MARCACION");
+                                        MARCACION_ACTIVA = false;
+                                        MODO_MARCACION = "";
+                                        TIEMPO_ACTIVO = 5;
+                                        mNombre = array_autorizaciones[0];
+                                        mTarjeta = array_autorizaciones[1];
+                                        mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                        mMensajeSecundario = "NO EXISTE BIOMETRIA";
+                                        MarcacionKO(btSocket01.getOutputStream());
+                                    }
+
+                                    MarcacionUI();
+
+
+
+                                } else {
+                                    TIEMPO_ACTIVO = 8;
+                                    mNombre = array_autorizaciones[0];
+                                    mTarjeta = array_autorizaciones[1];
+                                    mMensajePrincipal = "";
+                                    mMensajeSecundario = mensaje;
+
+                                    MarcacionUI();
+                                }
+
+                            }
+
+
+                        } else {
+
+                            MARCACION_ACTIVA = false;
+                            MODO_MARCACION = "";
+                            TIEMPO_ACTIVO = 5;
+
+                            if (autorizacion.equalsIgnoreCase("")) { // TEMPORAL Error NO EXISTE TARJETA
+                                MarcacionKO(btSocket01.getOutputStream());
+                                mNombre = "";
+                                mTarjeta = tarjeta;
+                                mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                mMensajeSecundario = "(*)";
+                                MarcacionUI();
+                            } else {
+                                MarcacionKO(btSocket01.getOutputStream());
+                                mNombre = array_autorizaciones[0];
+                                mTarjeta = array_autorizaciones[1];
+                                mMensajePrincipal = array_autorizaciones[2];
+                                mMensajeSecundario = array_autorizaciones[3];
+                                MarcacionUI();
+                            }
+
+                        }
+
+                    } catch (Exception e) {
+                        MARCACION_ACTIVA = false;
+                        MODO_MARCACION = "";
+                        TIEMPO_ACTIVO = 5;
+                        Log.d(TAG, e.getMessage());
+                        MarcacionKO(btSocket01.getOutputStream());
+                        mNombre = "";
+                        mTarjeta = tarjeta;
+                        mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                        mMensajeSecundario = "e000";
+                        MarcacionUI();
+                    }
+
+                } else {
+                    MARCACION_ACTIVA = false;
+                    MODO_MARCACION = "";
+                    TIEMPO_ACTIVO = 5;
+                    Log.v(TAG, "LECTORA NO HABILITADA");
+                    MarcacionKO(btSocket01.getOutputStream());
+                    mNombre = "";
+                    mTarjeta = "";
+                    mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                    mMensajeSecundario = "e001";
+                    MarcacionUI();
+                }
             }
         }
     }
@@ -1631,6 +1988,49 @@ public class ActivityPrincipal extends Activity {
 
             }
         });
+    }
+
+    public String analizarModoMarcacion(String lectora) {
+
+        String msj = "";
+
+        switch (lectora) {
+            case "1": // TECLADO
+                msj = "DIGITE TARJETA POR TECLADO";
+                break;
+            case "2": // DNI
+                msj = "INSERTE DNI";
+                break;
+            case "3": // DNI ELECTRONICO
+                msj = "INSERTE DNI ELECTRONICO";
+                break;
+            case "4": // PROXIMIDAD
+                msj = "ESPERANDO TARJ. DE PROXIMIDAD";
+                break;
+            case "5": // PROXIMIDAD
+                msj = "ESPERANDO TARJ. DE PROXIMIDAD";
+                break;
+            case "6": // PROXIMIDAD
+                msj = "ESPERANDO TARJ. DE PROXIMIDAD";
+                break;
+            case "7": // HUELLA SUPREMA
+                msj = "COLOQUE SU DEDO";
+                break;
+            case "8": // BARRA
+                msj = "ESPERANDO BARRA";
+                break;
+            case "9": // BANDA MAGNETICA
+                msj = "ESPERANDO BANDA MAGNETICA";
+                break;
+            case "10": // GEOMANO
+                msj = "COLOQUE SU MANO";
+                break;
+            default:
+                msj = "";
+                break;
+        }
+
+        return msj;
     }
 
     public String hexToDecimalStringProx(String s){
@@ -1827,65 +2227,6 @@ public class ActivityPrincipal extends Activity {
 
     /* -------------------- ADMINISTRACIÓN DE USER INTERFACE --------------------- */
 
-    public void initEventsButtons(boolean visible[], String nombre[]){
-        if (visible[0]){
-            btnEvent01.setVisibility(View.VISIBLE);
-            btnEvent01.setText(nombre[0]);
-        } else {
-            btnEvent01.setVisibility(View.INVISIBLE);
-        }
-
-        if (visible[1]){
-            btnEvent02.setVisibility(View.VISIBLE);
-            btnEvent02.setText(nombre[1]);
-        } else {
-            btnEvent02.setVisibility(View.INVISIBLE);
-        }
-
-        if (visible[2]){
-            btnEvent03.setVisibility(View.VISIBLE);
-            btnEvent03.setText(nombre[2]);
-        } else {
-            btnEvent03.setVisibility(View.INVISIBLE);
-        }
-
-        if (visible[3]){
-            btnEvent04.setVisibility(View.VISIBLE);
-            btnEvent04.setText(nombre[3]);
-        } else {
-            btnEvent04.setVisibility(View.INVISIBLE);
-        }
-
-        if (visible[4]){
-            btnEvent05.setVisibility(View.VISIBLE);
-            btnEvent05.setText(nombre[4]);
-        } else {
-            btnEvent05.setVisibility(View.INVISIBLE);
-        }
-
-        if (visible[5]){
-            btnEvent06.setVisibility(View.VISIBLE);
-            btnEvent06.setText(nombre[5]);
-        } else {
-            btnEvent06.setVisibility(View.INVISIBLE);
-        }
-
-        if (visible[6]){
-            btnEvent07.setVisibility(View.VISIBLE);
-            btnEvent07.setText(nombre[6]);
-        } else {
-            btnEvent07.setVisibility(View.INVISIBLE);
-        }
-
-        if (visible[7]){
-            btnEvent08.setVisibility(View.VISIBLE);
-            btnEvent08.setText(nombre[7]);
-        } else {
-            btnEvent08.setVisibility(View.INVISIBLE);
-        }
-
-    }
-
     public void manageKeyboard(boolean visible){
         tarjetaKey = "";
 
@@ -1907,8 +2248,10 @@ public class ActivityPrincipal extends Activity {
 
             visibleKey = true;
 
-            Date date = new Date();
-            tiempoPasado = date;
+            //Date date = new Date();
+            //tiempoPasado = date;
+
+            TIEMPO_ACTIVO = 5;
         } else {
             txvKeyFondo.setVisibility(View.INVISIBLE);
             txvKeyPantalla.setVisibility(View.INVISIBLE);
@@ -2016,8 +2359,10 @@ public class ActivityPrincipal extends Activity {
         if (dato.equalsIgnoreCase("intro")) {
             if (tarjetaKey.length()==8){
                 MarcacionMaster("TECLADO",tarjetaKey);
-                Date date = new Date();
-                tiempoPasado = date;
+                //Date date = new Date();
+                //tiempoPasado = date;
+
+                TIEMPO_ACTIVO = 5;
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -2035,8 +2380,10 @@ public class ActivityPrincipal extends Activity {
                 if (tarjetaKey.length()>0){
                     tarjetaKey = tarjetaKey.substring(0,(tarjetaKey.length()-1));
                     txvKeyPantalla.setText(tarjetaKey);
-                    Date date = new Date();
-                    tiempoPasado = date;
+                    //Date date = new Date();
+                    //tiempoPasado = date;
+
+                    TIEMPO_ACTIVO = 5;
                 } else {
                     manageKeyboard(false);
                     if ( MODO_EVENTO ) {
@@ -2047,13 +2394,17 @@ public class ActivityPrincipal extends Activity {
                 }
             } else {
                 if (tarjetaKey.length()<7){
-                    Date date = new Date();
-                    tiempoPasado = date;
+                    //Date date = new Date();
+                    //tiempoPasado = date;
+
+                    TIEMPO_ACTIVO = 5;
                     tarjetaKey = tarjetaKey + dato;
                     txvKeyPantalla.setText(tarjetaKey);
                 } else {
-                    Date date = new Date();
-                    tiempoPasado = date;
+                    //Date date = new Date();
+                    //tiempoPasado = date;
+
+                    TIEMPO_ACTIVO = 5;
                     tarjetaKey = tarjetaKey + dato;
                     txvKeyPantalla.setText(tarjetaKey);
                     MarcacionMaster("TECLADO",tarjetaKey);
@@ -2074,6 +2425,7 @@ public class ActivityPrincipal extends Activity {
     }
 
 
+
     /* -------------------------------EVALUAR TRAMA ------------------------------- */
 
     public void evaluarTrama(String origen, String trama) {
@@ -2087,7 +2439,11 @@ public class ActivityPrincipal extends Activity {
                 //26 4011000000000000000069ba0a
                 switch (objArduino.getTipoMensaje()){
                     case "00":
-                        if (activityActive.equals("Principal")){
+
+                        // Analizar ADC
+                        boolean b = analizarADC(objArduino.getNroLector(), String.valueOf(util.convertHexToDecimal(objArduino.getDatosLector().substring(0, 2))));
+
+                        if (activityActive.equals("Principal") && !b){
 
                             if( MODO_EVENTO ){
                                 // no ace==ptamos nada de marcaciones
@@ -2120,17 +2476,12 @@ public class ActivityPrincipal extends Activity {
                                             }
                                         }
                                     });
-
-
-
-
                                 }
                             } else {
                                 String flagRead = objArduino.getFlagRead();
                                 String tarjeta = objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin());
                                 Log.v("TEMPUS: ",tarjeta);
                                 MarcacionMaster(flagRead,tarjeta);
-
                                 // Marcando
                                 runOnUiThread(new Runnable() {
                                     @Override
@@ -2317,63 +2668,55 @@ public class ActivityPrincipal extends Activity {
     }
 
 
+    public boolean analizarADC(String msj, String valor) {
+        if (msj.equalsIgnoreCase("44")) {
+            logManager.RegisterLogTXT("BA="+valor+"\n");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
     /* ------------------------- RUTINAS THREAD SERIALES ------------------------- */
 
-    Thread threadSerial01 = new Thread(new Runnable() {
+    Thread threadSerial01UPD = new Thread(new Runnable() {
         @Override
         public void run() {
 
             String acumulador = "";
 
             while (true) {
-
-                if (ctrlThreadSerial01Enabled) {
+                if (!BT_01_IS_CONNECTED) {
+                    util.sleep(1000);
+                } else {
                     try {
                         byte[] rawBytes = new byte[1];
                         btSocket01.getInputStream().read(rawBytes);
-
                         acumulador = acumulador + util.byteArrayToHexString(rawBytes);
-
                         if (acumulador.length() == 10) {
                             if (!acumulador.equalsIgnoreCase("244f415841")) {
                                 acumulador = acumulador.substring(2, acumulador.length());
                             }
                         }
-
                         if (acumulador.length() == 108) {
                             Log.v(TAG, "Trama Arduino - " + acumulador);
-                            evaluarTrama("Arduino",acumulador);
+                            evaluarTrama("Arduino", acumulador);
                             objArduino.limpiarTramaArduino();
                             acumulador = "";
                         }
-
                     } catch (Exception e) {
-                        try {
-                            Log.d(TAG + "EX01","routine catch 1 returned exception "+e.getMessage() + " ~ " + String.valueOf(btSocket01.getSocket().isConnected()));
-                            if (!btSocket01.getSocket().isConnected() || e.getMessage().contains("bt socket closed")){
-                                Log.wtf(TAG + "EX11","Entro en reparacion");
-
-                                Date date = new Date();
-                                TIEMPO_PASADO_BT01 = date;
-                                STATUS_CONNECT_01 = false;
-                                btSocket01.closeBT();
-                            }
-
-                        } catch(Exception ex) {
-                            Log.d(TAG,"routine catch 1.5 returned exception "+ex.getMessage());
+                        if (!isBooting) {
+                            BT_01_IS_CONNECTED = false;
                         }
-                        ctrlThreadSerial01Enabled = false;
                     }
-                } else {
-                    Log.d(TAG,"ctrlThreadSerial01Enabled "+ctrlThreadSerial01Enabled);
-                    util.sleep(1000);
                 }
-
             }
         }
     });
 
-    Thread threadSerial02 = new Thread(new Runnable() {
+
+    Thread threadSerial02UPD = new Thread(new Runnable() {
         @Override
         public void run() {
 
@@ -2381,7 +2724,9 @@ public class ActivityPrincipal extends Activity {
             int tamano = 26;
 
             while (true) {
-                if (ctrlThreadSerial02Enabled) {
+                if (!BT_02_IS_CONNECTED) {
+                    util.sleep(1000);
+                } else {
                     try {
                         byte[] rawBytes = new byte[1];
                         btSocket02.getInputStream().read(rawBytes);
@@ -2414,55 +2759,12 @@ public class ActivityPrincipal extends Activity {
                         }
 
                     } catch (Exception e) {
-                        try {
-                            Log.d(TAG + "EX02","routine catch 1 returned exception "+e.getMessage() + " ~ " + String.valueOf(btSocket02.getSocket().isConnected()));
-                            if (!btSocket02.getSocket().isConnected() || e.getMessage().contains("bt socket closed")){
-                                Log.wtf(TAG + "EX12","Entro en reparacion");
-
-                                Date date = new Date();
-                                TIEMPO_PASADO_BT02 = date;
-                                STATUS_CONNECT_02 = false;
-                                btSocket02.closeBT();
-                            }
-
-                        } catch(Exception ex) {
-                            Log.d(TAG,"routine catch 1.5 returned exception "+ex.getMessage());
+                        if (!isBooting){
+                            BT_02_IS_CONNECTED = false;
                         }
-                        ctrlThreadSerial02Enabled = false;
-                    }
-                } else {
-                    Log.d(TAG,"ctrlThreadSerial02Enabled "+ctrlThreadSerial02Enabled);
-                    util.sleep(1000);
-                }
-
-            }
-        }
-    });
-
-    Thread threadSerial03 = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            /*
-            while (true) {
-                try {
-                    byte[] rawBytes = new byte[1];
-                    btSocket03.getInputStream().read(rawBytes);
-                } catch (Exception e) {
-                    try {
-                        Log.d(TAG,"routine catch 1 returned exception "+e.getMessage() + " ~ " + String.valueOf(btSocket03.getSocket().isConnected()));
-                        if (!btSocket03.getSocket().isConnected() || e.getMessage().contains("bt socket closed")){
-                            //btSocket03.closeBT();
-                            Date date = new Date();
-                            TIEMPO_PASADO_BT03 = date;
-                            STATUS_CONNECT_03 = false;
-                        }
-
-                    } catch(Exception ex) {
-                        Log.d(TAG,"routine catch 1.5 returned exception "+ex.getMessage());
                     }
                 }
             }
-            */
         }
     });
 
@@ -2473,16 +2775,18 @@ public class ActivityPrincipal extends Activity {
         Log.v(TAG,"CONTROL GENERAL");
 
         if (c1 && c2 && c3){ // Si todos los seriales estan conectados podemos hacer algo
+
             if (isBooting){
                 isBooting = false;
+                INICIADO = true;
                 util.sleep(1000);
                 try {
                     ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
                 } catch(Exception e) {
                     Log.v(TAG,"ERROR ESTABLECIENDO CONEXION CON HUELLERO");
                 }
-
             }
+
             Log.v(TAG,"SERIALES OK");
             ctrlThreadPantallaEnabled = true;
             ctrlThreadSyncMarcasEnabled = true;
@@ -2513,13 +2817,13 @@ public class ActivityPrincipal extends Activity {
             }
 
             if (isBooting){
+
                 showMsgBoot(true,"Iniciando Sistema \n"+detail+"]");
+
             } else {
                 if (!isCharging) {
 
-                    // Emitimos alerta de energia
-
-                    //detail = detail + "\nNO CONECTADO A ENERGÍA";
+                    logManager.RegisterLogTXT("APAGANDO EQUIPO 15s");
                     showMsgBoot(true,"Apagando Equipo en 15 segundos ... espere ...");
 
                     c = 15;
@@ -2536,168 +2840,26 @@ public class ActivityPrincipal extends Activity {
                             } catch (Exception e) {
                                 Log.wtf("WTF",e.getMessage());
                             }
-
-                            /*
-                            while(true){
-                                if (c <= 0){
-                                    c = 0;
-                                    try {
-                                        Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
-                                        proc.waitFor();
-                                    } catch (Exception e) {
-                                        Log.wtf("WTF",e.getMessage());
-                                    }
-                                    util.sleep(2000);
-                                } else {
-                                    c = c-1;
-                                    runOnUiThread(new Runnable() { // Cruce con hilo padre WTF
-                                        @Override
-                                        public void run() {
-                                            showMsgBoot(true,"Apagando Equipo en "+String.valueOf(c)+" segundos ...");
-                                        }
-                                    });
-                                    util.sleep(1000);
-                                }
-                            }
-                            */
                         }
                     });
 
+                    logManager.RegisterLogTXT("Apagando");
                     threadShutdown.start();
 
                 } else {
+                    logManager.RegisterLogTXT("Reconectando Interfaces");
                     c = 100;
                     detail = detail + "\n";
                     showMsgBoot(true,"Reconectando Interfaces \n"+detail+"]");
+                    INICIADO = false;
                 }
 
             }
 
-        }
-    }
-
-    public void mostrarReparador(boolean r1,boolean r2,boolean r3) {
-        if (r1 && r2 && r3){
-            // MOSTRAR INTERFAZ DE RECONECCION
-            buttonWarning01.setVisibility(View.VISIBLE);
-            buttonWarning02.setVisibility(View.VISIBLE);
-        } else {
-            // DESAPARECER INTERFAZ DE RECONECCION
-            buttonWarning01.setVisibility(View.INVISIBLE);
-            buttonWarning02.setVisibility(View.INVISIBLE);
         }
     }
 
     /* --- RUTINAS THREAD CONTROL --- */
-
-
-    Thread threadControlSerial01 = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-            while (true) {
-
-                Date date = new Date();
-                TIEMPO_PRESENTE_BT01 = date;
-
-                if (STATUS_CONNECT_01) {
-                    Log.v(TAG,"STATUS_CONNECT_01: OK");
-                } else {
-                    long dif = (TIEMPO_PRESENTE_BT01.getTime()-TIEMPO_PASADO_BT01.getTime())/1000;
-                    if (dif <= TIEMPO_CONN_BT) {
-                        Log.v(TAG,
-                                "Conectando SERIAL01 - " +
-                                        "TIEMPO_PRESENTE_BT01: " + TIEMPO_PRESENTE_BT01.toString() + " | " +
-                                        "TIEMPO_PASADO_BT01:" + TIEMPO_PASADO_BT01.toString());
-
-                        STATUS_CONNECT_01 = btSocket01.Connect();
-                        util.sleep(1000);
-                    } else {
-                        Log.wtf(TAG,"No pudo iniciar Serial01");
-                        HARD_FAIL_01 = true;
-                    }
-                }
-
-                if (REINTENTO_INFINITO){
-                    Date dateP = new Date();
-                    TIEMPO_PASADO_BT01 = dateP;
-                }
-                util.sleep(1000);
-            }
-
-        }
-    });
-
-    Thread threadControlSerial02 = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-            while (true) {
-
-                Date date = new Date();
-                TIEMPO_PRESENTE_BT02 = date;
-
-                if (STATUS_CONNECT_02) {
-                    Log.v(TAG,"STATUS_CONNECT_02: OK");
-                } else {
-                    long dif = (TIEMPO_PRESENTE_BT02.getTime()-TIEMPO_PASADO_BT02.getTime())/1000;
-                    if (dif <= TIEMPO_CONN_BT) {
-                        Log.v(TAG,
-                                "Conectando SERIAL02 - " +
-                                        "TIEMPO_PRESENTE_BT02: " + TIEMPO_PRESENTE_BT02.toString() + " | " +
-                                        "TIEMPO_PASADO_BT02:" + TIEMPO_PASADO_BT02.toString());
-
-                        STATUS_CONNECT_02 = btSocket02.Connect();
-                        util.sleep(1000);
-                    } else {
-                        Log.wtf(TAG,"No pudo iniciar Serial02");
-                        HARD_FAIL_02 = true;
-                    }
-                }
-
-                if (REINTENTO_INFINITO){
-                    Date dateP = new Date();
-                    TIEMPO_PASADO_BT02 = dateP;
-                }
-
-                util.sleep(1000);
-            }
-        }
-    });
-
-    Thread threadControlSerial03 = new Thread(new Runnable() {
-        @Override
-        public void run() {
-            while (true) {
-                Date date = new Date();
-                TIEMPO_PRESENTE_BT03 = date;
-
-                if (STATUS_CONNECT_03) {
-                    Log.v(TAG,"STATUS_CONNECT_03: OK");
-                } else {
-                    long dif = (TIEMPO_PRESENTE_BT03.getTime()-TIEMPO_PASADO_BT03.getTime())/1000;
-                    if (dif <= TIEMPO_CONN_BT) {
-                        Log.v(TAG,
-                                "Conectando SERIAL03 - " +
-                                        "TIEMPO_PRESENTE_BT03: " + TIEMPO_PRESENTE_BT03.toString() + " | " +
-                                        "TIEMPO_PASADO_BT03:" + TIEMPO_PASADO_BT03.toString());
-                        STATUS_CONNECT_03 = btSocket03.Connect();
-                        util.sleep(1000);
-                    } else {
-                        Log.wtf(TAG,"No pudo iniciar Serial03");
-                        HARD_FAIL_03 = true;
-                    }
-                }
-
-                if (REINTENTO_INFINITO){
-                    Date dateP = new Date();
-                    TIEMPO_PASADO_BT03 = dateP;
-                }
-
-                util.sleep(1000);
-            }
-        }
-    });
 
     Thread threadControlPrincipal = new Thread(new Runnable() {
         @Override
@@ -2710,47 +2872,40 @@ public class ActivityPrincipal extends Activity {
                     public void run() {
                         switch ( TIPO_TERMINAL ) {
                             case 1:
-                                controlGeneral(STATUS_CONNECT_01,true,true);
+                                controlGeneral(BT_01_IS_CONNECTED,true,true);
                                 if (HARD_FAIL_01) {
                                     buttonWarning01.setVisibility(View.VISIBLE);
                                     buttonWarning02.setVisibility(View.VISIBLE);
                                 }
-                                //mostrarReparador(HARD_FAIL_01,true,true);
                                 break;
                             case 2:
-                                controlGeneral(STATUS_CONNECT_01,STATUS_CONNECT_02,true);
+                                controlGeneral(BT_01_IS_CONNECTED,BT_02_IS_CONNECTED,true);
                                 if (HARD_FAIL_01 || HARD_FAIL_02) {
                                     buttonWarning01.setVisibility(View.VISIBLE);
                                     buttonWarning02.setVisibility(View.VISIBLE);
                                 }
-                                //mostrarReparador(HARD_FAIL_01,HARD_FAIL_02,true);
                                 break;
                             case 3:
-                                controlGeneral(STATUS_CONNECT_01,true,STATUS_CONNECT_03);
+                                controlGeneral(BT_01_IS_CONNECTED,true,BT_03_IS_CONNECTED);
                                 if (HARD_FAIL_01 || HARD_FAIL_03) {
                                     buttonWarning01.setVisibility(View.VISIBLE);
                                     buttonWarning02.setVisibility(View.VISIBLE);
                                 }
-                                //mostrarReparador(HARD_FAIL_01,true,HARD_FAIL_03);
                                 break;
                             case 4:
-                                controlGeneral(STATUS_CONNECT_01,STATUS_CONNECT_02,STATUS_CONNECT_03);
+                                controlGeneral(BT_01_IS_CONNECTED,BT_02_IS_CONNECTED,BT_03_IS_CONNECTED);
                                 if (HARD_FAIL_01 || HARD_FAIL_02 || HARD_FAIL_03) {
                                     buttonWarning01.setVisibility(View.VISIBLE);
                                     buttonWarning02.setVisibility(View.VISIBLE);
                                 }
-                                //mostrarReparador(HARD_FAIL_01,HARD_FAIL_02,HARD_FAIL_03);
                                 break;
-
                             case 5:
-                                controlGeneral(true,STATUS_CONNECT_02,true);
+                                controlGeneral(true,BT_02_IS_CONNECTED,true);
                                 if (HARD_FAIL_01 || HARD_FAIL_02 || HARD_FAIL_03) {
                                     buttonWarning01.setVisibility(View.VISIBLE);
                                     buttonWarning02.setVisibility(View.VISIBLE);
                                 }
-                                //mostrarReparador(HARD_FAIL_01,HARD_FAIL_02,HARD_FAIL_03);
                                 break;
-
                             default:
                                 break;
                         }
@@ -2772,37 +2927,35 @@ public class ActivityPrincipal extends Activity {
             while (true) {
                 if (ctrlThreadPantallaEnabled){
 
-                    // Control de Marcación
-
-                    Log.d("threadControlPantalla: ","Flag: " + flag);
+                    Log.d("threadControlPantalla: ","[FLAG=" + flag + "] - [TIEMPO_ACTIVO=" + TIEMPO_ACTIVO + "] - [MARCACION_ACTIVA=" + MARCACION_ACTIVA + "] - [MODO_MARCACION=" + MODO_MARCACION + "]");
 
                     try {
-                        Date date = new Date();
-                        tiempoPresente = date;
-                        long dif = (tiempoPresente.getTime() - tiempoPasado.getTime()) / 1000;
+                        if (TIEMPO_ACTIVO <= 0) {
 
-                        Log.v("threadControlPantalla: ","dif normal: " + dif);
+                            if (TIEMPO_ACTIVO <= -3600) { TIEMPO_ACTIVO = 0; }
 
-                        if (dif >= tiempoMarcacion) {
+                            MARCACION_ACTIVA = false;
+                            MODO_MARCACION = "";
 
                             Log.v("threadControlPantalla: ","1");
-
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+
+                                    txvMarcacionLed01.setVisibility(View.INVISIBLE);
+                                    txvMarcacionLed02.setVisibility(View.INVISIBLE);
+                                    txvMarcacionLed03.setVisibility(View.INVISIBLE);
+                                    txvMarcacionLed04.setVisibility(View.INVISIBLE);
+                                    imgViewMarcacionGeomano.setVisibility(View.INVISIBLE);
+
                                     manageKeyboard(false);
                                     manageLayerMarcacion(false);
 
                                     if ( MODO_EVENTO ){
-
                                         Log.v("threadControlPantalla: ","2");
-
-                                        if((tiempoPresente.getTime() - tiempoPasado.getTime()) / 1000 >= tiempoFlag){
-                                            Log.v("threadControlPantalla: ","3");
-                                            actualizarFlag(null,null);
-                                            manageAccessButtons(false);
-                                            txvMensajePantalla.setText("SELECCIONE EVENTO");
-                                        }
+                                        actualizarFlag(null,null);
+                                        manageAccessButtons(false);
+                                        txvMensajePantalla.setText("SELECCIONE EVENTO");
                                     }
                                 }
                             });
@@ -2812,39 +2965,7 @@ public class ActivityPrincipal extends Activity {
                         Log.e(TAG,e.getMessage());
                     }
 
-                    // Control de Patron
-
-                    /*
-                    try {
-                        Date date = new Date();
-                        tiempoPresentePatron = date;
-                        long dif = (tiempoPresentePatron.getTime() - tiempoPasadoPatron.getTime()) / 1000;
-
-                        if (dif >= tiempoPatron) {
-
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    patronAcceso = "";
-                                    areaAccessEnabled = false;
-                                    manageAccessButtons(false);
-
-                                    if (MODO_EVENTO){
-                                        txvMensajePantalla.setText("SELECCIONE EVENTO");
-                                    } else {
-                                        txvMensajePantalla.setText("PASE SU TARJETA");
-                                    }
-
-                                    MODO_PATRON = false;
-                                }
-                            });
-                        }
-
-
-                    } catch(Exception e) {
-                        Log.e(TAG,e.getMessage());
-                    }
-                    */
+                    TIEMPO_ACTIVO = TIEMPO_ACTIVO - 1;
                 }
                 util.sleep(1000);
             }
@@ -2981,33 +3102,10 @@ public class ActivityPrincipal extends Activity {
                 } else {
                     Log.d("ETH_HILO","Eth0 Disabled ... ");
 
-
                     AdministrarOTG(btSocket01.getOutputStream(), false); //CARGAR
 
                     util.sleep(10000);
                 }
-
-
-
-                /*
-
-                DBManager db = new DBManager(ActivityPrincipal.context);
-                String resultado = db.valexecSQL("SELECT PARAMETRO FROM TERMINAL_CONFIGURACION");
-                String valor = resultado.split(",")[1];
-
-                if (valor.equalsIgnoreCase("1")){
-                    // levantamos ethernet
-                    AdministrarOTG(btSocket01.getOutputStream(),"1");
-                    util.sleep(600000); // 10min
-                    AdministrarOTG(btSocket01.getOutputStream(),"0");
-                    util.sleep(600000); // 10min
-                } else {
-                    // apagamos ethernet
-                    AdministrarOTG(btSocket01.getOutputStream(),"0");
-                    util.sleep(600000); // 10min
-                }
-
-                */
 
             }
         }
@@ -3026,78 +3124,15 @@ public class ActivityPrincipal extends Activity {
                             Calendar calendar = Calendar.getInstance();
                             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
                             txcHora.setText(simpleDateFormat.format(calendar.getTime()));
-//Log.d("Autorizaciones","Set Fechahora: " + simpleDateFormat.format(calendar.getTime()));
                         } catch (Exception e) {
                             Log.wtf("Fechahora_HILO","ERROR EN SET TEXT txcHora... " +e.getMessage());
                         }
                     }
                 });
-
-//txcHora.setText(simpleDateFormat.format(calendar.getTime()));
                 util.sleep(250);
             }
         }
     });
-
-
-    Thread threadEthernet = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-            while (true) {
-                Date date = new Date();
-                TIEMPO_PRESENTE_BT01 = date;
-
-                if (STATUS_ETHERNET) {
-                    Log.v(TAG,"STATUS_ETHERNET: OK");
-                } else {
-                    STATUS_ETHERNET = btEthernet.Connect();
-                    util.sleep(1000);
-                }
-                util.sleep(1000);
-            }
-
-        }
-    });
-
-
-
-    Thread threadEthernetRead = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-            while (true) {
-
-                if (STATUS_ETHERNET) {
-                    try {
-                        byte[] rawBytes = new byte[20000000];
-                        btEthernet.getInputStream().read(rawBytes);
-                        Log.d(TAG,"LLEGO ETHERNET: " + rawBytes);
-                    } catch (Exception e) {
-                        Log.e(TAG,"btEthernet: " + e.getMessage());
-                    }
-                } else {
-                    Log.d(TAG,"STATUS_ETHERNET down");
-                    util.sleep(1000);
-                }
-
-            }
-
-        }
-    });
-
-
-    public static void WriteData(OutputStream out, String data) {
-        Log.v("ETHERNET", "Write Activado");
-        try {
-            byte[] a = data.getBytes();
-            out.write(a);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
 
 }
 
