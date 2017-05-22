@@ -13,7 +13,9 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Process;
+import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,7 +26,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tempus.proyectos.data.DBManager;
+import com.tempus.proyectos.log.Battery;
+import com.tempus.proyectos.log.LogManager;
+import com.tempus.proyectos.util.Fechahora;
+import com.tempus.proyectos.util.InternalFile;
+import com.tempus.proyectos.util.Utilities;
 import com.tempus.proyectos.util.WifiReceiver;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 
 /**
@@ -32,6 +45,12 @@ import com.tempus.proyectos.util.WifiReceiver;
  */
 
 public class FragmentBar extends Fragment {
+
+    LogManager logManager;
+    Fechahora fechahora;
+    static final String DIRECTORY = Environment.getExternalStorageDirectory().toString() + "/tempus/";
+    static final String FILE = "log.txt";
+    Utilities utilities;
 
 
     int rBatteryTemp;
@@ -48,11 +67,19 @@ public class FragmentBar extends Fragment {
     TextView txvIdterminal;
     ImageView imgViewReplica;
 
+    Battery battery;
+
+
     int i = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState){
+
+        utilities = new Utilities();
+        battery = new Battery(getActivity());
+        logManager = new LogManager();
+        fechahora = new Fechahora();
 
         rBatteryTemp = 0;
         rBatteryLevel = 0;
@@ -168,6 +195,25 @@ public class FragmentBar extends Fragment {
                     ActivityPrincipal.isCharging = false;
                 }
 
+                String fh = fechahora.getFechahora();
+                String[] data = battery.updateBatteryData(intent);
+                String BATTERY_HEALTH = data[0];
+                String BATTERY_PERCENTAGE = data[1];
+                String BATTERY_PLUGGED = data[2];
+                String BATTERY_CHARGING_STATUS = data[3];
+                String BATTERY_TEMPERATURE = data[5];
+                String BATTERY_VOLTAGE = data[6];
+//
+                String cadena = fh + ":" + BATTERY_HEALTH + "~" + BATTERY_PERCENTAGE + "~" + BATTERY_PLUGGED
+                        + "~" + BATTERY_CHARGING_STATUS  + "~" + BATTERY_TEMPERATURE
+                        + "~" + BATTERY_VOLTAGE + "\n";
+//
+                //logManager.RegisterLogTXT(cadena);
+
+                writeToFile(DIRECTORY,FILE,cadena);
+
+                ADC();
+
             } catch(Exception e) {
                 Log.e("BroadcastReceiver","Bateria Error: "+e.getMessage());
             }
@@ -175,6 +221,46 @@ public class FragmentBar extends Fragment {
             txvIdterminal.setText(ActivityPrincipal.idTerminal);
         }
     };
+
+    public void writeToFile(String directory, String filename, String data ){
+        File out;
+        OutputStreamWriter outStreamWriter = null;
+        FileOutputStream outStream = null;
+
+        out = new File(new File(directory), filename);
+
+        if ( out.exists() == false ){
+            try {
+                out.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            outStream = new FileOutputStream(out, true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        outStreamWriter = new OutputStreamWriter(outStream);
+
+        try {
+            outStreamWriter.append(data);
+            outStreamWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void ADC() {
+        Log.v("ADC", "Enviando ... ");
+        try {
+            ActivityPrincipal.btSocket01.getOutputStream().write(utilities.hexStringToByteArray("244F4158410013440000000000000000000041"));
+        } catch (IOException e) {
+            Log.e("ADC", "Error: " + e.getMessage());
+        }
+    }
 
 
     /* ===================================== RUTINA ROOT ===================================== */

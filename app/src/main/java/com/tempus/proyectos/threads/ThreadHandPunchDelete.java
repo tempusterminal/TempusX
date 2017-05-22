@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.tempus.proyectos.data.model.Biometrias;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
-import com.tempus.proyectos.tempusx.ActivityBiometria;
+import com.tempus.proyectos.tempusx.ActivityGeomano;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Utilities;
 
@@ -33,10 +33,12 @@ public class ThreadHandPunchDelete implements Runnable {
     @Override
     public void run() {
         try {
-            Biometrias objBiometria = ActivityBiometria.objEspacio02;
+            Biometrias objBiometria = ActivityGeomano.objEspacio01;
+
             // Borramos template
-            queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityPrincipal.context);
+            queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this.activity);
             String respuesta = queriesPersonalTipolectoraBiometria.EliminarBiometrias(objBiometria);
+
             mensajeRespuesta = respuesta;
 
             if (respuesta.equalsIgnoreCase("Biometria eliminada")){
@@ -57,39 +59,38 @@ public class ThreadHandPunchDelete implements Runnable {
 
     public void cancelarEnroll(){
 
-        ActivityBiometria.ocupado = false;
-        ActivityBiometria.accionCancel = false;
-        ActivityBiometria.idTipoDetaBio = 0;
-        ActivityBiometria.objEspacio01 = null;
-        ActivityBiometria.objEspacio02 = null;
+        ActivityGeomano.idTipoDetaBio = 0;
+        ActivityGeomano.objEspacio01 = null;
 
         this.activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (exito){
-                    ActivityBiometria.txvHuellaGif.setVisibility(View.INVISIBLE);
-                    ActivityBiometria.imgViewResultOK.setVisibility(View.VISIBLE);
-                    ActivityBiometria.imgViewResultKO.setVisibility(View.INVISIBLE);
-                    ActivityBiometria.txvHuellaTexto.setText(mensajeRespuesta);
-                    ActivityBiometria.txvHuellaTexto.setVisibility(View.VISIBLE);
+                    ActivityGeomano.imgViewGeomano.setVisibility(View.INVISIBLE);
+                    ActivityGeomano.imgViewResultOK.setVisibility(View.VISIBLE);
+                    ActivityGeomano.imgViewResultKO.setVisibility(View.INVISIBLE);
+                    ActivityGeomano.txvManoTexto.setText(mensajeRespuesta);
+                    ActivityGeomano.txvManoTexto.setVisibility(View.VISIBLE);
                 } else {
-                    ActivityBiometria.txvHuellaGif.setVisibility(View.INVISIBLE);
-                    ActivityBiometria.imgViewResultKO.setVisibility(View.VISIBLE);
-                    ActivityBiometria.imgViewResultOK.setVisibility(View.INVISIBLE);
-                    ActivityBiometria.txvHuellaTexto.setText(mensajeRespuesta);
-                    ActivityBiometria.txvHuellaTexto.setVisibility(View.VISIBLE);
+                    ActivityGeomano.imgViewGeomano.setVisibility(View.INVISIBLE);
+                    ActivityGeomano.imgViewResultKO.setVisibility(View.VISIBLE);
+                    ActivityGeomano.imgViewResultOK.setVisibility(View.INVISIBLE);
+                    ActivityGeomano.txvManoTexto.setText(mensajeRespuesta);
+                    ActivityGeomano.txvManoTexto.setVisibility(View.VISIBLE);
                 }
             }
         });
 
         util.sleep(1750);
 
+
         this.activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ActivityBiometria.manageScreenEnroll(false);
-                ActivityBiometria.dialog.viewDialog.dismiss();
-                ActivityBiometria.analizarRegistroBiometriaList(activity);
+
+                ActivityGeomano.manageScreenEnroll(false);
+                //ActivityGeomano.dialog.viewDialog.dismiss();
+                ActivityGeomano.analizarRegistroBiometriaList(activity);
             }
         });
     }

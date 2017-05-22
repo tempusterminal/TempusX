@@ -50,6 +50,7 @@ public class ThreadSupremaEnroll implements Runnable {
         valorIndice = String.valueOf(ActivityBiometria.indice);
         parametros[0] = ActivityPrincipal.objSuprema.convertCardToEnroll(valorIndice);
         Log.e("TEMPUS: ", String.valueOf(parametros[0]));
+
         try {
             ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"EnrollByScan",parametros);
         } catch (Exception e) {

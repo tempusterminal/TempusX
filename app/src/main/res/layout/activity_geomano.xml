@@ -262,13 +262,23 @@
         android:layout_width="@dimen/acBiometria_btnExitLstHuella_width"
         android:layout_height="@dimen/acBiometria_btnExitLstHuella_height"
         android:layout_alignBottom="@+id/btnConsultarHuella"
-        android:layout_alignEnd="@+id/lstHuella"
+        android:layout_alignEnd="@+id/lstMano"
         android:layout_marginBottom="@dimen/acBiometria_btnExitLstHuella_marginBotton"
         android:id="@+id/btnExitLstMano" />
 
 
 
-
+    <TextView
+        android:text="(*) Debe colocar su mano alrededor de 3 veces aproximadamente (puede variar)."
+        android:layout_width="@dimen/acBiometria_txvDescCustomer_width"
+        android:layout_height="@dimen/acBiometria_txvDescCustomer_height"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="@dimen/acBiometria_txvDescCustomer_marginLeft"
+        android:layout_marginTop="@dimen/acBiometria_txvDescCustomer_marginTop"
+        android:textSize="@dimen/acBiometria_txvDescCustomer_textSize"
+        android:textColor="@color/colorTexto"
+        android:gravity="center"
+        android:id="@+id/txvDescCustomerMano" />
 
 
 
@@ -281,7 +291,8 @@
         android:layout_marginTop="@dimen/fondo1_marginTop"
         android:layout_marginLeft="@dimen/fondo2_marginLeft"
         android:background="#dd000000"
-        android:id="@+id/txvMano" />
+        android:id="@+id/txvManoFondo" />
+
 
 
     <ImageView
@@ -291,7 +302,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:src="@drawable/geomano"
-        android:id="@+id/geomano" />
+        android:id="@+id/imgViewGeomano" />
 
 
 
@@ -333,15 +344,35 @@
 
 
     <TextView
-        android:text="COLOQUE\nSU\nMANO"
+        android:text=""
         android:textStyle="bold"
-        android:textSize="35sp"
-        android:layout_width="wrap_content"
+        android:textSize="32sp"
+        android:layout_width="180dp"
         android:layout_height="wrap_content"
-        android:id="@+id/textView3"
+        android:id="@+id/txvManoTexto"
         android:layout_centerVertical="true"
         android:layout_alignStart="@+id/Titulo"
         android:layout_marginStart="25dp" />
+
+
+    <ImageView
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:src="@drawable/sist2"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="260dp"
+        android:layout_marginTop="50dp"
+        android:id="@+id/imgViewResultOK" />
+
+    <ImageView
+        android:layout_width="220dp"
+        android:layout_height="220dp"
+        android:src="@drawable/sist0"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="260dp"
+        android:layout_marginTop="50dp"
+        android:id="@+id/imgViewResultKO" />
+
 
 
 </RelativeLayout>

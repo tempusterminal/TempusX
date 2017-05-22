@@ -1,0 +1,696 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==================================================================== -->
+    <dimen name="txvSecret_width">70dp</dimen>
+    <dimen name="txvSecret_height">60dp</dimen>
+    <dimen name="txvSecret_marginTop">3.33dp</dimen>
+
+    <dimen name="txvSecret01_marginLeft">3.33dp</dimen>
+    <dimen name="txvSecret02_marginLeft">73.33dp</dimen>
+    <dimen name="txvSecret03_marginLeft">146.66dp</dimen>
+    <!-- ==================================================================== -->
+
+    <dimen name="activity_horizontal_margin">0dp</dimen>
+    <dimen name="activity_vertical_margin">0dp</dimen>
+
+    <!-- Linea Parametros Generales -->
+    <dimen name="linea_width">598.33dp</dimen>
+    <dimen name="linea_height">3.33dp</dimen>
+
+
+    <!-- Linea 1 -->
+    <dimen name="linea1_marginTop">0dp</dimen>
+    <dimen name="linea1_marginLeft">0dp</dimen>
+
+    <!-- Linea 2 -->
+    <dimen name="linea2_marginTop">63.34dp</dimen>
+    <dimen name="linea2_marginLeft">0dp</dimen>
+
+    <!-- Linea 2 Alternativa -->
+    <dimen name="linea2alt_marginTop">46.66dp</dimen>
+    <dimen name="linea2alt_marginLeft">0dp</dimen>
+
+    <!-- Linea 3 -->
+    <dimen name="linea3_marginTop">0dp</dimen>
+    <dimen name="linea3_marginLeft">0dp</dimen>
+
+    <!-- Linea 4 -->
+    <dimen name="linea4_marginTop">23.33dp</dimen>
+    <dimen name="linea4_marginLeft">0dp</dimen>
+
+
+    <!-- Fondo Superior -->
+    <dimen name="fondo1_width">598.33dp</dimen>
+    <dimen name="fondo1_height">66.66dp</dimen>
+    <dimen name="fondo1_marginTop">0dp</dimen>
+    <dimen name="fondo1_marginLeft">0dp</dimen>
+
+    <!-- Fondo Superior Alternativo -->
+    <dimen name="fondo1alt_height">50dp</dimen>
+
+    <!-- Fondo Medio -->
+    <dimen name="fondo2_width">598.33dp</dimen>
+    <dimen name="fondo2_height">240.33dp</dimen>
+    <dimen name="fondo2_marginTop">66.66dp</dimen>
+    <dimen name="fondo2_marginLeft">0dp</dimen>
+
+    <!-- Fondo Medio Alternativo -->
+    <dimen name="fondo2alt_height">256.99dp</dimen>
+    <dimen name="fondo2alt_marginTop">50dp</dimen>
+
+    <!-- Fondo Inferior -->
+    <dimen name="fondo3_width">598.33dp</dimen>
+    <dimen name="fondo3_height">26.66dp</dimen>
+    <dimen name="fondo3_marginTop">307.33dp</dimen>
+    <dimen name="fondo3_marginLeft">0dp</dimen>
+
+
+    <!-- Fondo Flg -->
+    <dimen name="fondoFlg_width">598.33dp</dimen>
+    <dimen name="fondoFlg_height">100dp</dimen>
+    <dimen name="fondoFlg_marginTop">100dp</dimen>
+    <dimen name="fondoFlg_marginLeft">0dp</dimen>
+
+    <!-- Widget Hora -->
+    <dimen name="hora_textSize">55sp</dimen>
+    <dimen name="hora_marginTop">3.33dp</dimen>
+    <dimen name="hora_marginLeft">5.33dp</dimen>
+    <dimen name="hora_width">280.99dp</dimen>
+    <dimen name="hora_height">59.99dp</dimen>
+
+    <!-- Widget Fecha -->
+    <dimen name="fecha_textSize">15sp</dimen>
+    <dimen name="fecha_marginTop">43.33dp</dimen>
+    <dimen name="fecha_marginLeft">453.66dp</dimen>
+    <dimen name="fecha_width">133.33dp</dimen>
+    <dimen name="fecha_height">16.66dp</dimen>
+
+    <!-- Widget Logo -->
+    <dimen name="logo_marginTop">6.66dp</dimen>
+    <dimen name="logo_marginLeft">495.66dp</dimen>
+    <dimen name="logo_width">100dp</dimen>
+    <dimen name="logo_height">36.66dp</dimen>
+
+
+    <!-- ==================================================================== -->
+    <!-- PRINCIPAL -->
+
+    <!-- Widget Botones Accesos General <dimen name="botonAcceso_width">100dp</dimen> -->
+    <dimen name="botonAcceso_width">135dp</dimen>
+    <dimen name="botonAcceso_width_two">220dp</dimen>
+    <dimen name="botonAcceso_height">70.66dp</dimen>
+    <dimen name="botonAcceso_marginTop">93.33dp</dimen>
+    <dimen name="botonAcceso_textSize">25sp</dimen>
+
+    <!-- Boton Acceso para 4 (1 fila) u 8 (2 filas) botones -->
+    <!-- Boton Acceso 1 -->
+    <dimen name="botonAcceso1_marginLeft">25dp</dimen>
+
+    <!-- Boton Acceso 2 -->
+    <dimen name="botonAcceso2_marginLeft">160dp</dimen>
+
+    <!-- Boton Acceso 3 -->
+    <dimen name="botonAcceso3_marginLeft">295dp</dimen>
+
+    <!-- Boton Acceso 4 -->
+    <dimen name="botonAcceso4_marginLeft">430dp</dimen>
+
+    <!-- Boton Acceso para 2 (1 fila) o 4 (2 filas) botones -->
+    <!-- Boton Acceso 1 -->
+    <dimen name="botonAcceso1_marginLeft_24">25dp</dimen>
+
+    <!-- Boton Acceso 2 -->
+    <dimen name="botonAcceso2_marginLeft_24">295dp</dimen>
+
+
+    <!-- Marcacion Nombre -->
+    <dimen name="mWidgetNombre_height">46.66dp</dimen>
+    <dimen name="mWidgetNombre_marginTop">93.33dp</dimen>
+    <dimen name="mWidgetNombre_textSize">35sp</dimen>
+
+    <!-- Marcacion Tarjeta -->
+    <dimen name="mWidgetTarjeta_height">40dp</dimen>
+    <dimen name="mWidgetTarjeta_marginTop">140dp</dimen>
+    <dimen name="mWidgetTarjeta_textSize">30sp</dimen>
+
+    <!-- Marcacion MsjPrincipal -->
+    <dimen name="mWidgetMsjPrincipal_height">46.66dp</dimen>
+    <dimen name="mWidgetMsjPrincipal_marginTop">200dp</dimen>
+    <dimen name="mWidgetMsjPrincipal_textSize">35sp</dimen>
+
+    <!-- Marcacion MsjSecundario -->
+    <dimen name="mWidgetMsjSecundario_height">26.66dp</dimen>
+    <dimen name="mWidgetMsjSecundario_marginTop">246.66dp</dimen>
+    <dimen name="mWidgetMsjSecundario_textSize">20sp</dimen>
+
+
+    <!-- Progressbar -->
+    <dimen name="mProgressbar_marginTop">90dp</dimen>
+    <dimen name="mProgressbar_marginLeft">233.33dp</dimen>
+    <dimen name="mProgressbar_width">66.66dp</dimen>
+    <dimen name="mProgressbar_height">66.66dp</dimen>
+
+    <!-- Msj Sistema -->
+    <dimen name="msjSistema_height">80dp</dimen>
+    <dimen name="msjSistema_marginTop">165dp</dimen>
+    <dimen name="msjSistema_textSize">18sp</dimen>
+
+    <!-- Botones Reintentos -->
+    <dimen name="buttonWarning_width">150dp</dimen>
+    <dimen name="buttonWarning_height">40dp</dimen>
+    <dimen name="buttonWarning_marginTop">240dp</dimen>
+    <dimen name="buttonWarning01_marginLeft">60dp</dimen>
+    <dimen name="buttonWarning02_marginLeft">385dp</dimen>
+
+
+    <!-- Boton Acceso Teclado -->
+    <dimen name="btnAccessKey_width">60dp</dimen>
+    <dimen name="btnAccessKey_height">60dp</dimen>
+    <dimen name="btnAccessKey_marginTop">230dp</dimen>
+    <dimen name="btnAccessKey_marginLeft">520dp</dimen>
+
+
+    <!-- Eventos -->
+    <dimen name="btnEvent_marginTopRow1">85dp</dimen>
+    <dimen name="btnEvent_marginTopRow2">165dp</dimen>
+
+
+    <!-- Teclado -->
+
+    <dimen name="txvKeyPantalla_width">555dp</dimen>
+    <dimen name="txvKeyPantalla_height">55dp</dimen>
+    <dimen name="txvKeyPantalla_marginTop">85dp</dimen>
+    <dimen name="txvKeyPantalla_marginLeft">20dp</dimen>
+    <dimen name="txvKeyPantalla_textSize">40sp</dimen>
+
+    <dimen name="btnKey_width">135dp</dimen>
+    <dimen name="btnKey_height">45dp</dimen>
+    <dimen name="btnKey_textSize">15dp</dimen>
+
+    <dimen name="btnKey_marginTop_row1">150dp</dimen>
+    <dimen name="btnKey_marginTop_row2">200dp</dimen>
+    <dimen name="btnKey_marginTop_row3">250dp</dimen>
+
+    <dimen name="btnKey_marginLeft_col1">25dp</dimen>
+    <dimen name="btnKey_marginLeft_col2">160dp</dimen>
+    <dimen name="btnKey_marginLeft_col3">295dp</dimen>
+    <dimen name="btnKey_marginLeft_col4">430dp</dimen>
+
+    <!-- Mensaje en Pantalla -->
+    <dimen name="txvMensajePantalla_marginLeft">0dp</dimen>
+    <dimen name="txvMensajePantalla_marginTop">245dp</dimen>
+    <dimen name="txvMensajePantalla_textSize">30sp</dimen>
+
+
+    <!-- ==================================================================== -->
+
+
+    <!-- ==================================================================== -->
+    <!-- GENERAL -->
+
+    <!-- Titulo Menu -->
+    <dimen name="titulo_textSize">30sp</dimen>
+    <dimen name="titulo_marginTop">6.66dp</dimen>
+    <dimen name="titulo_marginLeft">6.66dp</dimen>
+    <dimen name="titulo_width">333.33dp</dimen>
+    <dimen name="titulo_height">36.66dp</dimen>
+
+    <!-- Texto Estandar -->
+    <dimen name="cuerpo_textSize">25sp</dimen>
+    <dimen name="cuerpo_min_textSize">15sp</dimen>
+
+    <!-- ==================================================================== -->
+
+
+    <!-- ==================================================================== -->
+    <!-- LOGIN -->
+
+    <dimen name="acLogin_lblUser_width">160dp</dimen>
+    <dimen name="acLogin_lblUser_height">40dp</dimen>
+    <dimen name="acLogin_lblUser_marginTop">120dp</dimen>
+    <dimen name="acLogin_lblUser_marginLeft">90dp</dimen>
+
+    <dimen name="acLogin_lblPass_width">160dp</dimen>
+    <dimen name="acLogin_lblPass_height">40dp</dimen>
+    <dimen name="acLogin_lblPass_marginTop">165dp</dimen>
+    <dimen name="acLogin_lblPass_marginLeft">90dp</dimen>
+
+    <dimen name="acLogin_txtUser_width">250dp</dimen>
+    <dimen name="acLogin_txtUser_height">40dp</dimen>
+    <dimen name="acLogin_txtUser_marginTop">120dp</dimen>
+    <dimen name="acLogin_txtUser_marginLeft">250dp</dimen>
+
+    <dimen name="acLogin_txtPass_width">250dp</dimen>
+    <dimen name="acLogin_txtPass_height">40dp</dimen>
+    <dimen name="acLogin_txtPass_marginTop">165dp</dimen>
+    <dimen name="acLogin_txtPass_marginLeft">250dp</dimen>
+
+    <dimen name="acLogin_btnIntro_width">120dp</dimen>
+    <dimen name="acLogin_btnIntro_height">40dp</dimen>
+    <dimen name="acLogin_btnIntro_marginTop">220dp</dimen>
+    <dimen name="acLogin_btnIntro_marginLeft">160dp</dimen>
+
+    <dimen name="acLogin_btnCancel_width">120dp</dimen>
+    <dimen name="acLogin_btnCancel_height">40dp</dimen>
+    <dimen name="acLogin_btnCancel_marginTop">220dp</dimen>
+    <dimen name="acLogin_btnCancel_marginLeft">310dp</dimen>
+
+    <!-- ==================================================================== -->
+
+
+    <!-- ==================================================================== -->
+    <!-- MENU -->
+
+    <dimen name="acMenu_btnOpcAllPadding">10dp</dimen>
+
+    <dimen name="acMenu_btnOpcAll_width">66.66dp</dimen>
+    <dimen name="acMenu_btnOpcAll_height">66.66dp</dimen>
+
+    <dimen name="acMenu_btnOpcSupAll_marginTop">73dp</dimen>
+    <dimen name="acMenu_btnOpcInfAll_marginTop">186.33dp</dimen>
+
+    <dimen name="acMenu_btnOpc1_marginLeft">38dp</dimen>
+    <dimen name="acMenu_btnOpc2_marginLeft">150.66dp</dimen>
+    <dimen name="acMenu_btnOpc3_marginLeft">263.33dp</dimen>
+    <dimen name="acMenu_btnOpc4_marginLeft">376dp</dimen>
+    <dimen name="acMenu_btnOpc5_marginLeft">488.66dp</dimen>
+
+
+    <dimen name="acMenu_lblOpc_textSize">11.5sp</dimen>
+
+    <dimen name="acMenu_lblOpcAll_width">94.66dp</dimen>
+    <dimen name="acMenu_lblOpcAll_height">20dp</dimen>
+
+    <dimen name="acMenu_lblOpcSupAll_marginTop">146.33dp</dimen>
+    <dimen name="acMenu_lblOpcInfAll_marginTop">259.66dp</dimen>
+
+    <dimen name="acMenu_lblOpc1_marginLeft">24dp</dimen>
+    <dimen name="acMenu_lblOpc2_marginLeft">136.66dp</dimen>
+    <dimen name="acMenu_lblOpc3_marginLeft">249.33dp</dimen>
+    <dimen name="acMenu_lblOpc4_marginLeft">362dp</dimen>
+    <dimen name="acMenu_lblOpc5_marginLeft">474.66dp</dimen>
+
+    <!-- ==================================================================== -->
+
+
+
+    <!-- ==================================================================== -->
+    <!-- SISTEMA -->
+
+    <dimen name="acSistema_lblItemAll_width">150dp</dimen>
+    <dimen name="acSistema_lblItemAll_height">25dp</dimen>
+
+    <dimen name="acSistema_lblItemAll_marginLeft">20dp</dimen>
+
+    <dimen name="acSistema_lblItem1_marginTop">60dp</dimen>
+    <dimen name="acSistema_lblItem2_marginTop">105dp</dimen>
+    <dimen name="acSistema_lblItem3_marginTop">135dp</dimen>
+    <dimen name="acSistema_lblItem4_marginTop">165dp</dimen>
+    <dimen name="acSistema_lblItem5_marginTop">215dp</dimen>
+
+    <dimen name="acSistema_lblItemDescAll_width">200dp</dimen>
+    <dimen name="acSistema_lblItemDescAll_height">25dp</dimen>
+
+    <dimen name="acSistema_lblItemDescAll_marginLeft">300dp</dimen>
+
+    <dimen name="acSistema_txtItemDesc1_width">70dp</dimen>
+    <dimen name="acSistema_txtItemDesc1_height">25dp</dimen>
+
+    <dimen name="acSistema_btnActualizarID_width">100dp</dimen>
+    <dimen name="acSistema_btnActualizarID_height">34dp</dimen>
+    <dimen name="acSistema_btnActualizarID_marginTop">54dp</dimen>
+    <dimen name="acSistema_btnActualizarID_marginLeft">400dp</dimen>
+
+    <!-- ==================================================================== -->
+
+
+    <!-- ==================================================================== -->
+    <!-- ACTIVITY COMUNICACION -->
+
+    <dimen name="acComunicacion_txvStatus_width">350dp</dimen>
+    <dimen name="acComunicacion_txvStatus_height">25dp</dimen>
+    <dimen name="acComunicacion_txvStatus_marginTop">10dp</dimen>
+    <dimen name="acComunicacion_txvStatus_marginLeft">20dp</dimen>
+
+    <dimen name="acComunicacion_swtStatus_height">25dp</dimen>
+    <dimen name="acComunicacion_swtStatus_marginTop">10dp</dimen>
+    <dimen name="acComunicacion_swtStatus_marginLeft">475dp</dimen>
+
+    <!-- Ethernet -->
+    <dimen name="acComunicacion_lblEth0_width">140dp</dimen>
+    <dimen name="acComunicacion_lblEth0_height">25dp</dimen>
+
+    <dimen name="acComunicacion_edtEth0_width">200dp</dimen>
+    <dimen name="acComunicacion_edtEth0_height">25dp</dimen>
+
+    <dimen name="acComunicacion_lblEth0_marginLeft">100dp</dimen>
+    <dimen name="acComunicacion_edtEth0_marginLeft">300dp</dimen>
+
+    <dimen name="acComunicacion_Eth0_marginTop1">60dp</dimen>
+    <dimen name="acComunicacion_Eth0_marginTop2">100dp</dimen>
+    <dimen name="acComunicacion_Eth0_marginTop3">140dp</dimen>
+
+    <!-- Ppp -->
+    <dimen name="acComunicacion_lblGPRS_width">150dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_height">25dp</dimen>
+
+    <dimen name="acComunicacion_lblGPRS_marginLeft_row1">40dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginLeft_row2">170dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginLeft_row3">320dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginLeft_row4">430dp</dimen>
+
+
+    <dimen name="acComunicacion_lblGPRS_marginTop_1">50dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginTop_2">75dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginTop_3">110dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginTop_4">135dp</dimen>
+    <dimen name="acComunicacion_lblGPRS_marginTop_5">170dp</dimen>
+
+    <!-- Wifi -->
+
+    <dimen name="acComunicacion_lblWifi_width">200dp</dimen>
+    <dimen name="acComunicacion_lblWifi_height">25dp</dimen>
+    <dimen name="acComunicacion_lblWifi_Left1">100dp</dimen>
+    <dimen name="acComunicacion_lblWifi_Left2">140dp</dimen>
+
+    <dimen name="acComunicacion_edtWifi_width">160dp</dimen>
+    <dimen name="acComunicacion_edtWifi_height">25dp</dimen>
+    <dimen name="acComunicacion_edtWifi_Left">280dp</dimen>
+
+    <dimen name="acComunicacion_Wifi_marginTop1">45dp</dimen>
+    <dimen name="acComunicacion_Wifi_marginTop2">75dp</dimen>
+    <dimen name="acComunicacion_Wifi_marginTop3">105dp</dimen>
+    <dimen name="acComunicacion_Wifi_marginTop4">135dp</dimen>
+
+
+    <dimen name="acComunicacion_Wifi_btnConf_width">150dp</dimen>
+    <dimen name="acComunicacion_Wifi_btnConf_height">35dp</dimen>
+    <dimen name="acComunicacion_Wifi_btnConf_marginLeft">225dp</dimen>
+    <dimen name="acComunicacion_Wifi_btnConf_marginTop">170dp</dimen>
+
+
+    <!-- ==================================================================== -->
+
+
+    <!-- ==================================================================== -->
+    <!-- ACTIVITY FECHAHORA -->
+
+    <dimen name="acFechaHora_framelayout_marginTop">70dp</dimen>
+    <dimen name="acFechaHora_framelayout_marginLeft">40dp</dimen>
+
+    <dimen name="acFechaHora_calendarFechaHora_width">300dp</dimen>
+    <dimen name="acFechaHora_calendarFechaHora_height">220dp</dimen>
+
+    <dimen name="acFechaHora_textClock_width">120dp</dimen>
+    <dimen name="acFechaHora_textClock_height">40dp</dimen>
+    <dimen name="acFechaHora_textClock_marginTop">70dp</dimen>
+    <dimen name="acFechaHora_textClock_marginLeft">415dp</dimen>
+
+    <dimen name="acFechaHora_edtConfHora_width">50dp</dimen>
+    <dimen name="acFechaHora_edtConfHora_height">30dp</dimen>
+    <dimen name="acFechaHora_edtConfHora_marginTop">170dp</dimen>
+    <dimen name="acFechaHora_edtConfHora_marginLeft">410dp</dimen>
+
+    <dimen name="acFechaHora_edtConfMinuto_width">50dp</dimen>
+    <dimen name="acFechaHora_edtConfMinuto_height">30dp</dimen>
+    <dimen name="acFechaHora_edtConfMinuto_marginTop">170dp</dimen>
+    <dimen name="acFechaHora_edtConfMinuto_marginLeft">490dp</dimen>
+
+    <dimen name="acFechaHora_btnConf_width">50dp</dimen>
+    <dimen name="acFechaHora_btnConf_height">30dp</dimen>
+
+    <dimen name="acFechaHora_btnConf_marginTop_row1">130dp</dimen>
+    <dimen name="acFechaHora_btnConf_marginTop_row2">210dp</dimen>
+
+    <dimen name="acFechaHora_btnConf_marginLeft_col1">410dp</dimen>
+    <dimen name="acFechaHora_btnConf_marginLeft_col2">490dp</dimen>
+
+    <dimen name="acFechaHora_btnGuardarFechaHora_width">150dp</dimen>
+    <dimen name="acFechaHora_btnGuardarFechaHora_height">40dp</dimen>
+    <dimen name="acFechaHora_btnGuardarFechaHora_marginTop">253dp</dimen>
+    <dimen name="acFechaHora_btnGuardarFechaHora_marginLeft">400dp</dimen>
+
+    <!-- ==================================================================== -->
+
+
+    <!-- ==================================================================== -->
+    <!-- ACTIVITY USUARIO -->
+
+    <dimen name="acUsuario_txvUser_width">150dp</dimen>
+    <dimen name="acUsuario_txvUser_height">30dp</dimen>
+    <dimen name="acUsuario_txvUser_marginTop">110dp</dimen>
+    <dimen name="acUsuario_txvUser_marginLeft">60dp</dimen>
+
+    <dimen name="acUsuario_txvPassword_width">150dp</dimen>
+    <dimen name="acUsuario_txvPassword_height">30dp</dimen>
+    <dimen name="acUsuario_txvPassword_marginTop">170dp</dimen>
+    <dimen name="acUsuario_txvPassword_marginLeft">60dp</dimen>
+
+    <dimen name="acUsuario_edtUsuarioNuevo_width">250dp</dimen>
+    <dimen name="acUsuario_edtUsuarioNuevo_height">30dp</dimen>
+    <dimen name="acUsuario_edtUsuarioNuevo_marginTop">110dp</dimen>
+    <dimen name="acUsuario_edtUsuarioNuevo_marginLeft">240dp</dimen>
+
+    <dimen name="acUsuario_edtContraseñaNuevo_width">250dp</dimen>
+    <dimen name="acUsuario_edtContraseñaNuevo_height">30dp</dimen>
+    <dimen name="acUsuario_edtContraseñaNuevo_marginTop">170dp</dimen>
+    <dimen name="acUsuario_edtContraseñaNuevo_marginLeft">240dp</dimen>
+
+    <dimen name="acUsuario_btnActualizarUsuario_width">150dp</dimen>
+    <dimen name="acUsuario_btnActualizarUsuario_height">40dp</dimen>
+    <dimen name="acUsuario_btnActualizarUsuario_marginTop">230dp</dimen>
+
+    <!-- ==================================================================== -->
+
+
+
+    <!-- ==================================================================== -->
+    <!-- ACTIVITY SINCRONIZACION -->
+
+    <!-- REPLICA -->
+
+    <dimen name="acSincronizacion_lblrep0_width">150dp</dimen>
+    <dimen name="acSincronizacion_lblrep0_height">25dp</dimen>
+    <dimen name="acSincronizacion_lblrep0_marginTop">15dp</dimen>
+    <dimen name="acSincronizacion_lblrep0_marginLeft">40dp</dimen>
+
+    <dimen name="acSincronizacion_btnReplicar_width">100dp</dimen>
+    <dimen name="acSincronizacion_btnReplicar_height">40dp</dimen>
+    <dimen name="acSincronizacion_btnReplicar_marginTop">7.5dp</dimen>
+    <dimen name="acSincronizacion_btnReplicar_marginLeft">440dp</dimen>
+
+
+    <dimen name="acSincronizacion_lblRep_width">100dp</dimen>
+    <dimen name="acSincronizacion_lblRep_height">25dp</dimen>
+
+    <dimen name="acSincronizacion_lblRep_marginLeft">40dp</dimen>
+    <dimen name="acSincronizacion_lblHora_marginLeft">150dp</dimen>
+
+    <dimen name="acSincronizacion_lblRep1_marginTop">60dp</dimen>
+    <dimen name="acSincronizacion_lblRep2_marginTop">100dp</dimen>
+    <dimen name="acSincronizacion_lblRep3_marginTop">140dp</dimen>
+    <dimen name="acSincronizacion_lblRep4_marginTop">180dp</dimen>
+
+
+    <dimen name="acSincronizacion_btnConfHora_width">45dp</dimen>
+    <dimen name="acSincronizacion_btnConfHora_height">37dp</dimen>
+    <dimen name="acSincronizacion_btnConfHora_marginLeft">320dp</dimen>
+
+    <dimen name="acSincronizacion_btnConfHora1_marginTop">52.5dp</dimen>
+    <dimen name="acSincronizacion_btnConfHora2_marginTop">92.5dp</dimen>
+    <dimen name="acSincronizacion_btnConfHora3_marginTop">132.5dp</dimen>
+    <dimen name="acSincronizacion_btnConfHora4_marginTop">172.5dp</dimen>
+
+
+    <dimen name="acSincronizacion_swtHoraConf_height">30dp</dimen>
+    <dimen name="acSincronizacion_swtHoraConf_marginLeft">440dp</dimen>
+
+    <dimen name="acSincronizacion_swtHoraConf1_marginTop">57.5dp</dimen>
+    <dimen name="acSincronizacion_swtHoraConf2_marginTop">97.5dp</dimen>
+    <dimen name="acSincronizacion_swtHoraConf3_marginTop">137.5dp</dimen>
+    <dimen name="acSincronizacion_swtHoraConf4_marginTop">177.5dp</dimen>
+
+
+
+    <!-- SERVICIOS -->
+
+    <dimen name="acSincronizacion_txvServicio0_width">150dp</dimen>
+    <dimen name="acSincronizacion_txvServicio0_height">30dp</dimen>
+    <dimen name="acSincronizacion_txvServicio0_marginTop">50dp</dimen>
+    <dimen name="acSincronizacion_txvServicio0_marginLeft">40dp</dimen>
+
+    <dimen name="acSincronizacion_btnAccessVPN_width">150dp</dimen>
+    <dimen name="acSincronizacion_btnAccessVPN_height">40dp</dimen>
+    <dimen name="acSincronizacion_btnAccessVPN_marginTop">40dp</dimen>
+    <dimen name="acSincronizacion_btnAccessVPN_marginLeft">340dp</dimen>
+
+
+    <!-- SERVIDOR -->
+
+    <dimen name="acSincronizacion_txvServer_width">160dp</dimen>
+    <dimen name="acSincronizacion_txvServer_height">29dp</dimen>
+    <dimen name="acSincronizacion_txvServer_marginLeft">20dp</dimen>
+
+    <dimen name="acSincronizacion_edtSync_width">280dp</dimen>
+    <dimen name="acSincronizacion_edtSync_height">29dp</dimen>
+    <dimen name="acSincronizacion_edtSync_marginLeft">190dp</dimen>
+
+    <dimen name="acSincronizacion_Sync1_marginTop">20dp</dimen>
+    <dimen name="acSincronizacion_Sync2_marginTop">55dp</dimen>
+    <dimen name="acSincronizacion_Sync3_marginTop">90dp</dimen>
+    <dimen name="acSincronizacion_Sync4_marginTop">125dp</dimen>
+    <dimen name="acSincronizacion_Sync5_marginTop">160dp</dimen>
+
+    <dimen name="acSincronizacion_btnSyncGuardar_width">80dp</dimen>
+    <dimen name="acSincronizacion_btnSyncGuardar_height">50dp</dimen>
+    <dimen name="acSincronizacion_btnSyncGuardar_marginTop">80dp</dimen>
+    <dimen name="acSincronizacion_btnSyncGuardar_marginLeft">500dp</dimen>
+
+
+    <!-- TEST -->
+
+    <dimen name="acSincronizacion_txvSyncTest_width">200dp</dimen>
+    <dimen name="acSincronizacion_txvSyncTest_height">30dp</dimen>
+    <dimen name="acSincronizacion_txvSyncTest_marginLeft">60dp</dimen>
+
+    <dimen name="acSincronizacion_txvSyncTestResult_width">60dp</dimen>
+    <dimen name="acSincronizacion_txvSyncTestResult_height">30dp</dimen>
+    <dimen name="acSincronizacion_txvSyncTestResult_marginLeft">460dp</dimen>
+
+    <dimen name="acSincronizacion_SyncTest1_marginTop">35dp</dimen>
+    <dimen name="acSincronizacion_SyncTest2_marginTop">70dp</dimen>
+    <dimen name="acSincronizacion_SyncTest3_marginTop">105dp</dimen>
+
+    <dimen name="acSincronizacion_btnTest_width">150dp</dimen>
+    <dimen name="acSincronizacion_btnTest_height">40dp</dimen>
+    <dimen name="acSincronizacion_btnTest_marginTop">150dp</dimen>
+
+    <!-- ==================================================================== -->
+
+
+    <!-- ==================================================================== -->
+    <!-- ACTIVITY BIOMETRIA -->
+
+    <dimen name="acBiometria_spnDocuments_width">140dp</dimen>
+    <dimen name="acBiometria_spnDocuments_height">35dp</dimen>
+    <dimen name="acBiometria_spnDocuments_marginLeft">24dp</dimen>
+    <dimen name="acBiometria_spnDocuments_marginTop">70dp</dimen>
+
+    <dimen name="acBiometria_edtHuellaDocumento_width">120dp</dimen>
+    <dimen name="acBiometria_edtHuellaDocumento_height">35dp</dimen>
+    <dimen name="acBiometria_edtHuellaDocumento_marginLeft">170dp</dimen>
+    <dimen name="acBiometria_edtHuellaDocumento_marginTop">70dp</dimen>
+
+    <dimen name="acBiometria_btnConsultarHuella_width">120dp</dimen>
+    <dimen name="acBiometria_btnConsultarHuella_height">35dp</dimen>
+    <dimen name="acBiometria_btnConsultarHuella_marginLeft">300dp</dimen>
+    <dimen name="acBiometria_btnConsultarHuella_marginTop">70dp</dimen>
+
+    <dimen name="acBiometria_txvHuellaNombrePersonal_width">557dp</dimen>
+    <dimen name="acBiometria_txvHuellaNombrePersonal_height">30dp</dimen>
+    <dimen name="acBiometria_txvHuellaNombrePersonal_marginLeft">20dp</dimen>
+    <dimen name="acBiometria_txvHuellaNombrePersonal_marginTop">110dp</dimen>
+
+    <dimen name="acBiometria_txvDescCustomer_width">557dp</dimen>
+    <dimen name="acBiometria_txvDescCustomer_height">25dp</dimen>
+    <dimen name="acBiometria_txvDescCustomer_marginLeft">20dp</dimen>
+    <dimen name="acBiometria_txvDescCustomer_marginTop">275dp</dimen>
+    <dimen name="acBiometria_txvDescCustomer_textSize">12sp</dimen>
+
+
+    <dimen name="acBiometria_txvHuellaEmpA1_width">557dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpA1_height">122dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpA1_marginLeft">19dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpA1_marginTop">149dp</dimen>
+
+    <dimen name="acBiometria_txvHuellaEmpA2_width">555dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpA2_height">120dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpA2_marginLeft">20dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpA2_marginTop">150dp</dimen>
+
+    <dimen name="acBiometria_btnAcHuella_width">170dp</dimen>
+    <dimen name="acBiometria_btnAcHuella_height">40dp</dimen>
+    <dimen name="acBiometria_btnAcHuella_marginTop">160dp</dimen>
+
+    <dimen name="acBiometria_btnAcHuella1_marginLeft">35dp</dimen>
+    <dimen name="acBiometria_btnAcHuella2_marginLeft">212.5dp</dimen>
+    <dimen name="acBiometria_btnAcHuella3_marginLeft">390dp</dimen>
+
+    <dimen name="acBiometria_txvAcHuella_marginTop">210dp</dimen>
+
+    <dimen name="acBiometria_txvHuellaEmpresaCorner_width">150dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpresaCorner_height">20dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpresaCorner_marginLeft">425dp</dimen>
+    <dimen name="acBiometria_txvHuellaEmpresaCorner_marginTop">250dp</dimen>
+
+
+    <dimen name="acBiometria_txvHuellaGif_width">140dp</dimen>
+    <dimen name="acBiometria_txvHuellaGif_height">180dp</dimen>
+    <dimen name="acBiometria_txvHuellaGif_marginLeft">40dp</dimen>
+    <dimen name="acBiometria_txvHuellaGif_marginTop">87dp</dimen>
+
+    <dimen name="acBiometria_imgViewResult_width">140dp</dimen>
+    <dimen name="acBiometria_imgViewResult_height">140dp</dimen>
+    <dimen name="acBiometria_imgViewResult_marginLeft">40dp</dimen>
+    <dimen name="acBiometria_imgViewResult_marginTop">107dp</dimen>
+
+    <dimen name="acBiometria_txvHuellaTexto_width">260dp</dimen>
+    <dimen name="acBiometria_txvHuellaTexto_height">60dp</dimen>
+    <dimen name="acBiometria_txvHuellaTexto_marginLeft">250dp</dimen>
+    <dimen name="acBiometria_txvHuellaTexto_marginTop">147dp</dimen>
+
+
+    <dimen name="acBiometria_txvLayerLstHuella_height">333.99dp</dimen>
+
+    <dimen name="acBiometria_lstHuella_width">460dp</dimen>
+    <dimen name="acBiometria_lstHuella_height">200dp</dimen>
+    <dimen name="acBiometria_lstHuella_marginTop">80dp</dimen>
+
+    <dimen name="acBiometria_txvCabeceraLstHuella_width">460dp</dimen>
+    <dimen name="acBiometria_txvCabeceraLstHuella_height">40dp</dimen>
+    <dimen name="acBiometria_txvCabeceraLstHuella_marginTop">43dp</dimen>
+
+    <dimen name="acBiometria_btnExitLstHuella_width">40dp</dimen>
+    <dimen name="acBiometria_btnExitLstHuella_height">40dp</dimen>
+    <dimen name="acBiometria_btnExitLstHuella_marginBotton">23dp</dimen>
+
+    <!-- ==================================================================== -->
+
+    <dimen name="fragmentBar_txvIdLabel_width">40dp</dimen>
+    <dimen name="fragmentBar_txvIdLabel_height">40dp</dimen>
+    <dimen name="fragmentBar_txvIdLabel_marginTop">10dp</dimen>
+    <dimen name="fragmentBar_txvIdLabel_marginLeft">2dp</dimen>
+
+    <dimen name="fragmentBar_txvIdterminal_width">40dp</dimen>
+    <dimen name="fragmentBar_txvIdterminal_height">20dp</dimen>
+    <dimen name="fragmentBar_txvIdterminal_marginTop">30dp</dimen>
+    <dimen name="fragmentBar_txvIdterminal_marginLeft">2dp</dimen>
+
+    <dimen name="fragmentBar_imgViewIBat_width">25dp</dimen>
+    <dimen name="fragmentBar_imgViewIBat_height">15dp</dimen>
+    <dimen name="fragmentBar_imgViewIBat_marginTop">7dp</dimen>
+    <dimen name="fragmentBar_imgViewIBat_marginRight">12dp</dimen>
+
+    <dimen name="fragmentBar_txvINivelBateria_marginTop">2dp</dimen>
+    <dimen name="fragmentBar_txvINivelBateria_marginRight">47dp</dimen>
+
+    <dimen name="fragmentBar_imgViewReplica_width">15dp</dimen>
+    <dimen name="fragmentBar_imgViewReplica_height">15dp</dimen>
+    <dimen name="fragmentBar_imgViewReplica_marginTop">6dp</dimen>
+    <dimen name="fragmentBar_imgViewReplica_marginRight">6dp</dimen>
+
+
+    <!-- ==================================================================== -->
+
+    <dimen name="acSuperadmin_spnItem_width">200dp</dimen>
+    <dimen name="acSuperadmin_spnItem_height">40dp</dimen>
+    <dimen name="acSuperadmin_spnItem_marginTop">70dp</dimen>
+    <dimen name="acSuperadmin_spnItem_marginLeft">40dp</dimen>
+
+    <dimen name="acSuperadmin_edtItem_width">200dp</dimen>
+    <dimen name="acSuperadmin_edtItem_height">40dp</dimen>
+    <dimen name="acSuperadmin_edtItem_marginTop">70dp</dimen>
+    <dimen name="acSuperadmin_edtItem_marginLeft">294dp</dimen>
+
+</resources>
