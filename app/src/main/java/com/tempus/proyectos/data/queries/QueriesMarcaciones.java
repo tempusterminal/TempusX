@@ -208,6 +208,12 @@ public class QueriesMarcaciones {
 
         if(idparametersMarcaciones.equals("")){
             autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,insert);
+            apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+            valortarjeta = autorizaciones.getValorTarjeta();
+            mensaje = autorizaciones.getMensaje();
+            mensajedetalle = autorizaciones.getMensajeDetalle();
+
+            /*
             if(!autorizaciones.getMensaje().equalsIgnoreCase("null")){
                 apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
                 valortarjeta = autorizaciones.getValorTarjeta();
@@ -216,6 +222,7 @@ public class QueriesMarcaciones {
             }else{
                 mensaje = "MARCACION NO AUTORIZADA";
             }
+            */
             lectorasiguiente = "0";
         }else{
             Log.d("Autorizaciones","Marcacion por Modos ");
@@ -248,6 +255,14 @@ public class QueriesMarcaciones {
                         // 1 = inserta
                         capturarlectorasiguiente = true;
                         autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,insert);
+
+                        apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                        valortarjeta = autorizaciones.getValorTarjeta();
+                        mensaje = autorizaciones.getMensaje();
+                        mensajedetalle = autorizaciones.getMensajeDetalle();
+                        ModoMarcacion = idparametermarcacionarray[i];
+
+                        /*
                         if(!autorizaciones.getMensaje().equalsIgnoreCase("null")){
                             apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
                             valortarjeta = autorizaciones.getValorTarjeta();
@@ -258,6 +273,7 @@ public class QueriesMarcaciones {
                             mensaje = "MARCACION NO AUTORIZADA";
                             lectorasiguiente = "0";
                         }
+                        */
 
                     }
 
