@@ -42,7 +42,7 @@
 
     <!-- Fondo Superior -->
     <dimen name="fondo1_width">533.33dp</dimen>
-    <dimen name="fondo1_height">66.66dp</dimen>
+    <dimen name="fondo1_height">70.66dp</dimen>
     <dimen name="fondo1_marginTop">0dp</dimen>
     <dimen name="fondo1_marginLeft">0dp</dimen>
 
@@ -136,12 +136,12 @@
 
     <!-- Marcacion MsjPrincipal -->
     <dimen name="mWidgetMsjPrincipal_height">46.66dp</dimen>
-    <dimen name="mWidgetMsjPrincipal_marginTop">200dp</dimen>
+    <dimen name="mWidgetMsjPrincipal_marginTop">210dp</dimen>
     <dimen name="mWidgetMsjPrincipal_textSize">35sp</dimen>
 
     <!-- Marcacion MsjSecundario -->
     <dimen name="mWidgetMsjSecundario_height">26.66dp</dimen>
-    <dimen name="mWidgetMsjSecundario_marginTop">246.66dp</dimen>
+    <dimen name="mWidgetMsjSecundario_marginTop">256.66dp</dimen>
     <dimen name="mWidgetMsjSecundario_textSize">20sp</dimen>
 
 

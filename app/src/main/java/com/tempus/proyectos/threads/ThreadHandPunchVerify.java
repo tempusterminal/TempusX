@@ -27,25 +27,28 @@ public class ThreadHandPunchVerify implements Runnable {
 
     @Override
     public void run() {
+        Log.d("MarcacionMasterTAG","Paso 1");
         hp.SerialHandPunch(ActivityPrincipal.btSocket03.getOutputStream(), ActivityPrincipal.btSocket03.getInputStream(), "ABORT", null);
         util.sleep(50);
 
+        Log.d("MarcacionMasterTAG","Paso 2");
         hp.SerialHandPunch(ActivityPrincipal.btSocket03.getOutputStream(), ActivityPrincipal.btSocket03.getInputStream(), "VERIFY_ON_EXTERNAL_DATA", this.template);
         util.sleep(50);
 
         boolean continuar = true;
 
+        Log.d("MarcacionMasterTAG","Paso 3");
         while (continuar) {
             String res = hp.SerialHandPunch(ActivityPrincipal.btSocket03.getOutputStream(), ActivityPrincipal.btSocket03.getInputStream(), "SEND_STATUS_CRC", null);
             String tmp = hp.OperarStatus(res,"");
 
             if (tmp.equalsIgnoreCase("Exito")){
-                Log.d("HandPunch","EXITO");
+                Log.d("MarcacionMasterTAG","EXITO");
                 continuar = false;
             }
 
             if (tmp.equalsIgnoreCase("Fallo")){
-                Log.d("HandPunch","FALLO");
+                Log.d("MarcacionMasterTAG","FALLO");
                 continuar = false;
             }
 

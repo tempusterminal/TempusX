@@ -36,8 +36,6 @@ public class ThreadHandPunchEnroll implements Runnable {
     @Override
     public void run() {
 
-        boolean resultado = false;
-
         hp.SerialHandPunch(ActivityPrincipal.btSocket03.getOutputStream(), ActivityPrincipal.btSocket03.getInputStream(), "ABORT", null);
         util.sleep(50);
 
@@ -74,6 +72,9 @@ public class ThreadHandPunchEnroll implements Runnable {
             util.sleep(50);
 
             String template = send_template.substring(14,32);
+
+            Log.d("HandPunch",send_template);
+            Log.d("HandPunch",template);
 
             idDetaBio = ActivityGeomano.idTipoDetaBio;
 

@@ -89,6 +89,10 @@ import java.util.Set;
 public class ActivityPrincipal extends Activity {
 
     /* Variables Globales */
+    String FLG_AUX = "";
+    boolean esperando_mano = false;
+    boolean buttonsVisibility[] = new boolean[8];
+    String buttonsText[] = new String[8];
 
     boolean MARCACION_ACTIVA;
     int TIEMPO_ACTIVO;
@@ -430,8 +434,8 @@ public class ActivityPrincipal extends Activity {
         processSyncTS.start(this);
         ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
         processSyncST.start(this);
-        ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
-        processSyncDatetime.start(this);
+        //ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
+        //processSyncDatetime.start(this);
 
         threadFechahora.start();
 
@@ -1113,10 +1117,22 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_ACTIVO = 0;
         MODO_MARCACION = "";
         MAC_BT_00 = "00:00:00:00:00:00";
+        //RANSA 1 - 14;1F:78:24:1A:31
         MAC_BT_01 = "20:16:08:10:42:63";
         MAC_BT_02 = "00:00:00:00:00:00";
         MAC_BT_03 = "20:16:08:10:46:09";
-        MODO_EVENTO = false;
+
+        //RANSA 2 - 14:1F:78:86:2F:9C
+        //MAC_BT_01 = "20:16:08:10:64:87";
+        //MAC_BT_02 = "00:00:00:00:00:00";
+        //MAC_BT_03 = "20:16:08:10:65:94";
+
+        //RANSA 3 - 14:1F:78:86:2F:B1
+        //MAC_BT_01 = "20:16:08:10:58:40";
+        //MAC_BT_02 = "00:00:00:00:00:00";
+        //MAC_BT_03 = "20:16:08:10:58:52";
+
+        MODO_EVENTO = true;
         TIPO_TERMINAL = 3;
         INTERFACE_ETH = false;
         INTERFACE_WLAN = true;
@@ -1124,9 +1140,25 @@ public class ActivityPrincipal extends Activity {
 
         if (MODO_EVENTO) {
 
-            boolean buttonsVisibility[] = {true, true, true, true, false, false, false, false};
-            String buttonsText[] = {"1", "2", "3", "4", "5", "6", "7", "8"};
+            buttonsVisibility[0] = true;
+            buttonsVisibility[1] = true;
+            buttonsVisibility[2] = true;
+            buttonsVisibility[3] = true;
+            buttonsVisibility[4] = false;
+            buttonsVisibility[5] = false;
+            buttonsVisibility[6] = false;
+            buttonsVisibility[7] = false;
 
+            buttonsText[0] = "1";
+            buttonsText[1] = "2";
+            buttonsText[2] = "3";
+            buttonsText[3] = "4";
+            buttonsText[4] = "5";
+            buttonsText[5] = "6";
+            buttonsText[6] = "7";
+            buttonsText[7] = "8";
+
+            /*
             try {
                 parameters = queriesParameters.selectParameter("BTN_EVENTO_1");
                 int visible_0 = parameters.getEnable();
@@ -1214,11 +1246,16 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_8 = OK");
             } catch (Exception e) {
             }
-
+            */
 
             flag = null;
             txvMensajePantalla.setText("SELECCIONE UN EVENTO");
-            InicializarModoEvento(buttonsVisibility, buttonsText);
+            try {
+                InicializarModoEvento();
+            } catch ( Exception e ) {
+                Log.e(TAG, "CargarDatosIniciales > Evento ERROR: "+ e.getMessage());
+            }
+
         } else {
             flag = "127";
             txvMensajePantalla.setText("PASE SU TARJETA");
@@ -1241,59 +1278,59 @@ public class ActivityPrincipal extends Activity {
 
     }
 
-    public void InicializarModoEvento(boolean visible[], String nombre[]) {
-        if (visible[0]) {
+    public void InicializarModoEvento() {
+        if (buttonsVisibility[0]) {
             btnEvent01.setVisibility(View.VISIBLE);
-            btnEvent01.setText(nombre[0]);
+            btnEvent01.setText(buttonsText[0]);
         } else {
             btnEvent01.setVisibility(View.INVISIBLE);
         }
 
-        if (visible[1]) {
+        if (buttonsVisibility[1]) {
             btnEvent02.setVisibility(View.VISIBLE);
-            btnEvent02.setText(nombre[1]);
+            btnEvent02.setText(buttonsText[1]);
         } else {
             btnEvent02.setVisibility(View.INVISIBLE);
         }
 
-        if (visible[2]) {
+        if (buttonsVisibility[2]) {
             btnEvent03.setVisibility(View.VISIBLE);
-            btnEvent03.setText(nombre[2]);
+            btnEvent03.setText(buttonsText[2]);
         } else {
             btnEvent03.setVisibility(View.INVISIBLE);
         }
 
-        if (visible[3]) {
+        if (buttonsVisibility[3]) {
             btnEvent04.setVisibility(View.VISIBLE);
-            btnEvent04.setText(nombre[3]);
+            btnEvent04.setText(buttonsText[3]);
         } else {
             btnEvent04.setVisibility(View.INVISIBLE);
         }
 
-        if (visible[4]) {
+        if (buttonsVisibility[4]) {
             btnEvent05.setVisibility(View.VISIBLE);
-            btnEvent05.setText(nombre[4]);
+            btnEvent05.setText(buttonsText[4]);
         } else {
             btnEvent05.setVisibility(View.INVISIBLE);
         }
 
-        if (visible[5]) {
+        if (buttonsVisibility[5]) {
             btnEvent06.setVisibility(View.VISIBLE);
-            btnEvent06.setText(nombre[5]);
+            btnEvent06.setText(buttonsText[5]);
         } else {
             btnEvent06.setVisibility(View.INVISIBLE);
         }
 
-        if (visible[6]) {
+        if (buttonsVisibility[6]) {
             btnEvent07.setVisibility(View.VISIBLE);
-            btnEvent07.setText(nombre[6]);
+            btnEvent07.setText(buttonsText[6]);
         } else {
             btnEvent07.setVisibility(View.INVISIBLE);
         }
 
-        if (visible[7]) {
+        if (buttonsVisibility[7]) {
             btnEvent08.setVisibility(View.VISIBLE);
-            btnEvent08.setText(nombre[7]);
+            btnEvent08.setText(buttonsText[7]);
         } else {
             btnEvent08.setVisibility(View.INVISIBLE);
         }
@@ -1656,12 +1693,13 @@ public class ActivityPrincipal extends Activity {
                     Log.v(TAG, "TARJETA " + tarjeta);
 
                     try {
+                        FLG_AUX = flag;
                         queriesMarcaciones = new QueriesMarcaciones(this);
                         Log.v(TAG, "MarcacionMaster Exec >");
                         Log.v(TAG, " > Tarjeta: " + tarjeta);
                         Log.v(TAG, " > ID Terminal: " + idTerminal);
                         Log.v(TAG, " > ID Lectora: " + getNroLectora(lectora));
-                        Log.v(TAG, " > Flag: " + flag);
+                        Log.v(TAG, " > Flag: " + flag + " - FLG_AUX: " + FLG_AUX);
                         Log.v(TAG, " > FechaHora: " + fechahora.getFechahora());
 
                         //autorizaciones = queriesMarcaciones.GestionarMarcaciones(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), flag, fechahora.getFechahora(), 1);
@@ -1671,7 +1709,7 @@ public class ActivityPrincipal extends Activity {
                             if (!MARCACION_ACTIVA) {
                                 MODO_MARCACION = "";
                             }
-                            autorizacion = queriesMarcaciones.ModoMarcacion(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), flag, fechahora.getFechahora(), MODO_MARCACION);
+                            autorizacion = queriesMarcaciones.ModoMarcacion(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), FLG_AUX, fechahora.getFechahora(), MODO_MARCACION);
                             Log.d(TAG, "Resultado de ModoMarcacion: " + autorizacion);
                             array_autorizaciones = autorizacion.split(",");
                             Log.d(TAG, "Resultado de array_autorizaciones: " + array_autorizaciones.toString());
@@ -1706,14 +1744,15 @@ public class ActivityPrincipal extends Activity {
                                 MODO_MARCACION = array_autorizaciones[5];
 
                                 if (mensaje.contains("MANO")) {
+                                    esperando_mano = true;
                                     TIEMPO_ACTIVO = 25;
                                     mMensajePrincipal = "";
                                     mMensajeSecundario = mensaje;
 
                                     Log.d(TAG, "MANO TIEMPO_ACTIVO: " + TIEMPO_ACTIVO);
 
-                                    TEMPLATE = dbManager.valexecSQL("SELECT VALOR_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE VALOR_TARJETA = '72663345' AND ID_TIPO_LECT = 10;");
-                                    INDICE = dbManager.valexecSQL("SELECT INDICE_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE VALOR_TARJETA = '72663345' AND ID_TIPO_LECT = 10;");
+                                    TEMPLATE = dbManager.valexecSQL("SELECT VALOR_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE VALOR_TARJETA = '"+tarjeta+"' AND ID_TIPO_LECT = 10;");
+                                    INDICE = dbManager.valexecSQL("SELECT INDICE_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE VALOR_TARJETA = '"+tarjeta+"' AND ID_TIPO_LECT = 10;");
 
                                     if (TEMPLATE!=null || false) {
 
@@ -1734,26 +1773,34 @@ public class ActivityPrincipal extends Activity {
                                         Thread verificarMano = new Thread(new Runnable() {
                                             @Override
                                             public void run() {
+
+                                                //Log.d("MarcacionMasterTAG", "Abort 1");
+                                                //objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "FIX", null);
+                                                //util.sleep(1000);
+
+                                                Log.d("MarcacionMasterTAG", "Abort 1");
                                                 objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "ABORT", null);
                                                 util.sleep(50);
 
+                                                Log.d("MarcacionMasterTAG", "Abort 2");
                                                 objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "VERIFY_ON_EXTERNAL_DATA", TEMPLATE);
                                                 util.sleep(50);
 
                                                 boolean continuar = true;
                                                 boolean fallo = false;
 
+                                                Log.d("MarcacionMasterTAG","Abort 3");
                                                 while (continuar) {
                                                     String res = objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "SEND_STATUS_CRC", null);
                                                     String tmp = objHandPunch.OperarStatus(res,"");
 
                                                     if (tmp.equalsIgnoreCase("Exito")){
-                                                        Log.d("HandPunch","EXITO");
+                                                        Log.d("MarcacionMasterTAG","EXITO");
                                                         continuar = false;
                                                     }
 
                                                     if (tmp.equalsIgnoreCase("Fallo")){
-                                                        Log.d("HandPunch","FALLO");
+                                                        Log.d("MarcacionMasterTAG","FALLO");
                                                         fallo = true;
                                                         // FALLO AL CAPTURAR MANO
 
@@ -1816,7 +1863,14 @@ public class ActivityPrincipal extends Activity {
                                                         String array_autorizaciones[] = {};
                                                         if (s < 100) { // MARCACION AUTORIZADA
                                                             Log.d("MarcacionMasterTAG", "S<100");
-                                                            String res_marcacion = queriesMarcaciones.ModoMarcacion(INDICE, idTerminal, 10, flag, fechahora.getFechahora(), MODO_MARCACION);
+                                                            String res_marcacion = "";
+                                                            try {
+                                                                res_marcacion = queriesMarcaciones.ModoMarcacion(INDICE, idTerminal, 10, FLG_AUX, fechahora.getFechahora(), MODO_MARCACION);
+                                                            } catch( Exception e) {
+                                                                Log.e("MarcacionMasterTAG", "Error res_marcacion: "+e.getMessage());
+                                                            }
+
+                                                            Log.d("MarcacionMasterTAG", "res_marcacion: "+res_marcacion);
                                                             array_autorizaciones = res_marcacion.split(",");
                                                             if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
 
@@ -2314,15 +2368,7 @@ public class ActivityPrincipal extends Activity {
     public void manageEventMode(boolean visible) {
 
         if (visible) {
-            btnEvent01.setVisibility(View.VISIBLE);
-            btnEvent02.setVisibility(View.VISIBLE);
-            btnEvent03.setVisibility(View.VISIBLE);
-            btnEvent04.setVisibility(View.VISIBLE);
-            btnEvent05.setVisibility(View.VISIBLE);
-            btnEvent06.setVisibility(View.VISIBLE);
-            btnEvent07.setVisibility(View.VISIBLE);
-            btnEvent08.setVisibility(View.VISIBLE);
-
+            InicializarModoEvento();
         } else {
             btnEvent01.setVisibility(View.INVISIBLE);
             btnEvent02.setVisibility(View.INVISIBLE);

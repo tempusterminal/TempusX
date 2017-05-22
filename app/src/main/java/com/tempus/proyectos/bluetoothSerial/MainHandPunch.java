@@ -31,6 +31,7 @@ public class MainHandPunch {
     Utilities util;
     Activity activity;
     String a;
+    String FIX = "FF0AFF30031C981E3297FFFF0A01440038F6FFFF";
 
 
     public MainHandPunch(Activity activity){
@@ -63,8 +64,17 @@ public class MainHandPunch {
                 break;
             case "VERIFY_ON_EXTERNAL_DATA":
                 String crc = util.getCRC16CCITT("014A0B0001" + data, 0x1021, 0x0000, true);
+                if (crc.length()<4){
+                    for (int i = 0 ; i < (4-crc.length()) ; i++) {
+                        crc = "0" + crc;
+                    }
+                }
                 trama = VERIFY_ON_EXTERNAL_DATA + data + crc.substring(2,4) + crc.substring(0,2) + "FF";
                 tam = 11;
+                break;
+            case "FIX":
+                trama = FIX;
+                tam = 19;
                 break;
             default:
                 trama = ABORT;
@@ -73,6 +83,7 @@ public class MainHandPunch {
         }
 
         try {
+            Log.d("HandPunch","INTENTANDO SALIR: " + trama);
             out.write(util.hexStringToByteArray(trama));
             Log.d("HandPunch","SALIO: " + trama);
         } catch (IOException e) {
