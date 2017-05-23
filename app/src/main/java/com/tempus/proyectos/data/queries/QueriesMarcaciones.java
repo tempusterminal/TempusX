@@ -206,26 +206,41 @@ public class QueriesMarcaciones {
 
         Log.d("Autorizaciones","idparametersMarcaciones = " + idparametersMarcaciones);
 
-        if(idparametersMarcaciones.equals("")){
-            autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,insert);
-            apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
-            valortarjeta = autorizaciones.getValorTarjeta();
-            mensaje = autorizaciones.getMensaje();
-            mensajedetalle = autorizaciones.getMensajeDetalle();
 
-            /*
-            if(!autorizaciones.getMensaje().equalsIgnoreCase("null")){
-                apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+        if(idparametersMarcaciones.equals("")){
+
+            try{
+                autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,1);
+                if(autorizaciones.getMensaje().equalsIgnoreCase("marcacion autorizada")){
+                    apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                    valortarjeta = autorizaciones.getValorTarjeta();
+                    mensaje = autorizaciones.getMensaje();
+                    mensajedetalle = autorizaciones.getMensajeDetalle();
+                    ModoMarcacion = "";
+                    lectorasiguiente = "0";
+                }else{
+                    apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                    valortarjeta = autorizaciones.getValorTarjeta();
+                    mensaje = autorizaciones.getMensaje();
+                    mensajedetalle = autorizaciones.getMensajeDetalle();
+                    ModoMarcacion = "";
+                    lectorasiguiente = "0";
+                }
+
+            }catch(Exception e){
+                Log.e("Autorizaciones",e.getMessage());
+                apellidosnombres = "";
                 valortarjeta = autorizaciones.getValorTarjeta();
                 mensaje = autorizaciones.getMensaje();
                 mensajedetalle = autorizaciones.getMensajeDetalle();
-            }else{
-                mensaje = "MARCACION NO AUTORIZADA";
+                ModoMarcacion = "";
+                lectorasiguiente = "0";
             }
-            */
-            lectorasiguiente = "0";
+
+            Log.d("Autorizaciones","autorizaciones{} = " + autorizaciones.toString());
+
         }else{
-            Log.d("Autorizaciones","Marcacion por Modos ");
+            Log.d("Autorizaciones","Marcacion por Modos");
             String[] idparametermarcacionarray = idparametersMarcaciones.split(",");
             // TECLADO_MANO [0] - DNI_MANO [1]
 
@@ -241,9 +256,12 @@ public class QueriesMarcaciones {
                     String[] modomarcaarray = modosmarcasarray[y].split(",");
                     // 1 [0] - 0 [1]
                     Log.d("Autorizaciones","modomarcaarray[] = " + modomarcaarray[0] + " - " + modomarcaarray[1]);
+                    // modomarcaarray[0] lectora
+                    // modomarcaarray[1] verifica/inserta
 
                     if(capturarlectorasiguiente){
                         lectorasiguiente = modomarcaarray[0];
+                        capturarlectorasiguiente = false;
                     }
 
                     Log.d("Autorizaciones","verificacion = " + modomarcaarray[0] + ":" + IdTipoLect);
@@ -254,28 +272,38 @@ public class QueriesMarcaciones {
                         // 0 = verifica/no inserta
                         // 1 = inserta
                         capturarlectorasiguiente = true;
-                        autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,insert);
 
-                        apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
-                        valortarjeta = autorizaciones.getValorTarjeta();
-                        mensaje = autorizaciones.getMensaje();
-                        mensajedetalle = autorizaciones.getMensajeDetalle();
-                        ModoMarcacion = idparametermarcacionarray[i];
+                        try{
+                            autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,insert);
+                            if(autorizaciones.getMensaje().equalsIgnoreCase("marcacion autorizada")){
+                                apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                                valortarjeta = autorizaciones.getValorTarjeta();
+                                mensaje = autorizaciones.getMensaje();
+                                mensajedetalle = autorizaciones.getMensajeDetalle();
+                                ModoMarcacion = idparametermarcacionarray[i];
 
-                        /*
-                        if(!autorizaciones.getMensaje().equalsIgnoreCase("null")){
-                            apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                            }else{
+                                apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                                valortarjeta = autorizaciones.getValorTarjeta();
+                                mensaje = autorizaciones.getMensaje();
+                                mensajedetalle = autorizaciones.getMensajeDetalle();
+                                ModoMarcacion = "";
+                                lectorasiguiente = "0";
+                            }
+                        }catch(Exception e){
+                            Log.e("Autorizaciones",e.getMessage());
+                            apellidosnombres = "";
                             valortarjeta = autorizaciones.getValorTarjeta();
                             mensaje = autorizaciones.getMensaje();
                             mensajedetalle = autorizaciones.getMensajeDetalle();
-                            ModoMarcacion = idparametermarcacionarray[i];
-                        }else{
-                            mensaje = "MARCACION NO AUTORIZADA";
+                            ModoMarcacion = "";
                             lectorasiguiente = "0";
                         }
-                        */
+
+                        Log.d("Autorizaciones","autorizaciones{} = " + autorizaciones.toString());
 
                     }
+
 
                 }
             }
