@@ -207,6 +207,7 @@ public class QueriesParameters {
 
         //Parametros
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('PARAMETERS_MARCACIONES','','TECLADO_MANO,DNI_MANO','','0','" + fechahora.getFechahora() + "');");
+        //database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('PARAMETERS_MARCACIONES','','','','0','" + fechahora.getFechahora() + "');");
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('TECLADO_MANO','','1,0;10,1','','0','" + fechahora.getFechahora() + "');");
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('DNI_MANO','','2,0;10,1','','0','" + fechahora.getFechahora() + "');");
 

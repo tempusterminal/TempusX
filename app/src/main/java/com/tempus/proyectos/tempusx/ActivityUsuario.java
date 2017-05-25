@@ -3,6 +3,7 @@ package com.tempus.proyectos.tempusx;
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -86,6 +87,22 @@ public class ActivityUsuario extends Activity {
                 ActualizarUsuario();
             }
         });
+    }
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        int eventaction = event.getAction();
+        switch (eventaction) {
+            case MotionEvent.ACTION_DOWN:
+                ui.initScreen(this);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+        }
+        return true;
     }
 
 

@@ -88,9 +88,12 @@ import java.util.Set;
 
 public class ActivityPrincipal extends Activity {
 
+    int SCORE_MANO = 0;
     /* Variables Globales */
     String FLG_AUX = "";
     boolean esperando_mano = false;
+    boolean fallo_mano = false;
+    boolean marcacion_mano = false;
     boolean buttonsVisibility[] = new boolean[8];
     String buttonsText[] = new String[8];
 
@@ -193,8 +196,8 @@ public class ActivityPrincipal extends Activity {
     public static boolean INTERFACE_ETH;
     public static boolean INTERFACE_PPP;
 
+    List<String> lectoras;
 
-    Map<String, String> Lectoras;
     String tarjetaKey;
     boolean visibleKey;
     String mNombre;
@@ -222,10 +225,6 @@ public class ActivityPrincipal extends Activity {
     private DBManager dbManager;
     private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria;
     private QueriesMarcaciones queriesMarcaciones;
-
-
-    private PowerManager mPowerManager;
-    private PowerManager.WakeLock mWakeLock;
 
 
     /* --- Declaración de Componentes de la Interfaz --- */
@@ -434,8 +433,8 @@ public class ActivityPrincipal extends Activity {
         processSyncTS.start(this);
         ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
         processSyncST.start(this);
-        //ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
-        //processSyncDatetime.start(this);
+        ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
+        processSyncDatetime.start(this);
 
         threadFechahora.start();
 
@@ -563,7 +562,7 @@ public class ActivityPrincipal extends Activity {
                 flag = "002";
                 Log.v(TAG, "Flg_Actividad: " + flag);
                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                actualizarFlag("009", btnEvent02);
+                actualizarFlag("002", btnEvent02);
                 //Date date = new Date();
                 //tiempoPasado = date;
 
@@ -1118,9 +1117,9 @@ public class ActivityPrincipal extends Activity {
         MODO_MARCACION = "";
         MAC_BT_00 = "00:00:00:00:00:00";
         //RANSA 1 - 14;1F:78:24:1A:31
-        MAC_BT_01 = "20:16:08:10:42:63";
-        MAC_BT_02 = "00:00:00:00:00:00";
-        MAC_BT_03 = "20:16:08:10:46:09";
+        //MAC_BT_01 = "20:16:08:10:42:63";
+        //MAC_BT_02 = "00:00:00:00:00:00";
+        //MAC_BT_03 = "20:16:08:10:46:09";
 
         //RANSA 2 - 14:1F:78:86:2F:9C
         //MAC_BT_01 = "20:16:08:10:64:87";
@@ -1128,15 +1127,21 @@ public class ActivityPrincipal extends Activity {
         //MAC_BT_03 = "20:16:08:10:65:94";
 
         //RANSA 3 - 14:1F:78:86:2F:B1
-        //MAC_BT_01 = "20:16:08:10:58:40";
-        //MAC_BT_02 = "00:00:00:00:00:00";
-        //MAC_BT_03 = "20:16:08:10:58:52";
+        MAC_BT_01 = "20:16:08:10:58:40";
+        MAC_BT_02 = "00:00:00:00:00:00";
+        MAC_BT_03 = "20:16:08:10:58:52";
+
+        //CLINICA INTERNACIONAL 1
+        //MAC_BT_01 = "00:12:06:04:99:06";
+        //MAC_BT_02 = "00:12:06:04:98:90";
+        //MAC_BT_03 = "00:00:00:00:00:00";
 
         MODO_EVENTO = true;
         TIPO_TERMINAL = 3;
         INTERFACE_ETH = false;
         INTERFACE_WLAN = true;
-        INTERFACE_PPP = true;
+        INTERFACE_PPP = false;
+        SCORE_MANO = 120;
 
         if (MODO_EVENTO) {
 
@@ -1267,11 +1272,17 @@ public class ActivityPrincipal extends Activity {
         tiempoPatron = 5;
         isBooting = true;
 
-        Lectoras = new HashMap<String, String>();
-        Lectoras.put("01", "TECLADO");
-        Lectoras.put("02", "DNI");
-        Lectoras.put("04", "PROXIMIDAD");
-        Lectoras.put("07", "HUELLA SUPREMA");
+        //lectoras = new HashMap<String, String>();
+        //lectoras.put("01", "TECLADO");
+        //lectoras.put("02", "DNI");
+        //lectoras.put("04", "PROXIMIDAD");
+        //lectoras.put("07", "HUELLA SUPREMA");
+
+        lectoras = new ArrayList<String>();
+        lectoras.add("TECLADO");
+        lectoras.add("DNI");
+        lectoras.add("PROXIMIDAD CHINA");
+        lectoras.add("HUELLA SUPREMA");
 
         HabilitarBluetooth();
         HabilitarBluetoothEthernet();
@@ -1592,8 +1603,35 @@ public class ActivityPrincipal extends Activity {
 
                 break;
 
+            case "41444414": // ABRIR CONFIGURACION DE ANDROID
+                Log.d("SYSTEM_MAIN_INSTRUCTION","COMANDO: APAGAR");
+                //logManager.RegisterLogTXT("COMANDO: CONFIGURACION DE ANDROID");
+                try {
+                    ShutdownArduino(btSocket01.getOutputStream());
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: CONFIGURACION DE ANDROID -> " + e.getMessage());
+                }
+
+                try {
+                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
+                    proc.waitFor();
+                } catch (Exception e) {
+                    Log.e("ERROR_SYSTEM_MAIN","COMANDO: APAGAR -> " + e.getMessage());
+                }
+
+                break;
+
             default:
                 break;
+        }
+    }
+
+    public void ShutdownArduino(OutputStream out) {
+        Log.v(TAG, "MARCACION OK");
+        try {
+            out.write(util.hexStringToByteArray("244F4158410013423030303030303030000041"));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -1655,6 +1693,9 @@ public class ActivityPrincipal extends Activity {
 
         String TAG = "MarcacionMasterTAG";
 
+        Log.d(TAG, "lectoraName: " + lectoraName);
+        Log.d(TAG, "tarjeta: " + tarjeta);
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -1662,7 +1703,7 @@ public class ActivityPrincipal extends Activity {
             }
         });
 
-        if (!lectoraName.equalsIgnoreCase("NO DATOS")) {
+        if (lectoras.contains(lectoraName)) {
             if (flag == null || flag == "") {
 
             } else {
@@ -1705,148 +1746,124 @@ public class ActivityPrincipal extends Activity {
                         //autorizaciones = queriesMarcaciones.GestionarMarcaciones(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), flag, fechahora.getFechahora(), 1);
                         String autorizacion = "";
                         String array_autorizaciones[] = {};
-                        try {
-                            if (!MARCACION_ACTIVA) {
-                                MODO_MARCACION = "";
-                            }
-                            autorizacion = queriesMarcaciones.ModoMarcacion(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), FLG_AUX, fechahora.getFechahora(), MODO_MARCACION);
-                            Log.d(TAG, "Resultado de ModoMarcacion: " + autorizacion);
-                            array_autorizaciones = autorizacion.split(",");
-                            Log.d(TAG, "Resultado de array_autorizaciones: " + array_autorizaciones.toString());
-                            NOMBRE_PERSONAL_MANO = array_autorizaciones[0];
-                        } catch (Exception e) { // Error NO EXISTE TARJETA
-                            Log.e(TAG, "Resultado de ModoMarcacion: " + autorizacion);
-                            Log.e(TAG, "Resultado de Busqueda de Autorizaciones: " + array_autorizaciones.toString());
-                            Log.e(TAG, "Error: " + e);
+
+
+                        if (!MARCACION_ACTIVA) {
+                            MODO_MARCACION = "";
                         }
+                        /*
+                        else {
+                            if (marcacion_mano) {
+                                esperando_mano = false;
+                                fallo_mano = false;
+                                marcacion_mano = false;
+                            } else {
+                        */
+                                try {
+                                    autorizacion = queriesMarcaciones.ModoMarcacion(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), FLG_AUX, fechahora.getFechahora(), MODO_MARCACION);
+                                    Log.d(TAG, "Resultado de ModoMarcacion: " + autorizacion);
+                                    esperando_mano = false;
+                                    //fallo_mano = true;
+                                    array_autorizaciones = autorizacion.split(",");
+                                    Log.d(TAG, "Resultado de array_autorizaciones: " + array_autorizaciones.toString());
+                                    NOMBRE_PERSONAL_MANO = array_autorizaciones[0];
+                                } catch (Exception e) { // Error NO EXISTE TARJETA
+                                    Log.e(TAG, "Resultado de ModoMarcacion: " + autorizacion);
+                                    Log.e(TAG, "Resultado de Busqueda de Autorizaciones: " + array_autorizaciones.toString());
+                                    Log.e(TAG, "Error: " + e);
+                                }
 
-                        //String autorizacion = autorizaciones.getMensaje();
+                                //String autorizacion = autorizaciones.getMensaje();
 
-                        if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
+                                if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
 
-                            if (array_autorizaciones[4].equals("0")){ // Finalizo Marcacion
-                                Log.d(TAG, "FINALIZO MARCACION");
-                                MARCACION_ACTIVA = false;
-                                MODO_MARCACION = "";
-                                TIEMPO_ACTIVO = 5;
-                                MarcacionOK(btSocket01.getOutputStream());
-                                mNombre = array_autorizaciones[0];
-                                mTarjeta = array_autorizaciones[1];
-                                mMensajePrincipal = array_autorizaciones[2];
-                                mMensajeSecundario = array_autorizaciones[3];
-                                MarcacionUI();
+                                    if (array_autorizaciones[4].equals("0")){ // Finalizo Marcacion
+                                        Log.d(TAG, "FINALIZO MARCACION");
+                                        MARCACION_ACTIVA = false;
+                                        MODO_MARCACION = "";
+                                        TIEMPO_ACTIVO = 5;
+                                        MarcacionOK(btSocket01.getOutputStream());
+                                        mNombre = array_autorizaciones[0];
+                                        mTarjeta = array_autorizaciones[1];
+                                        mMensajePrincipal = array_autorizaciones[2];
+                                        mMensajeSecundario = array_autorizaciones[3];
+                                        MarcacionUI();
 
-                            } else { // Marcacion Continua
-                                Log.d(TAG, "CONTINUA MARCACION");
-                                String mensaje = analizarModoMarcacion(array_autorizaciones[4]);
-                                Log.d(TAG, "Mensaje ANALIZAR_MODO_MARCACION: " + mensaje);
-                                MARCACION_ACTIVA = true;
-                                MODO_MARCACION = array_autorizaciones[5];
+                                    } else { // Marcacion Continua
+                                        Log.d(TAG, "CONTINUA MARCACION");
+                                        String mensaje = analizarModoMarcacion(array_autorizaciones[4]);
+                                        Log.d(TAG, "Mensaje ANALIZAR_MODO_MARCACION: " + mensaje);
+                                        MARCACION_ACTIVA = true;
+                                        MODO_MARCACION = array_autorizaciones[5];
 
-                                if (mensaje.contains("MANO")) {
-                                    esperando_mano = true;
-                                    TIEMPO_ACTIVO = 25;
-                                    mMensajePrincipal = "";
-                                    mMensajeSecundario = mensaje;
+                                        if (mensaje.contains("MANO")) {
+                                            //marcacion_mano = true;
+                                            TIEMPO_ACTIVO = 25;
+                                            mMensajePrincipal = "";
+                                            mMensajeSecundario = mensaje;
 
-                                    Log.d(TAG, "MANO TIEMPO_ACTIVO: " + TIEMPO_ACTIVO);
+                                            Log.d(TAG, "MANO TIEMPO_ACTIVO: " + TIEMPO_ACTIVO);
 
-                                    TEMPLATE = dbManager.valexecSQL("SELECT VALOR_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE VALOR_TARJETA = '"+tarjeta+"' AND ID_TIPO_LECT = 10;");
-                                    INDICE = dbManager.valexecSQL("SELECT INDICE_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA WHERE VALOR_TARJETA = '"+tarjeta+"' AND ID_TIPO_LECT = 10;");
+                                            TEMPLATE = dbManager.valexecSQL("SELECT VALOR_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA INNER JOIN PERSONAL ON PERSONAL_TIPOLECTORA_BIOMETRIA.EMPRESA = PERSONAL.EMPRESA AND PERSONAL_TIPOLECTORA_BIOMETRIA.CODIGO = PERSONAL.CODIGO WHERE VALOR_TARJETA = '"+tarjeta+"' AND ID_TIPO_LECT = 10 AND (PERSONAL.ESTADO != '002' OR PERSONAL.FECHA_DE_CESE IS NULL);");
+                                            INDICE = dbManager.valexecSQL("SELECT INDICE_BIOMETRIA FROM PERSONAL_TIPOLECTORA_BIOMETRIA INNER JOIN PERSONAL ON PERSONAL_TIPOLECTORA_BIOMETRIA.EMPRESA = PERSONAL.EMPRESA AND PERSONAL_TIPOLECTORA_BIOMETRIA.CODIGO = PERSONAL.CODIGO WHERE VALOR_TARJETA = '"+tarjeta+"' AND ID_TIPO_LECT = 10 AND (PERSONAL.ESTADO != '002' OR PERSONAL.FECHA_DE_CESE IS NULL);");
 
-                                    if (TEMPLATE!=null || false) {
+                                            if (TEMPLATE!=null || false) {
 
-                                        Log.d(TAG, "BIOMETRIA EXISTENTE ... INICIANDO GEOMANO");
-                                        // Existe Biometria
+                                                Log.d(TAG, "BIOMETRIA EXISTENTE ... INICIANDO GEOMANO");
+                                                // Existe Biometria
 
-                                        runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                txvMarcacionLed01.setVisibility(View.VISIBLE);
-                                                txvMarcacionLed02.setVisibility(View.VISIBLE);
-                                                txvMarcacionLed03.setVisibility(View.VISIBLE);
-                                                txvMarcacionLed04.setVisibility(View.VISIBLE);
-                                                imgViewMarcacionGeomano.setVisibility(View.VISIBLE);
-                                            }
-                                        });
-
-                                        Thread verificarMano = new Thread(new Runnable() {
-                                            @Override
-                                            public void run() {
-
-                                                //Log.d("MarcacionMasterTAG", "Abort 1");
-                                                //objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "FIX", null);
-                                                //util.sleep(1000);
-
-                                                Log.d("MarcacionMasterTAG", "Abort 1");
-                                                objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "ABORT", null);
-                                                util.sleep(50);
-
-                                                Log.d("MarcacionMasterTAG", "Abort 2");
-                                                objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "VERIFY_ON_EXTERNAL_DATA", TEMPLATE);
-                                                util.sleep(50);
-
-                                                boolean continuar = true;
-                                                boolean fallo = false;
-
-                                                Log.d("MarcacionMasterTAG","Abort 3");
-                                                while (continuar) {
-                                                    String res = objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "SEND_STATUS_CRC", null);
-                                                    String tmp = objHandPunch.OperarStatus(res,"");
-
-                                                    if (tmp.equalsIgnoreCase("Exito")){
-                                                        Log.d("MarcacionMasterTAG","EXITO");
-                                                        continuar = false;
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        txvMarcacionLed01.setVisibility(View.VISIBLE);
+                                                        txvMarcacionLed02.setVisibility(View.VISIBLE);
+                                                        txvMarcacionLed03.setVisibility(View.VISIBLE);
+                                                        txvMarcacionLed04.setVisibility(View.VISIBLE);
+                                                        imgViewMarcacionGeomano.setVisibility(View.VISIBLE);
                                                     }
+                                                });
 
-                                                    if (tmp.equalsIgnoreCase("Fallo")){
-                                                        Log.d("MarcacionMasterTAG","FALLO");
-                                                        fallo = true;
-                                                        // FALLO AL CAPTURAR MANO
+                                                Thread verificarMano = new Thread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
 
-                                                        continuar = false;
-                                                    }
+                                                    //Log.d("MarcacionMasterTAG", "Abort 1");
+                                                    //objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "FIX", null);
+                                                    //util.sleep(1000);
 
+                                                    Log.d("MarcacionMasterTAG", "Abort 1");
+                                                    objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "ABORT", null);
                                                     util.sleep(50);
-                                                }
 
-                                                if (fallo) {
+                                                    Log.d("MarcacionMasterTAG", "Abort 2");
+                                                    objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "VERIFY_ON_EXTERNAL_DATA", TEMPLATE);
+                                                    util.sleep(50);
 
-                                                    runOnUiThread(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            txvMarcacionLed01.setVisibility(View.INVISIBLE);
-                                                            txvMarcacionLed02.setVisibility(View.INVISIBLE);
-                                                            txvMarcacionLed03.setVisibility(View.INVISIBLE);
-                                                            txvMarcacionLed04.setVisibility(View.INVISIBLE);
-                                                            imgViewMarcacionGeomano.setVisibility(View.INVISIBLE);
+                                                    esperando_mano = true;
+                                                    fallo_mano = false;
+
+                                                    Log.d("MarcacionMasterTAG","Abort 3");
+                                                    while (esperando_mano) {
+                                                        String res = objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "SEND_STATUS_CRC", null);
+                                                        String tmp = objHandPunch.OperarStatus(res,"");
+
+                                                        if (tmp.equalsIgnoreCase("Exito")){
+                                                            Log.d("MarcacionMasterTAG","EXITO");
+                                                            esperando_mano = false;
                                                         }
-                                                    });
 
+                                                        if (tmp.equalsIgnoreCase("Fallo")){
+                                                            Log.d("MarcacionMasterTAG","FALLO");
+                                                            fallo_mano = true;
+                                                            // FALLO AL CAPTURAR MANO
 
-                                                    Log.d("MarcacionMasterTAG", "FINALIZO MARCACION");
-                                                    MARCACION_ACTIVA = false;
-                                                    MODO_MARCACION = "";
-                                                    TIEMPO_ACTIVO = 5;
-                                                    MarcacionKO(btSocket01.getOutputStream());
-                                                    mNombre = NOMBRE_PERSONAL_MANO;
-                                                    mTarjeta = INDICE;
-                                                    mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                                                    mMensajeSecundario = "ERROR AL CAPTURAR MANO";
-                                                    MarcacionUI();
+                                                            esperando_mano = false;
+                                                        }
 
-                                                } else {
-                                                    TEMPLATE = "";
-                                                    String resultado = objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "SEND_TEMPLATE", null);
-                                                    util.sleep(50);
+                                                        util.sleep(50);
+                                                    }
 
-                                                    Log.d("MarcacionMasterTAG", "OUTPUT: "+resultado);
-
-                                                    // Analizar Score
-                                                    if (resultado.length()>14) {
-                                                        Log.d("MarcacionMasterTAG", "SCORE OK");
-                                                        String SCORE_01 = resultado.substring(12,14);
-                                                        String SCORE_02 = resultado.substring(10,12);
+                                                    if (fallo_mano) {
 
                                                         runOnUiThread(new Runnable() {
                                                             @Override
@@ -1859,125 +1876,167 @@ public class ActivityPrincipal extends Activity {
                                                             }
                                                         });
 
-                                                        int s = util.convertHexToDecimal(SCORE_01 + SCORE_02);
-                                                        String array_autorizaciones[] = {};
-                                                        if (s < 100) { // MARCACION AUTORIZADA
-                                                            Log.d("MarcacionMasterTAG", "S<100");
-                                                            String res_marcacion = "";
-                                                            try {
-                                                                res_marcacion = queriesMarcaciones.ModoMarcacion(INDICE, idTerminal, 10, FLG_AUX, fechahora.getFechahora(), MODO_MARCACION);
-                                                            } catch( Exception e) {
-                                                                Log.e("MarcacionMasterTAG", "Error res_marcacion: "+e.getMessage());
-                                                            }
 
-                                                            Log.d("MarcacionMasterTAG", "res_marcacion: "+res_marcacion);
-                                                            array_autorizaciones = res_marcacion.split(",");
-                                                            if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
+                                                        Log.d("MarcacionMasterTAG", "FINALIZO MARCACION");
+                                                        MARCACION_ACTIVA = false;
+                                                        MODO_MARCACION = "";
+                                                        TIEMPO_ACTIVO = 5;
+                                                        MarcacionKO(btSocket01.getOutputStream());
+                                                        mNombre = NOMBRE_PERSONAL_MANO;
+                                                        mTarjeta = INDICE;
+                                                        mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                                        mMensajeSecundario = "ERROR AL CAPTURAR MANO";
+                                                        MarcacionUI();
 
-                                                                Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 1");
-                                                                MARCACION_ACTIVA = false;
-                                                                MODO_MARCACION = "";
-                                                                TIEMPO_ACTIVO = 5;
-                                                                MarcacionOK(btSocket01.getOutputStream());
-                                                                mNombre = array_autorizaciones[0];
-                                                                mTarjeta = array_autorizaciones[1];
-                                                                mMensajePrincipal = array_autorizaciones[2];
-                                                                mMensajeSecundario = array_autorizaciones[3];
-                                                                Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 1");
-                                                                MarcacionUI();
-                                                            } else {
-                                                                Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 2");
+                                                    } else {
+                                                        TEMPLATE = "";
+                                                        String resultado = objHandPunch.SerialHandPunch(btSocket03.getOutputStream(), btSocket03.getInputStream(), "SEND_TEMPLATE", null);
+                                                        util.sleep(50);
+
+                                                        Log.d("MarcacionMasterTAG", "OUTPUT: "+resultado);
+
+                                                        // Analizar Score
+                                                        if (resultado.length()>14) {
+                                                            Log.d("MarcacionMasterTAG", "SCORE OK");
+                                                            String SCORE_01 = resultado.substring(12,14);
+                                                            String SCORE_02 = resultado.substring(10,12);
+
+                                                            runOnUiThread(new Runnable() {
+                                                                @Override
+                                                                public void run() {
+                                                                    txvMarcacionLed01.setVisibility(View.INVISIBLE);
+                                                                    txvMarcacionLed02.setVisibility(View.INVISIBLE);
+                                                                    txvMarcacionLed03.setVisibility(View.INVISIBLE);
+                                                                    txvMarcacionLed04.setVisibility(View.INVISIBLE);
+                                                                    imgViewMarcacionGeomano.setVisibility(View.INVISIBLE);
+                                                                }
+                                                            });
+
+                                                            int s = util.convertHexToDecimal(SCORE_01 + SCORE_02);
+                                                            String array_autorizaciones[] = {};
+                                                            if (s < SCORE_MANO) { // MARCACION AUTORIZADA
+                                                                Log.d("MarcacionMasterTAG", "S<100");
+                                                                String res_marcacion = "";
+                                                                try {
+                                                                    res_marcacion = queriesMarcaciones.ModoMarcacion(INDICE, idTerminal, 10, FLG_AUX, fechahora.getFechahora(), MODO_MARCACION);
+                                                                } catch( Exception e) {
+                                                                    Log.e("MarcacionMasterTAG", "Error res_marcacion: "+e.getMessage());
+                                                                }
+
+                                                                Log.d("MarcacionMasterTAG", "res_marcacion: "+res_marcacion);
+                                                                array_autorizaciones = res_marcacion.split(",");
+                                                                if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
+
+                                                                    Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 1");
+                                                                    MARCACION_ACTIVA = false;
+                                                                    MODO_MARCACION = "";
+                                                                    TIEMPO_ACTIVO = 5;
+                                                                    MarcacionOK(btSocket01.getOutputStream());
+                                                                    mNombre = array_autorizaciones[0];
+                                                                    mTarjeta = array_autorizaciones[1];
+                                                                    mMensajePrincipal = array_autorizaciones[2];
+                                                                    mMensajeSecundario = array_autorizaciones[3];
+                                                                    Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 1");
+                                                                    MarcacionUI();
+                                                                } else {
+                                                                    Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 2");
+                                                                    MARCACION_ACTIVA = false;
+                                                                    MODO_MARCACION = "";
+                                                                    TIEMPO_ACTIVO = 5;
+                                                                    MarcacionKO(btSocket01.getOutputStream());
+                                                                    mNombre = array_autorizaciones[0];
+                                                                    mTarjeta = array_autorizaciones[1];
+                                                                    mMensajePrincipal = array_autorizaciones[2];
+                                                                    mMensajeSecundario = array_autorizaciones[3];
+                                                                    Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 3");
+                                                                    MarcacionUI();
+                                                                }
+
+                                                            } else { // MARCACION NO AUTORIZADA, BIOMETRIA NO COINCIDE
+                                                                Log.d("MarcacionMasterTAG", "S>100");
+                                                                Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 3");
                                                                 MARCACION_ACTIVA = false;
                                                                 MODO_MARCACION = "";
                                                                 TIEMPO_ACTIVO = 5;
                                                                 MarcacionKO(btSocket01.getOutputStream());
-                                                                mNombre = array_autorizaciones[0];
-                                                                mTarjeta = array_autorizaciones[1];
-                                                                mMensajePrincipal = array_autorizaciones[2];
-                                                                mMensajeSecundario = array_autorizaciones[3];
+                                                                mNombre = NOMBRE_PERSONAL_MANO;
+                                                                mTarjeta = INDICE;
+                                                                mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                                                mMensajeSecundario = "BIOMETRIA NO COINCIDE";
                                                                 Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 3");
                                                                 MarcacionUI();
                                                             }
-
-                                                        } else { // MARCACION NO AUTORIZADA, BIOMETRIA NO COINCIDE
-                                                            Log.d("MarcacionMasterTAG", "S>100");
-                                                            Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 3");
-                                                            MARCACION_ACTIVA = false;
-                                                            MODO_MARCACION = "";
-                                                            TIEMPO_ACTIVO = 5;
-                                                            MarcacionKO(btSocket01.getOutputStream());
-                                                            mNombre = NOMBRE_PERSONAL_MANO;
-                                                            mTarjeta = INDICE;
-                                                            mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                                                            mMensajeSecundario = "BIOMETRIA NO COINCIDE";
-                                                            Log.d("MarcacionMasterTAG", "FINALIZO MARCACION 3");
-                                                            MarcacionUI();
                                                         }
                                                     }
-                                                }
 
+                                                    //marcacion_mano = false;
 
+                                                    Thread.currentThread().interrupt();
+                                                    }
+                                                });
 
-                                                Thread.currentThread().interrupt();
+                                                verificarMano.start();
+
+                                            } else {
+                                                //marcacion_mano = false;
+                                                Log.d(TAG, "BIOMETRIA NO EXISTENTE ... ");
+                                                // No Existe Biometria
+                                                Log.d(TAG, "FINALIZO MARCACION");
+                                                MARCACION_ACTIVA = false;
+                                                MODO_MARCACION = "";
+                                                TIEMPO_ACTIVO = 5;
+                                                mNombre = array_autorizaciones[0];
+                                                mTarjeta = array_autorizaciones[1];
+                                                mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                                mMensajeSecundario = "NO EXISTE BIOMETRIA";
+                                                MarcacionKO(btSocket01.getOutputStream());
                                             }
-                                        });
 
-                                        verificarMano.start();
+                                            MarcacionUI();
 
-                                    } else {
-                                        Log.d(TAG, "BIOMETRIA NO EXISTENTE ... ");
-                                        // No Existe Biometria
-                                        Log.d(TAG, "FINALIZO MARCACION");
-                                        MARCACION_ACTIVA = false;
-                                        MODO_MARCACION = "";
-                                        TIEMPO_ACTIVO = 5;
-                                        mNombre = array_autorizaciones[0];
-                                        mTarjeta = array_autorizaciones[1];
-                                        mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                                        mMensajeSecundario = "NO EXISTE BIOMETRIA";
-                                        MarcacionKO(btSocket01.getOutputStream());
+
+
+                                        } else {
+                                            TIEMPO_ACTIVO = 8;
+                                            mNombre = array_autorizaciones[0];
+                                            mTarjeta = array_autorizaciones[1];
+                                            mMensajePrincipal = "";
+                                            mMensajeSecundario = mensaje;
+
+                                            MarcacionUI();
+                                        }
+
                                     }
-
-                                    MarcacionUI();
-
 
 
                                 } else {
-                                    TIEMPO_ACTIVO = 8;
-                                    mNombre = array_autorizaciones[0];
-                                    mTarjeta = array_autorizaciones[1];
-                                    mMensajePrincipal = "";
-                                    mMensajeSecundario = mensaje;
 
-                                    MarcacionUI();
+                                    MARCACION_ACTIVA = false;
+                                    MODO_MARCACION = "";
+                                    TIEMPO_ACTIVO = 5;
+
+                                    if (autorizacion.equalsIgnoreCase("")) { // TEMPORAL Error NO EXISTE TARJETA
+                                        MarcacionKO(btSocket01.getOutputStream());
+                                        mNombre = "";
+                                        mTarjeta = tarjeta;
+                                        mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                        mMensajeSecundario = "(*)";
+                                        MarcacionUI();
+                                    } else {
+                                        MarcacionKO(btSocket01.getOutputStream());
+                                        mNombre = array_autorizaciones[0];
+                                        mTarjeta = array_autorizaciones[1];
+                                        mMensajePrincipal = array_autorizaciones[2];
+                                        mMensajeSecundario = array_autorizaciones[3];
+                                        MarcacionUI();
+                                    }
+
                                 }
 
-                            }
 
 
-                        } else {
 
-                            MARCACION_ACTIVA = false;
-                            MODO_MARCACION = "";
-                            TIEMPO_ACTIVO = 5;
 
-                            if (autorizacion.equalsIgnoreCase("")) { // TEMPORAL Error NO EXISTE TARJETA
-                                MarcacionKO(btSocket01.getOutputStream());
-                                mNombre = "";
-                                mTarjeta = tarjeta;
-                                mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                                mMensajeSecundario = "(*)";
-                                MarcacionUI();
-                            } else {
-                                MarcacionKO(btSocket01.getOutputStream());
-                                mNombre = array_autorizaciones[0];
-                                mTarjeta = array_autorizaciones[1];
-                                mMensajePrincipal = array_autorizaciones[2];
-                                mMensajeSecundario = array_autorizaciones[3];
-                                MarcacionUI();
-                            }
-
-                        }
 
                     } catch (Exception e) {
                         MARCACION_ACTIVA = false;
@@ -2487,9 +2546,9 @@ public class ActivityPrincipal extends Activity {
                     case "00":
 
                         // Analizar ADC
-                        boolean b = analizarADC(objArduino.getNroLector(), String.valueOf(util.convertHexToDecimal(objArduino.getDatosLector().substring(0, 2))));
+                        boolean isADC = analizarADC(objArduino.getNroLector(), String.valueOf(util.convertHexToDecimal(objArduino.getDatosLector().substring(0, 2))));
 
-                        if (activityActive.equals("Principal") && !b){
+                        if (activityActive.equals("Principal") && !isADC){
 
                             if( MODO_EVENTO ){
                                 // no ace==ptamos nada de marcaciones
@@ -2714,9 +2773,19 @@ public class ActivityPrincipal extends Activity {
     }
 
 
-    public boolean analizarADC(String msj, String valor) {
-        if (msj.equalsIgnoreCase("44")) {
+    public boolean analizarADC(String nroLector, String valor) {
+        if (nroLector.equalsIgnoreCase("44")) {
             logManager.RegisterLogTXT("BA="+valor+"\n");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    public boolean analizarEvento(String nroLector, String valor) {
+        if (nroLector.equalsIgnoreCase("0e")) {
+            logManager.RegisterLogTXT("EVENTO="+valor+"\n");
             return true;
         } else {
             return false;

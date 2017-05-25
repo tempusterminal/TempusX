@@ -39,10 +39,6 @@ public class ActivityGeomano extends Activity {
     static UserInterfaceM ui;
     Utilities util;
 
-    Button btnConectar;
-    Button btnVerificar;
-    Button btnEnrolar;
-
     static Button btnConsultarMano;
     static EditText edtManoDocumentoG;
     static ListView lstMano;
@@ -57,19 +53,11 @@ public class ActivityGeomano extends Activity {
     static Button btnAcMano3;
     static TextView txvAcMano1;
     static TextView txvManoEmpresaCorner;
-    static Button btnConsultarHuella;
     static TextView txvManoNombrePersonal;
-    static EditText edtManoDocumento;
 
     public static boolean ABORTAR = false;
 
-    BluetoothSuperAdmin socket01;
-    MainHandPunch hp;
-
     /* --- Declaración de Variables Globales --- */
-
-    List<Button> lstHuellaBtn;
-    List<TextView> lstHuellaTxv;
 
     public static Biometrias objBiometriaList;
     public static QueriesBiometrias queriesBiometrias;
@@ -112,9 +100,6 @@ public class ActivityGeomano extends Activity {
 
         ActivityPrincipal.activityActive = "Geomano";
 
-        lstHuellaBtn = new ArrayList<Button>();
-        lstHuellaTxv = new ArrayList<TextView>();
-
         /* --- Inicialización de Variables Locales --- */
 
         /* --- Inicialización de Componentes de la Interfaz --- */
@@ -147,7 +132,7 @@ public class ActivityGeomano extends Activity {
         txvManoEmpresaCorner = (TextView) findViewById(R.id.txvManoEmpresaCorner);
 
         btnExitLstMano = (Button) findViewById(R.id.btnExitLstMano);
-        txvLayerLstMano= (TextView) findViewById(R.id.txvLayerLstMano);
+        txvLayerLstMano = (TextView) findViewById(R.id.txvLayerLstMano);
         lstMano = (ListView) findViewById(R.id.lstMano);
         txvCabeceraLstMano = (TextView) findViewById(R.id.txvCabeceraLstMano);
 
@@ -155,7 +140,7 @@ public class ActivityGeomano extends Activity {
 
         ui.initScreen(this);
         limpiarScreen();
-        manageEnrollEmp(false,"");
+        manageEnrollEmp(false, "");
         manageScreenEnroll(false);
         manageScreenListaMano(false);
 
@@ -165,7 +150,7 @@ public class ActivityGeomano extends Activity {
 
         btnMasterGeomano.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                ui.goToActivity(ActivityGeomano.this, ActivityMenu.class , "","");
+                ui.goToActivity(ActivityGeomano.this, ActivityMenu.class, "", "");
             }
         });
 
@@ -184,26 +169,25 @@ public class ActivityGeomano extends Activity {
                 //registrarMano();
 
 
-
                 String numero = edtManoDocumentoG.getText().toString();
 
-                if (numero.isEmpty()){
-                    ui.showAlert(ActivityGeomano.this,"info","Debe ingresar un número válido");
+                if (numero.isEmpty()) {
+                    ui.showAlert(ActivityGeomano.this, "info", "Debe ingresar un número válido");
                 } else {
 
                     List<String> lista = new ArrayList<String>();
 
                     try {
-                        Log.d("TEMPUS",numero);
+                        Log.d("TEMPUS", numero);
                         queriesBiometrias = new QueriesBiometrias(ActivityGeomano.this);
-                        biometriasList = queriesBiometrias.ListarPersonalBiometria(7,numero);
+                        biometriasList = queriesBiometrias.ListarPersonalBiometria(10, numero);
 
                         int cantidad = biometriasList.size();
 
-                        if ( cantidad > 0 ) {
-                            for(int i = 0; i < biometriasList.size(); i++){
+                        if (cantidad > 0) {
+                            for (int i = 0; i < biometriasList.size(); i++) {
 
-                                Log.d("Autorizaciones",biometriasList.get(i).toString());
+                                Log.d("Autorizaciones", biometriasList.get(i).toString());
                                 String empresa = biometriasList.get(i).getEmpresa();
                                 String codigo = biometriasList.get(i).getCodigo();
                                 String nrodocumento = biometriasList.get(i).getNroDocumento();
@@ -214,16 +198,16 @@ public class ActivityGeomano extends Activity {
                                 lista.add(registro);
                             }
 
-                            ArrayAdapter<String> test = new ArrayAdapter<String>(ActivityGeomano.this,android.R.layout.simple_list_item_1, android.R.id.text1, lista){
+                            ArrayAdapter<String> test = new ArrayAdapter<String>(ActivityGeomano.this, android.R.layout.simple_list_item_1, android.R.id.text1, lista) {
 
                                 @Override
-                                public View getView(int position, View convertView, ViewGroup parent){
+                                public View getView(int position, View convertView, ViewGroup parent) {
 
                                     View view = super.getView(position, convertView, parent);
 
                                     final TextView ListItemShow = (TextView) view.findViewById(android.R.id.text1);
 
-                                    if (ListItemShow.getText().toString().contains("1|")){
+                                    if (ListItemShow.getText().toString().contains("1|")) {
                                         ListItemShow.setBackgroundColor(Color.parseColor("#5db85d"));
                                     } else {
                                         ListItemShow.setBackgroundColor(Color.parseColor("#333333"));
@@ -237,11 +221,11 @@ public class ActivityGeomano extends Activity {
                             manageScreenListaMano(true);
 
                         } else {
-                            ui.showAlert(ActivityGeomano.this,"warning","Cod/Doc no se reconoce");
+                            ui.showAlert(ActivityGeomano.this, "warning", "Cod/Doc no se reconoce");
                         }
 
-                    } catch (Exception e ){
-                        Log.e("ERROR",e.getMessage());
+                    } catch (Exception e) {
+                        Log.e("ERROR", e.getMessage());
                     }
 
                 }
@@ -253,7 +237,7 @@ public class ActivityGeomano extends Activity {
         lstMano.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                objBiometriaList =  biometriasList.get(position);
+                objBiometriaList = biometriasList.get(position);
                 analizarRegistroBiometriaList(ActivityGeomano.this);
             }
         });
@@ -261,6 +245,7 @@ public class ActivityGeomano extends Activity {
         btnAcMano1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setClickeable(false);
                 registrarMano();
             }
         });
@@ -268,136 +253,11 @@ public class ActivityGeomano extends Activity {
         btnAcMano3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setClickeable(false);
                 eliminarMano();
             }
         });
 
-
-        /*
-
-        btnConectar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                socket01.Connect();
-
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        String acumulador = "";
-
-                        while (true) {
-
-                            try {
-                                byte[] rawBytes = new byte[1];
-                                socket01.getInputStream().read(rawBytes);
-                                acumulador = acumulador + util.byteArrayToHexString(rawBytes);
-                                if (acumulador.length()>=20){
-                                    Log.d("HandPunch", "LLEGO: " + acumulador);
-                                    acumulador = "";
-                                }
-
-                            } catch (Exception e) {
-                                Log.e("HandPunch",e.getMessage());
-                            }
-
-                        }
-                    }
-                });
-
-                //t.start();
-            }
-        });
-
-
-        btnVerificar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("HandPunch","Boton Verificar");
-
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        hp.SerialHandPunch(socket01.getOutputStream(), socket01.getInputStream(), "ABORT", null);
-                        util.sleep(50);
-
-                        hp.SerialHandPunch(socket01.getOutputStream(), socket01.getInputStream(), "VERIFY_ON_EXTERNAL_DATA", "707d756a8189896e27");
-                        util.sleep(50);
-
-                        boolean continuar = true;
-
-                        while (continuar) {
-                            String res = hp.SerialHandPunch(socket01.getOutputStream(), socket01.getInputStream(), "SEND_STATUS_CRC", null);
-
-                            String tmp = hp.OperarStatus(res);
-
-                            if (tmp.equalsIgnoreCase("Exito")){
-                                Log.d("HandPunch","EXITO");
-                                continuar = false;
-                            }
-
-                            if (tmp.equalsIgnoreCase("Fallo")){
-                                Log.d("HandPunch","FALLO");
-                                continuar = false;
-                            }
-
-                            util.sleep(50);
-                        }
-
-                        hp.SerialHandPunch(socket01.getOutputStream(), socket01.getInputStream(), "SEND_TEMPLATE", null);
-                        util.sleep(50);
-                    }
-                });
-
-                t.start();
-
-            }
-        });
-
-
-
-        btnEnrolar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Log.d("HandPunch","Boton Enrolar");
-
-                boolean cancel = false;
-
-                hp.SerialHandPunch(socket01.getOutputStream(), socket01.getInputStream(), "ABORT", null);
-                util.sleep(50);
-
-                hp.SerialHandPunch(socket01.getOutputStream(), socket01.getInputStream(), "ENROLL_USER", null);
-                util.sleep(50);
-
-                boolean continuar = true;
-
-                while (continuar) {
-
-                    String res = hp.SerialHandPunch(socket01.getOutputStream(), socket01.getInputStream(), "SEND_STATUS_CRC", null);
-
-                    String tmp = hp.OperarStatus(res);
-
-                    if (tmp.equalsIgnoreCase("Exito")){
-                        Log.d("HandPunch","EXITO");
-                        continuar = false;
-                    }
-
-                    if (tmp.equalsIgnoreCase("Fallo")){
-                        Log.d("HandPunch","FALLO");
-                        continuar = false;
-                    }
-
-                    util.sleep(50);
-
-                }
-
-                hp.SerialHandPunch(socket01.getOutputStream(), socket01.getInputStream(), "SEND_TEMPLATE", null);
-                util.sleep(50);
-            }
-        });
-
-        */
 
     }
 
@@ -416,6 +276,21 @@ public class ActivityGeomano extends Activity {
         return true;
     }
 
+    public static void setClickeable(boolean clickeable){
+        if (clickeable) {
+            btnAcMano1.setClickable(true);
+            btnAcMano3.setClickable(true);
+            btnConsultarMano.setClickable(true);
+            btnMasterGeomano.setClickable(true);
+            edtManoDocumentoG.setClickable(true);
+        } else {
+            btnAcMano1.setClickable(false);
+            btnAcMano3.setClickable(false);
+            btnConsultarMano.setClickable(false);
+            btnMasterGeomano.setClickable(false);
+            edtManoDocumentoG.setClickable(false);
+        }
+    }
 
     public void registrarMano() {
         txvManoTexto.setText("");
@@ -437,6 +312,8 @@ public class ActivityGeomano extends Activity {
     }
 
     public static void analizarRegistroBiometriaList(Activity activity){
+
+        setClickeable(true);
 
         int permisos = objBiometriaList.getFlagPerTipoLectTerm();
 

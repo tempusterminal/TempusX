@@ -233,13 +233,15 @@ public class ActivityMenu extends Activity {
                 ui.goToActivity(ActivityMenu.this,ActivityFechaHora.class,"","");
                 break;
             case "BIOMETRIA":
-
-                if (ActivityPrincipal.TIPO_TERMINAL == 2){
-                    ui.goToActivity(ActivityMenu.this,ActivityBiometria.class,"","");
-                }
-
-                if (ActivityPrincipal.TIPO_TERMINAL == 3 ){
-                    ui.goToActivity(ActivityMenu.this,ActivityGeomano.class,"","");
+                try {
+                    if (ActivityPrincipal.TIPO_TERMINAL == 2){
+                        ui.goToActivity(ActivityMenu.this,ActivityBiometria.class,"","");
+                    }
+                    if (ActivityPrincipal.TIPO_TERMINAL == 3 ){
+                        ui.goToActivity(ActivityMenu.this,ActivityGeomano.class,"","");
+                    }
+                } catch(Exception e) {
+                    Log.e("TEMPUS", "MENU - " + e.getMessage());
                 }
 
                 break;

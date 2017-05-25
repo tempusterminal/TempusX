@@ -89,6 +89,7 @@ public class ActivityLogin extends Activity {
                     } else {
                         ui.showAlert(ActivityLogin.this,"warning","Usuario o Contrasena errado(s) " + i);
                     }
+
                 } catch(Exception e){
                     ui.showAlert(ActivityLogin.this,"warning","No se puede acceder.");
                 }

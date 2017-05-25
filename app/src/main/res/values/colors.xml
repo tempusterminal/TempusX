@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--
     <color name="colorLinea">#009933</color>
     <color name="colorFondoBarra">#d0dfdb</color>
     <color name="colorFondoCuerpo">#ffffff</color>
+    <color name="colorTexto">#000000</color>
+    <color name="colorBlanco">#ffffff</color>
+    <color name="colorFondoMarcacion">#000000</color>
+    -->
+    <!--
+    <color name="colorLinea">#0032a0</color>
+    <color name="colorFondoBarra">#daf4ff</color>
+    <color name="colorFondoCuerpo">#ffffff</color>
+    <color name="colorTexto">#000000</color>
+    <color name="colorBlanco">#ffffff</color>
+    <color name="colorFondoMarcacion">#000000</color>
+    -->
+
+    <color name="colorLinea">#91cc35</color>
+    <color name="colorFondoBarra">#ffffff</color>
+    <color name="colorFondoCuerpo">#eeeeee</color>
     <color name="colorTexto">#000000</color>
     <color name="colorBlanco">#ffffff</color>
     <color name="colorFondoMarcacion">#000000</color>
@@ -17,10 +34,10 @@
     <color name="colorVerdeClaro">#cbd9c1</color>
     <color name="colorNegro">#000000</color>
 
-    <color name="colorTabNonFocusedSelect">#009933</color>
-    <color name="colorTabNonFocusedNone">#1ebf54</color>
-    <color name="colorTabFocusedSelect">#026b25</color>
-    <color name="colorTabFocusedNone">#027027</color>
+    <color name="colorTabNonFocusedSelect">#91cc35</color>
+    <color name="colorTabNonFocusedNone">#75a923</color>
+    <color name="colorTabFocusedSelect">#5e8423</color>
+    <color name="colorTabFocusedNone">#719c2e</color>
 
     <color name="colorInfo">#5cc0de</color>
     <color name="colorSuccess">#5db85d</color>

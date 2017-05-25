@@ -43,6 +43,7 @@ public class ThreadHandPunchEnroll implements Runnable {
         util.sleep(50);
 
         boolean continuar = true;
+        boolean fail = false;
 
         while (continuar) {
             if (ActivityGeomano.ABORTAR) {
@@ -57,60 +58,65 @@ public class ThreadHandPunchEnroll implements Runnable {
                 if (tmp.equalsIgnoreCase("Exito")){
                     Log.d("HandPunch","EXITO");
                     continuar = false;
+                    fail = false;
                 }
 
                 if (tmp.equalsIgnoreCase("Fallo")){
                     Log.d("HandPunch","FALLO");
                     continuar = false;
+                    fail = true;
+                    exito = false;
                 }
                 util.sleep(50);
             }
         }
 
-        if (!ActivityGeomano.ABORTAR) {
-            String send_template = hp.SerialHandPunch(ActivityPrincipal.btSocket03.getOutputStream(), ActivityPrincipal.btSocket03.getInputStream(), "SEND_TEMPLATE", null);
-            util.sleep(50);
+        if (!fail) {
+            if (!ActivityGeomano.ABORTAR) {
+                String send_template = hp.SerialHandPunch(ActivityPrincipal.btSocket03.getOutputStream(), ActivityPrincipal.btSocket03.getInputStream(), "SEND_TEMPLATE", null);
+                util.sleep(50);
 
-            String template = send_template.substring(14,32);
+                String template = send_template.substring(14, 32);
 
-            Log.d("HandPunch",send_template);
-            Log.d("HandPunch",template);
+                Log.d("HandPunch", send_template);
+                Log.d("HandPunch", template);
 
-            idDetaBio = ActivityGeomano.idTipoDetaBio;
+                idDetaBio = ActivityGeomano.idTipoDetaBio;
 
-            Biometrias objBiometria = null;
+                Biometrias objBiometria = null;
 
-            try {
-                if (idDetaBio == 1){
-                    objBiometria = ActivityGeomano.objEspacio01;
+                try {
+                    if (idDetaBio == 1) {
+                        objBiometria = ActivityGeomano.objEspacio01;
+                    }
+                } catch (Exception e) {
+                    Log.e("HandPunch", "Error Al registrar Huella");
                 }
-            } catch(Exception e) {
-                Log.e("HandPunch","Error Al registrar Huella");
-            }
-            // Formatear Huella
-            Log.d("HandPunch", "Template: " + template);
+                // Formatear Huella
+                Log.d("HandPunch", "Template: " + template);
 
-            if (template.length()!=0){
-                // Insertamos template en base de datos
-                queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this.activity);
-                String respuesta = queriesPersonalTipolectoraBiometria.RegistrarBiometrias(objBiometria, template);
+                if (template.length() != 0) {
+                    // Insertamos template en base de datos
+                    queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this.activity);
+                    String respuesta = queriesPersonalTipolectoraBiometria.RegistrarBiometrias(objBiometria, template);
 
-                mensajeRespuesta = respuesta;
+                    mensajeRespuesta = respuesta;
 
-                Log.d("HandPunch", "Respuesta: " + mensajeRespuesta);
+                    Log.d("HandPunch", "Respuesta: " + mensajeRespuesta);
 
-                if (respuesta.equalsIgnoreCase("Biometria enrolada")){
-                    exito = true;
-                    Log.d("HandPunch", "Biometria enrolada");
+                    if (respuesta.equalsIgnoreCase("Biometria enrolada")) {
+                        exito = true;
+                        Log.d("HandPunch", "Biometria enrolada");
+                    } else {
+                        exito = false;
+                        Log.d("HandPunch", "Biometria no enrolada");
+                    }
+
                 } else {
-                    exito = false;
-                    Log.d("HandPunch", "Biometria no enrolada");
+                    Log.v("HandPunch", "FAIL!");
                 }
 
-            } else {
-                Log.v("HandPunch","FAIL!");
             }
-
         }
 
         cancelarEnroll();

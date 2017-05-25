@@ -41,6 +41,8 @@ public class MainHandPunch {
 
     public String SerialHandPunch(OutputStream out, InputStream input, String opcion, String data) {
 
+        Log.d("Handpunch","data: " + data);
+
         String resultado = "";
         String trama = "";
         int tam = 0;
@@ -63,14 +65,33 @@ public class MainHandPunch {
                 tam = 19;
                 break;
             case "VERIFY_ON_EXTERNAL_DATA":
+                Log.d("HandPunch","entro Verify");
                 String crc = util.getCRC16CCITT("014A0B0001" + data, 0x1021, 0x0000, true);
-                if (crc.length()<4){
-                    for (int i = 0 ; i < (4-crc.length()) ; i++) {
-                        crc = "0" + crc;
+                Log.d("HandPunch","crc: " + crc + " - length: " + crc.length());
+                int tamanio = crc.length();
+                try {
+                    if (crc.length()<4){
+                        Log.d("HandPunch","<4");
+                        for (int i = 0 ; i < (4-tamanio) ; i++) {
+                            crc = "0" + crc;
+                            Log.d("HandPunch","VUELTA " + i);
+                        }
+                        Log.d("HandPunch","crc final: " + crc);
+                    }else {
+                        Log.d("HandPunch",">4");
                     }
+                } catch (Exception e ){
+                    Log.e("HandPunch","FIN DEL MUNDO XD - " + e.getMessage());
                 }
+
+
+
+                Log.d("HandPunch","calculo trama: " + trama + " - " + data +  " - " + crc.substring(2,4) + crc.substring(0,2));
+
                 trama = VERIFY_ON_EXTERNAL_DATA + data + crc.substring(2,4) + crc.substring(0,2) + "FF";
                 tam = 11;
+
+                Log.d("HandPunch","salio Verify");
                 break;
             case "FIX":
                 trama = FIX;

@@ -385,9 +385,9 @@
 
 
     <dimen name="acComunicacion_Wifi_btnConf_width">150dp</dimen>
-    <dimen name="acComunicacion_Wifi_btnConf_height">35dp</dimen>
+    <dimen name="acComunicacion_Wifi_btnConf_height">40dp</dimen>
     <dimen name="acComunicacion_Wifi_btnConf_marginLeft">225dp</dimen>
-    <dimen name="acComunicacion_Wifi_btnConf_marginTop">170dp</dimen>
+    <dimen name="acComunicacion_Wifi_btnConf_marginTop">160dp</dimen>
 
 
     <!-- ==================================================================== -->

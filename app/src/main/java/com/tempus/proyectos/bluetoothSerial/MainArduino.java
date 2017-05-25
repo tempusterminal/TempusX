@@ -250,6 +250,11 @@ public class MainArduino {
                 this.mascaraIni = 4;
                 this.mascaraFin = 32;
                 break;
+            case "0e":
+                this.flagRead = "EVENTO PULSADOR";
+                this.mascaraIni = 62;
+                this.mascaraFin = 64;
+                break;
             default:
                 System.out.println("Error");
                 break;

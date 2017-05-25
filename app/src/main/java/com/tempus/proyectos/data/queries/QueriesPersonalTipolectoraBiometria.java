@@ -262,8 +262,10 @@ public class QueriesPersonalTipolectoraBiometria {
         contentValues.put(TablePersonalTipolectoraBiometria.FechaBiometria,fechahora.getFecha(fechahora.getFechahora()));
         contentValues.put(TablePersonalTipolectoraBiometria.FechaHoraSinc,fechahora.getFechahora());
 
+        Log.d("Autorizaciones","eliminabiometria: " + biometrias.toString());
+
         try{
-            database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + TablePersonalTipolectoraBiometria.IdTipoLect + " = ? " , new String[] { String.valueOf(biometrias.getIndiceBiometria()), String.valueOf(biometrias.getIdTipoLect()) });
+            database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? AND " + TablePersonalTipolectoraBiometria.IdTipoLect + " = ? " , new String[] { String.valueOf(biometrias.getIndiceBiometria()), String.valueOf(biometrias.getIdTipoLect()) });
             return "BIOMETRIA ELIMINADA";
         }catch(Exception e){
             Log.d("Autorizaciones","Error en el registro de Biometria: " + e.getMessage());
