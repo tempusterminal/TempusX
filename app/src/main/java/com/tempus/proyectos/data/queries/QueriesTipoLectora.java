@@ -35,6 +35,7 @@ public class QueriesTipoLectora {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

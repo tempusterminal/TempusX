@@ -36,6 +36,7 @@ public class QueriesServicios {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

@@ -43,6 +43,7 @@ public class QueriesMarcaciones {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

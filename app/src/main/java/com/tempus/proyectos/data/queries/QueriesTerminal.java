@@ -38,6 +38,7 @@ public class QueriesTerminal {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 
@@ -129,7 +130,11 @@ public class QueriesTerminal {
 
         while(ActivityPrincipal.controlFlagSyncAutorizaciones){
             // //////////////////////////////////
+            try{
+                Thread.sleep(100);
+            }catch(Exception e){
 
+            }
         }
         try{
             if(!ActivityPrincipal.controlFlagSyncAutorizaciones){

@@ -34,6 +34,7 @@ public class QueriesPerTipolectTerm {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

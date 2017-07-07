@@ -35,6 +35,7 @@ public class QueriesTipoDetalleBiometria {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

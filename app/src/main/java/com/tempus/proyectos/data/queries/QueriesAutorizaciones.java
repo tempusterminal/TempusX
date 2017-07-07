@@ -39,6 +39,7 @@ public class QueriesAutorizaciones {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

@@ -15,8 +15,8 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLWarning;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,14 +29,9 @@ import com.tempus.proyectos.data.model.Marcaciones;
 import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesEstados;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
-import com.tempus.proyectos.data.queries.QueriesPersonal;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
-import com.tempus.proyectos.tempusx.ActivityFechaHora;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
-import com.tempus.proyectos.util.Utilities;
-
-
 
 
 /**
@@ -44,6 +39,8 @@ import com.tempus.proyectos.util.Utilities;
  */
 
 public class ProcessSync {
+
+    private String TAG = "DA-PR-PSY";
 
 
     private Connection connection = null;
@@ -56,41 +53,63 @@ public class ProcessSync {
     private QueriesLlamadas queriesLlamadas;
     private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria;
     private DBManager dbManager;
+    private ArrayList<ArrayList<String>> aavaluesiu = new ArrayList<ArrayList<String>>();
+    private ArrayList<String> avaluesiu = new ArrayList<String>();
+    private int ivaluesiu = 0;
 
 
     public ProcessSync() {
 
     }
 
-    public void InsertUpdateLlamadas(String idllamada, String llamada, String parameters, String tablename, String primarykey, String columns, Context context){
-        String insert = "";
-        String values = "";
-        String update = "";
-        String set = "";
-        String where = "";
+    public List<Llamadas> getLlamadas(Context context){
+        String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX,SYNC_TARJETA_PERSONAL_TIPOLECTORA_TX,SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
+        //String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX";
+        //String process = "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
+        //String process = "SYNC_ESTADOS_TX";
+        String[] processarray = process.split(",");
+
+        //Log.v(TAG, "processarray.length: " + String.valueOf(processarray.length) );
+        queriesLlamadas = new QueriesLlamadas(context);
+        List<Llamadas> llamadasList = new ArrayList<Llamadas>();
+        try{
+            for(int i = 0; i < processarray.length; i++){
+                llamadasList.add(queriesLlamadas.select_one_row(processarray[i]).get(0));
+                //Log.v(TAG,"llamadasList.size(): " + String.valueOf(llamadasList.size()));
+            }
+            //Log.v(TAG,"getLlamadas: " + llamadasList.toString());
+        }catch(Exception e){
+            Log.e(TAG,"getLlamadas: " + e.getMessage());
+        }
+        return llamadasList;
+    }
+
+    public String prepareParametersLlamadas(String parameters, Context context){
+        //String insert = "";
+        //String values = "";
+        //String update = "";
+        //String set = "";
+        //String where = "";
         String parametersnamesvalues = "";
         String[] parametersnamesarray = parameters.split(";");
         String[] parameter;
-        String[] allcolumnsarray = (primarykey + "," + columns).split(",");
-        String[] primarykeyarray = primarykey.split(",");
-        String[] columnsarray = columns.split(",");
-        int resultSetCount = 0;
+        //String[] allcolumnsarray = (primarykey + "," + columns).split(",");
+        //String[] primarykeyarray = primarykey.split(",");
+        //String[] columnsarray = columns.split(",");
+        //int resultSetCount = 0;
 
         dbManager = new DBManager(context);
-
-
-        //Log.d ("Autorizaciones","parametersnamesarray.length: " + parametersnamesarray.length);
+        //Log.v (TAG,"parametersnamesarray.length: " + parametersnamesarray.length);
 
         if(parametersnamesarray.length > 0){
             for(int i = 0; i < parametersnamesarray.length; i++){
 
                 parameter = parametersnamesarray[i].split("&");
-                //Log.d ("Autorizaciones","parametro nombre y valor: " + parameter[0] + " - " + parameter[1]);
+                //Log.v (TAG,"parametro nombre y valor: " + parameter[0] + " - " + parameter[1]);
                 try{
-
                     parametersnamesvalues = parametersnamesvalues + parameter[0] + "," + dbManager.valexecSQL(parameter[1]);
                 }catch(SQLException e){
-                    Log.d ("Autorizaciones","Error 01: " + e.getMessage());
+                    Log.v (TAG,"Error 01: " + e.getMessage());
                 }
                 if(i < parametersnamesarray.length - 1){
                     parametersnamesvalues = parametersnamesvalues + ";";
@@ -99,82 +118,294 @@ public class ProcessSync {
         }
 
 
-        //
-        //Log.d ("Autorizaciones","Parametros: " + parametersnamesvalues);
+        try{
+            //aavaluesiu = executeLlamadasServer(idllamada, llamada, parametersnamesvalues, primarykey, columns);
+            //insertUpdateData(aavaluesiu,tablename,primarykey,columns,ActivityPrincipal.context);
+        }catch (Exception e){
+            Log.e(TAG,"prepareParametersLlamadas " + e.getMessage());
+        }
+
+
+        /*
+        //Log.v (TAG,"Parametros: " + parametersnamesvalues);
         ConexionServidor conexionServidor = new ConexionServidor();
         if(connection == null){
             connection = conexionServidor.getInstance().getConnection();
         }
 
         String sql = llamada + " '" + idllamada + "'" + ",'','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'";
-        //Log.d("Autorizaciones",sql);
-        Log.d("Autorizaciones","Llamada: " + idllamada + " - " + parametersnamesvalues);
-
-
-
-
+        //Log.v(TAG,sql);
+        Log.v(TAG,"Llamada: " + idllamada + " - " + parametersnamesvalues);
+        */
 
 
         try{
+            /*
             if(connection.isClosed()){
-                //Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
+                //Log.v(TAG,"Intentando restablecer conexion: " + connection.toString());
                 connection = conexionServidor.conectar();
             }
 
             preparedStatement = connection.prepareStatement(sql);
             resultSet = preparedStatement.executeQuery();
 
-            //resultSetCount = Integer.parseInt(connection.prepareStatement("SELECT @@ROWCOUNT AS ROWS").executeQuery().getString("ROWS"));
-
+            aavaluesiu = new ArrayList<ArrayList<String>>();
+            ivaluesiu = 0;
             while(resultSet.next()){
-
                 try{
-                    //Log.d ("Autorizaciones","Insertando Tabla " + tablename + ":");
-
-                    values = "";
+                    avaluesiu = new ArrayList<String>();
                     for(int i = 0; i < resultSet.getMetaData().getColumnCount(); i++){
-                        if(resultSet.getString(allcolumnsarray[i]) != null){
-                            values = values + "'" + resultSet.getString(allcolumnsarray[i]) + "'";
-                        }else{
-                            values = values + "" + resultSet.getString(allcolumnsarray[i]) + "";
+                        avaluesiu.add(i,resultSet.getString(allcolumnsarray[i]));
+                        //Log.v(TAG,"resultSet(" + ivaluesiu + "," + i + "): " + resultSet.getString(allcolumnsarray[i]));
+                    }
+                    aavaluesiu.add(ivaluesiu,avaluesiu);
+                    //Log.v(TAG,"aavaluesiu: " + ivaluesiu + " - " + aavaluesiu.toString());
+
+                    ivaluesiu++;
+
+                }catch(Exception e){
+                    Log.e(TAG,"prepareParametersLlamadas.values error: " + e.getMessage());
+                }
+            }
+            resultSet.close();
+            */
+
+
+
+
+            /*
+            if(aavaluesiu.size()>0){
+                try {
+                    //Log.v(TAG,"Insertando Tabla " + tablename + ":");
+
+                    for (int i = 0; i < aavaluesiu.size(); i++) {
+                        values = "";
+                        for (int y = 0; y < aavaluesiu.get(i).size(); y++) {
+                            //Log.v(TAG,"valuesiu[" + i + "," + y + "]: " + aavaluesiu.get(i).get(y));
+
+                            if (aavaluesiu.get(i).get(y) != null) {
+                                values = values + "'" + aavaluesiu.get(i).get(y) + "'";
+                            } else {
+                                values = values + "" + aavaluesiu.get(i).get(y) + "";
+                            }
+                            if (y < aavaluesiu.get(i).size() - 1) {
+                                values = values + ",";
+                            }
+
                         }
-                        if(i < resultSet.getMetaData().getColumnCount() - 1){
-                            values = values + ",";
+                        //Log.v(TAG,"values: " + values);
+
+
+                        insert = "INSERT INTO " + tablename + "(" + primarykey + "," + columns + ") " +
+                                "VALUES(" + values + ");";
+
+
+
+
+                        try {
+                            dbManager.execSQL(insert);
+                            //dbManager.close();
+                            //Thread.sleep(50);
+                            //Log.v(TAG,"Registro insertado");
+                            Log.v(TAG, "(" + aavaluesiu.size() + "/" + (i + 1) + ")" + " " + insert);
+
+                        } catch (SQLException e) {
+                            //Log.e(TAG,"update insert " + tablename + ": " + e.getMessage());
+
+                            where = "";
+                            if (primarykeyarray.length > 0) {
+                                for (int y = 0; y < primarykeyarray.length; y++) {
+                                    where = where + primarykeyarray[y] + " = '" + aavaluesiu.get(i).get(y) + "'";
+                                    if (y < primarykeyarray.length - 1) {
+                                        where = where + " AND ";
+                                    }
+                                }
+                            }
+
+                            set = "";
+                            if (columnsarray.length > 0) {
+                                for (int z = 0; z < columnsarray.length; z++) {
+                                    if (aavaluesiu.get(i).get(z + primarykeyarray.length) != null) {
+                                        set = set + columnsarray[z] + "='" + aavaluesiu.get(i).get(z + primarykeyarray.length) + "'";
+                                    } else {
+                                        set = set + columnsarray[z] + "=" + aavaluesiu.get(i).get(z + primarykeyarray.length) + "";
+                                    }
+                                    if (z < columnsarray.length - 1) {
+                                        set = set + ", ";
+                                    }
+
+                                }
+                            }
+
+                            update = "UPDATE " + tablename +
+                                    " SET " + set +
+                                    " WHERE " + where +
+                                    ";";
+
+                            try {
+                                dbManager.execSQL(update);
+                                //dbManager.close();
+                                //Thread.sleep(50);
+                                //Log.v(TAG,"Registro actualizado");
+                                Log.v(TAG, "(" + aavaluesiu.size() + "/" + (i + 1) + ")" + " " + update);
+                            } catch (SQLException ex) {
+                                Log.e(TAG, "Error SQL update " + ex.getMessage());
+                                Thread.sleep(50);
+                            } catch (Exception ex) {
+                                Log.e(TAG, "Error update " + ex.getMessage());
+                                Thread.sleep(50);
+                            }
                         }
                     }
 
+
+                } catch (SQLException e) {
+                    Log.e(TAG, "No se pudo realizar la inserción / actualización " + e.getMessage());
+                } catch(Exception e){
+                    Log.e(TAG, "Error general " + e.getMessage());
+                }finally {
+                    //dbManager.close();
+                }
+            }else{
+                Log.v(TAG, "Sin registros por sincronizar");
+            }
+            */
+
+
+
+
+
+        }catch(SQLException e){
+            Log.e(TAG,"Error SQLite: " + e.getMessage());
+        }
+
+        return parametersnamesvalues;
+
+    }
+
+    public ArrayList<ArrayList<String>> executeLlamadasServer(String idllamada, String llamada, String parametersnamesvalues, String primarykey, String columns){
+        String[] allcolumnsarray = (primarykey + "," + columns).split(",");
+
+        ArrayList<ArrayList<String>> aaviu = new ArrayList<ArrayList<String>>();
+        ArrayList<String> aviu = new ArrayList<String>();
+
+        ConexionServidor conexionServidor = new ConexionServidor();
+        if(connection == null){
+            connection = conexionServidor.getInstance().getConnection();
+        }
+
+        String sql = llamada + " '" + idllamada + "'" + ",'','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'";
+        //Log.v(TAG,sql);
+        Log.v(TAG,"Llamada: " + idllamada + " - " + parametersnamesvalues);
+
+        try{
+            if(connection.isClosed()){
+                //Log.v(TAG,"Intentando restablecer conexion: " + connection.toString());
+                connection = conexionServidor.conectar();
+            }
+
+            preparedStatement = connection.prepareStatement(sql);
+            resultSet = preparedStatement.executeQuery();
+
+            aaviu = new ArrayList<ArrayList<String>>();
+            ivaluesiu = 0;
+            while(resultSet.next()){
+                try{
+                    aviu = new ArrayList<String>();
+                    for(int i = 0; i < resultSet.getMetaData().getColumnCount(); i++){
+                        aviu.add(i,resultSet.getString(allcolumnsarray[i]));
+                        //Log.v(TAG,"resultSet(" + ivaluesiu + "," + i + "): " + resultSet.getString(allcolumnsarray[i]));
+                    }
+                    aaviu.add(ivaluesiu,aviu);
+                    //Log.v(TAG,"aaviu: " + ivaluesiu + " - " + aaviu.toString());
+
+                    ivaluesiu++;
+
+                }catch(Exception e){
+                    Log.e(TAG,"prepareParametersLlamadas.values error: " + e.getMessage());
+                }
+            }
+            resultSet.close();
+        }catch (java.sql.SQLException e) {
+            Log.e(TAG,"executeLlamadasServer SQLException " + e.getMessage());
+        }catch(Exception e){
+            Log.e(TAG,"executeLlamadasServer " + e.getMessage());
+        }
+
+        return aaviu;
+
+    }
+
+
+    public void insertUpdateData(ArrayList<ArrayList<String>> aaviu, String tablename, String primarykey, String columns, Context context){
+        String insert = "";
+        String values = "";
+        String update = "";
+        String set = "";
+        String where = "";
+
+        String[] primarykeyarray = primarykey.split(",");
+        String[] columnsarray = columns.split(",");
+
+        dbManager = new DBManager(context);
+        dbManager.open();
+
+        if(aaviu.size()>0){
+            try {
+                //Log.v(TAG,"Insertando Tabla " + tablename + ":");
+
+                for (int i = 0; i < aaviu.size(); i++) {
+                    values = "";
+                    for (int y = 0; y < aaviu.get(i).size(); y++) {
+                        //Log.v(TAG,"valuesiu[" + i + "," + y + "]: " + aaviu.get(i).get(y));
+
+                        if (aaviu.get(i).get(y) != null) {
+                            values = values + "'" + aaviu.get(i).get(y) + "'";
+                        } else {
+                            values = values + "" + aaviu.get(i).get(y) + "";
+                        }
+                        if (y < aaviu.get(i).size() - 1) {
+                            values = values + ",";
+                        }
+
+                    }
+                    //Log.v(TAG,"values: " + values);
+
                     insert = "INSERT INTO " + tablename + "(" + primarykey + "," + columns + ") " +
                             "VALUES(" + values + ");";
-                    Log.d("Autorizaciones",resultSetCount + "/" + resultSet.getRow() + " - insert: " + insert);
 
-
-                    try{
+                    try {
                         dbManager.execSQL(insert);
-                        //Log.d("Autorizaciones","Registro insertado");
-                    }catch(SQLException e){
-                        //Log.d("Autorizaciones","Actualizando Tabla " + tablename + ": " + e.getMessage());
+                        //dbManager.close();
+                        //Thread.sleep(50);
+                        //Log.v(TAG,"Registro insertado");
+                        Log.v(TAG, "BTS-MAET " + "(" + (i + 1) + "/" + aaviu.size() + ")" + " " + insert);
 
-                        set = "";
-                        if(columnsarray.length > 0){
-                            for(int i = 0; i < columnsarray.length ; i++){
-                                if(resultSet.getString(columnsarray[i]) != null){
-                                    set = set + columnsarray[i] + "='" + resultSet.getString(columnsarray[i]) + "'";
-                                }else{
-                                    set = set + columnsarray[i] + "=" + resultSet.getString(columnsarray[i]) + "";
-                                }
-                                if(i < columnsarray.length - 1){
-                                    set = set + ", ";
+                    } catch (SQLException e) {
+                        //Log.e(TAG,"update insert " + tablename + ": " + e.getMessage());
+
+                        where = "";
+                        if (primarykeyarray.length > 0) {
+                            for (int y = 0; y < primarykeyarray.length; y++) {
+                                where = where + primarykeyarray[y] + " = '" + aaviu.get(i).get(y) + "'";
+                                if (y < primarykeyarray.length - 1) {
+                                    where = where + " AND ";
                                 }
                             }
                         }
 
-                        where = "";
-                        if(primarykeyarray.length > 0){
-                            for(int i = 0; i < primarykeyarray.length ; i++){
-                                where = where + primarykeyarray[i] + " = '" + resultSet.getString(primarykeyarray[i]) + "'";
-                                if(i < primarykeyarray.length - 1){
-                                    where = where + " AND ";
+                        set = "";
+                        if (columnsarray.length > 0) {
+                            for (int z = 0; z < columnsarray.length; z++) {
+                                if (aaviu.get(i).get(z + primarykeyarray.length) != null) {
+                                    set = set + columnsarray[z] + "='" + aaviu.get(i).get(z + primarykeyarray.length) + "'";
+                                } else {
+                                    set = set + columnsarray[z] + "=" + aaviu.get(i).get(z + primarykeyarray.length) + "";
                                 }
+                                if (z < columnsarray.length - 1) {
+                                    set = set + ", ";
+                                }
+
                             }
                         }
 
@@ -183,29 +414,37 @@ public class ProcessSync {
                                 " WHERE " + where +
                                 ";";
 
-                        Log.d("Autorizaciones",resultSetCount + "/" + resultSet.getRow() + " - update: " + insert);
-                        try{
+                        try {
                             dbManager.execSQL(update);
-                            //Log.d("Autorizaciones","Registro actualizado");
-                        }catch(SQLException ex){
-                            Log.d("Autorizaciones","Error SQL: " + ex.getMessage());
+                            //dbManager.close();
+                            //Thread.sleep(50);
+                            //Log.v(TAG,"Registro actualizado");
+                            Log.v(TAG,"BTS-MAET " + "(" + (i + 1) + "/" + aaviu.size() + ")" + " " + update);
+                                /*
+                                if(i%1000==0){
+                                    Thread.sleep(3000);
+                                }
+                                */
+                        } catch (SQLException ex) {
+                            Log.e(TAG, "Error SQL update " + ex.getMessage());
+                            Thread.sleep(50);
+                        } catch (Exception ex) {
+                            Log.e(TAG, "Error update " + ex.getMessage());
+                            Thread.sleep(50);
                         }
-
                     }
-
-                }catch(SQLException e){
-                    Log.d("Autorizaciones","No se pudo realizar la inserción / actualización");
-                }finally {
-                    //resultSet.close();
                 }
 
+
+            } catch (SQLException e) {
+                Log.e(TAG, "insertUpdateData No se pudo realizar la inserción / actualización " + e.getMessage());
+            } catch(Exception e){
+                Log.e(TAG, "insertUpdateData Error general " + e.getMessage());
+            }finally {
+                //dbManager.close();
             }
-
-
-        }catch(SQLException e){
-            Log.d("Autorizaciones","Error SQLite: " + e.getMessage());
-        }catch (java.sql.SQLException e) {
-            //Log.d("Autorizaciones","Error SQLServer: " + e.getMessage());
+        }else{
+            Log.v(TAG, "BTS-MAET " + "Sin registros por sincronizar");
         }
 
     }
@@ -239,31 +478,31 @@ public class ProcessSync {
                 "'" + marcaciones.getTmpListar() + "'," +
                 "" + "GETDATE()" + "," +
                 "" + null + ")";
-        Log.d("Autorizaciones",sql);
+        Log.v(TAG,sql);
 
         try{
             if(connection.isClosed()){
-                Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
+                Log.v(TAG,"Intentando restablecer conexion: " + connection.toString());
                 connection = conexionServidor.conectar();
             }
             statement = connection.createStatement();
             rowaffected = statement.executeUpdate(sql);
 
-            Log.d("Autorizaciones","Registro insertado");
+            Log.v(TAG,"Registro insertado");
 
         }catch (SQLException e) {
-            Log.d("Autorizaciones","DBManagerServidor.syncMarcaciones SQLException SQLite: " + e.getMessage());
+            Log.v(TAG,"DBManagerServidor.syncMarcaciones SQLException SQLite: " + e.getMessage());
         }catch (java.sql.SQLException e) {
-            Log.d("Autorizaciones","DBManagerServidor.syncMarcaciones SQLException SQLServer: " + e.getMessage());
+            Log.v(TAG,"DBManagerServidor.syncMarcaciones SQLException SQLServer: " + e.getMessage());
             if(e.getMessage().contains("No se puede insertar una clave duplicada en el objeto")){
                 rowaffected = 1;
-                Log.d("Autorizaciones","Registro ya insertado");
+                Log.v(TAG,"Registro ya insertado");
             }
         }finally {
             connection.close();
-            Log.d("Autorizaciones","Conexion cerrada");
+            Log.v(TAG,"Conexion cerrada");
         }
-        Log.d("Autorizaciones","Cantidad de filas afectadas: " + String.valueOf(rowaffected));
+        Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
         return rowaffected;
     }
 
@@ -301,27 +540,27 @@ public class ProcessSync {
                 "AND PERSONAL_TIPOLECTORA_BIOMETRIA.EMPRESA = '" + personalTipolectoraBiometria.getEmpresa() + "' " +
                 "AND PERSONAL_TIPOLECTORA_BIOMETRIA.CODIGO = '" + personalTipolectoraBiometria.getCodigo() + "' " +
                 ";";
-        Log.d("Autorizaciones",sql);
+        Log.v(TAG,sql);
 
         try{
             if(connection.isClosed()){
-                Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
+                Log.v(TAG,"Intentando restablecer conexion: " + connection.toString());
                 connection = conexionServidor.conectar();
             }
             statement = connection.createStatement();
             rowaffected = statement.executeUpdate(sql);
 
-            Log.d("Autorizaciones","Registro actualizado");
+            Log.v(TAG,"Registro actualizado");
 
         }catch (SQLException e) {
-            Log.d("Autorizaciones","DBManagerServidor.syncMarcaciones SQLException SQLite: " + e.getMessage());
+            Log.v(TAG,"DBManagerServidor.syncMarcaciones SQLException SQLite: " + e.getMessage());
         }catch (java.sql.SQLException e) {
-            Log.d("Autorizaciones","DBManagerServidor.syncMarcaciones SQLException SQLServer: " + e.getMessage());
+            Log.v(TAG,"DBManagerServidor.syncMarcaciones SQLException SQLServer: " + e.getMessage());
         }finally {
             connection.close();
-            Log.d("Autorizaciones","Conexion cerrada");
+            Log.v(TAG,"Conexion cerrada");
         }
-        Log.d("Autorizaciones","Cantidad de filas afectadas: " + String.valueOf(rowaffected));
+        Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
         return rowaffected;
 
     }
@@ -330,55 +569,56 @@ public class ProcessSync {
 
     public void ProcessLlamadas(Context context){
 
+        /// SEPARAR EL getLlamadas de ProcessLlamadas
+        /// SEPARAR EL getLlamadas de ProcessLlamadas
+        /// SEPARAR EL getLlamadas de ProcessLlamadas
+        /// SEPARAR EL getLlamadas de ProcessLlamadas
+        /// SEPARAR EL getLlamadas de ProcessLlamadas
+
         // //////////////////////////////////
-        String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX,SYNC_TARJETA_PERSONAL_TIPOLECTORA_TX,SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
+        //String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX,SYNC_TARJETA_PERSONAL_TIPOLECTORA_TX,SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
         //String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX";
         //String process = "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
-        String[] processarray = process.split(",");
+        //String process = "SYNC_ESTADOS_TX";
+        //String[] processarray = process.split(",");
 
-        //Log.d("Autorizaciones", "processarray.length: " + String.valueOf(processarray.length) );
-        queriesLlamadas = new QueriesLlamadas(context);
 
-        for(int i = 0; i < processarray.length; i++){
-
-            List<Llamadas> llamadasList = queriesLlamadas.select_one_row(processarray[i]);
-
-            //Log.d("Autorizaciones","llamadasList.size(): " + String.valueOf(llamadasList.size()));
-
+        //Log.v(TAG, "processarray.length: " + String.valueOf(processarray.length) );
+        //queriesLlamadas = new QueriesLlamadas(context);
+        try{
+            List<Llamadas> llamadasList = getLlamadas(context);
+            //Log.v(TAG,"llamadasList.size(): " + String.valueOf(llamadasList.size()));
             if(llamadasList.size() == 0){
-                Log.d("Autorizaciones"," Sin llamadas por ejecutar " + String.valueOf(llamadasList.size()));
-            }
-
-            for(int y = 0; y < llamadasList.size(); y++){
-                //Log.d("Autorizaciones",llamadasList.get(y).toString());
-
-                ActivityPrincipal.controlFlagSyncAutorizaciones = true;
-
-                try{
-                    if(ActivityPrincipal.controlFlagSyncAutorizaciones){
-                        InsertUpdateLlamadas(llamadasList.get(y).getIdllamada(),llamadasList.get(y).getLlamada(),llamadasList.get(y).getParameters(),llamadasList.get(y).getTableName(),llamadasList.get(y).getPrimarykey(),llamadasList.get(y).getColumns(),context);
+                Log.v(TAG," Sin llamadas por ejecutar " + String.valueOf(llamadasList.size()));
+            }else{
+                for(int i = 0; i < llamadasList.size(); i++){
+                    //Log.v(TAG,llamadasList.get(i).toString());
+                    ActivityPrincipal.controlFlagSyncAutorizaciones = true;
+                    try{
+                        if(ActivityPrincipal.controlFlagSyncAutorizaciones){
+                            String parametersnamesvalues = prepareParametersLlamadas(llamadasList.get(i).getParameters(), context);
+                            Log.v(TAG,"parametersnamesvalues: " + parametersnamesvalues);
+                            aavaluesiu = executeLlamadasServer(llamadasList.get(i).getIdllamada(), llamadasList.get(i).getLlamada(), parametersnamesvalues, llamadasList.get(i).getPrimarykey(), llamadasList.get(i).getColumns());
+                            insertUpdateData(aavaluesiu,llamadasList.get(i).getTableName(),llamadasList.get(i).getPrimarykey(), llamadasList.get(i).getColumns(),context);
+                            ActivityPrincipal.controlFlagSyncAutorizaciones = false;
+                        }
+                        Thread.sleep(5000);
+                    }catch(Exception e){
+                        //Log.v(TAG,"ProcessSync.ProcessLlamadas Error: " + e.getMessage());
                         ActivityPrincipal.controlFlagSyncAutorizaciones = false;
                     }
-                    Thread.sleep(3000);
-                }catch(Exception e){
-                    //Log.d("Autorizaciones","ProcessSync.ProcessLlamadas Error: " + e.getMessage());
-                    ActivityPrincipal.controlFlagSyncAutorizaciones = false;
-                    try{
-                        Thread.sleep(3000);
-                    }catch (Exception ex){
-
-                    }
                 }
-
-
-
-
-
-
-
-
             }
+
+            Thread.sleep(1000);
+        }catch(Exception ex){
+
         }
+    }
+
+
+    public void ProcessLlamadas(){
+
 
     }
 
@@ -408,24 +648,24 @@ public class ProcessSync {
 
         try{
             if(connection.isClosed()){
-                //Log.d("Autorizaciones","Intentando restablecer conexion: " + connection.toString());
+                //Log.v(TAG,"Intentando restablecer conexion: " + connection.toString());
                 connection = conexionServidor.conectar();
             }
 
-            //Log.d("Autorizaciones","Consultando fechahora servidor ");
+            //Log.v(TAG,"Consultando fechahora servidor ");
             preparedStatement = connection.prepareStatement("SELECT GETDATE()");
             resultSet = preparedStatement.executeQuery();
 
             while(resultSet.next()){
                 /*
-                Log.d("Autorizaciones","Fecha Hora Servidor: " + resultSet.getString(1));
-                Log.d("Autorizaciones","Año: " + resultSet.getString(1).substring(0,4));
-                Log.d("Autorizaciones","Mes: " + resultSet.getString(1).substring(5,7));
-                Log.d("Autorizaciones","Día: " + resultSet.getString(1).substring(8,10));
-                Log.d("Autorizaciones","Hora: " + resultSet.getString(1).substring(11,13));
-                Log.d("Autorizaciones","Minuto: " + resultSet.getString(1).substring(14,16));
-                Log.d("Autorizaciones","Segundo: " + resultSet.getString(1).substring(17,19));
-                Log.d("Autorizaciones","Milisegundo: " + resultSet.getString(1).substring(20));
+                Log.v(TAG,"Fecha Hora Servidor: " + resultSet.getString(1));
+                Log.v(TAG,"Año: " + resultSet.getString(1).substring(0,4));
+                Log.v(TAG,"Mes: " + resultSet.getString(1).substring(5,7));
+                Log.v(TAG,"Día: " + resultSet.getString(1).substring(8,10));
+                Log.v(TAG,"Hora: " + resultSet.getString(1).substring(11,13));
+                Log.v(TAG,"Minuto: " + resultSet.getString(1).substring(14,16));
+                Log.v(TAG,"Segundo: " + resultSet.getString(1).substring(17,19));
+                Log.v(TAG,"Milisegundo: " + resultSet.getString(1).substring(20));
                 */
 
                 Calendar calendar = Calendar.getInstance();
@@ -451,8 +691,8 @@ public class ProcessSync {
                 //milisegundof = milisegundof * (int) Math.pow(10,(3 - String.valueOf(milisegundof).length()));
 
 
-                //Log.d("Autorizaciones","FechaHora Del Terminal: " + anoi + "-" + mesi + "-" + diai + " " + horai + ":" + minutoi + ":" + segundoi + "." + milisegundoi);
-                //Log.d("Autorizaciones","FechaHora Del Servidor: " + resultSet.getString(1));// + " - " + milisegundof);
+                //Log.v(TAG,"FechaHora Del Terminal: " + anoi + "-" + mesi + "-" + diai + " " + horai + ":" + minutoi + ":" + segundoi + "." + milisegundoi);
+                //Log.v(TAG,"FechaHora Del Servidor: " + resultSet.getString(1));// + " - " + milisegundof);
 
                 // Comparar que el año sea el mismo
 
@@ -471,55 +711,55 @@ public class ProcessSync {
                                         if(milisegundoi > milisegundof){
                                             if((milisegundoi - milisegundof) > 250){
                                                 //Cambio de Fechahora
-                                                Log.d("Autorizaciones","Diferencia de milisegundo (servidor atrasado): " + (milisegundoi - milisegundof));
+                                                Log.v(TAG,"Diferencia de milisegundo (servidor atrasado): " + (milisegundoi - milisegundof));
                                                 setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
                                             }else{
-                                                //Log.d("Autorizaciones","Diferencia de milisegundo (servidor atrasado): " + (milisegundoi - milisegundof));
-                                                //Log.d("Autorizaciones","No requiere actualizacion de Fechahora");
+                                                //Log.v(TAG,"Diferencia de milisegundo (servidor atrasado): " + (milisegundoi - milisegundof));
+                                                //Log.v(TAG,"No requiere actualizacion de Fechahora");
 
                                             }
                                         }else if(milisegundof > milisegundoi){
                                             if((milisegundof - milisegundoi) > 250){
                                                 //Cambio de Fechahora
-                                                Log.d("Autorizaciones","Diferencia de milisegundo (servidor adelantado):" + (milisegundoi - milisegundof));
+                                                Log.v(TAG,"Diferencia de milisegundo (servidor adelantado):" + (milisegundoi - milisegundof));
                                                 setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
                                             }else{
-                                                //Log.d("Autorizaciones","Diferencia de milisegundo (servidor adelantado):" + (milisegundoi - milisegundof));
-                                                //Log.d("Autorizaciones","No requiere actualizacion de Fechahora");
+                                                //Log.v(TAG,"Diferencia de milisegundo (servidor adelantado):" + (milisegundoi - milisegundof));
+                                                //Log.v(TAG,"No requiere actualizacion de Fechahora");
                                             }
                                         }else{
-                                            //Log.d("Autorizaciones","No requiere actualizacion de Fechahora");
+                                            //Log.v(TAG,"No requiere actualizacion de Fechahora");
                                         }
                                     }else{
-                                        Log.d("Autorizaciones","Diferencia de Segundo: " + (segundoi - segundof));
+                                        Log.v(TAG,"Diferencia de Segundo: " + (segundoi - segundof));
                                         setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
                                     }
                                 }else{
-                                    Log.d("Autorizaciones","Diferencia de Minuto: " + (minutoi - minutof));
+                                    Log.v(TAG,"Diferencia de Minuto: " + (minutoi - minutof));
                                     setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
                                 }
                             }else{
-                                Log.d("Autorizaciones","Diferencia de Hora: " + (horai - horaf));
+                                Log.v(TAG,"Diferencia de Hora: " + (horai - horaf));
                                 setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
                             }
                         }else{
-                            Log.d("Autorizaciones","Diferencia de Dia: " + (diai - diaf));
+                            Log.v(TAG,"Diferencia de Dia: " + (diai - diaf));
                             setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
                         }
                     }else{
-                        Log.d("Autorizaciones","Diferencia de Mes: " + (mesi - mesf));
+                        Log.v(TAG,"Diferencia de Mes: " + (mesi - mesf));
                         setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
                     }
                 }else{
-                    Log.d("Autorizaciones","Diferencia de Año: " + (anoi - anof));
+                    Log.v(TAG,"Diferencia de Año: " + (anoi - anof));
                     setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
                 }
-                //Log.d("Autorizaciones","--------------------------------------------------------------");
+                //Log.v(TAG,"--------------------------------------------------------------");
 
             }
 
         }catch(Exception e){
-            Log.d("Autorizaciones","ProcessSync.syncFechahora Error: " + e.getMessage());
+            Log.v(TAG,"ProcessSync.syncFechahora Error: " + e.getMessage());
         }
 
     }
@@ -540,7 +780,7 @@ public class ProcessSync {
         AlarmManager alarmManager = (AlarmManager) ActivityPrincipal.context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setTime(calendar.getTimeInMillis());
 
-        Log.d("Autorizaciones","Fechahora del Terminal Actualizada: " + dia + "/" + mes + "/" + ano + " " + hora + ":" + minuto + ":" + segundo + "." + milisegundo);
+        Log.v(TAG,"Fechahora del Terminal Actualizada: " + dia + "/" + mes + "/" + ano + " " + hora + ":" + minuto + ":" + segundo + "." + milisegundo);
 
     }
 
@@ -551,26 +791,26 @@ public class ProcessSync {
         if (ActivityPrincipal.ctrlThreadReplicadoEnabled){
             if(ActivityPrincipal.isReplicating){
                 try{
-                    Log.d("Autorizaciones","REPLICADO INICIADO");
+                    Log.v(TAG,"REPLICADO INICIADO");
                     ActivityPrincipal.objSuprema.limpiarTramaSuprema();
                     queriesPersonalTipolectoraBiometria.ReplicarBiometria();
                 }catch(Exception e){
-                    //Log.d("Autorizaciones","REPLICADO A FALSO");
+                    //Log.v(TAG,"REPLICADO A FALSO");
                     ActivityPrincipal.isReplicating = false;
                 }
 
             }else{
-                Log.d("Autorizaciones","Sin horarios de Replicado");
+                Log.v(TAG,"Sin horarios de Replicado");
 
                 if(queriesPersonalTipolectoraBiometria.iniciarReplicado() == 1){
-                    Log.d("Autorizaciones","Horario de Replica, habilitando Replicado");
+                    Log.v(TAG,"Horario de Replica, habilitando Replicado");
                     ActivityPrincipal.isReplicating = true;
                     /*
                     try{
                         ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"DeleteAllTemplates",null);
                         Thread.sleep(1000);
                     }catch(Exception e){
-                        Log.d("Autorizaciones","Error Enrolamiento: " + e.getMessage());
+                        Log.v(TAG,"Error Enrolamiento: " + e.getMessage());
                     }
                     ActivityPrincipal.objSuprema.limpiarTramaSuprema();
 
@@ -590,7 +830,7 @@ public class ProcessSync {
         try{
             while(rs.next()){
                 resultSetCount++;
-                Log.d("Autorizaciones","p: " + rs.getRow());
+                Log.v(TAG,"p: " + rs.getRow());
             }
             rs.beforeFirst();
         }catch(Exception e){
@@ -606,9 +846,6 @@ public class ProcessSync {
     public void callWebService(){
 
         try{
-
-
-
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("OPCION","TERMINAL");
             map.put("EMPRESA","LDS_TEMPUS");
@@ -641,14 +878,17 @@ public class ProcessSync {
             Reader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
             String respuesta = "";
             for (int c; (c = in.read()) >= 0; respuesta = respuesta + (char) c){
-                Log.d("Autorizaciones","Sin horarios de Replicado");
+                Log.v(TAG,"Sin horarios de Replicado");
             }
 
         }catch(Exception e){
-            Log.d("Autorizaciones","callWebService error: " + e.getMessage());
+            Log.v(TAG,"callWebService error: " + e.getMessage());
         }
 
     }
+
+
+
 
 
 

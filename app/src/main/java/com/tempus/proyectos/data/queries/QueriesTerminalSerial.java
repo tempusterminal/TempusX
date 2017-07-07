@@ -37,6 +37,7 @@ public class QueriesTerminalSerial {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

@@ -35,6 +35,7 @@ public class QueriesEmpresa {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

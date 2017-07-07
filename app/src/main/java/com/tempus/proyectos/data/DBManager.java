@@ -39,6 +39,7 @@ public class DBManager {
     }
 
     public void close() {
+        database.close();
         conexion.close();
     }
 
@@ -175,7 +176,10 @@ public class DBManager {
 
     public void execSQL(String sql){
 
-        this.open();
+
+        if(!database.isOpen()){
+            this.open();
+        }
         //database.beginTransaction();
         database.execSQL(sql);
         //database.endTransaction();

@@ -50,6 +50,7 @@ public class QueriesPersonalTipolectoraBiometria {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

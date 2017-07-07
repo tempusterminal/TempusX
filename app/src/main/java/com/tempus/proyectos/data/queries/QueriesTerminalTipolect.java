@@ -35,6 +35,7 @@ public class QueriesTerminalTipolect {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

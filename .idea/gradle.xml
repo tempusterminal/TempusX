@@ -5,13 +5,14 @@
       <GradleProjectSettings>
         <option name="distributionType" value="LOCAL" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="gradleHome" value="C:\Program Files\Android\Android Studio\gradle\gradle-2.14.1" />
+        <option name="gradleHome" value="C:\Program Files\Android\Android Studio1\gradle\gradle-2.14.1" />
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/commons-net-3.5" />
             <option value="$PROJECT_DIR$/jtds-1.2.7" />
+            <option value="$PROJECT_DIR$/mysql-connector-java-3.0.17-ga-bin" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

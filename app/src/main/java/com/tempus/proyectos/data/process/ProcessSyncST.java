@@ -42,10 +42,10 @@ public class ProcessSyncST extends Thread{
                     // Llamadas para poblar autorizaciones
                     processSync.ProcessLlamadas(context);
                     // Consultar si se activa Replica
-                    processSync.syncSuprema(context);
+                    //processSync.syncSuprema(context);
                 }
 
-                Thread.sleep(3000);
+                Thread.sleep(10000);
             }catch (SQLException e){
                 Log.d("Autorizaciones","Error SQL Hilo " + nombreHilo + ": " + e.toString());
             }catch (InterruptedException e){

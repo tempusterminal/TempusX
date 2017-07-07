@@ -35,6 +35,7 @@ public class QueriesTarjetaPersonalTipolectora {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

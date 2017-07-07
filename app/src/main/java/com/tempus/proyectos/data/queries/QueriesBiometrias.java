@@ -41,6 +41,7 @@ public class QueriesBiometrias {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

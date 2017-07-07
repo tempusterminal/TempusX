@@ -37,6 +37,7 @@ public class QueriesParameters {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

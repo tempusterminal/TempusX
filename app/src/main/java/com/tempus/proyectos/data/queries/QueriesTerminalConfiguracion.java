@@ -35,6 +35,7 @@ public class QueriesTerminalConfiguracion {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 

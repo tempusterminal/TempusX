@@ -37,6 +37,7 @@ public class QueriesLlamadas {
     }
 
     public void close(){
+        database.close();
         conexion.close();
     }
 
@@ -141,7 +142,6 @@ public class QueriesLlamadas {
 
         return llamadasList;
     }
-
 
     public int count(){
 
