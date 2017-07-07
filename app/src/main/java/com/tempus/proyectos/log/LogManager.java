@@ -42,10 +42,10 @@ public class LogManager {
 
     public void RegisterLogTXT(String cadena){
         String fh = fechahora.getFechahora();
-        internalFile.validarDirectorio(DIRECTORY);
-        internalFile.validarArchivo(DIRECTORY + FILE);
+        //internalFile.validarDirectorio(DIRECTORY);
+        //internalFile.validarArchivo(DIRECTORY + FILE);
         Log.d("DIRECTORIO XD", DIRECTORY);
-        internalFile.writeToFileAppend(DIRECTORY, FILE, fh + ":" + cadena);
+        internalFile.writeToAppend(fh + ":" + cadena, DIRECTORY + FILE);
     }
 
 }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--
+
     <color name="colorLinea">#009933</color>
     <color name="colorFondoBarra">#d0dfdb</color>
     <color name="colorFondoCuerpo">#ffffff</color>
     <color name="colorTexto">#000000</color>
     <color name="colorBlanco">#ffffff</color>
     <color name="colorFondoMarcacion">#000000</color>
-    -->
+
     <!--
     <color name="colorLinea">#0032a0</color>
     <color name="colorFondoBarra">#daf4ff</color>
@@ -16,13 +16,14 @@
     <color name="colorBlanco">#ffffff</color>
     <color name="colorFondoMarcacion">#000000</color>
     -->
-
+    <!--
     <color name="colorLinea">#91cc35</color>
     <color name="colorFondoBarra">#ffffff</color>
     <color name="colorFondoCuerpo">#eeeeee</color>
     <color name="colorTexto">#000000</color>
     <color name="colorBlanco">#ffffff</color>
     <color name="colorFondoMarcacion">#000000</color>
+    -->
 
     <color name="colorMenu">#5674a6a6</color>
 

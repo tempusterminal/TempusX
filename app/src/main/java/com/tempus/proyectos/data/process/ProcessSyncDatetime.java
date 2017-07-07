@@ -34,13 +34,28 @@ public class ProcessSyncDatetime extends Thread{
                 Thread.sleep(1000);
             }catch (SQLException e){
                 Log.d("Autorizaciones","Error SQL Hilo " + nombreHilo + ": " + e.toString());
+                try{
+                    Thread.sleep(1000);
+                }catch(Exception ex){
+
+                }
             }catch (InterruptedException e){
                 Log.d("Autorizaciones","Error Interrupcion Hilo " + nombreHilo + ": " + e.toString());
+                try{
+                    Thread.sleep(1000);
+                }catch(Exception ex){
+
+                }
             }catch (Exception e){
                 Log.d("Autorizaciones","Error General Hilo " + nombreHilo + ": " + e.toString());
-            }
-        }
+                try{
+                    Thread.sleep(1000);
+                }catch(Exception ex){
 
+                }
+            }
+
+        }
         // //////////////////////////////////
         //Log.d("Autorizaciones","Fin Hilo");
     }

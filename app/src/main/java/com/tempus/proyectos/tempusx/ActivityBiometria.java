@@ -180,6 +180,10 @@ public class ActivityBiometria extends Activity {
         lstHuella = (ListView) findViewById(R.id.lstHuella);
         txvCabeceraLstHuella = (TextView) findViewById(R.id.txvCabeceraLstHuella);
 
+        if (ui.isTablet(this)){
+            txvCabeceraLstHuella.setText("\t\tEMPRESA\t\t\tCÓDIGO\t\t\tDOCUMENTO\t\t\tPERSONAL");
+        }
+
 
         //ArrayAdapter<String> test = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,val);
 
@@ -228,16 +232,25 @@ public class ActivityBiometria extends Activity {
                         int cantidad = biometriasList.size();
 
                         if ( cantidad > 0 ) {
-                            for(int i = 0; i < biometriasList.size(); i++){
+                            for(int i = 0; i < biometriasList.size(); i++) {
 
-                                Log.d("Autorizaciones",biometriasList.get(i).toString());
+                                Log.d("Autorizaciones", biometriasList.get(i).toString());
                                 String empresa = biometriasList.get(i).getEmpresa();
                                 String codigo = biometriasList.get(i).getCodigo();
                                 String nrodocumento = biometriasList.get(i).getNroDocumento();
+                                String nombres = biometriasList.get(i).getNombres();
+                                String apellidoMaterno = biometriasList.get(i).getApellidoMaterno();
                                 String apellidoPaterno = biometriasList.get(i).getApellidoPaterno();
                                 int flag = biometriasList.get(i).getFlagPerTipoLectTerm();
 
-                                String registro = String.valueOf(flag) + "|   " + empresa + "   " + codigo + "   " + nrodocumento + "   " + apellidoPaterno;
+                                String registro = "";
+
+                                if (ui.isTablet(ActivityBiometria.this)){
+                                    registro = String.valueOf(flag) + "|   " + empresa + " - " + codigo + " - " + nrodocumento + " - " + nombres + " " + apellidoPaterno + " " + apellidoMaterno;
+                                } else {
+                                    registro = String.valueOf(flag) + "|   " + empresa + " - " + codigo + " - " + nrodocumento + " - " + apellidoPaterno;
+                                }
+
                                 lista.add(registro);
                             }
 

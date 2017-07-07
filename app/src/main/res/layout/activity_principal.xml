@@ -29,16 +29,55 @@
         android:background="@color/colorFondoCuerpo"
         android:id="@+id/txvFondo2" />
 
+    <!--
     <fragment
-        android:name="com.tempus.proyectos.tempusx.FragmentBar"
         android:layout_width="@dimen/fondo3_width"
         android:layout_height="@dimen/fondo3_height"
-        android:layout_marginLeft="@dimen/fondo3_marginLeft"
         android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:id="@+id/fragment"
+        android:layout_marginLeft="@dimen/fondo3_marginLeft"
+        android:name="com.tempus.proyectos.tempusx.FragmentBar"
+        android:layout_marginBottom="0dp"
+        android:id="@+id/fragment1"
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
         tools:layout="@layout/fragment_bar" />
+     -->
+
+
+
+    <TextView
+        android:layout_width="@dimen/fondo3_width"
+        android:layout_height="@dimen/fondo3_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/fondo3_marginLeft"
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/txvBarraInf" />
+
+    <TextView
+        android:gravity="center"
+        android:text="100"
+        android:textColor="@color/colorNegro"
+        android:layout_width="50dp"
+        android:layout_height="@dimen/fondo3_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/fondo3_marginLeft"
+        android:id="@+id/txvIdTerminalInfo"/>
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/linea3_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea3" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/linea3_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea4" />
+
 
 
 

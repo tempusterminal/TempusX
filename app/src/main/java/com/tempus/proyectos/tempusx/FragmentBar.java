@@ -128,6 +128,7 @@ public class FragmentBar extends Fragment {
                         Log.d("PID THREAD", String.valueOf(id) + " isreplicating: " + ActivityPrincipal.isReplicating);
 
 
+                        /*
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -135,6 +136,7 @@ public class FragmentBar extends Fragment {
                                 fnReplicaManager(ActivityPrincipal.isReplicating);
                             }
                         });
+                        */
 
                         Log.d("FragmentBar", "Ciclo");
 
@@ -196,7 +198,12 @@ public class FragmentBar extends Fragment {
                 }
 
                 String fh = fechahora.getFechahora();
-                String[] data = battery.updateBatteryData(intent);
+                String[] data = batt3.0432
+                0we
+                    2
+                *
+                            g
+                ery.updateBatteryData(intent);
                 String BATTERY_HEALTH = data[0];
                 String BATTERY_PERCENTAGE = data[1];
                 String BATTERY_PLUGGED = data[2];

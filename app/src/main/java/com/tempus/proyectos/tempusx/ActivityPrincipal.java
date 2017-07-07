@@ -292,10 +292,16 @@ public class ActivityPrincipal extends Activity {
 
     TextView txvIdterminal;
 
+    TextView txvIdTerminalInfo;
+
+    protected PowerManager.WakeLock mWakeLock;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
+
+        turnOnScreen();
 
         logManager = new LogManager();
         logManager.RegisterLogTXT("INICIO TEMPUSX");
@@ -324,6 +330,8 @@ public class ActivityPrincipal extends Activity {
 
 
         // Inicializacion de componentes
+
+        txvIdTerminalInfo = (TextView) findViewById(R.id.txvIdTerminalInfo);
 
         txcHora = (TextClock) findViewById(R.id.txcHora);
 
@@ -429,6 +437,7 @@ public class ActivityPrincipal extends Activity {
 
 
         // Iniciar Rutinas en verdadero
+
         ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
         processSyncTS.start(this);
         ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
@@ -437,6 +446,7 @@ public class ActivityPrincipal extends Activity {
         processSyncDatetime.start(this);
 
         threadFechahora.start();
+
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
 
@@ -1014,6 +1024,7 @@ public class ActivityPrincipal extends Activity {
             e.printStackTrace();
         }
 
+        txvIdTerminalInfo.setText(idTerminal);
 
         QueriesParameters queriesParameters = new QueriesParameters(this);
         Parameters parameters;
@@ -1116,28 +1127,51 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_ACTIVO = 0;
         MODO_MARCACION = "";
         MAC_BT_00 = "00:00:00:00:00:00";
-        //RANSA 1 - 14;1F:78:24:1A:31
-        //MAC_BT_01 = "20:16:08:10:42:63";
+
+        // CARRION 02
+        //MAC_BT_01 = "98:D3:34:90:87:DC"; // hc 06
+        //MAC_BT_02 = "00:12:03:16:02:08"; // linvor
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // CARRION 01
+        //MAC_BT_01 = "20:16:05:03:24:64";
+        //MAC_BT_02 = "20:16:08:10:42:29";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // PUERTA
+        //MAC_BT_01 = "20:16:08:04:87:50";
+        //MAC_BT_02 = "20:16:08:10:62:98";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        //RANSA 1 - 14:1F:78:24:1A:31
+        //MAC_BT_01 = "20:16:08:10:42:63"; //ARDUINO
         //MAC_BT_02 = "00:00:00:00:00:00";
         //MAC_BT_03 = "20:16:08:10:46:09";
 
         //RANSA 2 - 14:1F:78:86:2F:9C
-        //MAC_BT_01 = "20:16:08:10:64:87";
+        //MAC_BT_01 = "20:16:08:10:64:87"; //ARDUINO
         //MAC_BT_02 = "00:00:00:00:00:00";
         //MAC_BT_03 = "20:16:08:10:65:94";
 
         //RANSA 3 - 14:1F:78:86:2F:B1
-        MAC_BT_01 = "20:16:08:10:58:40";
-        MAC_BT_02 = "00:00:00:00:00:00";
-        MAC_BT_03 = "20:16:08:10:58:52";
+        //MAC_BT_01 = "20:16:08:10:58:40"; //ARDUINO
+        //MAC_BT_02 = "00:00:00:00:00:00";
+        //MAC_BT_03 = "20:16:08:10:58:52";
+
+        //RANSA BACKUP -
+        //MAC_BT_01 = "20:16:08:10:57:20";
+        //MAC_BT_02 = "00:00:00:00:00:00";
+        //MAC_BT_03 = "20:16:08:10:60:02";
 
         //CLINICA INTERNACIONAL 1
-        //MAC_BT_01 = "00:12:06:04:99:06";
-        //MAC_BT_02 = "00:12:06:04:98:90";
-        //MAC_BT_03 = "00:00:00:00:00:00";
+        MAC_BT_01 = "00:12:06:04:99:06";
+        MAC_BT_02 = "00:12:06:04:98:90";
+        MAC_BT_03 = "00:00:00:00:00:00";
 
-        MODO_EVENTO = true;
-        TIPO_TERMINAL = 3;
+
+
+        MODO_EVENTO = false;
+        TIPO_TERMINAL = 2;
         INTERFACE_ETH = false;
         INTERFACE_WLAN = true;
         INTERFACE_PPP = false;
@@ -1627,9 +1661,9 @@ public class ActivityPrincipal extends Activity {
     }
 
     public void ShutdownArduino(OutputStream out) {
-        Log.v(TAG, "MARCACION OK");
+        Log.v(TAG, "SHUTDOWN OK");
         try {
-            out.write(util.hexStringToByteArray("244F4158410013423030303030303030000041"));
+            out.write(util.hexStringToByteArray("244F415841 0013 42 30 30303030303030000041 "));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -2546,9 +2580,9 @@ public class ActivityPrincipal extends Activity {
                     case "00":
 
                         // Analizar ADC
-                        boolean isADC = analizarADC(objArduino.getNroLector(), String.valueOf(util.convertHexToDecimal(objArduino.getDatosLector().substring(0, 2))));
+                        //boolean isADC = analizarADC(objArduino.getNroLector(), String.valueOf(util.convertHexToDecimal(objArduino.getDatosLector().substring(0, 2))));
 
-                        if (activityActive.equals("Principal") && !isADC){
+                        if (activityActive.equals("Principal") && lectoras.contains(objArduino.getFlagRead())){
 
                             if( MODO_EVENTO ){
                                 // no ace==ptamos nada de marcaciones
@@ -2948,6 +2982,12 @@ public class ActivityPrincipal extends Activity {
                         public void run() {
 
                             util.sleep(15000);
+
+                            try {
+                                ShutdownArduino(btSocket01.getOutputStream());
+                            } catch (Exception e) {
+                                Log.e("Error 15s","-> " + e.getMessage());
+                            }
 
                             try {
                                 Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});

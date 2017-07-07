@@ -29,6 +29,7 @@
         android:background="@color/colorFondoCuerpo"
         android:id="@+id/Fondo2" />
 
+    <!--
     <fragment
         android:layout_width="@dimen/fondo3_width"
         android:layout_height="@dimen/fondo3_height"
@@ -39,6 +40,34 @@
         android:id="@+id/fragment1"
         android:layout_alignParentTop="true"
         tools:layout="@layout/fragment_bar" />
+     -->
+
+
+
+    <TextView
+        android:layout_width="@dimen/fondo3_width"
+        android:layout_height="@dimen/fondo3_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/fondo3_marginLeft"
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/txvBarraInf" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/linea3_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea3" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/linea3_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea4" />
+
 
 
     <!-- Lineas -->
