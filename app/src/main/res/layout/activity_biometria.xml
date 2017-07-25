@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_biometria"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -294,6 +294,7 @@
         android:background="@color/colorFondoMarcacion"
         android:id="@+id/txvHuellaFondo" />
 
+    <!--
     <pl.droidsonroids.gif.GifTextView
         android:layout_width="@dimen/acBiometria_txvHuellaGif_width"
         android:layout_height="@dimen/acBiometria_txvHuellaGif_height"
@@ -302,6 +303,7 @@
         android:layout_marginLeft="@dimen/acBiometria_txvHuellaGif_marginLeft"
         android:layout_marginTop="@dimen/acBiometria_txvHuellaGif_marginTop"
         android:id="@+id/txvHuellaGif" />
+     -->
 
     <ImageView
         android:layout_width="@dimen/acBiometria_imgViewResult_width"

@@ -193,13 +193,13 @@ public class ThreadSupremaEnroll implements Runnable {
             @Override
             public void run() {
                 if (exito){
-                    ActivityBiometria.txvHuellaGif.setVisibility(View.INVISIBLE);
+                    //ActivityBiometria.txvHuellaGif.setVisibility(View.INVISIBLE);
                     ActivityBiometria.imgViewResultOK.setVisibility(View.VISIBLE);
                     ActivityBiometria.imgViewResultKO.setVisibility(View.INVISIBLE);
                     ActivityBiometria.txvHuellaTexto.setText(mensajeRespuesta);
                     ActivityBiometria.txvHuellaTexto.setVisibility(View.VISIBLE);
                 } else {
-                    ActivityBiometria.txvHuellaGif.setVisibility(View.INVISIBLE);
+                    //ActivityBiometria.txvHuellaGif.setVisibility(View.INVISIBLE);
                     ActivityBiometria.imgViewResultKO.setVisibility(View.VISIBLE);
                     ActivityBiometria.imgViewResultOK.setVisibility(View.INVISIBLE);
                     ActivityBiometria.txvHuellaTexto.setText(mensajeRespuesta);

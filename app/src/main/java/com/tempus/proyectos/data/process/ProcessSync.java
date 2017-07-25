@@ -64,9 +64,12 @@ public class ProcessSync {
 
     public List<Llamadas> getLlamadas(Context context){
         String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX,SYNC_TARJETA_PERSONAL_TIPOLECTORA_TX,SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
+
         //String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX";
         //String process = "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
+        //String process = "SYNC_PERSONAL_TX";
         //String process = "SYNC_ESTADOS_TX";
+        //process = "";
         String[] processarray = process.split(",");
 
         //Log.v(TAG, "processarray.length: " + String.valueOf(processarray.length) );
@@ -449,7 +452,7 @@ public class ProcessSync {
 
     }
 
-    public int syncMarcaciones(Marcaciones marcaciones) throws java.sql.SQLException {
+    public int syncMarcaciones(Marcaciones marcaciones){
         //Este método o función envía las marcaciones pors sincronizar al servidor principal
         Fechahora fechahora = new Fechahora();
         int rowaffected = 0;
@@ -499,14 +502,18 @@ public class ProcessSync {
                 Log.v(TAG,"Registro ya insertado");
             }
         }finally {
-            connection.close();
-            Log.v(TAG,"Conexion cerrada");
+            try{
+                connection.close();
+                Log.v(TAG,"Conexion cerrada");
+            }catch(Exception e){
+                Log.e(TAG,"Error cerrando conexion " + e.getMessage());
+            }
         }
         Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
         return rowaffected;
     }
 
-    public int syncBiometrias(PersonalTipolectoraBiometria personalTipolectoraBiometria) throws java.sql.SQLException {
+    public int syncBiometrias(PersonalTipolectoraBiometria personalTipolectoraBiometria) {
         //Este método o función envía las biometrias pors sincronizar al servidor principal
         Fechahora fechahora = new Fechahora();
         int rowaffected = 0;
@@ -551,14 +558,17 @@ public class ProcessSync {
             rowaffected = statement.executeUpdate(sql);
 
             Log.v(TAG,"Registro actualizado");
-
         }catch (SQLException e) {
             Log.v(TAG,"DBManagerServidor.syncMarcaciones SQLException SQLite: " + e.getMessage());
         }catch (java.sql.SQLException e) {
             Log.v(TAG,"DBManagerServidor.syncMarcaciones SQLException SQLServer: " + e.getMessage());
         }finally {
-            connection.close();
-            Log.v(TAG,"Conexion cerrada");
+            try{
+                connection.close();
+                Log.v(TAG,"Conexion cerrada");
+            }catch(Exception e){
+                Log.e(TAG,"Error cerrando conexion " + e.getMessage());
+            }
         }
         Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
         return rowaffected;
@@ -568,21 +578,6 @@ public class ProcessSync {
 
 
     public void ProcessLlamadas(Context context){
-
-        /// SEPARAR EL getLlamadas de ProcessLlamadas
-        /// SEPARAR EL getLlamadas de ProcessLlamadas
-        /// SEPARAR EL getLlamadas de ProcessLlamadas
-        /// SEPARAR EL getLlamadas de ProcessLlamadas
-        /// SEPARAR EL getLlamadas de ProcessLlamadas
-
-        // //////////////////////////////////
-        //String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX,SYNC_TARJETA_PERSONAL_TIPOLECTORA_TX,SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
-        //String process = "SYNC_ESTADOS_TX,SYNC_EMPRESAS_TX,SYNC_TIPO_LECTORA_TX,SYNC_TIPO_DETALLE_BIOMETRIA_TX,SYNC_TERMINAL_TX,SYNC_TERMINAL_TIPOLECT_TX,SYNC_PERSONAL_TX,SYNC_PER_TIPOLECT_TERM_TX";
-        //String process = "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_TX";
-        //String process = "SYNC_ESTADOS_TX";
-        //String[] processarray = process.split(",");
-
-
         //Log.v(TAG, "processarray.length: " + String.valueOf(processarray.length) );
         //queriesLlamadas = new QueriesLlamadas(context);
         try{

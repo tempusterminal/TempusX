@@ -6,8 +6,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import com.tempus.proyectos.data.model.Llamadas;
+import com.tempus.proyectos.data.model.Marcaciones;
+import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.process.ProcessSync;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
+import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.Utilities;
@@ -54,6 +57,12 @@ public class MainEthernet {
     private int approximationToFix = 0;
     private int limitToFix = 30;
 
+    private int lhs = 0;
+
+
+    private QueriesMarcaciones queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
+    private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityPrincipal.context);
+
 
     public void writeData(OutputStream out, String data) {
         Log.v(TAG, "Write Activado");
@@ -75,23 +84,27 @@ public class MainEthernet {
             //Log.v(TAG,"lenght -> " + lenghtrawBytes );
             String hs = "";
             hs = new String(util.hexStringToByteArray(util.byteArrayToHexString(rawBytes).substring(0,lenghtrawBytes*2)), StandardCharsets.UTF_8);
-
-            Log.v(TAG,"LLEGO ASCCI (" + hs.length() + ") -> " + hs );
+            lhs += hs.length();
+            Log.v(TAG,"LLEGO ASCCI (" + hs.length() + "=>" + lhs + ") -> " + hs );
             approximationToFix = 0;
             hexString += hs;
             //Log.v(TAG,"LLEGO ASCCI+ -> " + hexString );
             //Log.v(TAG,"hexString.length() -> " + hexString.length() );
             //validateHexString(hexString);
 
+            //Log.v(TAG,"------------------------- 1");
             String vHexString = findHexString(hexString,"{","}");
-            //String vHexString = findHexString(hexString,"[","]");
+            //Log.v(TAG,"------------------------- 2");
 
             if(vHexString.length()>0){
+                //Log.v(TAG,"------------------------- 3");
                 Log.v(TAG,"validateHexString: " + vHexString);
                 vHexString = validateJson(vHexString);
+                //Log.v(TAG,"------------------------- 4");
                 Log.v(TAG,"validateJson: " + vHexString);
 
                 if(vHexString.length()>0){
+                    //Log.v(TAG,"------------------------- 5");
 
                     if(syncData == 1){
                         Log.v(TAG,"jsonObject: " + keyvalueJsonObject(vHexString,"CADENA",0).substring(0,20) + " ... " + keyvalueJsonObject(vHexString,"CADENA",0).substring(keyvalueJsonObject(vHexString,"CADENA",0).length()-20,keyvalueJsonObject(vHexString,"CADENA",0).length()));
@@ -140,7 +153,19 @@ public class MainEthernet {
                             hearing = true;
                         }
                     }else if(syncData == 0){
-                        jsonObject = new JSONObject(vHexString);
+                        // antes jsonObject = new JSONObject(vHexString);
+                        // modificado para envio de marcas y biometrias
+                        try{
+                            jsonObject = new JSONObject(vHexString);
+                        }catch(Exception e){
+                            Log.e(TAG,"prepareHexString jsonObject " + e.getMessage());
+                            try{
+                                jsonArray = new JSONArray(vHexString);
+                            }catch(Exception ex){
+                                Log.e(TAG,"prepareHexString jsonObject " + e.getMessage());
+                            }
+                        }
+
                         //Log.v(TAG,"jsonObject -> " + jsonObject.toString() );
                         approximationToFix = 0;
                         hearing = true;
@@ -174,6 +199,9 @@ public class MainEthernet {
                 }
                 */
 
+            }else{
+                //approximationToFix = 0;
+                //hearing = true;
             }
 
         }catch(Exception e){
@@ -181,10 +209,17 @@ public class MainEthernet {
             approximationToFix = 0;
             hearing = true;
             if(e.getMessage().contains("bt socket closed")){
+                Log.e(TAG,"Socket opening...");
                 ActivityPrincipal.STATUS_ETHERNET = false;
+                ActivityPrincipal.STATUS_ETHERNET = ActivityPrincipal.btSocketEthernet.ConnectBT();
+
+            }else if(e.getMessage().contains("null object")){
+                Log.e(TAG,"Socket opening - null object...");
+                ActivityPrincipal.STATUS_ETHERNET = false;
+                ActivityPrincipal.STATUS_ETHERNET = ActivityPrincipal.btSocketEthernet.ConnectBT();
             }
             try{
-                Thread.sleep(7000);
+                Thread.sleep(1000);
             }catch (Exception ex){
 
             }
@@ -205,13 +240,13 @@ public class MainEthernet {
 
                     //Log.v(TAG,"Longitud a recibir: " + hs.substring(0,start));
                     //Log.v(TAG,"Longitud a recibir: " + Integer.parseInt(hs.substring(0,start).trim(),16));
-                    if(hs.length() > Integer.parseInt(hs.substring(0,start).trim(),16)){
+                    if(hs.length()+200 > Integer.parseInt(hs.substring(0,start).trim(),16)){
                         for(int i = 0; i < 15; i++){
                             try{
                                 //Log.v(TAG,"Caracter final a evaluar: " + hs.substring((hs.length() - i),(hs.length() - i) + 1));
                                 if(ce.equalsIgnoreCase(hs.substring((hs.length() - i),(hs.length() - i) + 1))){
                                     end = hs.length() - i;
-                                    Log.v(TAG,"Caracter final " + end + " <" + hs.substring(end).trim() + ">");
+                                    //Log.v(TAG,"Caracter final " + end + " <" + hs.substring(end).trim() + ">");
                                     i = 15;
                                 }
                             }catch (Exception e){
@@ -238,6 +273,7 @@ public class MainEthernet {
                 hexString = "";
                 start = -1;
                 end = -1;
+                lhs = 0;
             }else{
                 hexStrings = "";
             }
@@ -281,9 +317,6 @@ public class MainEthernet {
                 aavaluesiu.add(i,jsonObjectToArrayList(ja.get(i).toString(),allcolumnsarray));
             }
 
-            //IMPLEMENTAR EL ENLACE A ProcessSync()
-            //processSync.insertUpdateData(aavaluesiu,"PERSONAL","EMPRESA,CODIGO","APELLIDO_PATERNO,APELLIDO_MATERNO,NOMBRES,FECHA_DE_NACIMIENTO,FECHA_DE_INGRESO,FECHA_DE_CESE,ESTADO,TIPO_HORARIO,ICONO,NRO_DOCUMENTO,FECHA_HORA_SINC",ActivityPrincipal.context);
-
             /*
             Log.v(TAG,"aavaluesiu.size()" + aavaluesiu.size());
             for(int i = 0; i < aavaluesiu.size(); i++){
@@ -306,7 +339,12 @@ public class MainEthernet {
             //Log.v(TAG,"allcolumnsarray.length: " + allcolumnsarray.length);
             for(int i = 0; i < allcolumnsarray.length; i++){
                 String value = keyvalueJsonObject(jo.getString(allcolumnsarray[i]),"date",1);
-                avaluesiu.add(i,value);
+                if(value.equalsIgnoreCase("null")){
+                    avaluesiu.add(i,null);
+                }else{
+                    avaluesiu.add(i,value);
+                }
+
             }
 
             /*
@@ -427,150 +465,309 @@ public class MainEthernet {
 
             jsonAuthenticate = new JSONObject();
             ArrayList<String> dataArray = new ArrayList<String>();
+            Fechahora fechahora = new Fechahora();
+            queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityPrincipal.context);
+            queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
 
             while(true){
                 try{
+                    Log.v(TAG,"EthernetExecuting next loop");
+                    if(ActivityPrincipal.STATUS_ETHERNET){
+                        Thread.sleep(3000);
+                        jsonItems = "";
+                        loopfn = 0;
+                        ilfn = -2;
+                        Log.v(TAG,"EthernetExecuting: " + "hearing (iniciando tareas) " + String.valueOf(hearing));
+                        //Log.v(TAG,"jsonAuthenticate " + jsonAuthenticate.length());
 
-                    Thread.sleep(3000);
-                    jsonItems = "";
-                    loopfn = 0;
-                    ilfn = -2;
-                    Log.v(TAG,"EthernetExecuting: " + "hearing (iniciando tareas) " + String.valueOf(hearing));
-                    //Log.v(TAG,"jsonAuthenticate " + jsonAuthenticate.length());
+                        if(jsonAuthenticate.length() == 0){
+                            // 1. Llamada para iniciar sesión
+                            dataArray = new ArrayList<String>();
+                            dataArray.add("EMPRESA=TEMPUS_WS_T10");
+                            dataArray.add("USER=TEMPUS");
+                            dataArray.add("PASS=TEMPUSSCA");
+                            dataArray.add("IP=0.0.0.0");
+                            dataArray.add("MAC=00-00-00-00-00-00");
+                            dataArray.add("HOSTNAME=TERMINAL_T10");
 
-                    if(jsonAuthenticate.length() == 0){
-                        // 1. Llamada para iniciar sesión
-                        dataArray = new ArrayList<String>();
-                        dataArray.add("EMPRESA=TEMPUS_WS_T10");
-                        dataArray.add("USER=TEMPUS");
-                        dataArray.add("PASS=TEMPUSSCA");
-                        dataArray.add("IP=0.0.0.0");
-                        dataArray.add("MAC=00-00-00-00-00-00");
-                        dataArray.add("HOSTNAME=TERMINAL_T10");
+                            hearing = false;
+                            callsws(0,dataArray,"TERMINAL");
+                            dataArray.clear();
 
-                        hearing = false;
-                        callsws(0,dataArray,"TERMINAL");
-                        dataArray.clear();
-
-                        while(!hearing){
-                            Log.v(TAG,"EthernetExecuting: " + "hearing (autenticando) " + String.valueOf(hearing));
-                            Thread.sleep(2000);
-                        }
-
-                        Log.v(TAG,"jsonObject " + jsonObject.toString());
-                        if(jsonObject.getString("ESTADO").equalsIgnoreCase("true")){
-                            jsonAuthenticate = new JSONObject(jsonObject.getString("DATA"));
-                            Log.v(TAG,"jsonAuthenticate " + jsonAuthenticate.toString());
-                        }
-                        jsonObject = new JSONObject();
-                    }
-
-                    // 2. Llamada para ejecutar objeto de base de datos del servidor
-
-                    if(jsonAuthenticate.length() > 0){
-
-                        if(llamadasList.size() == 0){
-                            llamadasList = processSync.getLlamadas(ActivityPrincipal.context);
-                            Log.v(TAG,"llamadasList.size() " + llamadasList.size());
-                            for(int i = 0; i <llamadasList.size(); i++ ){
-                                Log.v(TAG,"llamadasList " + i + " - " + llamadasList.get(i));
-                            }
-                        }
-                        llamadasList = processSync.getLlamadas(ActivityPrincipal.context);
-                        if(llamadasList.size() == 0){
-                            Log.v(TAG," Sin llamadas por ejecutar " + String.valueOf(llamadasList.size()));
-                        }else{
-                            for(illamadasList = 0; illamadasList < llamadasList.size(); illamadasList++){
-                                Log.v(TAG,"illamadasList: " + illamadasList);
-                                String parametersnamesvalues = processSync.prepareParametersLlamadas(llamadasList.get(illamadasList).getParameters(), ActivityPrincipal.context);
-
-                                dataArray.add("DATA=" + "{\"session\":" + jsonAuthenticate.getString("ID_SESSION") + ",\"llamada\":\"" + jsonAuthenticate.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + llamadasList.get(illamadasList).getIdllamada() + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
-
-                                hearing = false;
-                                jsonItems = "";
-                                callsws(0,dataArray,"EXEC_DATA");
-                                dataArray.clear();
-
-                                while(!hearing){
-                                    Log.v(TAG,"EthernetExecuting: " + "hearing3 (esperando " + llamadasList.get(illamadasList).getIdllamada() + ") " + String.valueOf(hearing));
-                                    Thread.sleep(2000);
-                                }
-
-                                // 3. Llamada para extraer data delñarchivo json creado en el Servidor
-
-                                lfn = jsonObject.getInt("LONGITUD");
-                                if(lfn == 0){
-                                    loopfn = 0;
-                                }else if(lfn < lcut){
-                                    loopfn = 1;
-                                }else if(lfn >= lcut){
-                                    loopfn = 0;
-                                    while((lcut * loopfn) < lfn){
-                                        loopfn++;
-                                    }
-                                }else{
-                                    loopfn = 0;
-                                }
-                                Log.v(TAG,"EthernetExecuting: jsonObject LONGITUD: " + lfn + " en " + loopfn + " parte(s)");
-
-                                for(ilfn = 0; ilfn < loopfn; ilfn++){
-                                    try{
-                                        dataArray.add("FILENAME=" + jsonObject.getString("NOMBRE_ARCHIVO"));
-                                        dataArray.add("START=" + (ilfn*lcut));
-                                        dataArray.add("LENGTH=" + (lcut));
-
-                                        Log.v(TAG,"EthernetExecuting: " + "hearing2 " + String.valueOf(hearing));
-                                        hearing = false;
-                                        callsws(1,dataArray,"SUBSTR_FILE");
-                                        dataArray.clear();
-                                        //jsonObject = new JSONObject();
-
-                                        //writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(),"OPCION=SUBSTR_FILE&FILENAME=" + fn + "&START=" + i*200000 + "&LENGTH=" + (i+1)*200000 + "");
-                                        Log.v(TAG,"EthernetExecuting: " + "hexStrings final parte-" + (ilfn+1) + "/" + loopfn + " -> " + hexStrings);
-                                        while(!hearing){
-                                            Log.v(TAG,"EthernetExecuting: " + "hearing3 (esperando parte-" + (ilfn+1) + "/" + loopfn + ") " + String.valueOf(hearing));
-                                            Thread.sleep(2000);
-                                        }
-                                        Thread.sleep(3000);
-                                    }catch(Exception e){
-                                        Log.e(TAG,"EthernetExecuting: " + e.getMessage());
-                                        try{
-                                            Thread.sleep(1000);
-                                        }catch(Exception ex){
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-
-
-                    /*
-                    for(int i = 0; i < (lfn/200000); i++){
-                        try{
-                            Log.v(TAG,"EthernetExecuting: " + "hearing2 " + String.valueOf(hearing));
-                            //callsws(0);
-                            //writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(),"OPCION=SUBSTR_FILE&FILENAME=" + fn + "&START=" + i*200000 + "&LENGTH=" + (i+1)*200000 + "");
-                            Log.v(TAG,"EthernetExecuting: " + "hexStrings final parte_" + (i+1) + " -> " + hexStrings);
                             while(!hearing){
-                                Log.v(TAG,"EthernetExecuting: " + "hearing3 " + String.valueOf(hearing));
+                                Log.v(TAG,"EthernetExecuting: " + "hearing (autenticando) " + String.valueOf(hearing));
                                 Thread.sleep(2000);
                             }
-                            Thread.sleep(1000);
-                        }catch(Exception e){
-                            Log.e(TAG,"EthernetExecuting: " + e.getMessage());
-                            try{
-                                Thread.sleep(1000);
-                            }catch(Exception ex){
 
+                            Log.v(TAG,"jsonObject " + jsonObject.toString());
+                            if(jsonObject.getString("ESTADO").equalsIgnoreCase("true")){
+                                jsonAuthenticate = new JSONObject(jsonObject.getString("DATA"));
+                                Log.v(TAG,"jsonAuthenticate " + jsonAuthenticate.toString());
                             }
+                            jsonObject = new JSONObject();
                         }
+
+                        // 2. Llamada para ejecutar objeto de base de datos del servidor
+
+                        if(jsonAuthenticate.length() > 0){
+
+                            // Enviar biometrias
+                            for(int i = 0; i < 11; i++){
+                                try{
+
+                                    List<PersonalTipolectoraBiometria> personalTipolectoraBiometriaList = queriesPersonalTipolectoraBiometria.select_one_row();
+
+                                    if(personalTipolectoraBiometriaList.isEmpty()){
+                                        Log.v(TAG,"Sin biometrias por pasar");
+                                        i = 11;
+                                    }else{
+                                        Log.v(TAG,"Biometria a sincronizar: " + personalTipolectoraBiometriaList.get(0).toString());
+                                        try{
+                                            //String parametersnamesvalues = "";
+                                            String parametersnamesvalues = "pID_PER_TIPOLECT_BIO," + personalTipolectoraBiometriaList.get(0).getIdPerTipolectBio() +
+                                                    ";pINDICE_BIOMETRIA," + personalTipolectoraBiometriaList.get(0).getIndiceBiometria() +
+                                                    ";pEMPRESA," + personalTipolectoraBiometriaList.get(0).getEmpresa() +
+                                                    ";pCODIGO," + personalTipolectoraBiometriaList.get(0).getCodigo() +
+                                                    ";pVALOR_BIOMETRIA," + personalTipolectoraBiometriaList.get(0).getValorBiometria() +
+                                                    ";pIMAGEN_BIOMETRIA," + personalTipolectoraBiometriaList.get(0).getImagenBiometria() +
+                                                    ";pFECHA_BIOMETRIA," + personalTipolectoraBiometriaList.get(0).FechaBiometria +
+                                                    ";pFECHA_HORA_SINC," + fechahora.getFechahoraSync(personalTipolectoraBiometriaList.get(0).getFechaHoraSinc());
+
+                                            dataArray.add("DATA=" + "{\"session\":" + jsonAuthenticate.getString("ID_SESSION") + ",\"llamada\":\"" + jsonAuthenticate.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_SERVER_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
+
+                                            hearing = false;
+                                            jsonItems = "";
+                                            callsws(0,dataArray,"EXEC_DATA");
+                                            dataArray.clear();
+
+                                            while(!hearing){
+                                                Log.v(TAG,"EthernetExecuting: " + "hearing3 (esperando " + "respuesta de biometrias" + ") " + String.valueOf(hearing));
+                                                Thread.sleep(2000);
+                                            }
+
+                                            try{
+                                                // revisar resultado de sincronizacion de biometria
+                                                dataArray.add("FILENAME=" + jsonObject.getString("NOMBRE_ARCHIVO"));
+                                                dataArray.add("START=" + 0);
+                                                dataArray.add("LENGTH=" + 100000);
+
+                                                Log.v(TAG,"EthernetExecuting: " + "hearing2 " + String.valueOf(hearing));
+                                                hearing = false;
+                                                callsws(0,dataArray,"SUBSTR_FILE");
+                                                dataArray.clear();
+                                                //jsonObject = new JSONObject();
+
+                                                //writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(),"OPCION=SUBSTR_FILE&FILENAME=" + fn + "&START=" + i*200000 + "&LENGTH=" + (i+1)*200000 + "");
+                                                Log.v(TAG,"EthernetExecuting: " + "hexStrings final parte-" + 1 + "/" + 1 + " -> " + hexStrings);
+                                                while(!hearing){
+                                                    Log.v(TAG,"EthernetExecuting: " + "hearing3 (esperando parte-" + 1 + "/" + 1 + ") " + String.valueOf(hearing));
+                                                    Thread.sleep(2000);
+                                                }
+                                                Thread.sleep(1000);
+                                            }catch(Exception e){
+                                                Log.e(TAG,"EthernetExecuting: " + e.getMessage());
+                                                try{
+                                                    Thread.sleep(1000);
+                                                }catch(Exception ex){
+                                                }
+                                            }
+
+                                            Log.v(TAG,"EthernetExecuting " + "revisión de jsonArray.toString(): " + jsonArray.toString());
+                                            if(jsonArray.toString().equalsIgnoreCase("[]")){
+                                                queriesPersonalTipolectoraBiometria.ActualizarBiometriaEnviadaServidor(personalTipolectoraBiometriaList.get(0).getIndiceBiometria(),personalTipolectoraBiometriaList.get(0).getIdTipoDetaBio());
+                                            }else{
+                                                Log.v(TAG,"EthernetExecuting " + "No se completo la sincronización de biometrias");
+                                            }
+
+                                        }catch(SQLException e){
+                                            Log.e(TAG,"EthernetExecuting " + "SQLException " + e.toString());
+                                        }catch(Exception e){
+                                            Log.e(TAG,"EthernetExecuting " + "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_SERVER_TX " + e.getMessage());
+                                        }
+                                    }
+                                }catch (Exception e){
+                                    Log.e(TAG,"EthernetExecuting " + "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_SERVER_TX general" + e.getMessage());
+                                }
+                            }
+
+
+                            for(int i = 0; i < 11; i++) {
+                                // Enviar marcaciones
+                                try {
+
+                                    List<Marcaciones> marcacionesList = queriesMarcaciones.select_one_row();
+
+                                    if (marcacionesList.isEmpty()) {
+                                        Log.v(TAG,"Sin marcaciones por pasar");
+                                        i = 11;
+                                    } else {
+                                        Log.v(TAG,"Marcacion a sincronizar: " + marcacionesList.get(0).toString());
+                                        try {
+                                            //String parametersnamesvalues = "";
+                                            String parametersnamesvalues = "pEMPRESA," + marcacionesList.get(0).getEmpresa() +
+                                                    ";pCODIGO," + marcacionesList.get(0).getCodigo() +
+                                                    ";pFECHAHORA," + fechahora.getFechahoraSqlServer(marcacionesList.get(0).getFechahora()) +
+                                                    ";pNUMERO_TARJETA," + marcacionesList.get(0).getValorTarjeta() +
+                                                    ";pHORATXT," + marcacionesList.get(0).getHoraTxt() +
+                                                    ";pENT_SAL," + marcacionesList.get(0).getEntSal() +
+                                                    ";pFLAG," + marcacionesList.get(0).getFlag() +
+                                                    ";pFECHA," + fechahora.getFechahoraSqlServer(marcacionesList.get(0).getFecha()) +
+                                                    ";pHORA," + fechahora.getFechahoraSqlServer(marcacionesList.get(0).getHora()) +
+                                                    ";pIDTERMINAL," + marcacionesList.get(0).getIdterminal() +
+                                                    ";pIDLECTORA," + marcacionesList.get(0).getIdTipoLect() +
+                                                    ";pFLG_ACTIVIDAD," + marcacionesList.get(0).getFlgActividad() +
+                                                    ";pIDUSUARIO," + marcacionesList.get(0).getIdUsuario() +
+                                                    ";pTMP_LISTAR," + marcacionesList.get(0).getTmpListar() +
+                                                    ";pDATOS," + marcacionesList.get(0).getDatos();
+
+                                            dataArray.add("DATA=" + "{\"session\":" + jsonAuthenticate.getString("ID_SESSION") + ",\"llamada\":\"" + jsonAuthenticate.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_MARCACIONES_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
+
+
+                                            hearing = false;
+                                            jsonItems = "";
+                                            callsws(0, dataArray, "EXEC_DATA");
+                                            dataArray.clear();
+
+                                            while (!hearing) {
+                                                Log.v(TAG, "EthernetExecuting: " + "hearing3 (esperando " + "respuesta de marcaciones" + ") " + String.valueOf(hearing));
+                                                Thread.sleep(2000);
+                                            }
+
+                                            try {
+                                                // revisar resultado de sincronizacion de biometria
+                                                dataArray.add("FILENAME=" + jsonObject.getString("NOMBRE_ARCHIVO"));
+                                                dataArray.add("START=" + 0);
+                                                dataArray.add("LENGTH=" + 100000);
+
+                                                Log.v(TAG, "EthernetExecuting: " + "hearing2 " + String.valueOf(hearing));
+                                                hearing = false;
+                                                callsws(0, dataArray, "SUBSTR_FILE");
+                                                dataArray.clear();
+                                                //jsonObject = new JSONObject();
+
+                                                //writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(),"OPCION=SUBSTR_FILE&FILENAME=" + fn + "&START=" + i*200000 + "&LENGTH=" + (i+1)*200000 + "");
+                                                Log.v(TAG, "EthernetExecuting: " + "hexStrings final parte-" + 1 + "/" + 1 + " -> " + hexStrings);
+                                                while (!hearing) {
+                                                    Log.v(TAG, "EthernetExecuting: " + "hearing3 (esperando parte-" + 1 + "/" + 1 + ") " + String.valueOf(hearing));
+                                                    Thread.sleep(2000);
+                                                }
+                                                Thread.sleep(1000);
+                                            } catch (Exception e) {
+                                                Log.e(TAG, "EthernetExecuting: " + e.getMessage());
+                                                try {
+                                                    Thread.sleep(1000);
+                                                } catch (Exception ex) {
+                                                }
+                                            }
+
+                                            Log.v(TAG, "EthernetExecuting " + "revisión de jsonArray.toString(): " + jsonArray.toString());
+                                            if (jsonArray.toString().equalsIgnoreCase("[]")) {
+                                                queriesMarcaciones.ActualizarSincronizado(marcacionesList.get(0), 1);
+                                            } else if (jsonArray.toString().contains("Infracción de la restricción PRIMARY KEY")) {
+                                                queriesMarcaciones.ActualizarSincronizado(marcacionesList.get(0), 1);
+                                            } else {
+                                                Log.v(TAG, "EthernetExecuting " + "No se completo la sincronización de marcaciones");
+                                            }
+
+                                        } catch (SQLException e) {
+                                            Log.e(TAG, "EthernetExecuting " + "SQLException " + e.toString());
+                                        } catch (Exception e) {
+                                            Log.e(TAG, "EthernetExecuting " + "SYNC_MARCACIONES_TX " + e.getMessage());
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "EthernetExecuting " + "SYNC_MARCACIONES_TX general" + e.getMessage());
+                                }
+                            }
+
+
+
+                            ///*
+                            // Obtener llamadas para autorizaciones
+                            if(llamadasList.size() == 0){
+                                llamadasList = processSync.getLlamadas(ActivityPrincipal.context);
+                                Log.v(TAG,"llamadasList.size() " + llamadasList.size());
+                                for(int i = 0; i <llamadasList.size(); i++ ){
+                                    Log.v(TAG,"llamadasList " + i + " - " + llamadasList.get(i));
+                                }
+                            }
+                            //llamadasList = processSync.getLlamadas(ActivityPrincipal.context);
+
+                            // ¿Existen llamadas por ejecutar?
+                            if(llamadasList.size() == 0){
+                                Log.v(TAG,"Sin llamadas por ejecutar " + String.valueOf(llamadasList.size()));
+                            }else{
+                                for(illamadasList = 0; illamadasList < llamadasList.size(); illamadasList++){
+                                    Log.v(TAG,"illamadasList: " + illamadasList);
+                                    String parametersnamesvalues = processSync.prepareParametersLlamadas(llamadasList.get(illamadasList).getParameters(), ActivityPrincipal.context);
+
+                                    dataArray.add("DATA=" + "{\"session\":" + jsonAuthenticate.getString("ID_SESSION") + ",\"llamada\":\"" + jsonAuthenticate.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + llamadasList.get(illamadasList).getIdllamada() + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
+
+                                    hearing = false;
+                                    jsonItems = "";
+                                    callsws(0,dataArray,"EXEC_DATA");
+                                    dataArray.clear();
+
+                                    while(!hearing){
+                                        Log.v(TAG,"EthernetExecuting: " + "hearing3 (esperando " + llamadasList.get(illamadasList).getIdllamada() + ") " + String.valueOf(hearing));
+                                        Thread.sleep(2000);
+                                    }
+
+                                    // 3. Llamada para extraer data del archivo json creado en el Servidor
+
+                                    lfn = jsonObject.getInt("LONGITUD");
+                                    if(lfn == 0){
+                                        loopfn = 0;
+                                    }else if(lfn < lcut){
+                                        loopfn = 1;
+                                    }else if(lfn >= lcut){
+                                        loopfn = 0;
+                                        while((lcut * loopfn) < lfn){
+                                            loopfn++;
+                                        }
+                                    }else{
+                                        loopfn = 0;
+                                    }
+                                    Log.v(TAG,"EthernetExecuting: jsonObject LONGITUD: " + lfn + " en " + loopfn + " parte(s)");
+
+                                    for(ilfn = 0; ilfn < loopfn; ilfn++){
+                                        try{
+                                            dataArray.add("FILENAME=" + jsonObject.getString("NOMBRE_ARCHIVO"));
+                                            dataArray.add("START=" + (ilfn*lcut));
+                                            dataArray.add("LENGTH=" + (lcut));
+
+                                            Log.v(TAG,"EthernetExecuting: " + "hearing2 " + String.valueOf(hearing));
+                                            hearing = false;
+                                            callsws(1,dataArray,"SUBSTR_FILE");
+                                            dataArray.clear();
+                                            //jsonObject = new JSONObject();
+
+                                            //writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(),"OPCION=SUBSTR_FILE&FILENAME=" + fn + "&START=" + i*200000 + "&LENGTH=" + (i+1)*200000 + "");
+                                            Log.v(TAG,"EthernetExecuting: " + "hexStrings final parte-" + (ilfn+1) + "/" + loopfn + " -> " + hexStrings);
+                                            while(!hearing){
+                                                Log.v(TAG,"EthernetExecuting: " + "hearing3 (esperando parte-" + (ilfn+1) + "/" + loopfn + ") " + String.valueOf(hearing));
+                                                Thread.sleep(2000);
+                                            }
+                                            Thread.sleep(3000);
+                                        }catch(Exception e){
+                                            Log.e(TAG,"EthernetExecuting: " + e.getMessage());
+                                            try{
+                                                Thread.sleep(1000);
+                                            }catch(Exception ex){
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            //*/
+
+
+                        }
+
+                    }else{
+                        Thread.sleep(3000);
                     }
-                    */
-
-
                 }catch (Exception e){
                     Log.e(TAG,"EthernetExecuting: " + e.getMessage());
                     try{
@@ -612,8 +809,11 @@ public class MainEthernet {
             Log.v(TAG,"Ejecutando Hilo " + nombreHilo);
 
             while(true){
+
                 try{
                     prepareHexString(ActivityPrincipal.btSocketEthernet);
+                    //Thread.sleep(1000);
+
                     //Thread.sleep(1000);
                 }catch (Exception e){
                     Log.d(TAG,"Error General Hilo " + nombreHilo + ": " + e.toString());

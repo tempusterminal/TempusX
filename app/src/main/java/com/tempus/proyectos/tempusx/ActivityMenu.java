@@ -18,6 +18,8 @@ import com.tempus.proyectos.util.UserInterfaceM;
 
 public class ActivityMenu extends Activity {
 
+    String TAG = "TX-AME";
+
     /* --- Declaración de Objetos --- */
 
     UserInterfaceM ui;
@@ -233,15 +235,18 @@ public class ActivityMenu extends Activity {
                 ui.goToActivity(ActivityMenu.this,ActivityFechaHora.class,"","");
                 break;
             case "BIOMETRIA":
+                Log.v(TAG,"SUBMENU BIOMETRIA -> TIPO_TERMINAL = " + ActivityPrincipal.TIPO_TERMINAL);
                 try {
                     if (ActivityPrincipal.TIPO_TERMINAL == 2){
+                        Log.v(TAG,"ABRIENDO " + ActivityPrincipal.TIPO_TERMINAL + " ActivityBiometria");
                         ui.goToActivity(ActivityMenu.this,ActivityBiometria.class,"","");
                     }
                     if (ActivityPrincipal.TIPO_TERMINAL == 3 ){
+                        Log.v(TAG,"ABRIENDO " + ActivityPrincipal.TIPO_TERMINAL + " ActivityGeomano");
                         ui.goToActivity(ActivityMenu.this,ActivityGeomano.class,"","");
                     }
                 } catch(Exception e) {
-                    Log.e("TEMPUS", "MENU - " + e.getMessage());
+                    Log.e(TAG,"case BIOMETRIA: MENU - " + e.getMessage());
                 }
 
                 break;
@@ -278,7 +283,7 @@ public class ActivityMenu extends Activity {
         try {
             ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOn",null);
         } catch(Exception e) {
-            Log.e("Error",e.getMessage());
+            Log.e(TAG, "goToMain" + e.getMessage());
         }
 
         ActivityPrincipal.activityActive = "Principal";

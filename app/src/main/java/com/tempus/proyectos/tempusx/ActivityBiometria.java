@@ -41,6 +41,8 @@ import pl.droidsonroids.gif.GifTextView;
 
 public class ActivityBiometria extends Activity {
 
+    String TAG = "TX-ABI";
+
     /* --- Declaración de Objetos --- */
 
     static UserInterfaceM ui;
@@ -69,7 +71,7 @@ public class ActivityBiometria extends Activity {
 
     static ImageView btnMasterBiometria;
     static TextView txvHuellaFondo;
-    public static GifTextView txvHuellaGif;
+    //public static GifTextView txvHuellaGif;
     public static TextView txvHuellaTexto;
     //ProgressBar pbrHuellaCarga;
 
@@ -117,11 +119,11 @@ public class ActivityBiometria extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_biometria);
 
         /* --- Inicialización de Objetos --- */
-
         ui = new UserInterfaceM();
         dialog = new ViewDialog(ActivityBiometria.this);
         util = new Utilities();
@@ -140,11 +142,10 @@ public class ActivityBiometria extends Activity {
 
         valorTarjeta = "";
 
-
         /* --- Inicialización de Componentes de la Interfaz --- */
 
         txvHuellaFondo = (TextView) findViewById(R.id.txvHuellaFondo);
-        txvHuellaGif = (GifTextView) findViewById(R.id.txvHuellaGif);
+        //txvHuellaGif = (GifTextView) findViewById(R.id.txvHuellaGif);
         txvHuellaTexto = (TextView) findViewById(R.id.txvHuellaTexto);
         imgViewResultOK = (ImageView) findViewById(R.id.imgViewResultOK);
         imgViewResultKO = (ImageView) findViewById(R.id.imgViewResultKO);
@@ -195,6 +196,7 @@ public class ActivityBiometria extends Activity {
 
         /* --- Inicialización de Métodos --- */
 
+
         ui.initScreen(this);
         limpiarScreen();
         manageEnrollEmp(false,"");
@@ -211,7 +213,6 @@ public class ActivityBiometria extends Activity {
             }
         });
 
-
         btnConsultarHuella.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -225,7 +226,7 @@ public class ActivityBiometria extends Activity {
                     List<String> lista = new ArrayList<String>();
 
                     try {
-                        Log.d("TEMPUS",numero);
+                        Log.v(TAG,numero);
                         queriesBiometrias = new QueriesBiometrias(ActivityBiometria.this);
                         biometriasList = queriesBiometrias.ListarPersonalBiometria(7,numero);
 
@@ -234,7 +235,7 @@ public class ActivityBiometria extends Activity {
                         if ( cantidad > 0 ) {
                             for(int i = 0; i < biometriasList.size(); i++) {
 
-                                Log.d("Autorizaciones", biometriasList.get(i).toString());
+                                Log.v(TAG, biometriasList.get(i).toString());
                                 String empresa = biometriasList.get(i).getEmpresa();
                                 String codigo = biometriasList.get(i).getCodigo();
                                 String nrodocumento = biometriasList.get(i).getNroDocumento();
@@ -281,7 +282,7 @@ public class ActivityBiometria extends Activity {
                         }
 
                     } catch (Exception e ){
-                        Log.e("ERROR",e.getMessage());
+                        Log.e(TAG,e.getMessage());
                     }
 
                 }
@@ -349,6 +350,10 @@ public class ActivityBiometria extends Activity {
     }
 
 
+    // ---------------------------------------------------------------------------------------------
+
+
+
     public void registrarHuella1() {
         // Registrando huella 1
         idTipoDetaBio = 1;
@@ -412,7 +417,7 @@ public class ActivityBiometria extends Activity {
             codigo = objBiometriaList.getCodigo();
             template = "";
 
-            Log.d("TEMPUS: ","HUELLA SELECCIONADA: " + objBiometriaList.toString());
+            Log.v("TX-ABI","HUELLA SELECCIONADA: " + objBiometriaList.toString());
 
             manageScreenListaHuella(false);
 
@@ -421,9 +426,11 @@ public class ActivityBiometria extends Activity {
                 List<Biometrias> espaciosBiometrias = queriesBiometrias.BuscarBiometrias(7,empresaCodigo,codigo);
                 int cantidad = espaciosBiometrias.size();
 
+                Log.v("TX-ABI","espaciosBiometrias: " + espaciosBiometrias.toString());
+
                 if (cantidad == 2 ) {
                     for(int i = 0; i < espaciosBiometrias.size(); i++){
-                        Log.d("Autorizaciones",espaciosBiometrias.get(i).toString());
+                        Log.v("TX-ABI",espaciosBiometrias.get(i).toString());
                     }
 
                     // Espacio 01
@@ -435,7 +442,7 @@ public class ActivityBiometria extends Activity {
 
 
                     indice = espaciosBiometrias.get(0).getIndiceBiometria();
-                    Log.e("TEMPUS: ", ":::::::::::::: " + String.valueOf(indice));
+                    Log.e("TX-ABI", ":::::::::::::: " + String.valueOf(indice));
 
                     txvHuellaNombrePersonal.setText(nombre);
 
@@ -461,12 +468,13 @@ public class ActivityBiometria extends Activity {
                 }
 
             } catch (Exception e){
-                Log.e("Error: ",e.getMessage());
+                Log.e("TX-ABI",e.getMessage());
             }
         } else {
             ui.showAlert(activity,"warning","Registro no tiene permisos");
         }
     }
+
 
 
 
@@ -549,12 +557,12 @@ public class ActivityBiometria extends Activity {
 
         if (visible) {
             txvHuellaFondo.setVisibility(View.VISIBLE);
-            txvHuellaGif.setVisibility(View.VISIBLE);
+            //txvHuellaGif.setVisibility(View.VISIBLE);
             txvHuellaTexto.setVisibility(View.VISIBLE);
             //pbrHuellaCarga.setVisibility(View.VISIBLE);
         } else {
             txvHuellaFondo.setVisibility(View.INVISIBLE);
-            txvHuellaGif.setVisibility(View.INVISIBLE);
+            //txvHuellaGif.setVisibility(View.INVISIBLE);
             txvHuellaTexto.setVisibility(View.INVISIBLE);
             //pbrHuellaCarga.setVisibility(View.INVISIBLE);
         }

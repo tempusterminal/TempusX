@@ -198,12 +198,7 @@ public class FragmentBar extends Fragment {
                 }
 
                 String fh = fechahora.getFechahora();
-                String[] data = batt3.0432
-                0we
-                    2
-                *
-                            g
-                ery.updateBatteryData(intent);
+                String[] data = battery.updateBatteryData(intent);
                 String BATTERY_HEALTH = data[0];
                 String BATTERY_PERCENTAGE = data[1];
                 String BATTERY_PLUGGED = data[2];

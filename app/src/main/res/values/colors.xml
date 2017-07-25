@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="colorLinea">#009933</color>
-    <color name="colorFondoBarra">#d0dfdb</color>
+    <color name="colorLinea">#369</color>
+    <color name="colorFondoBarra">#b7d3f1</color>
     <color name="colorFondoCuerpo">#ffffff</color>
     <color name="colorTexto">#000000</color>
     <color name="colorBlanco">#ffffff</color>

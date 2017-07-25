@@ -24,6 +24,8 @@ import com.tempus.proyectos.util.Fechahora;
 
 public class QueriesMarcaciones {
 
+    private String TAG = "DQ-QUEMAR";
+
     private Conexion conexion;
     private Context context;
     private SQLiteDatabase database;
@@ -495,7 +497,7 @@ public class QueriesMarcaciones {
         contentValues.put(TableMarcaciones.Sincronizado, sincronizado);
 
         database.update(TableMarcaciones.TABLE_NAME, contentValues, TableMarcaciones.Empresa + " = ? AND " + TableMarcaciones.Codigo + " = ? AND " + TableMarcaciones.Fechahora + " = ? ", new String[] { marcaciones.getEmpresa(), marcaciones.getCodigo(), marcaciones.getFechahora()});
-        Log.d("Autorizaciones","Registro actualizado");
+        Log.v(TAG,"BTS-MAET Registro actualizado");
         this.close();
     }
 

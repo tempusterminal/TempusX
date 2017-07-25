@@ -22,6 +22,8 @@ import java.util.Date;
 
 public class ActivityFechaHora extends Activity {
 
+    String TAG = "TX-AFH";
+
     /* --- Declaración de Objetos --- */
 
     UserInterfaceM ui;
@@ -98,7 +100,7 @@ public class ActivityFechaHora extends Activity {
                 int hor = Integer.parseInt(edtConfHora.getText().toString());
                 int min = Integer.parseInt(edtConfMinuto.getText().toString());
 
-                Log.d("TEMPUS: ",selectedDate);
+                Log.v(TAG,"setOnClickListener " + selectedDate);
 
                 updateDateTime(año,mes,dia,hor,min,0);
             }
@@ -135,7 +137,7 @@ public class ActivityFechaHora extends Activity {
         calendarFechaHora.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                Log.v("TEMPUS: ","::::::::::::::" + year + " " + month + " " + dayOfMonth);
+                Log.v(TAG,"::::::::::::::" + year + " " + month + " " + dayOfMonth);
             }
         });
 
@@ -164,7 +166,7 @@ public class ActivityFechaHora extends Activity {
             AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
             am.setTime(c.getTimeInMillis());
         } catch(Exception e) {
-            Log.v("TEMPUS: ","" + e.getMessage());
+            Log.e(TAG,"updateDateTime " + e.getMessage());
         }
     }
 
@@ -212,7 +214,7 @@ public class ActivityFechaHora extends Activity {
         edtConfHora.setText(result.substring(0,2));
         edtConfMinuto.setText(result.substring(3,5));
 
-        Log.v("TEMPUS: ",result);
+        Log.v(TAG,"manageHora " + result);
     }
 
     public String manageMonth(int month){
