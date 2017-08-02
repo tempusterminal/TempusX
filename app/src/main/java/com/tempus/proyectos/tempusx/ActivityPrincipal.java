@@ -312,6 +312,9 @@ public class ActivityPrincipal extends Activity {
 
     protected PowerManager.WakeLock mWakeLock;
 
+    // Testing BT on off
+    InternalFile internalFile = new InternalFile();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -465,11 +468,13 @@ public class ActivityPrincipal extends Activity {
         threadFechahora.start();
         //threadEthernet.start();
 
-        //mainEthernet.startEthernetReading();
-        //mainEthernet.startEthernetExecuting();
-        //mainEthernet.startEthernetFixing();
+        mainEthernet.startEthernetReading();
+        mainEthernet.startEthernetExecuting();
+        mainEthernet.startEthernetFixing();
 
         batteryLife.startBatteryLifeReading();
+
+        //threadTestingBTonoff.start();
 
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
@@ -1153,7 +1158,7 @@ public class ActivityPrincipal extends Activity {
         //Ethernet test
         //MAC_BT_00 = "20:16:08:10:60:93";
         //Ethernet test Clinica Internacional
-        //MAC_BT_00 = "00:21:13:01:7E:8F";
+        MAC_BT_00 = "00:21:13:01:7E:8F";
 
         // CARRION 02
         //MAC_BT_01 = "98:D3:34:90:87:DC"; // hc 06
@@ -1770,7 +1775,7 @@ public class ActivityPrincipal extends Activity {
                 */
 
                 Log.v(TAG,"BT " + "Bluetooth");
-                BluetoothAdapter.getDefaultAdapter().disable();
+                btSocket01.closeBT();
 
 
                 break;
@@ -2986,13 +2991,17 @@ public class ActivityPrincipal extends Activity {
             String acumulador = "";
 
             while (true) {
+                Log.v(TAG,"threadSerial01UPD loop");
                 if (!BT_01_IS_CONNECTED) {
                     util.sleep(1000);
                 } else {
                     try {
                         byte[] rawBytes = new byte[1];
+                        Log.v(TAG,"btSocket01 ----- 1");
                         btSocket01.getInputStream().read(rawBytes);
+                        Log.v(TAG,"btSocket01 ----- 2");
                         acumulador = acumulador + util.byteArrayToHexString(rawBytes);
+                        Log.v(TAG,"btSocket01 ----- 3");
                         if (acumulador.length() == 10) {
                             if (!acumulador.equalsIgnoreCase("244f415841")) {
                                 acumulador = acumulador.substring(2, acumulador.length());
@@ -3004,9 +3013,21 @@ public class ActivityPrincipal extends Activity {
                             objArduino.limpiarTramaArduino();
                             acumulador = "";
                         }
+                        Log.v(TAG,"btSocket01 ----- 4");
                     } catch (Exception e) {
                         if (!isBooting) {
                             BT_01_IS_CONNECTED = false;
+                            /*
+                            try{
+                                Thread.sleep(3000);
+                                //btSocket01.closeBT();
+                                Log.v(TAG,"btSocket01.ConnectBT()");
+                                btSocket01.ConnectBT();
+                                internalFile.writeToAppend(fechahora.getFechahora() + ": " + "btSocket01.ConnectBT() ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+                            }catch (Exception ex){
+                                Log.e(TAG,"btSocket01.ConnectBT() " + ex.getMessage());
+                            }
+                            */
                         }
                     }
                 }
@@ -3021,17 +3042,18 @@ public class ActivityPrincipal extends Activity {
 
             String acumulador = "";
             int tamano = 26;
-
             while (true) {
+                Log.v(TAG,"threadSerial02UPD loop");
                 if (!BT_02_IS_CONNECTED) {
                     util.sleep(1000);
                 } else {
                     try {
                         byte[] rawBytes = new byte[1];
+                        Log.v(TAG,"btSocket02 ----- 1");
                         btSocket02.getInputStream().read(rawBytes);
-
+                        Log.v(TAG,"btSocket02 ----- 2");
                         acumulador = acumulador + util.byteArrayToHexString(rawBytes);
-
+                        Log.v(TAG,"btSocket02 ----- 3");
                         if (acumulador.length() == 2){
                             if (!acumulador.equals("40")) {
                                 acumulador = "";
@@ -3056,10 +3078,22 @@ public class ActivityPrincipal extends Activity {
                             objSuprema.limpiarTramaSuprema();
                             acumulador = "";
                         }
+                        Log.v(TAG,"btSocket02 ----- 4");
 
                     } catch (Exception e) {
                         if (!isBooting){
                             BT_02_IS_CONNECTED = false;
+                            /*
+                            try{
+                                Thread.sleep(3000);
+                                //btSocket02.closeBT();
+                                Log.v(TAG,"btSocket02.ConnectBT()");
+                                btSocket02.ConnectBT();
+                                internalFile.writeToAppend(fechahora.getFechahora() + ": " + "btSocket02.ConnectBT() ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+                            }catch (Exception ex){
+                                Log.e(TAG,"btSocket02.ConnectBT() " + ex.getMessage());
+                            }
+                            */
                         }
                     }
                 }
@@ -3073,6 +3107,7 @@ public class ActivityPrincipal extends Activity {
 
         Log.v(TAG,"CONTROL GENERAL");
         Log.v(TAG,"isCharging: " + isCharging);
+        Log.v(TAG,"isBooting: " + isBooting);
         Log.v(TAG,"BT_01_IS_CONNECTED: " + BT_01_IS_CONNECTED);
         Log.v(TAG,"BT_02_IS_CONNECTED: " + BT_02_IS_CONNECTED);
 
@@ -3459,6 +3494,48 @@ public class ActivityPrincipal extends Activity {
                     util.sleep(1000);
                 }
                 util.sleep(1000);
+            }
+
+        }
+    });
+
+
+    Thread threadTestingBTonoff = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> Iniciando threadTestingBTonoff >>>>>>>>>>> ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+            internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> MAC_BT_00: " + MAC_BT_00,Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+            internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> MAC_BT_01: " + MAC_BT_01,Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+            internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> MAC_BT_02: " + MAC_BT_02,Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+            internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> MAC_BT_03: " + MAC_BT_03,Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+
+            while (true) {
+                try{
+                    Log.v(TAG,"threadTestingBTonoff Esperando para apagar BTs");
+                    Thread.sleep(180000);
+                    internalFile.writeToAppend(fechahora.getFechahora() + ": " + "---------- Iniciando desconexion de bluetooth ------------- ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+
+                    Log.v(TAG,"threadTestingBTonoff Desactivando BTs");
+                    if(bluetoothAdapter.disable()){
+                        internalFile.writeToAppend(fechahora.getFechahora() + ": " + "bluetoothAdapter.disable() ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+                        bluetoothAdapter.enable();
+                        internalFile.writeToAppend(fechahora.getFechahora() + ": " + "bluetoothAdapter.enable() ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+                        Log.v(TAG,"threadTestingBTonoff Activando BTs");
+                    }else{
+                        Log.v(TAG,"threadTestingBTonoff no se puede desactivar BTs");
+                    }
+
+                    /*
+                    Log.v(TAG,"threadTestingBTonoff Apagando BTs");
+                    btSocket01.closeBT();
+                    internalFile.writeToAppend(fechahora.getFechahora() + ": " + "btSocket01.closeBT() ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+                    btSocket02.closeBT();
+                    internalFile.writeToAppend(fechahora.getFechahora() + ": " + "btSocket02.closeBT() ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
+                    */
+                }catch (Exception e){
+                    Log.e(TAG,"threadTestingBTonoff " + e.getMessage());
+                }
             }
 
         }

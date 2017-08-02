@@ -34,6 +34,7 @@ public class BatteryLife {
 
     private static final String DIRECTORY = Environment.getExternalStorageDirectory().toString() + "/tempus/";
     private static final String FILE = "batterylife.txt";
+    private static final String FILE_FULL = "batterylife_full.txt";
     InternalFile internalFile = new InternalFile();
     Fechahora fechahora = new Fechahora();
 
@@ -176,6 +177,8 @@ public class BatteryLife {
     private class BatteryLifeReading extends Thread{
         private Thread hilo;
         private String nombreHilo;
+        private boolean isC = false;
+        private int levelB = -1;
 
         public BatteryLifeReading(String nombreHilo) {
             this.nombreHilo = nombreHilo;
@@ -184,6 +187,57 @@ public class BatteryLife {
 
         public void run(){
             Log.v(TAG,"Ejecutando Hilo " + nombreHilo);
+            try{
+                getBatteryLife();
+                internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> Iniciado Log ---------------", DIRECTORY + FILE);
+                internalFile.writeToAppend(fechahora.getFechahora() + ": " + "isCharging " + isCharging + "/" + levelBattery + "%" + " - " + "usbCharge->" + usbCharge + "/" + "acCharge->" + acCharge + " - " + "voltage " + voltage, DIRECTORY + FILE);
+                isC = isCharging;
+                levelB = levelBattery;
+
+                internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> Iniciado Log ---------------", DIRECTORY + FILE_FULL);
+                internalFile.writeToAppend(fechahora.getFechahora() + ": " + "isCharging " + isCharging + "/" + levelBattery + "%" + " - " + "usbCharge->" + usbCharge + "/" + "acCharge->" + acCharge + " - " + "voltage " + voltage, DIRECTORY + FILE_FULL);
+
+            }catch (Exception e){
+                Log.e(TAG,"BatteryLifeReading run " + e.getMessage());
+            }
+
+            while(true){
+                try{
+                    getBatteryLife();
+                    Log.v(TAG,"getBatteryLife() internalFile.writeToAppend...");
+                    if(isC != isCharging){
+                        Log.v(TAG,"getBatteryLife() internalFile.writeToAppend... isCharging");
+                        internalFile.writeToAppend(fechahora.getFechahora() + ": " + "isCharging " + isCharging + "/" + levelBattery + "%" + " - " + "usbCharge->" + usbCharge + "/" + "acCharge->" + acCharge + " - " + "voltage " + voltage, DIRECTORY + FILE);
+                        isC = isCharging;
+                    }
+                    if(levelB != levelBattery){
+                        Log.v(TAG,"getBatteryLife() internalFile.writeToAppend... levelBattery");
+                        internalFile.writeToAppend(fechahora.getFechahora() + ": " + "isCharging " + isCharging + "/" + levelBattery + "%" + " - " + "usbCharge->" + usbCharge + "/" + "acCharge->" + acCharge + " - " + "voltage " + voltage, DIRECTORY + FILE);
+                        levelB = levelBattery;
+                    }
+
+                    //Log.v(TAG,"second = " + fechahora.getFechahora().substring(17,19));
+                    if(Integer.valueOf(fechahora.getFechahora().substring(17,19)) == 0){
+                        internalFile.writeToAppend(fechahora.getFechahora() + ": " + "isCharging " + isCharging + "/" + levelBattery + "%" + " - " + "usbCharge->" + usbCharge + "/" + "acCharge->" + acCharge + " - " + "voltage " + voltage, DIRECTORY + FILE_FULL);
+                    }
+
+                    Thread.sleep(1000);
+                }catch (Exception e){
+                    Log.e(TAG,"Error General Hilo " + nombreHilo + ": " + e.getMessage());
+                    try{
+                        Thread.sleep(1000);
+                    }catch(Exception ex){
+
+                    }
+
+                }
+            }
+
+
+
+
+
+            /*
             try{
                 internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> Iniciado Log ---------------", DIRECTORY + FILE);
             }catch (Exception e){
@@ -206,6 +260,7 @@ public class BatteryLife {
 
                 }
             }
+            */
         }
 
         public void start(){

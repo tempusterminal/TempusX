@@ -224,7 +224,7 @@ public class QueriesPersonalTipolectoraBiometria {
 
         try{
             database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + " AND " + TablePersonalTipolectoraBiometria.IdTipoDetaBio + " = ? ", new String[] { String.valueOf(IndiceBiometria), String.valueOf(IdTipoDetaBio) });
-            Log.v("TEMPUS: ","Biometria Actualizada a Estado " + sincronizado + " (Biometria Enviada al Servidor)");
+            Log.v("TEMPUS: ","BTS-MAET Biometria Actualizada a Estado " + sincronizado + " (Biometria Enviada al Servidor)");
             return 1;
         }catch(Exception e){
             Log.d("Autorizaciones","QueriesPersonalTipolectoraBiometria.ActualizarBiometria Error al Actualizar Biometria: " + e.getMessage());
