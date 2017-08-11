@@ -1,12 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+
+    <color name="colorLinea">#ff6600</color>
+    <color name="colorFondoBarra">#ffe9d9</color>
+    <color name="colorFondoCuerpo">#ffffff</color>
+    <color name="colorTexto">#000000</color>
+    <color name="colorBlanco">#ffffff</color>
+    <color name="colorFondoMarcacion">#000000</color>
+
+    <!-- DIRESA
     <color name="colorLinea">#369</color>
     <color name="colorFondoBarra">#b7d3f1</color>
     <color name="colorFondoCuerpo">#ffffff</color>
     <color name="colorTexto">#000000</color>
     <color name="colorBlanco">#ffffff</color>
     <color name="colorFondoMarcacion">#000000</color>
+    -->
 
     <!--
     <color name="colorLinea">#0032a0</color>

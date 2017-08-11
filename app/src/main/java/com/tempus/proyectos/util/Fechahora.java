@@ -60,5 +60,10 @@ public class Fechahora {
         return fechahora;
     }
 
+    public String setFileName(String fechahora){
+        //yyyy-MM-dd HH:mm:ss -> yyyyMMddHHmmss
+        return fechahora.replace("-","").replace(":","").replace(" ","");
+    }
+
 
 }

@@ -19,6 +19,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
+import android.os.Looper;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -48,7 +49,9 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tempus.proyectos.bluetoothSerial.MainEthernet;
 import com.tempus.proyectos.data.DBManager;
+import com.tempus.proyectos.tcpSerial.UsrTCP;
 import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
@@ -64,7 +67,9 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
@@ -79,7 +84,7 @@ public class ActivityComunicacion extends Activity {
     private TelephonyManager telephonyManager;
     private SignalStrength      signalStrength;
 
-    String TAG;
+    String TAG = "TX-AC";
 
     /* --- Declaración de Objetos --- */
 
@@ -115,6 +120,7 @@ public class ActivityComunicacion extends Activity {
     EditText edtEthIp;
     EditText edtEthMascara;
     EditText edtEthPuerta;
+    EditText edtEthDns;
 
     EditText edtWlanIp;
     EditText edtWlanMascara;
@@ -131,16 +137,27 @@ public class ActivityComunicacion extends Activity {
     TabHost host;
 
     Button btnWifi;
+    Button btnEth;
 
     Switch swtStatusEth0;
+    Switch swtDhcpEth0;
     Switch swtStatusWlan0;
     Switch swtStatusPpp0;
+
 
     TextView txvWifiState;
 
     TextView txvStatusWlan0;
     TextView txvStatusPpp0;
     TextView txvStatusEth0;
+
+    /* --- MainEthernet --- */
+    MainEthernet mainEthernet = new MainEthernet();
+
+    /* --- UsrTCP --- */
+    UsrTCP usrTCP = new UsrTCP();
+
+
 
 
 
@@ -152,13 +169,13 @@ public class ActivityComunicacion extends Activity {
         int PERMISSION_READ_PHONE_STATE = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
 
         if (PERMISSION_READ_PHONE_STATE != PackageManager.PERMISSION_GRANTED) {
-            Log.d("GPRS DATA", "PERMISSION_READ_PHONE_STATE: FALSE");
+            Log.d(TAG,"GPRS DATA " + "PERMISSION_READ_PHONE_STATE: FALSE");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, REQUEST_READ_PHONE_STATE);
         } else {
-            Log.d("GPRS DATA", "PERMISSION_READ_PHONE_STATE: TRUE");
+            Log.d(TAG,"GPRS DATA " + "PERMISSION_READ_PHONE_STATE: TRUE");
         }
 
-        Log.wtf("POINT","PUNTO 1");
+        Log.wtf(TAG,"POINT " + "PUNTO 1");
 
         /* --- Inicialización de Objetos --- */
 
@@ -168,7 +185,7 @@ public class ActivityComunicacion extends Activity {
         /* --- Inicialización de Variables Globales --- */
 
         ActivityPrincipal.activityActive = "Comunicacion";
-        TAG = "ActivityComunicacion";
+        //TAG = "ActivityComunicacion";
 
         /* --- Inicialización de Variables Locales --- */
 
@@ -187,8 +204,10 @@ public class ActivityComunicacion extends Activity {
         edtEthIp = (EditText) findViewById(R.id.edtEthIp);
         edtEthMascara = (EditText) findViewById(R.id.edtEthMascara);
         edtEthPuerta = (EditText) findViewById(R.id.edtEthPuerta);
+        edtEthDns = (EditText) findViewById(R.id.edtEthDns);
 
         btnWifi = (Button) findViewById(R.id.btnWifi);
+        btnEth = (Button) findViewById(R.id.btnEth);
 
         lblDescDataState = (TextView) findViewById(R.id.lblDescDataState);
         lblDescSimState = (TextView) findViewById(R.id.lblDescSimState);
@@ -198,6 +217,7 @@ public class ActivityComunicacion extends Activity {
         lblDescSenial = (TextView) findViewById(R.id.lblDescSenial);
 
         swtStatusEth0 = (Switch) findViewById(R.id.swtStatusEth0);
+        swtDhcpEth0 = (Switch) findViewById(R.id.swtDhcpEth0);
         swtStatusWlan0 = (Switch) findViewById(R.id.swtStatusWlan0);
         swtStatusPpp0 = (Switch) findViewById(R.id.swtStatusPpp0);
 
@@ -205,7 +225,7 @@ public class ActivityComunicacion extends Activity {
         txvStatusPpp0 = (TextView) findViewById(R.id.txvStatusPpp0);
         txvStatusEth0 = (TextView) findViewById(R.id.txvStatusEth0);
 
-        Log.wtf("POINT","PUNTO 2");
+        Log.wtf(TAG,"POINT " + "PUNTO 2");
 
         if (isMobileDataEnabled()){
             swtStatusPpp0.setChecked(true);
@@ -213,7 +233,7 @@ public class ActivityComunicacion extends Activity {
             swtStatusPpp0.setChecked(false);
         }
 
-        Log.wtf("POINT","PUNTO 3");
+        Log.wtf(TAG,"POINT " + "PUNTO 3");
 
         host = (TabHost)findViewById(R.id.tabHostComm);
         host.setup();
@@ -261,7 +281,7 @@ public class ActivityComunicacion extends Activity {
             tv.setTextSize(15);
         }
 
-        Log.wtf("POINT","PUNTO 4");
+        Log.wtf(TAG,"POINT " + "PUNTO 4");
 
         txvWifiState = (TextView) findViewById(R.id.txvWifiState);
 
@@ -269,6 +289,36 @@ public class ActivityComunicacion extends Activity {
 
         ui.initScreen(this);
         disableDataWifi();
+
+
+
+        Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+
+        if(ActivityPrincipal.parametersEthernet.size() == 0){
+            getParametersEth();
+        }else if(ActivityPrincipal.parametersEthernet.size() == 4){
+            Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+
+            edtEthIp.setText(ActivityPrincipal.parametersEthernet.get(1));
+            edtEthMascara.setText(ActivityPrincipal.parametersEthernet.get(2));
+            edtEthPuerta.setText(ActivityPrincipal.parametersEthernet.get(3));
+
+            if(ActivityPrincipal.parametersEthernet.get(0).equalsIgnoreCase("DHCP")){
+                getParametersEth();
+                //swtDhcpEth0.setChecked(true);
+                //edtEthIp.setEnabled(false);
+                //edtEthMascara.setEnabled(false);
+                //edtEthPuerta.setEnabled(false);
+            }else{
+                swtDhcpEth0.setChecked(false);
+                edtEthIp.setEnabled(true);
+                edtEthMascara.setEnabled(true);
+                edtEthPuerta.setEnabled(true);
+            }
+        }
+
+
+
 
 
         telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -281,7 +331,7 @@ public class ActivityComunicacion extends Activity {
             public void onSignalStrengthsChanged(SignalStrength sStrength) {
                 signalStrength = sStrength;
 
-                Log.e("mListener INICIO", String.valueOf(mSignalStrength));
+                Log.e(TAG,"mListener INICIO " + String.valueOf(mSignalStrength));
 
                 //Log.e("SIGNAL 1", String.valueOf(signalStrength.getCdmaDbm()));
                 //Log.e("SIGNAL 2", String.valueOf(signalStrength.getCdmaEcio()));
@@ -293,13 +343,13 @@ public class ActivityComunicacion extends Activity {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     mSignalStrength = signalStrength.getLevel();
-                    Log.e("SIGNAL getLevel", String.valueOf(mSignalStrength));
+                    Log.e(TAG,"SIGNAL getLevel " + String.valueOf(mSignalStrength));
                 }
 
                 int signalStrengthDbm = getSignalStrengthByName(signalStrength, "getDbm");
                 int signalStrengthAsuLevel = getSignalStrengthByName(signalStrength, "getAsuLevel");
-                Log.e("SIGNAL getDbm", String.valueOf(signalStrengthDbm));
-                Log.e("SIGNAL getAsuLevel", String.valueOf(signalStrengthAsuLevel));
+                Log.e(TAG,"SIGNAL getDbm " + String.valueOf(signalStrengthDbm));
+                Log.e(TAG,"SIGNAL getAsuLevel " + String.valueOf(signalStrengthAsuLevel));
 
                 loadDataSIM();
                 if (!lblDescSimState.getText().toString().equalsIgnoreCase("AUSENTE")) {
@@ -323,11 +373,11 @@ public class ActivityComunicacion extends Activity {
         };
 
 
-        Log.wtf("POINT","PUNTO 5");
+        Log.wtf(TAG,"POINT " + "PUNTO 5");
         try {
             telephonyManager.listen(mListener, PhoneStateListener.LISTEN_SIGNAL_STRENGTHS);
         } catch (Exception e) {
-            Log.e("registerListener", e.getMessage());
+            Log.e(TAG,"registerListener " + e.getMessage());
         }
 
 
@@ -354,16 +404,233 @@ public class ActivityComunicacion extends Activity {
             }
         });
 
+        btnEth.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String msg = "";
+                String parameter = "";
+
+                Thread threadEthernetcfg = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.v(TAG,"threadEthernetcfg inicio ");
+                            //Toast.makeText(ActivityPrincipal.context,"Configurando Ethernet",Toast.LENGTH_LONG).show();
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    swtDhcpEth0.setEnabled(false);
+                                    edtEthIp.setEnabled(false);
+                                    edtEthMascara.setEnabled(false);
+                                    edtEthPuerta.setEnabled(false);
+                                    edtEthDns.setEnabled(false);
+                                    btnEth.setEnabled(false);
+                                    btnEth.setText("Configurando");
+                                }
+                            });
+
+                            Log.v(TAG,"threadEthernetcfg enableSetEthernet " + MainEthernet.enableSetEthernet);
+                            while(!MainEthernet.enableSetEthernet){
+                                Log.v(TAG,"threadEthernetcfg enableSetEthernet while " + MainEthernet.enableSetEthernet);
+                                Thread.sleep(250);
+                            }
+                            Thread.sleep(1000);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnEth.setText(".");
+                                }
+                            });
+
+                            while(MainEthernet.atCommandMode){
+                                Log.v(TAG,"threadEthernetcfg atCommandMode while " + MainEthernet.atCommandMode);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(btnEth.getText().length() == 3){
+                                            btnEth.setText(".");
+                                        }else{
+                                            btnEth.setText(btnEth.getText() + ".");
+                                        }
+                                    }
+                                });
+                                Thread.sleep(1000);
+                            }
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    swtDhcpEth0.setEnabled(true);
+                                    edtEthIp.setEnabled(true);
+                                    edtEthMascara.setEnabled(true);
+                                    edtEthPuerta.setEnabled(true);
+                                    edtEthDns.setEnabled(true);
+                                    btnEth.setEnabled(true);
+                                    btnEth.setText("Configurar");
+                                }
+                            });
+
+
+                            Log.v(TAG,"hexStringcfg " + MainEthernet.hexStringcfg);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try{
+                                        String[] parametersArray = usrTCP.getParameters(MainEthernet.hexStringcfg);
+                                        Log.v(TAG,"parametersArray[" + parametersArray.length + "] = " + parametersArray[0] + " - " + parametersArray[1] + " - " +parametersArray[2] + " - " +parametersArray[3]);
+                                        if(parametersArray.length>0){
+                                            Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+                                            ActivityPrincipal.parametersEthernet.clear();
+                                            Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+                                            ActivityPrincipal.parametersEthernet.add(parametersArray[0]);
+                                            ActivityPrincipal.parametersEthernet.add(parametersArray[1]);
+                                            ActivityPrincipal.parametersEthernet.add(parametersArray[2]);
+                                            ActivityPrincipal.parametersEthernet.add(parametersArray[3]);
+                                            Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+
+                                            edtEthIp.setText(ActivityPrincipal.parametersEthernet.get(1));
+                                            edtEthMascara.setText(ActivityPrincipal.parametersEthernet.get(2));
+                                            edtEthPuerta.setText(ActivityPrincipal.parametersEthernet.get(3));
+
+                                        }
+                                    }catch (Exception e){
+                                        Log.e(TAG,"parametersArray " + e.getMessage());
+                                    }
+
+                                    if(ActivityPrincipal.parametersEthernet.get(0).equalsIgnoreCase("DHCP")){
+                                        swtDhcpEth0.setChecked(true);
+                                        edtEthIp.setEnabled(false);
+                                        edtEthMascara.setEnabled(false);
+                                        edtEthPuerta.setEnabled(false);
+                                    }else{
+                                        swtDhcpEth0.setChecked(false);
+                                        edtEthIp.setEnabled(true);
+                                        edtEthMascara.setEnabled(true);
+                                        edtEthPuerta.setEnabled(true);
+                                    }
+
+                                    edtEthDns.setEnabled(true);
+                                    btnEth.setEnabled(true);
+                                    btnEth.setText("Configurar");
+                                }
+                            });
+
+                            //Toast.makeText(ActivityPrincipal.context,"Ethernet Configurado",Toast.LENGTH_LONG).show();
+                            Log.v(TAG,"threadEthernetcfg fin ");
+                        } catch (Exception e) {
+                            Log.e(TAG,"threadEthernetcfg " + e.getMessage());
+                        }
+
+                    }
+                });
+
+
+                //mainEthernet.startEthernetATCommand("AT+WANN","=STATIC,192.168.0.78,255.255.255.0,192.168.0.2");
+                if(swtDhcpEth0.isChecked()){
+                    Log.v(TAG,"Parametros Validos (DHCP)");
+                    parameter = "=DHCP";
+                    mainEthernet.startEthernetATCommand("AT+WANN",parameter,true,true,true);
+                    threadEthernetcfg.start();
+                }else{
+                    Log.v(TAG,"edtEthIp (validando) " + edtEthIp.getText().toString());
+                    msg = validateParameters("IP", edtEthIp.getText().toString());
+                    Log.v(TAG,"msg " + msg);
+                    if(msg.length()==0){
+                        Log.v(TAG,"edtEthMascara (validando) " + edtEthMascara.getText().toString());
+                        msg = validateParameters("Máscara",edtEthMascara.getText().toString());
+                        Log.v(TAG,"msg " + msg);
+                        if(msg.length()==0){
+                            Log.v(TAG,"edtEthPuerta (validando) " + edtEthPuerta.getText().toString());
+                            msg = validateParameters("P. Enlace",edtEthPuerta.getText().toString());
+                            Log.v(TAG,"msg " + msg);
+                            if(msg.length()==0){
+                                Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
+                            }else{
+                                Log.v(TAG,"Parametros Validos (STATIC)");
+                                parameter = "=STATIC" + "," + edtEthIp.getText().toString() + "," + edtEthMascara.getText().toString() + "," + edtEthPuerta.getText().toString();
+                                Log.v(TAG,"parameter " + parameter);
+                                mainEthernet.startEthernetATCommand("AT+WANN",parameter,true,true,true);
+                                threadEthernetcfg.start();
+                            }
+                        }else{
+                            Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
+                        }
+                    }else{
+                        Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+            }
+        });
+
         swtStatusEth0.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+                Log.v(TAG,"swtStatusEth0 onCheckedChanged " + isChecked);
+                try{
                     DBManager db = new DBManager(ActivityPrincipal.context);
-                    db.execSQL("UPDATE TERMINAL_CONFIGURACION SET PARAMETRO = 'Ethernet,1'");
-                } else {
-                    DBManager db = new DBManager(ActivityPrincipal.context);
-                    db.execSQL("UPDATE TERMINAL_CONFIGURACION SET PARAMETRO = 'Ethernet,0'");
+                    db.open();
+                    if (isChecked) {
+                        db.execSQL("UPDATE TERMINAL_CONFIGURACION SET PARAMETRO = 'Ethernet,1'");
+                        Log.v(TAG,"isChecked " + "Ethernet,1");
+                        edtEthIp.setEnabled(true);
+                        edtEthMascara.setEnabled(true);
+                        edtEthPuerta.setEnabled(true);
+                        edtEthDns.setEnabled(true);
+
+                    } else {
+                        db.execSQL("UPDATE TERMINAL_CONFIGURACION SET PARAMETRO = 'Ethernet,0'");
+                        Log.v(TAG,"isChecked " + "Ethernet,0");
+                        edtEthIp.setEnabled(false);
+                        edtEthMascara.setEnabled(false);
+                        edtEthPuerta.setEnabled(false);
+                        edtEthDns.setEnabled(false);
+
+                    }
+                    db.close();
+                }catch(Exception e){
+                    Log.e(TAG,"swtStatusEth0 onCheckedChanged " + e.getMessage());
                 }
+
+            }
+        });
+
+        swtDhcpEth0.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.v(TAG,"swtDhcpEth0 onCheckedChanged " + isChecked);
+                try{
+                    if (isChecked) {
+                        //edtEthIp.setText("");
+                        //edtEthMascara.setText("");
+                        //edtEthPuerta.setText("");
+                        //edtEthDns.setText("");
+
+                        edtEthIp.setEnabled(false);
+                        edtEthMascara.setEnabled(false);
+                        edtEthPuerta.setEnabled(false);
+                        edtEthDns.setEnabled(false);
+                    } else {
+                        if(ActivityPrincipal.parametersEthernet.size() == 4){
+                            Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+                            edtEthIp.setText(ActivityPrincipal.parametersEthernet.get(1));
+                            edtEthMascara.setText(ActivityPrincipal.parametersEthernet.get(2));
+                            edtEthPuerta.setText(ActivityPrincipal.parametersEthernet.get(3));
+                        }
+                        edtEthIp.setEnabled(true);
+                        edtEthMascara.setEnabled(true);
+                        edtEthPuerta.setEnabled(true);
+                        edtEthDns.setEnabled(true);
+                    }
+
+                }catch(Exception e){
+                    Log.e(TAG,"swtDhcpEth0 onCheckedChanged " + e.getMessage());
+                }
+
             }
         });
 
@@ -429,23 +696,29 @@ public class ActivityComunicacion extends Activity {
         swtStatusPpp0.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    if (connectivity.existSIM(ActivityComunicacion.this)){
-                        connectivity.setMobileDataState(ActivityComunicacion.this,true);
-                    } else {
-                        ui.showAlert(ActivityComunicacion.this,"warning","No hay SIM insertada.");
-                        swtStatusPpp0.setChecked(false);
-                    }
+                Log.v(TAG,"swtStatusPpp0 onCheckedChanged " + isChecked);
+                try{
+                    if (isChecked) {
+                        if (connectivity.existSIM(ActivityComunicacion.this)){
+                            connectivity.setMobileDataState(ActivityComunicacion.this,true);
+                        } else {
+                            ui.showAlert(ActivityComunicacion.this,"warning","No hay SIM insertada.");
+                            swtStatusPpp0.setChecked(false);
+                        }
 
-                } else {
-                    if (connectivity.existSIM(ActivityComunicacion.this)){
-                        connectivity.setMobileDataState(ActivityComunicacion.this,false);
                     } else {
-                        ui.showAlert(ActivityComunicacion.this,"warning","No hay SIM insertada.");
-                        swtStatusPpp0.setChecked(false);
-                    }
+                        if (connectivity.existSIM(ActivityComunicacion.this)){
+                            connectivity.setMobileDataState(ActivityComunicacion.this,false);
+                        } else {
+                            ui.showAlert(ActivityComunicacion.this,"warning","No hay SIM insertada.");
+                            swtStatusPpp0.setChecked(false);
+                        }
 
+                    }
+                }catch(Exception e){
+                    Log.e(TAG,"swtStatusPpp0 onCheckedChanged " + e.getMessage());
                 }
+
             }
         });
 
@@ -459,12 +732,7 @@ public class ActivityComunicacion extends Activity {
 
         t.start();
 
-        Log.wtf("POINT","PUNTO 8");
-
-        edtEthIp.setEnabled(false);
-        edtEthMascara.setEnabled(false);
-        edtEthPuerta.setEnabled(false);
-
+        Log.wtf(TAG,"POINT PUNTO 8");
 
         Shell sh = new Shell();
         String params[] = {"su","-c","busybox ifconfig"};
@@ -479,11 +747,11 @@ public class ActivityComunicacion extends Activity {
         Log.d(TAG, ">>" + macWlan);
         Log.d(TAG, ">>" + macEth);
 
-        Log.wtf("POINT","PUNTO 9");
+        Log.wtf(TAG,"POINT PUNTO 9");
 
         inicializarSwitches();
 
-        Log.wtf("POINT","PUNTO 10");
+        Log.wtf(TAG,"POINT PUNTO 10");
     }
 
     @Override
@@ -641,7 +909,7 @@ public class ActivityComunicacion extends Activity {
             lblDescOperatorSim.setText(data[13]);
             lblDescSenial.setText(data[0]);
         } catch(Exception e) {
-            Log.e("loadDataSIM",e.getMessage());
+            Log.e(TAG,"loadDataSIM " + e.getMessage());
         }
     }
 
@@ -730,6 +998,160 @@ public class ActivityComunicacion extends Activity {
         }
     }
 
+    public String validateParameters(String name, String parameteEth) {
+        Log.v(TAG,"parameteEth " + parameteEth);
+        String[] octets = parameteEth.split("\\.");
+        Log.v(TAG,"validateParameters octets " + octets.length + " - " + octets.toString());
+
+        if(octets.length != 4) {
+            return name + " (Octetos incompletos)";
+        }else{
+            for(String octet : octets) {
+                try{
+                    int val = Integer.parseInt(octet);
+                    if(val > 255 || val < 0) {
+                        return name + " (Octeto fuera de rango)";
+                    }
+                }catch (Exception e){
+                    Log.e(TAG,"Octeto inválido " + e.getMessage());
+                    return name + " (Octeto inválido)";
+                }
+            }
+        }
+
+        return "";
+
+    }
+
+
+    public void getParametersEth(){
+
+        mainEthernet.startEthernetATCommand("AT+WANN","",false,true,true);
+
+        Thread threadEthernetcfg = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(TAG,"threadEthernetcfg runOnUiThread inicio ");
+                try {
+                    Log.v(TAG,"threadEthernetcfg inicio ");
+                    //Toast.makeText(ActivityPrincipal.context,"Configurando Ethernet",Toast.LENGTH_LONG).show();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swtDhcpEth0.setEnabled(false);
+                            edtEthIp.setEnabled(false);
+                            edtEthMascara.setEnabled(false);
+                            edtEthPuerta.setEnabled(false);
+                            edtEthDns.setEnabled(false);
+                            btnEth.setEnabled(false);
+                            btnEth.setText("Actualizando");
+                        }
+                    });
+
+                    Log.v(TAG,"threadEthernetcfg enableSetEthernet " + MainEthernet.enableSetEthernet);
+                    while(!MainEthernet.enableSetEthernet){
+                        Log.v(TAG,"threadEthernetcfg enableSetEthernet while " + MainEthernet.enableSetEthernet);
+                        Thread.sleep(250);
+                    }
+                    Thread.sleep(1000);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            btnEth.setText(".");
+                        }
+                    });
+
+                    while(MainEthernet.atCommandMode){
+                        Log.v(TAG,"threadEthernetcfg atCommandMode while " + MainEthernet.atCommandMode);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(btnEth.getText().length() == 3){
+                                    btnEth.setText(".");
+                                }else{
+                                    btnEth.setText(btnEth.getText() + ".");
+                                }
+                            }
+                        });
+                        Thread.sleep(1000);
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            swtDhcpEth0.setEnabled(true);
+                            edtEthIp.setEnabled(true);
+                            edtEthMascara.setEnabled(true);
+                            edtEthPuerta.setEnabled(true);
+                            edtEthDns.setEnabled(true);
+                            btnEth.setEnabled(true);
+                            btnEth.setText("Configurar");
+                        }
+                    });
+
+
+                    //String[] parametersArray = usrTCP.getParameters(MainEthernet.hexStringcfg);
+                    //Log.v(TAG,"parametersArray[" + parametersArray.length + "] = " + parametersArray[0] + " - " + parametersArray[1] + " - " +parametersArray[2] + " - " +parametersArray[3]);
+
+                    Log.v(TAG,"hexStringcfg " + MainEthernet.hexStringcfg);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                String[] parametersArray = usrTCP.getParameters(MainEthernet.hexStringcfg);
+                                //Log.v(TAG,"parametersArray[" + parametersArray.length + "] = " + parametersArray[0] + " - " + parametersArray[1] + " - " +parametersArray[2] + " - " +parametersArray[3]);
+                                if(parametersArray.length>0){
+                                    //Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+                                    ActivityPrincipal.parametersEthernet.clear();
+                                    //Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+
+                                    ActivityPrincipal.parametersEthernet.add(parametersArray[0]);
+                                    ActivityPrincipal.parametersEthernet.add(parametersArray[1]);
+                                    ActivityPrincipal.parametersEthernet.add(parametersArray[2]);
+                                    ActivityPrincipal.parametersEthernet.add(parametersArray[3]);
+                                    Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+
+                                    edtEthIp.setText(ActivityPrincipal.parametersEthernet.get(1));
+                                    edtEthMascara.setText(ActivityPrincipal.parametersEthernet.get(2));
+                                    edtEthPuerta.setText(ActivityPrincipal.parametersEthernet.get(3));
+
+                                }
+                            }catch (Exception e){
+                                Log.e(TAG,"parametersArray " + e.getMessage());
+                            }
+
+                            if(ActivityPrincipal.parametersEthernet.get(0).equalsIgnoreCase("DHCP")){
+                                swtDhcpEth0.setChecked(true);
+                                edtEthIp.setEnabled(false);
+                                edtEthMascara.setEnabled(false);
+                                edtEthPuerta.setEnabled(false);
+                            }else{
+                                swtDhcpEth0.setChecked(false);
+                                edtEthIp.setEnabled(true);
+                                edtEthMascara.setEnabled(true);
+                                edtEthPuerta.setEnabled(true);
+                            }
+
+                            edtEthDns.setEnabled(true);
+                            btnEth.setEnabled(true);
+                            btnEth.setText("Configurar");
+                        }
+                    });
+
+                    //Toast.makeText(ActivityPrincipal.context,"Ethernet Configurado",Toast.LENGTH_LONG).show();
+                    Log.v(TAG,"threadEthernetcfg fin ");
+                } catch (Exception e) {
+                    Log.e(TAG,"threadEthernetcfg " + e.getMessage());
+                }
+                Log.v(TAG,"threadEthernetcfg runOnUiThread fin ");
+            }
+        });
+
+        threadEthernetcfg.start();
+
+    }
 
 
 

@@ -338,6 +338,8 @@
     <dimen name="acComunicacion_swtStatus_marginLeft">475dp</dimen>
 
     <!-- Ethernet -->
+    <dimen name="acComunicacion_swtDhcp_marginTop">30dp</dimen>
+
     <dimen name="acComunicacion_lblEth0_width">140dp</dimen>
     <dimen name="acComunicacion_lblEth0_height">25dp</dimen>
 
@@ -350,6 +352,7 @@
     <dimen name="acComunicacion_Eth0_marginTop1">60dp</dimen>
     <dimen name="acComunicacion_Eth0_marginTop2">100dp</dimen>
     <dimen name="acComunicacion_Eth0_marginTop3">140dp</dimen>
+    <dimen name="acComunicacion_Eth0_marginTop4">180dp</dimen>
 
     <!-- Ppp -->
     <dimen name="acComunicacion_lblGPRS_width">150dp</dimen>
@@ -565,6 +568,12 @@
     <dimen name="acSincronizacion_btnTest_width">150dp</dimen>
     <dimen name="acSincronizacion_btnTest_height">40dp</dimen>
     <dimen name="acSincronizacion_btnTest_marginTop">150dp</dimen>
+
+    <!-- USB -->
+
+    <dimen name="acSincronizacion_btnUsbMarcas_width">250dp</dimen>
+    <dimen name="acSincronizacion_btnUsbMarcas_height">40dp</dimen>
+    <dimen name="acSincronizacion_btnUsbMarcas_marginTop">20dp</dimen>
 
     <!-- ==================================================================== -->
 

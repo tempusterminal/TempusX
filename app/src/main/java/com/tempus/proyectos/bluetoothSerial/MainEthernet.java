@@ -11,6 +11,7 @@ import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.process.ProcessSync;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
+import com.tempus.proyectos.tempusx.ActivityComunicacion;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.Utilities;
@@ -19,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -56,13 +58,20 @@ public class MainEthernet {
     private int ilfn;
     private int approximationToFix = 0;
     private int limitToFix = 30;
+    public static boolean atCommandMode = true;
+    public static boolean enableSetEthernet = false;
 
     private int lhs = 0;
+
+    public static String hexStringcfg = "";
 
 
     private QueriesMarcaciones queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
     private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityPrincipal.context);
 
+    EthernetReading ethernetReading;
+    EthernetExecuting ethernetExecuting;
+    EthernetFixing ethernetFixing;
 
     public void writeData(OutputStream out, String data) {
         Log.v(TAG, "Write Activado");
@@ -79,123 +88,138 @@ public class MainEthernet {
     public String prepareHexString(Bluetooth btSocketEthernet){
 
         try{
-            //Log.v(TAG,"Esperando btSocketEthernet.getInputStream().read(rawBytes)");
+            Log.v(TAG,"Esperando btSocketEthernet.getInputStream().read(rawBytes)");
             lenghtrawBytes = btSocketEthernet.getInputStream().read(rawBytes);
+            Log.v(TAG,"Recibiendo btSocketEthernet.getInputStream().read(rawBytes)");
             //Log.v(TAG,"lenght -> " + lenghtrawBytes );
             String hs = "";
             hs = new String(util.hexStringToByteArray(util.byteArrayToHexString(rawBytes).substring(0,lenghtrawBytes*2)), StandardCharsets.UTF_8);
-            lhs += hs.length();
-            Log.v(TAG,"LLEGO ASCCI (" + hs.length() + "=>" + lhs + ") -> " + hs );
-            approximationToFix = 0;
-            hexString += hs;
-            //Log.v(TAG,"LLEGO ASCCI+ -> " + hexString );
-            //Log.v(TAG,"hexString.length() -> " + hexString.length() );
-            //validateHexString(hexString);
 
-            //Log.v(TAG,"------------------------- 1");
-            String vHexString = findHexString(hexString,"{","}");
-            if(vHexString.length() == 0){
-                vHexString = findHexString(hexString,"[","]");
-            }
-            //Log.v(TAG,"------------------------- 2");
 
-            if(vHexString.length()>0){
-                //Log.v(TAG,"------------------------- 3");
-                Log.v(TAG,"validateHexString: " + vHexString);
-                vHexString = validateJson(vHexString);
-                //Log.v(TAG,"------------------------- 4");
-                Log.v(TAG,"validateJson: " + vHexString);
+            if(atCommandMode){
+
+                //Log.v(TAG,"LLEGO ASCCI (config) (" + hs.length() + ") -> " + hs );
+                approximationToFix = 0;
+                hexStringcfg += hs;
+                //Log.v(TAG,"LLEGO ASCCI (config) (" + hexStringcfg.length() + ") -> " + hexStringcfg);
+                hexStringcfg = hexStringcfg.replaceAll("\n","");
+                Log.v(TAG,"LLEGO ASCCI (config) (" + hexStringcfg.length() + ") -> " + hexStringcfg);
+                //String vHexStringcfg = findHexString(hexStringcfg,"+OK=","+OK");
+                //Log.v(TAG,"findHexString: " + vHexStringcfg);
+
+            }else{
+                lhs += hs.length();
+                Log.v(TAG,"LLEGO ASCCI (" + hs.length() + "=>" + lhs + ") -> " + hs );
+                approximationToFix = 0;
+                hexString += hs;
+                //Log.v(TAG,"LLEGO ASCCI+ -> " + hexString );
+                //Log.v(TAG,"hexString.length() -> " + hexString.length() );
+                //validateHexString(hexString);
+
+                //Log.v(TAG,"------------------------- 1");
+                String vHexString = findHexString(hexString,"{","}");
+                if(vHexString.length() == 0){
+                    vHexString = findHexString(hexString,"[","]");
+                }
+                //Log.v(TAG,"------------------------- 2");
 
                 if(vHexString.length()>0){
-                    //Log.v(TAG,"------------------------- 5");
+                    //Log.v(TAG,"------------------------- 3");
+                    Log.v(TAG,"findHexString: " + vHexString);
+                    vHexString = validateJson(vHexString);
+                    //Log.v(TAG,"------------------------- 4");
+                    Log.v(TAG,"validateJson: " + vHexString);
 
-                    if(syncData == 1){
-                        if(keyvalueJsonObject(vHexString,"CADENA",0).length() > 30){
-                            Log.v(TAG,"jsonObject: " + keyvalueJsonObject(vHexString,"CADENA",0).substring(0,20) + " ... " + keyvalueJsonObject(vHexString,"CADENA",0).substring(keyvalueJsonObject(vHexString,"CADENA",0).length()-20,keyvalueJsonObject(vHexString,"CADENA",0).length()));
-                        }else{
-                            Log.v(TAG,"jsonObject: " + keyvalueJsonObject(vHexString,"CADENA",0));
-                        }
-                        // Concatenar los value con key CADENA enviadas en las llamada
-                        jsonItems += keyvalueJsonObject(vHexString,"CADENA",0);
-                        Log.v(TAG,"jsonItems+= " + jsonItems.toString().substring(0,20) + " ... " + jsonItems.substring(jsonItems.length()-20,jsonItems.length()));
-                        //jsonItems = validateJson(jsonItems);
+                    if(vHexString.length()>0){
+                        //Log.v(TAG,"------------------------- 5");
 
-                        Log.v(TAG,"prepareHexString (ilfn+1) vs loopfn = " + (ilfn+1) + "/" + loopfn);
-                        if((ilfn+1) == loopfn){
-                            try{
-                                jsonArray = new JSONArray(jsonItems);
-                            }catch(Exception e){
-                                Log.e(TAG,"prepareHexString -> jsonArray = new JSONArray(jsonItems) length(" + jsonArray.length() + ") " + e.getMessage());
-                                approximationToFix = 0;
-                                hearing = true;
+                        if(syncData == 1){
+                            if(keyvalueJsonObject(vHexString,"CADENA",0).length() > 30){
+                                Log.v(TAG,"jsonObject: " + keyvalueJsonObject(vHexString,"CADENA",0).substring(0,20) + " ... " + keyvalueJsonObject(vHexString,"CADENA",0).substring(keyvalueJsonObject(vHexString,"CADENA",0).length()-20,keyvalueJsonObject(vHexString,"CADENA",0).length()));
+                            }else{
+                                Log.v(TAG,"jsonObject: " + keyvalueJsonObject(vHexString,"CADENA",0));
                             }
+                            // Concatenar los value con key CADENA enviadas en las llamada
+                            jsonItems += keyvalueJsonObject(vHexString,"CADENA",0);
+                            Log.v(TAG,"jsonItems+= " + jsonItems.toString().substring(0,20) + " ... " + jsonItems.substring(jsonItems.length()-20,jsonItems.length()));
+                            //jsonItems = validateJson(jsonItems);
 
-                            if(jsonArray.length()>0){
-                                Log.v(TAG,"jsonArray::: " + jsonArray.toString().substring(0,20) + " ... " + jsonArray.toString().substring(jsonArray.toString().length()-20,jsonArray.toString().length()));
-                                //Log.v(TAG,"jsonArray::: " + jsonArray.toString().substring(0,20) + " ... " );
-                                String[] allcolumnsarray = (llamadasList.get(illamadasList).getPrimarykey() + "," + llamadasList.get(illamadasList).getColumns()).split(",");
-                                jsonArrayToArrayList(jsonArray.toString(),allcolumnsarray);
-                                Log.v(TAG,"aavaluesiu: " + aavaluesiu.toString());
-                                jsonArray = new JSONArray();
-                                Log.v(TAG,"jsonArray new JSONArray(): " + jsonArray.toString());
-
-                                if(aavaluesiu.size()>0){
-                                    Log.v(TAG,"insertUpdateData inicio: " + aavaluesiu.toString());
-                                    Log.v(TAG,"insertUpdateData llamadasList: " + llamadasList.get(illamadasList).getTableName() + " - " + llamadasList.get(illamadasList).getPrimarykey() + " - " + llamadasList.get(illamadasList).getColumns());
-                                    if((aavaluesiu.size()/40) > limitToFix){
-                                        limitToFix = aavaluesiu.size() / 20;
-                                    }
-                                    processSync.insertUpdateData(aavaluesiu,llamadasList.get(illamadasList).getTableName(),llamadasList.get(illamadasList).getPrimarykey(),llamadasList.get(illamadasList).getColumns(),ActivityPrincipal.context);
-                                    limitToFix = 30;
-                                    Log.v(TAG,"insertUpdateData fin: " + aavaluesiu.toString());
-
-                                    aavaluesiu.clear();
-                                    Log.v(TAG,"aavaluesiu.clear(): " + aavaluesiu.toString());
+                            Log.v(TAG,"prepareHexString (ilfn+1) vs loopfn = " + (ilfn+1) + "/" + loopfn);
+                            if((ilfn+1) == loopfn){
+                                try{
+                                    jsonArray = new JSONArray(jsonItems);
+                                }catch(Exception e){
+                                    Log.e(TAG,"prepareHexString -> jsonArray = new JSONArray(jsonItems) length(" + jsonArray.length() + ") " + e.getMessage());
                                     approximationToFix = 0;
                                     hearing = true;
                                 }
+
+                                if(jsonArray.length()>0){
+                                    Log.v(TAG,"jsonArray::: " + jsonArray.toString().substring(0,20) + " ... " + jsonArray.toString().substring(jsonArray.toString().length()-20,jsonArray.toString().length()));
+                                    //Log.v(TAG,"jsonArray::: " + jsonArray.toString().substring(0,20) + " ... " );
+                                    String[] allcolumnsarray = (llamadasList.get(illamadasList).getPrimarykey() + "," + llamadasList.get(illamadasList).getColumns()).split(",");
+                                    jsonArrayToArrayList(jsonArray.toString(),allcolumnsarray);
+                                    Log.v(TAG,"aavaluesiu: " + aavaluesiu.toString());
+                                    jsonArray = new JSONArray();
+                                    Log.v(TAG,"jsonArray new JSONArray(): " + jsonArray.toString());
+
+                                    if(aavaluesiu.size()>0){
+                                        Log.v(TAG,"insertUpdateData inicio: " + aavaluesiu.toString());
+                                        Log.v(TAG,"insertUpdateData llamadasList: " + llamadasList.get(illamadasList).getTableName() + " - " + llamadasList.get(illamadasList).getPrimarykey() + " - " + llamadasList.get(illamadasList).getColumns());
+                                        if((aavaluesiu.size()/40) > limitToFix){
+                                            limitToFix = aavaluesiu.size() / 20;
+                                        }
+                                        processSync.insertUpdateData(aavaluesiu,llamadasList.get(illamadasList).getTableName(),llamadasList.get(illamadasList).getPrimarykey(),llamadasList.get(illamadasList).getColumns(),ActivityPrincipal.context);
+                                        limitToFix = 30;
+                                        Log.v(TAG,"insertUpdateData fin: " + aavaluesiu.toString());
+
+                                        aavaluesiu.clear();
+                                        Log.v(TAG,"aavaluesiu.clear(): " + aavaluesiu.toString());
+                                        approximationToFix = 0;
+                                        hearing = true;
+                                    }
+                                }
+                            }else{
+                                approximationToFix = 0;
+                                hearing = true;
                             }
-                        }else{
+                        }else if(syncData == 0){
+                            // antes jsonObject = new JSONObject(vHexString);
+                            // modificado para envio de marcas y biometrias
+                            try{
+                                jsonObject = new JSONObject(vHexString);
+                            }catch(Exception e){
+                                Log.e(TAG,"prepareHexString jsonObject " + e.getMessage());
+                                try{
+                                    jsonArray = new JSONArray(vHexString);
+                                }catch(Exception ex){
+                                    Log.e(TAG,"prepareHexString jsonObject " + e.getMessage());
+                                }
+                            }
+
+                            //Log.v(TAG,"jsonObject -> " + jsonObject.toString() );
                             approximationToFix = 0;
                             hearing = true;
-                        }
-                    }else if(syncData == 0){
-                        // antes jsonObject = new JSONObject(vHexString);
-                        // modificado para envio de marcas y biometrias
-                        try{
-                            jsonObject = new JSONObject(vHexString);
-                        }catch(Exception e){
-                            Log.e(TAG,"prepareHexString jsonObject " + e.getMessage());
-                            try{
-                                jsonArray = new JSONArray(vHexString);
-                            }catch(Exception ex){
-                                Log.e(TAG,"prepareHexString jsonObject " + e.getMessage());
-                            }
+                            //if(jsonObject.length()>0){
+                            //    hearing = true;
+                            //}
+
                         }
 
-                        //Log.v(TAG,"jsonObject -> " + jsonObject.toString() );
-                        approximationToFix = 0;
-                        hearing = true;
-                        //if(jsonObject.length()>0){
-                        //    hearing = true;
-                        //}
 
                     }
 
 
-                }
+                    //jsonArray = new JSONArray(vHexString);
+                    //Log.v(TAG,"jsonArray.length: " + jsonArray.length());
+                    //Log.v(TAG,"jsonArray: " + jsonArray.toString());
 
+                    //for(int i=0; i<jsonArray.length(); i++){
+                    //    Log.v(TAG,"jsonArray(" + i + "): " + jsonArray.get(i).toString());
+                    //    Log.v(TAG,"jsonObject: " + jsonArray.getJSONObject(i).getString("APELLIDO_PATERNO") + " - " + jsonArray.getJSONObject(i).getString("APELLIDO_MATERNO") + " - " + jsonArray.getJSONObject(i).getString("FECHA_DE_NACIMIENTO"));
+                    //}
 
-                //jsonArray = new JSONArray(vHexString);
-                //Log.v(TAG,"jsonArray.length: " + jsonArray.length());
-                //Log.v(TAG,"jsonArray: " + jsonArray.toString());
-
-                //for(int i=0; i<jsonArray.length(); i++){
-                //    Log.v(TAG,"jsonArray(" + i + "): " + jsonArray.get(i).toString());
-                //    Log.v(TAG,"jsonObject: " + jsonArray.getJSONObject(i).getString("APELLIDO_PATERNO") + " - " + jsonArray.getJSONObject(i).getString("APELLIDO_MATERNO") + " - " + jsonArray.getJSONObject(i).getString("FECHA_DE_NACIMIENTO"));
-                //}
-
-                //keyJsonObject(vHexString,"CADENA");
+                    //keyJsonObject(vHexString,"CADENA");
 
 
 
@@ -206,9 +230,10 @@ public class MainEthernet {
                 }
                 */
 
-            }else{
-                //approximationToFix = 0;
-                //hearing = true;
+                }else{
+                    //approximationToFix = 0;
+                    //hearing = true;
+                }
             }
 
         }catch(Exception e){
@@ -224,6 +249,10 @@ public class MainEthernet {
                 Log.e(TAG,"Socket opening - null object...");
                 ActivityPrincipal.STATUS_ETHERNET = false;
                 ActivityPrincipal.STATUS_ETHERNET = ActivityPrincipal.btSocketEthernet.ConnectBT();
+            }else{
+                Log.e(TAG,"Another troubles with bt ethernet");
+                //ActivityPrincipal.STATUS_ETHERNET = false;
+                //ActivityPrincipal.STATUS_ETHERNET = ActivityPrincipal.btSocketEthernet.ConnectBT();
             }
             try{
                 Thread.sleep(1000);
@@ -238,53 +267,57 @@ public class MainEthernet {
 
     public String findHexString(String hs, String cs, String ce){
         try{
-            if(start == -1){
-                start = hs.indexOf(cs);
-            }
-            if(start != -1){
-                // Si viene json con longitud y token 0 en la cadena: 386a2{EMPRESA:""...}0
-                if(start > 0){
+            if(hs.length()>0){
+                if(start == -1){
+                    start = hs.indexOf(cs);
+                }
+                if(start != -1){
+                    // Si viene json con longitud y token 0 en la cadena: 386a2{EMPRESA:""...}0
+                    if(start > 0){
 
-                    //Log.v(TAG,"Longitud a recibir: " + hs.substring(0,start));
-                    //Log.v(TAG,"Longitud a recibir: " + Integer.parseInt(hs.substring(0,start).trim(),16));
-                    if(hs.length()+200 > Integer.parseInt(hs.substring(0,start).trim(),16)){
-                        for(int i = 0; i < 15; i++){
-                            try{
-                                //Log.v(TAG,"Caracter final a evaluar: " + hs.substring((hs.length() - i),(hs.length() - i) + 1));
-                                if(ce.equalsIgnoreCase(hs.substring((hs.length() - i),(hs.length() - i) + 1))){
-                                    end = hs.length() - i;
-                                    //Log.v(TAG,"Caracter final " + end + " <" + hs.substring(end).trim() + ">");
-                                    i = 15;
+                        //Log.v(TAG,"Longitud a recibir: " + hs.substring(0,start));
+                        //Log.v(TAG,"Longitud a recibir: " + Integer.parseInt(hs.substring(0,start).trim(),16));
+                        if(hs.length()+200 > Integer.parseInt(hs.substring(0,start).trim(),16)){
+                            for(int i = 0; i < 15; i++){
+                                try{
+                                    //Log.v(TAG,"Caracter final a evaluar: " + hs.substring((hs.length() - i),(hs.length() - i) + 1));
+                                    if(ce.equalsIgnoreCase(hs.substring((hs.length() - i),(hs.length() - i) + 1))){
+                                        end = hs.length() - i;
+                                        //Log.v(TAG,"Caracter final " + end + " <" + hs.substring(end).trim() + ">");
+                                        i = 15;
+                                    }
+                                }catch (Exception e){
+                                    //Log.e(TAG,"Caracter final no encontrado " + e.getMessage());
                                 }
-                            }catch (Exception e){
-                                //Log.e(TAG,"Caracter final no encontrado " + e.getMessage());
                             }
                         }
-                    }
-                // Si solo viene json en la cadena: {EMPRESA:""...}
-                }else if(start == 0){
-                    if(ce.equalsIgnoreCase(hs.substring((hs.length() - 1),(hs.length() - 1) + 1))){
-                        end = hs.length()-1;
-                        Log.v(TAG,"Caracter final- " + end + " <" + hs.substring(end).trim() + ">");
+                        // Si solo viene json en la cadena: {EMPRESA:""...}
+                    }else if(start == 0){
+                        if(ce.equalsIgnoreCase(hs.substring((hs.length() - 1),(hs.length() - 1) + 1))){
+                            end = hs.length()-1;
+                            Log.v(TAG,"Caracter final- " + end + " <" + hs.substring(end).trim() + ">");
+                        }
                     }
                 }
-            }
 
-            // Si se ubica caracter de inicio y caracter final dentro la cadena
-            if(start != -1 && end != -1){
-                Log.v(TAG,"caracteres encontrados en la posición: " + start + " ... " + end);
-                //Log.v(TAG,"hexString completo: " + hexString);
-                hexStrings = hexString.substring(start,(end+1));
-                //Log.v(TAG,"hexStrings completo: " + hexStrings);
-                if(hexStrings.length()>30){
-                    Log.v(TAG,"hexStrings resumen: " + hexStrings.substring(0,15) + " ... " + hexStrings.substring(hexStrings.length()-15,hexStrings.length()));
+                // Si se ubica caracter de inicio y caracter final dentro la cadena
+                if(start != -1 && end != -1){
+                    Log.v(TAG,"caracteres encontrados en la posición: " + start + " ... " + end);
+                    //Log.v(TAG,"hexString completo: " + hexString);
+                    hexStrings = hexString.substring(start,(end+1));
+                    //Log.v(TAG,"hexStrings completo: " + hexStrings);
+                    if(hexStrings.length()>30){
+                        Log.v(TAG,"hexStrings resumen: " + hexStrings.substring(0,15) + " ... " + hexStrings.substring(hexStrings.length()-15,hexStrings.length()));
+                    }else{
+                        Log.v(TAG,"hexStrings resumen: " + hexStrings);
+                    }
+                    hexString = "";
+                    start = -1;
+                    end = -1;
+                    lhs = 0;
                 }else{
-                    Log.v(TAG,"hexStrings resumen: " + hexStrings);
+                    hexStrings = "";
                 }
-                hexString = "";
-                start = -1;
-                end = -1;
-                lhs = 0;
             }else{
                 hexStrings = "";
             }
@@ -294,7 +327,7 @@ public class MainEthernet {
             end = -1;
             approximationToFix = 0;
             hearing = true;
-            Log.e(TAG,"validateHexString: " + e.getMessage());
+            Log.e(TAG,"findHexString: " + e.getMessage());
         }
 
         return hexStrings;
@@ -478,7 +511,6 @@ public class MainEthernet {
         private int ldt;
         private int lcutdt = 300;
 
-
         public EthernetExecuting(String nombreHilo) {
             this.nombreHilo = nombreHilo;
             Log.v(TAG,"Creating " + nombreHilo);
@@ -493,6 +525,7 @@ public class MainEthernet {
             Fechahora fechahora = new Fechahora();
             queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityPrincipal.context);
             queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
+            atCommandMode = false;
 
             while(true){
                 try{
@@ -735,6 +768,22 @@ public class MainEthernet {
                                 }
                             }
 
+                            // Tiempo de espera para permitir configuración de Ethernet
+                            try{
+                                enableSetEthernet = true;
+                                Log.v(TAG,"enableSetEthernet inicio: " + enableSetEthernet);
+                                Thread.sleep(1000);
+                                while (atCommandMode){
+                                    Log.v(TAG,"enableSetEthernet while: " + enableSetEthernet);
+                                    Thread.sleep(1000);
+                                }
+                                enableSetEthernet = false;
+                                Log.v(TAG,"enableSetEthernet fin: " + enableSetEthernet);
+                            }catch (Exception e){
+                                enableSetEthernet = false;
+                                Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
+                            }
+
                             // Enviar marcaciones
                             for(int i = 0; i < 11; i++) {
 
@@ -851,7 +900,21 @@ public class MainEthernet {
                                 }
                             }
 
-
+                            // Tiempo de espera para permitir configuración de Ethernet
+                            try{
+                                enableSetEthernet = true;
+                                Log.v(TAG,"enableSetEthernet inicio: " + enableSetEthernet);
+                                Thread.sleep(1000);
+                                while (atCommandMode){
+                                    Log.v(TAG,"enableSetEthernet while: " + enableSetEthernet);
+                                    Thread.sleep(1000);
+                                }
+                                enableSetEthernet = false;
+                                Log.v(TAG,"enableSetEthernet fin: " + enableSetEthernet);
+                            }catch (Exception e){
+                                enableSetEthernet = false;
+                                Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
+                            }
 
                             ///*
                             // Obtener llamadas para autorizaciones
@@ -886,6 +949,7 @@ public class MainEthernet {
 
                                     // 3. Llamada para extraer data del archivo json creado en el Servidor
 
+                                    Log.v(TAG,"jsonObject " + jsonObject.toString());
                                     lfn = jsonObject.getInt("LONGITUD");
                                     if(lfn == 0){
                                         loopfn = 0;
@@ -953,6 +1017,22 @@ public class MainEthernet {
                                         }
                                     }
 
+
+                                    // Tiempo de espera para permitir configuración de Ethernet
+                                    try{
+                                        enableSetEthernet = true;
+                                        Log.v(TAG,"enableSetEthernet inicio: " + enableSetEthernet);
+                                        Thread.sleep(1000);
+                                        while (atCommandMode){
+                                            Log.v(TAG,"enableSetEthernet while: " + enableSetEthernet);
+                                            Thread.sleep(1000);
+                                        }
+                                        enableSetEthernet = false;
+                                        Log.v(TAG,"enableSetEthernet fin: " + enableSetEthernet);
+                                    }catch (Exception e){
+                                        enableSetEthernet = false;
+                                        Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
+                                    }
                                 }
                             }
                             //*/
@@ -965,11 +1045,29 @@ public class MainEthernet {
                     }
                 }catch (Exception e){
                     Log.e(TAG,"EthernetExecuting: " + e.getMessage());
+
+                    // Tiempo de espera para permitir configuración de Ethernet
+                    try{
+                        enableSetEthernet = true;
+                        Log.v(TAG,"enableSetEthernet inicio: " + enableSetEthernet);
+                        Thread.sleep(1000);
+                        while (atCommandMode){
+                            Log.v(TAG,"enableSetEthernet while: " + enableSetEthernet);
+                            Thread.sleep(1000);
+                        }
+                        enableSetEthernet = false;
+                        Log.v(TAG,"enableSetEthernet fin: " + enableSetEthernet);
+                    }catch (Exception ex){
+                        enableSetEthernet = false;
+                        Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
+                    }
+                    /*
                     try{
                         Thread.sleep(3000);
                     }catch (Exception ex){
 
                     }
+                    */
                 }
             }
 
@@ -1006,12 +1104,13 @@ public class MainEthernet {
             while(true){
 
                 try{
+                    Log.v(TAG,"EthernetReading loop");
                     prepareHexString(ActivityPrincipal.btSocketEthernet);
                     //Thread.sleep(1000);
 
                     //Thread.sleep(1000);
                 }catch (Exception e){
-                    Log.d(TAG,"Error General Hilo " + nombreHilo + ": " + e.toString());
+                    Log.v(TAG,"Error General Hilo " + nombreHilo + ": " + e.toString());
                     try{
                         Thread.sleep(1000);
                     }catch(Exception ex){
@@ -1020,6 +1119,7 @@ public class MainEthernet {
 
                 }
             }
+
         }
 
         public void start(){
@@ -1067,6 +1167,15 @@ public class MainEthernet {
                         //callsws(0,dataArrayFix,"EXEC_DATA");
                         //dataArrayFix.clear();
                     }
+
+                    //Log.v(TAG,"ethernetExecuting.isAlive() = " + ethernetExecuting.isAlive());
+                    //Log.v(TAG,"ethernetReading.isAlive() = " + ethernetReading.isAlive());
+                    if(!ethernetReading.isAlive()){
+                        ethernetReading.start();
+                    }
+                    if(!ethernetExecuting.isAlive()){
+                        ethernetExecuting.start();
+                    }
                     Thread.sleep(1000);
                 }catch (Exception e){
                     Log.d(TAG,"Error General Hilo " + nombreHilo + ": " + e.toString());
@@ -1092,22 +1201,177 @@ public class MainEthernet {
     }
 
 
+    public class EthernetATCommand extends Thread{
+        private Thread hilo;
+        private String nombreHilo;
+        private String atcommand;
+        private String parameters;
+
+        private boolean set;
+        private boolean get;
+        private boolean restart;
+
+        public EthernetATCommand(String nombreHilo) {
+            this.nombreHilo = nombreHilo;
+            Log.v(TAG,"Creando Hilo " + nombreHilo);
+        }
+
+        public void run(){
+            Log.v(TAG,"Ejecutando Hilo " + nombreHilo);
+
+            approximationToFix = 0;
+            hexStringcfg = "";
+
+            try{
+                Log.v(TAG,"EthernetATCommand enableSetEthernet " + enableSetEthernet);
+                while(!enableSetEthernet){
+                    Log.v(TAG,"EthernetATCommand enableSetEthernet while " + enableSetEthernet);
+                    Thread.sleep(250);
+                }
+            }catch (Exception e){
+                Log.e(TAG,"EthernetATCommand enableSetEthernet " + enableSetEthernet);
+            }
+
+            atCommandMode = true;
+            String trama = "";
+            try {
+                Log.v(TAG,"Iniciando configuración por comandos AT");
+
+                /* Activando AT Command Mode en Modulo */
+                trama = "+++";
+                ActivityPrincipal.btSocketEthernet.getOutputStream().write(trama.getBytes());
+                Log.v(TAG,"setAtCommand SALIO: " + trama);
+                Thread.sleep(500);
+
+                trama = "a";
+                ActivityPrincipal.btSocketEthernet.getOutputStream().write(trama.getBytes());
+                Log.v(TAG,"setAtCommand SALIO: " + trama);
+                Thread.sleep(1000);
+
+                //---------------------------------------------------------------------------
+                 /* Test AT Command Mode en Modulo */
+                //trama = "AT+VER" + "\r";
+                //ActivityPrincipal.btSocketEthernet.getOutputStream().write(trama.getBytes());
+                //Log.v(TAG,"setAtCommand SALIO: " + trama);
+                //Thread.sleep(1000);
+
+                //---------------------------------------------------------------------------
+
+            /*
+                AT+WANN<CR>
+                AT+WANN=<Mode>,<IP address>,<Mask>,<Gateway><CR>
+
+                AT+DNS<CR>
+                AT+DNS=<Address><CR>
+            */
+
+                if(set){
+                    trama = atcommand + parameters + "\r" + "\n";
+                    ActivityPrincipal.btSocketEthernet.getOutputStream().write(trama.getBytes());
+                    Log.v(TAG,"setAtCommand SALIO: " + trama);
+                    Thread.sleep(3000);
+                }
+
+                if(get){
+                    trama = atcommand + "\r" + "\n";
+                    ActivityPrincipal.btSocketEthernet.getOutputStream().write(trama.getBytes());
+                    Log.v(TAG,"setAtCommand SALIO: " + trama);
+                    Thread.sleep(3000);
+                }
+
+
+                //---------------------------------------------------------------------------
+                if(restart){
+                    /* Desactivando(Restart) AT Command Mode en Modulo */
+                    trama = "AT+Z" + "\r" + "\n";
+                    ActivityPrincipal.btSocketEthernet.getOutputStream().write(trama.getBytes());
+                    Log.v(TAG,"setAtCommand SALIO: " + trama);
+                    Thread.sleep(5000);
+                }else{
+                    /* Desactivando (go out) AT Command Mode en Modulo */
+                    trama = "AT+ENTM" + "\r"+ "\n";
+                    ActivityPrincipal.btSocketEthernet.getOutputStream().write(trama.getBytes());
+                    Log.v(TAG,"setAtCommand SALIO: " + trama);
+                    Thread.sleep(2000);
+                }
+                //---------------------------------------------------------------------------
+
+                Log.v(TAG,"Finalizando configuración por comandos AT");
+            } catch (IOException e) {
+                Log.e(TAG,"setAtCommand IOExc " + e.getMessage());
+            } catch (Exception e){
+                Log.e(TAG,"setAtCommand " + e.getMessage());
+            }
+            //hexString = "";
+            //lhs = 0;
+            //start = -1;
+            //end = -1;
+            //lhs = 0;
+            //jsonObject = new JSONObject();
+            hearing = true;
+            atCommandMode = false;
+
+            Log.v(TAG,"EthernetATCommand hexStringcfg = " + hexStringcfg.replaceAll("\n",""));
+
+            /*
+            while(true){
+                try{
+
+                    Thread.sleep(1000);
+                }catch (Exception e){
+                    Log.d(TAG,"Error General Hilo " + nombreHilo + ": " + e.toString());
+                    try{
+                        Thread.sleep(1000);
+                    }catch(Exception ex){
+
+                    }
+
+                }
+            }
+            */
+
+
+        }
+
+        public void start(String atcommand, String parameters, boolean set, boolean get, boolean restart){
+            //Looper.prepare();
+            Log.v(TAG,"Iniciando Hilo " + nombreHilo);
+            this.atcommand = atcommand;
+            this.parameters = parameters;
+            this.set = set;
+            this.get = get;
+            this.restart = restart;
+
+            if(hilo == null){
+                hilo = new Thread(nombreHilo);
+                super.start();
+            }
+        }
+
+    }
+
+
     public void startEthernetReading(){
-        EthernetReading ethernetReading = new EthernetReading("EthernetReading");
+        ethernetReading = new EthernetReading("EthernetReading");
         ethernetReading.start();
     }
 
     public void startEthernetExecuting(){
-        EthernetExecuting ethernetExecuting = new EthernetExecuting("EthernetExecuting");
+        ethernetExecuting = new EthernetExecuting("EthernetExecuting");
         ethernetExecuting.start();
     }
 
     public void startEthernetFixing(){
-        EthernetFixing ethernetFixing = new EthernetFixing("EthernetFixing");
+        ethernetFixing = new EthernetFixing("EthernetFixing");
         ethernetFixing.start();
     }
 
+    public int startEthernetATCommand(String atcommand, String parameters, boolean set, boolean get, boolean restart){
+        EthernetATCommand ethernetATCommand = new EthernetATCommand("startEthernetATCommand");
+        ethernetATCommand.start(atcommand, parameters, set, get, restart);
 
+        return 0;
+    }
 
 
 

@@ -137,7 +137,6 @@
                 android:layout_height="match_parent">
 
 
-
                 <RelativeLayout
                     android:id="@+id/tab1"
                     android:layout_width="match_parent"
@@ -169,6 +168,17 @@
                         android:textOff="Off "
                         android:textOn=" On " />
 
+                    <Switch
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/acComunicacion_lblEth0_height"
+                        android:layout_marginTop="@dimen/acComunicacion_swtDhcp_marginTop"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblEth0_marginLeft"
+                        android:id="@+id/swtDhcpEth0"
+                        android:track="@drawable/switchshape"
+                        android:thumb="@drawable/switchbutton"
+                        android:textColor="@color/colorBlanco"
+                        android:textOff="STATIC"
+                        android:textOn="DHCP" />
 
 
                     <TextView
@@ -207,7 +217,18 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/lblGwEth0" />
 
-
+                    <TextView
+                        android:text="DNS"
+                        android:layout_width="@dimen/acComunicacion_lblEth0_width"
+                        android:layout_height="@dimen/acComunicacion_lblEth0_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="@dimen/acComunicacion_lblEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop4"
+                        android:gravity="center_vertical"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:visibility="invisible"
+                        android:id="@+id/lblDnsEth0" />
 
                     <TextView
                         android:layout_alignParentTop="true"
@@ -235,6 +256,16 @@
                         android:layout_height="@dimen/acComunicacion_edtEth0_height"
                         android:background="@color/colorGris"
                         android:id="@+id/background103" />
+
+                    <TextView
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop4"
+                        android:layout_width="@dimen/acComunicacion_edtEth0_width"
+                        android:layout_height="@dimen/acComunicacion_edtEth0_height"
+                        android:background="@color/colorGris"
+                        android:visibility="invisible"
+                        android:id="@+id/background104" />
 
 
                     <EditText
@@ -276,6 +307,29 @@
                         android:textColor="@color/colorTexto"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:id="@+id/edtEthPuerta" />
+
+                    <EditText
+                        android:layout_width="@dimen/acComunicacion_edtEth0_width"
+                        android:layout_height="@dimen/acComunicacion_edtEth0_height"
+                        android:inputType="textPersonName"
+                        android:text=""
+                        android:layout_alignParentTop="true"
+                        android:layout_marginLeft="@dimen/acComunicacion_edtEth0_marginLeft"
+                        android:layout_marginTop="@dimen/acComunicacion_Eth0_marginTop4"
+                        android:backgroundTint="@color/colorNegro"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:visibility="invisible"
+                        android:id="@+id/edtEthDns" />
+
+                    <Button
+                        android:text="Configurar"
+                        android:layout_width="@dimen/acComunicacion_Wifi_btnConf_width"
+                        android:layout_height="@dimen/acComunicacion_Wifi_btnConf_height"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/acComunicacion_Wifi_btnConf_marginTop"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnEth" />
 
 
                 </RelativeLayout>

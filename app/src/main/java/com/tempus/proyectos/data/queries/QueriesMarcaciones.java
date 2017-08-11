@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.tempus.proyectos.cam.CameraLocalManager;
 import com.tempus.proyectos.data.Conexion;
 import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.model.Marcaciones;
@@ -29,6 +30,7 @@ public class QueriesMarcaciones {
     private Conexion conexion;
     private Context context;
     private SQLiteDatabase database;
+    CameraLocalManager cameraLocalManager = new CameraLocalManager();
 
     public QueriesMarcaciones() {
 
@@ -367,6 +369,7 @@ public class QueriesMarcaciones {
                                 //marcaciones.setDatos(null);
                                 //marcaciones.setValorDatoContenido(0);
                                 if(Insert == 1){
+                                    cameraLocalManager.takePhotoFrontCamera(fechahora.setFileName(Fechahora),Idterminal);
                                     this.insert(marcaciones);
                                     Log.d("Autorizaciones","Marcacion: " + marcaciones.toString());
                                     Log.d("Autorizaciones","Marcacion Registrada");

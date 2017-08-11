@@ -18,7 +18,6 @@ public class ProcessSyncST extends Thread{
     private Thread hilo;
     private String nombreHilo;
 
-    private QueriesMarcaciones queriesMarcaciones;
     Fechahora fechahora = new Fechahora();
     private Context context;
 

@@ -32,6 +32,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.tempus.proyectos.bluetoothSerial.MainEthernet;
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Parameters;
@@ -39,6 +40,7 @@ import com.tempus.proyectos.data.model.Servicios;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.servicios.OverlayShowingService;
+import com.tempus.proyectos.tcpSerial.UsrTCP;
 import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
@@ -52,6 +54,8 @@ import java.util.Calendar;
 import java.util.List;
 
 public class ActivitySincronizacion extends Activity {
+
+    String TAG = "TX-ASY";
 
     /* --- Declaración de Objetos --- */
 
@@ -92,6 +96,11 @@ public class ActivitySincronizacion extends Activity {
     EditText edtSyncUser;
     EditText edtSyncPass;
 
+    Button btnWsGuardar;
+
+    EditText edtWsServer;
+    EditText edtWsPort;
+
     boolean internet = false;
     boolean servidor = false;
     boolean basedatos = false;
@@ -112,6 +121,12 @@ public class ActivitySincronizacion extends Activity {
     Switch swtHoraConf4;
 
     Button btnReplicar;
+
+    /* --- MainEthernet --- */
+    MainEthernet mainEthernet = new MainEthernet();
+
+    /* --- UsrTCP --- */
+    UsrTCP usrTCP = new UsrTCP();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,6 +168,11 @@ public class ActivitySincronizacion extends Activity {
         edtSyncPort = (EditText) findViewById(R.id.edtSyncPort);
         edtSyncUser = (EditText) findViewById(R.id.edtSyncUser);
         edtSyncPass = (EditText) findViewById(R.id.edtSyncPass);
+
+        btnWsGuardar = (Button) findViewById(R.id.btnWsGuardar);
+
+        edtWsServer = (EditText) findViewById(R.id.edtWsServer);
+        edtWsPort = (EditText) findViewById(R.id.edtWsPort);
 
         btnReplicar = (Button) findViewById(R.id.btnReplicar);
 
@@ -204,10 +224,20 @@ public class ActivitySincronizacion extends Activity {
         //Tab 4
         spec = host.newTabSpec("Tab4");
         spec.setContent(R.id.tabSync4);
+        spec.setIndicator("WEB SERVICE");
+        host.addTab(spec);
+
+        //Tab 5
+        spec = host.newTabSpec("Tab5");
+        spec.setContent(R.id.tabSync5);
         spec.setIndicator("TEST");
         host.addTab(spec);
 
-
+        //Tab 6
+        spec = host.newTabSpec("Tab6");
+        spec.setContent(R.id.tabSync6);
+        spec.setIndicator("USB");
+        host.addTab(spec);
 
 
         TabWidget widget = host.getTabWidget();
@@ -231,6 +261,19 @@ public class ActivitySincronizacion extends Activity {
         txvOrigen.setBackgroundColor(Color.RED);
 
         connectivity = new Connectivity();
+
+
+        Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+
+        if(ActivityPrincipal.parametersSock.size() == 0){
+            getParametersSock();
+        }else if(ActivityPrincipal.parametersSock.size() == 3){
+            //AT+SOCK=<Protocol>,<IP address>,<Port><CR>
+            Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+            edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
+            edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
+
+        }
 
 
         /* --- Inicialización de Parametros Generales --- */
@@ -309,6 +352,134 @@ public class ActivitySincronizacion extends Activity {
 
             }
         });
+
+
+        btnWsGuardar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String msg = "";
+                String parameter = "";
+
+                Thread threadHttpcfg = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Log.v(TAG,"threadHttpcfg inicio ");
+                            //Toast.makeText(ActivityPrincipal.context,"Configurando Ethernet",Toast.LENGTH_LONG).show();
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    edtWsServer.setEnabled(false);
+                                    edtWsPort.setEnabled(false);
+                                    btnWsGuardar.setEnabled(false);
+                                    btnWsGuardar.setText("Configurando");
+                                }
+                            });
+
+                            Log.v(TAG,"threadHttpcfg enableSetEthernet " + MainEthernet.enableSetEthernet);
+                            while(!MainEthernet.enableSetEthernet){
+                                Log.v(TAG,"threadHttpcfg enableSetEthernet while " + MainEthernet.enableSetEthernet);
+                                Thread.sleep(250);
+                            }
+                            Thread.sleep(1000);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnWsGuardar.setText(".");
+                                }
+                            });
+
+                            while(MainEthernet.atCommandMode){
+                                Log.v(TAG,"threadEthernetcfg atCommandMode while " + MainEthernet.atCommandMode);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(btnWsGuardar.getText().length() == 3){
+                                            btnWsGuardar.setText(".");
+                                        }else{
+                                            btnWsGuardar.setText(btnWsGuardar.getText() + ".");
+                                        }
+                                    }
+                                });
+                                Thread.sleep(1000);
+                            }
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    edtWsServer.setEnabled(true);
+                                    edtWsPort.setEnabled(true);
+                                    btnWsGuardar.setEnabled(true);
+                                    btnWsGuardar.setText("Configurar");
+                                }
+                            });
+
+
+                            Log.v(TAG,"hexStringcfg " + MainEthernet.hexStringcfg);
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try{
+                                        //AT+SOCK=<Protocol>,<IP address>,<Port><CR>
+                                        String[] parametersArray = usrTCP.getParameters(MainEthernet.hexStringcfg);
+                                        Log.v(TAG,"parametersArray[" + parametersArray.length + "] = " + parametersArray[0] + " - " + parametersArray[1] + " - " +parametersArray[2]);
+                                        if(parametersArray.length>0){
+                                            Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+                                            ActivityPrincipal.parametersSock.clear();
+                                            Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+                                            ActivityPrincipal.parametersSock.add(parametersArray[0]);
+                                            ActivityPrincipal.parametersSock.add(parametersArray[1]);
+                                            ActivityPrincipal.parametersSock.add(parametersArray[2]);
+                                            Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+
+                                            edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
+                                            edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
+
+                                        }
+                                    }catch (Exception e){
+                                        Log.e(TAG,"parametersArray " + e.getMessage());
+                                    }
+
+                                    edtWsServer.setEnabled(true);
+                                    edtWsPort.setEnabled(true);
+                                    btnWsGuardar.setEnabled(true);
+                                    btnWsGuardar.setText("Configurar");
+                                }
+                            });
+
+                            //Toast.makeText(ActivityPrincipal.context,"Ethernet Configurado",Toast.LENGTH_LONG).show();
+                            Log.v(TAG,"threadHttpcfg fin ");
+                        } catch (Exception e) {
+                            Log.e(TAG,"threadHttpcfg " + e.getMessage());
+                        }
+
+                    }
+                });
+
+
+                //mainEthernet.startEthernetATCommand("AT+WANN","=STATIC,192.168.0.78,255.255.255.0,192.168.0.2");
+                //AT+SOCK=<Protocol>,<IP address>,<Port><CR>
+
+                Log.v(TAG,"edtWsServer (validando) " + edtWsServer.getText().toString());
+                msg = usrTCP.validateParameters("SERVIDOR", edtWsServer.getText().toString());
+                Log.v(TAG,"msg " + msg);
+                if(msg.length()==0){
+                    Log.v(TAG,"Parametros Validos (HTTP)");
+                    parameter = "=HTPC" + "," + edtWsServer.getText().toString() + "," + edtWsPort.getText().toString();
+                    Log.v(TAG,"parameter " + parameter);
+                    mainEthernet.startEthernetATCommand("AT+SOCK",parameter,true,true,true);
+                    threadHttpcfg.start();
+                }else{
+                    Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
+
 
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -737,5 +908,121 @@ public class ActivitySincronizacion extends Activity {
         //    queriesParameters.update(parameter);
         //}
     }
+
+
+
+    public void getParametersSock(){
+
+        mainEthernet.startEthernetATCommand("AT+SOCK","",false,true,true);
+
+        Thread threadHttpcfg = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(TAG,"threadHttpcfg runOnUiThread inicio ");
+                try {
+                    Log.v(TAG,"threadHttpcfg inicio ");
+                    //Toast.makeText(ActivityPrincipal.context,"Configurando Ethernet",Toast.LENGTH_LONG).show();
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            edtWsServer.setEnabled(false);
+                            edtWsPort.setEnabled(false);
+                            btnWsGuardar.setEnabled(false);
+                            btnWsGuardar.setText("Actualizando");
+                        }
+                    });
+
+                    Log.v(TAG,"threadHttpcfg enableSetEthernet " + MainEthernet.enableSetEthernet);
+                    while(!MainEthernet.enableSetEthernet){
+                        Log.v(TAG,"threadHttpcfg enableSetEthernet while " + MainEthernet.enableSetEthernet);
+                        Thread.sleep(250);
+                    }
+                    Thread.sleep(1000);
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            btnWsGuardar.setText(".");
+                        }
+                    });
+
+                    while(MainEthernet.atCommandMode){
+                        Log.v(TAG,"threadHttpcfg atCommandMode while " + MainEthernet.atCommandMode);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(btnWsGuardar.getText().length() == 3){
+                                    btnWsGuardar.setText(".");
+                                }else{
+                                    btnWsGuardar.setText(btnWsGuardar.getText() + ".");
+                                }
+                            }
+                        });
+                        Thread.sleep(1000);
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            edtWsServer.setEnabled(true);
+                            edtWsPort.setEnabled(true);
+                            btnWsGuardar.setEnabled(true);
+                            btnWsGuardar.setText("Configurar");
+                        }
+                    });
+
+
+                    //String[] parametersArray = usrTCP.getParameters(MainEthernet.hexStringcfg);
+                    //Log.v(TAG,"parametersArray[" + parametersArray.length + "] = " + parametersArray[0] + " - " + parametersArray[1] + " - " +parametersArray[2] + " - " +parametersArray[3]);
+
+                    Log.v(TAG,"hexStringcfg " + MainEthernet.hexStringcfg);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                String[] parametersArray = usrTCP.getParameters(MainEthernet.hexStringcfg);
+                                //Log.v(TAG,"parametersArray[" + parametersArray.length + "] = " + parametersArray[0] + " - " + parametersArray[1] + " - " +parametersArray[2]);
+                                if(parametersArray.length>0){
+                                    //Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+                                    ActivityPrincipal.parametersSock.clear();
+                                    //Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+
+                                    ActivityPrincipal.parametersSock.add(parametersArray[0]);
+                                    ActivityPrincipal.parametersSock.add(parametersArray[1]);
+                                    ActivityPrincipal.parametersSock.add(parametersArray[2]);
+                                    Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+
+                                    edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
+                                    edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
+
+                                }
+                            }catch (Exception e){
+                                Log.e(TAG,"parametersArray " + e.getMessage());
+                            }
+
+                            edtWsServer.setEnabled(true);
+                            edtWsPort.setEnabled(true);
+                            btnWsGuardar.setEnabled(true);
+                            btnWsGuardar.setText("Configurar");
+                        }
+                    });
+
+                    //Toast.makeText(ActivityPrincipal.context,"Ethernet Configurado",Toast.LENGTH_LONG).show();
+                    Log.v(TAG,"threadHttpcfg fin ");
+                } catch (Exception e) {
+                    Log.e(TAG,"threadHttpcfg " + e.getMessage());
+                }
+                Log.v(TAG,"threadHttpcfg runOnUiThread fin ");
+            }
+        });
+
+        threadHttpcfg.start();
+
+    }
+
+
+
+
 
 }

@@ -575,6 +575,134 @@
                     android:background="@color/colorFondoCuerpo"
                     android:orientation="vertical">
 
+                    <TextView
+                        android:text="SERVIDOR:"
+                        android:layout_width="@dimen/acSincronizacion_txvServer_width"
+                        android:layout_height="@dimen/acSincronizacion_txvServer_height"
+                        android:textColor="@color/colorTexto"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync1_marginTop"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/textView10"/>
+
+                    <TextView
+                        android:text="PUERTO:"
+                        android:layout_width="@dimen/acSincronizacion_txvServer_width"
+                        android:layout_height="@dimen/acSincronizacion_txvServer_height"
+                        android:textColor="@color/colorTexto"
+                        android:gravity="center_vertical"
+                        android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync2_marginTop"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/textView12" />
+
+
+
+
+
+                    <!---->
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync1_marginTop"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync2_marginTop"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync3_marginTop"
+                        android:visibility="invisible"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync4_marginTop"
+                        android:visibility="invisible"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync5_marginTop"
+                        android:visibility="invisible"
+                        android:background="@color/colorGris"
+                        />
+
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:text=""
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:paddingBottom="5dp"
+                        android:inputType="textPersonName"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync1_marginTop"
+                        android:textColor="@color/colorTexto"
+                        android:id="@+id/edtWsServer" />
+
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:text=""
+                        android:inputType="textPersonName"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:paddingBottom="5dp"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_Sync2_marginTop"
+                        android:textColor="@color/colorTexto"
+                        android:id="@+id/edtWsPort" />
+
+
+
+                    <Button
+                        android:text="Guardar"
+                        android:paddingBottom="5dp"
+                        android:layout_width="@dimen/acSincronizacion_btnTest_width"
+                        android:layout_height="@dimen/acSincronizacion_btnTest_height"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginTop="@dimen/acSincronizacion_btnTest_marginTop"
+                        android:layout_centerHorizontal="true"
+                        android:id="@+id/btnWsGuardar" />
+                        <!--
+                        android:layout_width="@dimen/acSincronizacion_btnSyncGuardar_width"
+                        android:layout_height="@dimen/acSincronizacion_btnSyncGuardar_height"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginLeft="@dimen/acSincronizacion_btnSyncGuardar_marginLeft"
+                        android:layout_marginTop="@dimen/acSincronizacion_btnSyncGuardar_marginTop"
+                        -->
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tabSync5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
 
                     <TextView
                         android:text="- Acceso a Internet"
@@ -656,7 +784,24 @@
 
                 </RelativeLayout>
 
+                <RelativeLayout
+                    android:id="@+id/tabSync6"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
 
+
+                    <Button
+                        android:text="Guardar Marcaciones"
+                        android:layout_width="@dimen/acSincronizacion_btnUsbMarcas_width"
+                        android:layout_height="@dimen/acSincronizacion_btnUsbMarcas_height"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginTop="@dimen/acSincronizacion_btnUsbMarcas_marginTop"
+                        android:layout_centerHorizontal="true"
+                        android:id="@+id/btnUsbMarcas" />
+
+                </RelativeLayout>
 
 
             </FrameLayout>

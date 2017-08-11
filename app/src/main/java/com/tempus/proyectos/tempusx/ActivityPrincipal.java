@@ -28,6 +28,7 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -39,6 +40,7 @@ import android.widget.ProgressBar;
 import android.widget.TextClock;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.hardware.Camera;
 
 import com.tempus.proyectos.battery.BatteryLife;
 import com.tempus.proyectos.bluetoothSerial.Bluetooth;
@@ -153,7 +155,13 @@ public class ActivityPrincipal extends Activity {
     public boolean acCharge;
 
 
+    /* --- Variables Fotos --- */
+    public static Camera camera;
+    public static SurfaceView surfaceView;
 
+    /* --- Variables Ethernet --- */
+    public static ArrayList<String> parametersEthernet = new ArrayList<String>();
+    public static ArrayList<String> parametersSock = new ArrayList<String>();
 
     /* --- ACCESO ESTÁTICO --- */
 
@@ -472,9 +480,24 @@ public class ActivityPrincipal extends Activity {
         mainEthernet.startEthernetExecuting();
         mainEthernet.startEthernetFixing();
 
+
         batteryLife.startBatteryLifeReading();
 
         //threadTestingBTonoff.start();
+
+
+        /* --- Variables Fotos --- */
+        try{
+            Log.v(TAG,"camera/surfaceView iniciando");
+            camera = Camera.open(1);
+            surfaceView = new SurfaceView(context);
+            Log.v(TAG,"camera/surfaceView iniciado");
+        }catch (Exception e){
+            Log.e(TAG,"camera/surfaceView " + e.getMessage());
+        }
+
+
+
 
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
@@ -1107,7 +1130,7 @@ public class ActivityPrincipal extends Activity {
             } else {
                 MODO_EVENTO = true;
             }
-            Log.d(TAG, "CargarDatosIniciales > MODO_EVENTO = OK");
+            Log.d(TAG, "CargarDatosIniciales > MODO_EVENTO = OK " + "(" + MODO_EVENTO + ")");
             MODO_EVENTO = false;
         } catch (Exception e) {
             MODO_EVENTO = false;
@@ -1121,7 +1144,7 @@ public class ActivityPrincipal extends Activity {
             } else {
                 INTERFACE_ETH = true;
             }
-            Log.d(TAG, "CargarDatosIniciales > INTERFACE_ETH = OK");
+            Log.d(TAG, "CargarDatosIniciales > INTERFACE_ETH = OK " + "(" + INTERFACE_ETH + ")");
         } catch (Exception e) {
             INTERFACE_ETH = false;
         }
@@ -1134,7 +1157,7 @@ public class ActivityPrincipal extends Activity {
             } else {
                 INTERFACE_WLAN = true;
             }
-            Log.d(TAG, "CargarDatosIniciales > INTERFACE_WLAN = OK");
+            Log.d(TAG, "CargarDatosIniciales > INTERFACE_WLAN = OK " + "(" + INTERFACE_WLAN + ")");
         } catch (Exception e) {
             INTERFACE_WLAN = true;
         }
@@ -1147,7 +1170,7 @@ public class ActivityPrincipal extends Activity {
             } else {
                 INTERFACE_PPP = true;
             }
-            Log.d(TAG, "CargarDatosIniciales > INTERFACE_PPP = OK");
+            Log.d(TAG, "CargarDatosIniciales > INTERFACE_PPP = OK " + "(" + INTERFACE_PPP + ")");
         } catch (Exception e) {
             INTERFACE_PPP = false;
         }
@@ -1156,9 +1179,12 @@ public class ActivityPrincipal extends Activity {
         TIEMPO_ACTIVO = 0;
         MODO_MARCACION = "";
         //Ethernet test
-        //MAC_BT_00 = "20:16:08:10:60:93";
+        //MAC_BT_00 = "20:16:08:10:60:93"; //5555
         //Ethernet test Clinica Internacional
-        MAC_BT_00 = "00:21:13:01:7E:8F";
+        //MAC_BT_00 = "00:21:13:01:7E:8F"; //1234
+
+        //Ethernet Shougang
+        MAC_BT_00 = "00:21:13:00:CC:2D"; //1234
 
         // CARRION 02
         //MAC_BT_01 = "98:D3:34:90:87:DC"; // hc 06
@@ -1195,14 +1221,19 @@ public class ActivityPrincipal extends Activity {
         //MAC_BT_02 = "00:00:00:00:00:00";
         //MAC_BT_03 = "20:16:08:10:60:02";
 
-        //CLINICA INTERNACIONAL 1
+        //CLINICA INTERNACIONAL 1 (2)
         //MAC_BT_01 = "00:12:06:04:99:06";
         //MAC_BT_02 = "00:12:06:04:98:90";
         //MAC_BT_03 = "00:00:00:00:00:00";
 
-        //CLINICA INTERNACIONAL TEST
-        MAC_BT_02 = "20:16:08:10:68:89";
-        MAC_BT_01 = "20:16:08:10:63:74";
+        //CLINICA INTERNACIONAL TEST (1)
+        //MAC_BT_02 = "20:16:08:10:68:89";
+        //MAC_BT_01 = "20:16:08:10:63:74";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        //SHOUGANG
+        MAC_BT_02 = "00:15:83:35:7A:66";
+        MAC_BT_01 = "98:D3:34:90:88:89";
         MAC_BT_03 = "00:00:00:00:00:00";
 
 
@@ -1226,9 +1257,9 @@ public class ActivityPrincipal extends Activity {
 
         MODO_EVENTO = false;
         TIPO_TERMINAL = 2;
-        INTERFACE_ETH = false;
+        INTERFACE_ETH = true;
         INTERFACE_WLAN = true;
-        INTERFACE_PPP = false;
+        INTERFACE_PPP = true;
         SCORE_MANO = 120;
 
         if (MODO_EVENTO) {
@@ -1774,38 +1805,31 @@ public class ActivityPrincipal extends Activity {
                 processSync.ProcessLlamadas(context);
                 */
 
-                Log.v(TAG,"BT " + "Bluetooth");
-                btSocket01.closeBT();
+                //Log.v(TAG,"BT " + "Bluetooth");
+                //btSocket01.closeBT();
+                Log.v(TAG,"Prueba de Aplicacion no responde");
+
+                try{
+                    Thread.sleep(30000);
+                    while(true){
+
+                    }
+                }catch (Exception e){
+                    Log.e(TAG,"Prueba de Aplicacion no responde");
+                }
+
 
 
                 break;
 
             case "4422":
-                Log.v(TAG,"BTS-MAET processSyncTest ..............................................");
-                if(STATUS_ETHERNET){
-                    try{
-                        //ProcessSyncTest processSyncTest = new ProcessSyncTest();
-                        //processSyncTest.execute();
+                Log.v(TAG,"");
 
-                        mainEthernet.startEthernetExecuting();
-                    }catch(Exception e){
-                        Log.e(TAG,"BTS-MAET " + e.getMessage());
-                    }
-                }
                 break;
 
             case "4433":
-                Log.v(TAG,"BTS-MAET processSyncTest ..............................................");
-                if(STATUS_ETHERNET){
-                    try{
-                        //ProcessSyncTest processSyncTest = new ProcessSyncTest();
-                        //processSyncTest.execute();
+                Log.v(TAG,"");
 
-                        mainEthernet.startEthernetFixing();
-                    }catch(Exception e){
-                        Log.e(TAG,"BTS-MAET " + e.getMessage());
-                    }
-                }
                 break;
 
 
@@ -1902,7 +1926,7 @@ public class ActivityPrincipal extends Activity {
 
                 LimpiarDatosMarcacion();
                 String lectora = lectoraName;
-                Log.d(TAG, "Lectora: " + lectora);
+                Log.v(TAG, "Lectora: " + lectora);
 
                 if (lectora != null) {
 
@@ -1949,6 +1973,7 @@ public class ActivityPrincipal extends Activity {
                         */
                                 try {
                                     autorizacion = queriesMarcaciones.ModoMarcacion(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), FLG_AUX, fechahora.getFechahora(), MODO_MARCACION);
+
                                     Log.d(TAG, "Resultado de ModoMarcacion: " + autorizacion);
                                     esperando_mano = false;
                                     //fallo_mano = true;
