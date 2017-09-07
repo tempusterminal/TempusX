@@ -759,6 +759,132 @@ public class ProcessSync {
 
     }
 
+    public void syncFechahora(String fechahoraServer){
+
+        //Fechahora del Terminal
+        int anoi = 0;
+        int mesi = 0;
+        int diai = 0;
+        int horai = 0;
+        int minutoi = 0;
+        int segundoi = 0;
+        int milisegundoi = 0;
+
+        //Fechahora del Servidor
+        int anof = 0;
+        int mesf = 0;
+        int diaf = 0;
+        int horaf = 0;
+        int minutof = 0;
+        int segundof = 0;
+        int milisegundof = 0;
+
+        try{
+
+            /*
+            Log.v(TAG,"Fecha Hora Servidor: " + fechahoraServer);
+            Log.v(TAG,"Año: " + fechahoraServer.substring(0,4));
+            Log.v(TAG,"Mes: " + fechahoraServer.substring(5,7));
+            Log.v(TAG,"Día: " + fechahoraServer.substring(8,10));
+            Log.v(TAG,"Hora: " + fechahoraServer.substring(11,13));
+            Log.v(TAG,"Minuto: " + fechahoraServer.substring(14,16));
+            Log.v(TAG,"Segundo: " + fechahoraServer.substring(17,19));
+            Log.v(TAG,"Milisegundo: " + fechahoraServer.substring(20));
+            */
+
+            Calendar calendar = Calendar.getInstance();
+
+            anoi = calendar.get(Calendar.YEAR);
+            // Se suma 1 al mes debido a que considera los meses del 0 al 11
+            mesi = calendar.get(Calendar.MONTH) + 1;
+            diai = calendar.get(Calendar.DAY_OF_MONTH);
+            horai = calendar.get(Calendar.HOUR_OF_DAY);
+            minutoi = calendar.get(Calendar.MINUTE);
+            segundoi = calendar.get(Calendar.SECOND);
+            milisegundoi = calendar.get(Calendar.MILLISECOND);
+
+            anof = Integer.parseInt(fechahoraServer.substring(0,4));
+            mesf = Integer.parseInt(fechahoraServer.substring(5,7));
+            diaf = Integer.parseInt(fechahoraServer.substring(8,10));
+            horaf = Integer.parseInt(fechahoraServer.substring(11,13));
+            minutof = Integer.parseInt(fechahoraServer.substring(14,16));
+            segundof = Integer.parseInt(fechahoraServer.substring(17,19));
+            milisegundof = Integer.parseInt(fechahoraServer.substring(20)) * (int) Math.pow(10,(3 - fechahoraServer.substring(20).length()));
+
+            milisegundoi = milisegundoi * (int) Math.pow(10,(3 - String.valueOf(milisegundoi).length()));
+            //milisegundof = milisegundof * (int) Math.pow(10,(3 - String.valueOf(milisegundof).length()));
+
+            //Log.v(TAG,"FechaHora Del Terminal: " + anoi + "-" + mesi + "-" + diai + " " + horai + ":" + minutoi + ":" + segundoi + "." + milisegundoi);
+            //Log.v(TAG,"FechaHora Del Servidor: " + fechahoraServer);// + " - " + milisegundof);
+
+            // Comparar que el año sea el mismo
+
+            if((anoi - anof) == 0){
+                // Comparar que el mes sea el mismo
+                if((mesi - mesf) == 0){
+                    // Comparar que el día sea el mismo
+                    if((diai - diaf) == 0){
+                        // Comparar que la hora sea el mismo
+                        if((horai - horaf) == 0){
+                            // Comparar que el minuto sea el mismo
+                            if((minutoi - minutof) == 0){
+                                // Comparar que el segundo sea el mismo
+                                if((segundoi - segundof) == 0){
+                                    // terminal comparacion de milisegundos
+                                    if(milisegundoi > milisegundof){
+                                        if((milisegundoi - milisegundof) > 250){
+                                            //Cambio de Fechahora
+                                            Log.v(TAG,"BTS-MAET Diferencia de milisegundo (servidor atrasado): " + (milisegundoi - milisegundof));
+                                            setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
+                                        }else{
+                                            //Log.v(TAG,"Diferencia de milisegundo (servidor atrasado): " + (milisegundoi - milisegundof));
+                                            //Log.v(TAG,"No requiere actualizacion de Fechahora");
+
+                                        }
+                                    }else if(milisegundof > milisegundoi){
+                                        if((milisegundof - milisegundoi) > 250){
+                                            //Cambio de Fechahora
+                                            Log.v(TAG,"BTS-MAET Diferencia de milisegundo (servidor adelantado):" + (milisegundoi - milisegundof));
+                                            setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
+                                        }else{
+                                            //Log.v(TAG,"Diferencia de milisegundo (servidor adelantado):" + (milisegundoi - milisegundof));
+                                            //Log.v(TAG,"No requiere actualizacion de Fechahora");
+                                        }
+                                    }else{
+                                        //Log.v(TAG,"No requiere actualizacion de Fechahora");
+                                    }
+                                }else{
+                                    Log.v(TAG,"BTS-MAET Diferencia de Segundo: " + (segundoi - segundof));
+                                    setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
+                                }
+                            }else{
+                                Log.v(TAG,"BTS-MAET Diferencia de Minuto: " + (minutoi - minutof));
+                                setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
+                            }
+                        }else{
+                            Log.v(TAG,"BTS-MAET Diferencia de Hora: " + (horai - horaf));
+                            setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
+                        }
+                    }else{
+                        Log.v(TAG,"BTS-MAET Diferencia de Dia: " + (diai - diaf));
+                        setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
+                    }
+                }else{
+                    Log.v(TAG,"BTS-MAET Diferencia de Mes: " + (mesi - mesf));
+                    setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
+                }
+            }else{
+                Log.v(TAG,"BTS-MAET Diferencia de Año: " + (anoi - anof));
+                setFechahoraTerminal(anof,mesf,diaf,horaf,minutof,segundof,milisegundof);
+            }
+            //Log.v(TAG,"--------------------------------------------------------------");
+
+        }catch(Exception e){
+            Log.v(TAG,"BTS-MAET ProcessSync.syncFechahora Error: " + e.getMessage());
+        }
+
+    }
+
     public void setFechahoraTerminal(int ano, int mes, int dia, int hora, int minuto, int segundo, int milisegundo){
 
         Calendar calendar = Calendar.getInstance();

@@ -102,5 +102,29 @@ public class TableMarcaciones {
             "ORDER BY " + Fechahora + " ASC " +
             "LIMIT 1" ;
 
+    public static final String SELECT_NOSYNC_TABLE = "SELECT " +
+            Empresa + ", " +
+            Codigo + ", " +
+            Fechahora + ", " +
+            ValorTarjeta + ", " +
+            HoraTxt + ", " +
+            EntSal + ", " +
+            Flag + ", " +
+            Fecha + ", " +
+            Hora + ", " +
+            Idterminal + ", " +
+            IdTipoLect + ", " +
+            FlgActividad + ", " +
+            IdUsuario + ", " +
+            TmpListar + ", " +
+            Autorizado + ", " +
+            TipoOperacion + ", " +
+            Sincronizado + ", " +
+            Datos + ", " +
+            ValorDatoContenido + " " +
+            "FROM " + TABLE_NAME + " " +
+            "WHERE " + Sincronizado + " = 0 " +
+            "ORDER BY " + Fechahora + " ASC ";
+
 
 }

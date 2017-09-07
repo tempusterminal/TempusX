@@ -31,13 +31,13 @@ public class UsrTCP {
 
         do{
             // Buscar la posicion de fin de los parametros
-            end = parameters.indexOf("A");
+            end = parameters.indexOf("AT+");
             if(end != -1){
                 // Eliminar lo posterior al fin de los parametros
                 // parameters = STATIC,192.168.0.77,255.255.255.0,192.168.0.2
                 parameters = parameters.substring(0,end);
             }
-        }while(parameters.contains("A"));
+        }while(parameters.contains("AT+"));
 
         do{
             // Buscar la posicion de fin de los parametros

@@ -37,6 +37,7 @@ import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
+import com.tempus.proyectos.data.process.ProcessSyncUSB;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.servicios.OverlayShowingService;
@@ -46,9 +47,11 @@ import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
 import org.apache.commons.net.io.ToNetASCIIInputStream;
+import org.apache.commons.net.nntp.Threadable;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -122,6 +125,8 @@ public class ActivitySincronizacion extends Activity {
 
     Button btnReplicar;
 
+    Button btnUsbMarcas;
+
     /* --- MainEthernet --- */
     MainEthernet mainEthernet = new MainEthernet();
 
@@ -192,6 +197,8 @@ public class ActivitySincronizacion extends Activity {
         swtHoraConf4 = (Switch) findViewById(R.id.swtHoraConf4);
 
         btnReplicar = (Button) findViewById(R.id.btnReplicar);
+
+        btnUsbMarcas = (Button) findViewById(R.id.btnUsbMarcas);
 
         /* --- Inicialización de Métodos --- */
 
@@ -619,6 +626,119 @@ public class ActivitySincronizacion extends Activity {
                 });
 
                 thread.start();
+            }
+        });
+
+        btnUsbMarcas.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Thread threadUsbMarcas = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+
+
+                            Log.v(TAG,"threadUsbMarcas inicio ");
+                            //Toast.makeText(ActivityPrincipal.context,"Configurando Ethernet",Toast.LENGTH_LONG).show();
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnUsbMarcas.setEnabled(false);
+                                    btnUsbMarcas.setText("Procesando");
+                                }
+                            });
+
+                            Log.v(TAG,"threadUsbMarcas otgmode " + ProcessSyncUSB.otgmode);
+                            while(!ProcessSyncUSB.otgmode){
+                                Log.v(TAG,"threadUsbMarcas otgmode while " + ProcessSyncUSB.otgmode);
+                                Thread.sleep(250);
+                            }
+                            Thread.sleep(1000);
+
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //btnUsbMarcas.setTextSize(40);
+                                    btnUsbMarcas.setText(".");
+                                }
+                            });
+                            Thread.sleep(250);
+
+
+                            while(ProcessSyncUSB.otgmode){
+                                Log.v(TAG,"threadUsbMarcas otgmode while " + ProcessSyncUSB.otgmode);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if(ProcessSyncUSB.lfilenamemarcaciones > 0){
+                                            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+                                            btnUsbMarcas.setText(decimalFormat.format(ProcessSyncUSB.lfilenamemarcaciones / 1000) + " KB");
+                                        }else{
+                                            if(btnUsbMarcas.getText().length() == 3){
+                                                btnUsbMarcas.setText(".");
+                                            }else{
+                                                btnUsbMarcas.setText(btnUsbMarcas.getText() + ".");
+                                            }
+                                            //btnUsbMarcas.setText("0.00 KB");
+                                        }
+
+                                    }
+                                });
+                                Thread.sleep(250);
+                            }
+
+                            Log.v(TAG,"ProcessSyncUSB.msg " + ProcessSyncUSB.msg);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnUsbMarcas.setEnabled(false);
+                                    btnUsbMarcas.setText(ProcessSyncUSB.msg);
+                                }
+
+                            });
+                            Thread.sleep(2000);
+
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(ProcessSyncUSB.msg.equals("Archivo Guardado")) {
+                                        btnUsbMarcas.setEnabled(false);
+                                        btnUsbMarcas.setText("Extraer USB");
+                                    }
+                                }
+
+                            });
+                            Thread.sleep(3000);
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    btnUsbMarcas.setEnabled(true);
+                                    btnUsbMarcas.setText("Guardar Marcaciones");
+                                }
+                            });
+
+                            //Toast.makeText(ActivityPrincipal.context,"Ethernet Configurado",Toast.LENGTH_LONG).show();
+                            Log.v(TAG,"threadUsbMarcas fin ");
+                        } catch (Exception e) {
+                            Log.e(TAG,"threadUsbMarcas " + e.getMessage());
+                        }
+
+                    }
+                });
+
+                // Iniciar proceso para guardar marcaciones BCK
+                ProcessSyncUSB processSyncUSB = new ProcessSyncUSB();
+                processSyncUSB.startOTGOnOff();
+                threadUsbMarcas.start();
+
+                //Toast.makeText(ActivityPrincipal.context,"Procesando",Toast.LENGTH_SHORT).show();
+
             }
         });
 

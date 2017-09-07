@@ -136,6 +136,18 @@ public class Utilities {
         return val;
     }
 
+    public double convertHexToDouble(String s) {
+        String digits = "0123456789ABCDEF";
+        s = s.toUpperCase();
+        double val = 0;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            int d = digits.indexOf(c);
+            val = 16*val + d;
+        }
+        return val;
+    }
+
     public static int[] byteArrayToIntArray(byte[] barray) {
         int[] iarray = new int[barray.length];
         int i = 0;

@@ -8,8 +8,11 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +26,7 @@ import com.tempus.proyectos.data.queries.QueriesTerminalConfiguracion;
 import com.tempus.proyectos.data.tables.TableEstados;
 
 public class DBManager {
+    private static String TAG = "DA-DBM";
     private Conexion conexion;
     private Context context;
     private SQLiteDatabase database;
@@ -202,6 +206,73 @@ public class DBManager {
 
         return value;
     }
+
+    public class BackupBd extends Thread{
+        private Thread hilo;
+        private String nombreHilo;
+
+        public BackupBd(String nombreHilo) {
+            this.nombreHilo = nombreHilo;
+            Log.v(TAG,"Creando Hilo " + nombreHilo);
+        }
+
+        public void run(){
+            Log.v(TAG,"Ejecutando Hilo " + nombreHilo);
+            try{
+                Log.v(TAG,"BackupBd inicio");
+                deletealltables();
+
+                DBManager dbManager = new DBManager(context);
+                dbManager.open();
+
+                FileReader fr = new FileReader(Environment.getExternalStoragePublicDirectory("") + "/tempus/backupdb.sql"); // /storage/emulated/0/
+                BufferedReader br = new BufferedReader(fr);
+
+                String linea;
+                while((linea = br.readLine()) != null){
+                    try{
+                        Log.v(TAG,"linea = " + linea);
+                        dbManager.execSQL(linea);
+                    }catch (Exception e){
+                        Log.e(TAG,"BackupBd " + e.getMessage());
+                    }
+
+                }
+
+                fr.close();
+
+                dbManager.close();
+
+
+                Log.v(TAG,"BackupBd Finalizando");
+            } catch (Exception e){
+                Log.e(TAG,"BackupBd " + e.getMessage());
+            }
+        }
+
+        public void start(){
+            //Looper.prepare();
+            Log.v(TAG,"Iniciando Hilo " + nombreHilo);
+
+
+            if(hilo == null){
+                hilo = new Thread(nombreHilo);
+                super.start();
+            }
+        }
+
+    }
+
+    public void startBackupBd(){
+        BackupBd backupBd = new BackupBd("startBackupBd");
+        backupBd.start();
+    }
+
+
+
+
+
+
 
 
 

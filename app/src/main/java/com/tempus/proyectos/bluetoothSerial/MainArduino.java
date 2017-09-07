@@ -201,9 +201,9 @@ public class MainArduino {
                 this.mascaraFin = 60;
                 break;
             case "02":
-                this.flagRead = "";
-                this.mascaraIni = 0;
-                this.mascaraFin = 0;
+                this.flagRead = "PROXIMIDAD HID";
+                this.mascaraIni = 48;
+                this.mascaraFin = 64;
                 break;
             case "03":
                 this.flagRead = "";

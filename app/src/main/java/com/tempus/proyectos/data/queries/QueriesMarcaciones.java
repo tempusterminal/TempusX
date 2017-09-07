@@ -121,6 +121,44 @@ public class QueriesMarcaciones {
         return marcacionesList;
     }
 
+    public List<Marcaciones> select_nosync(){
+
+        Marcaciones marcaciones = new Marcaciones();
+        List<Marcaciones> marcacionesList =  new ArrayList<Marcaciones>();
+
+        this.open();
+        Cursor cursor = database.rawQuery(TableMarcaciones.SELECT_NOSYNC_TABLE, null);
+        if(cursor.moveToNext()){
+            do{
+                marcaciones = new Marcaciones();
+                marcaciones.setEmpresa(cursor.getString(cursor.getColumnIndex(TableMarcaciones.Empresa)));
+                marcaciones.setCodigo(cursor.getString(cursor.getColumnIndex(TableMarcaciones.Codigo)));
+                marcaciones.setFechahora(cursor.getString(cursor.getColumnIndex(TableMarcaciones.Fechahora)));
+                marcaciones.setValorTarjeta(cursor.getString(cursor.getColumnIndex(TableMarcaciones.ValorTarjeta)));
+                marcaciones.setHoraTxt(cursor.getString(cursor.getColumnIndex(TableMarcaciones.HoraTxt)));
+                marcaciones.setEntSal(cursor.getString(cursor.getColumnIndex(TableMarcaciones.EntSal)));
+                marcaciones.setFlag(cursor.getString(cursor.getColumnIndex(TableMarcaciones.Flag)));
+                marcaciones.setFecha(cursor.getString(cursor.getColumnIndex(TableMarcaciones.Fecha)));
+                marcaciones.setHora(cursor.getString(cursor.getColumnIndex(TableMarcaciones.Hora)));
+                marcaciones.setIdterminal(cursor.getString(cursor.getColumnIndex(TableMarcaciones.Idterminal)));
+                marcaciones.setIdTipoLect(cursor.getInt(cursor.getColumnIndex(TableMarcaciones.IdTipoLect)));
+                marcaciones.setFlgActividad(cursor.getString(cursor.getColumnIndex(TableMarcaciones.FlgActividad)));
+                marcaciones.setIdUsuario(cursor.getInt(cursor.getColumnIndex(TableMarcaciones.IdUsuario)));
+                marcaciones.setTmpListar(cursor.getString(cursor.getColumnIndex(TableMarcaciones.TmpListar)));
+                marcaciones.setAutorizado(cursor.getInt(cursor.getColumnIndex(TableMarcaciones.Autorizado)));
+                marcaciones.setTipoOperacion(cursor.getInt(cursor.getColumnIndex(TableMarcaciones.TipoOperacion)));
+                marcaciones.setSincronizado(cursor.getInt(cursor.getColumnIndex(TableMarcaciones.Sincronizado)));
+                marcaciones.setDatos(cursor.getString(cursor.getColumnIndex(TableMarcaciones.Datos)));
+                marcaciones.setValorDatoContenido(cursor.getInt(cursor.getColumnIndex(TableMarcaciones.ValorDatoContenido)));
+                marcacionesList.add(marcaciones);
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        this.close();
+        return marcacionesList;
+    }
+
     public List<Marcaciones> select_one_row(){
 
         Marcaciones marcaciones = new Marcaciones();
@@ -437,7 +475,7 @@ public class QueriesMarcaciones {
 
         this.open();
         int count = 0;
-        int pasttime = -10; // -x segundos, minutos, horas en el pasado
+        int pasttime = -600; // -x segundos, minutos, horas en el pasado
         int futuretime = 3; // +x segundos, minutos, horas en el futuro
         int repeatType = 2; //1=MarcaRepetida por ValorTarjeta e IdTipoLect - 2=MarcaRepetida por Empresa y Codigo
 

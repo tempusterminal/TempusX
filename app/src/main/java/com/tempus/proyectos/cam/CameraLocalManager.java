@@ -28,12 +28,12 @@ public class CameraLocalManager {
 
     private String filename;
     public static String rutalocal;
-    private File file;
+    //private File file;
 
     public CameraLocalManager() {
-        rutalocal = Environment.getExternalStoragePublicDirectory("") + "/tempus/img/marcaciones/local/";
-        file = new File(rutalocal);
-        file.mkdirs();
+        rutalocal = Environment.getExternalStoragePublicDirectory("") + "/tempus/img/marcaciones/local/original/";
+        //file = new File(rutalocal);
+        //file.mkdirs();
         Log.v(TAG,"rutalocal " + rutalocal);
     }
 
@@ -83,5 +83,6 @@ public class CameraLocalManager {
 
         return idterminal;
     }
+
 
 }

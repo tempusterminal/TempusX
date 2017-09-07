@@ -538,15 +538,15 @@ public class ActivityComunicacion extends Activity {
                     Log.v(TAG,"edtEthIp (validando) " + edtEthIp.getText().toString());
                     msg = validateParameters("IP", edtEthIp.getText().toString());
                     Log.v(TAG,"msg " + msg);
-                    if(msg.length()==0){
+                    if(msg.replace(" ","").length()==0){
                         Log.v(TAG,"edtEthMascara (validando) " + edtEthMascara.getText().toString());
                         msg = validateParameters("Máscara",edtEthMascara.getText().toString());
                         Log.v(TAG,"msg " + msg);
-                        if(msg.length()==0){
+                        if(msg.replace(" ","").length()==0){
                             Log.v(TAG,"edtEthPuerta (validando) " + edtEthPuerta.getText().toString());
                             msg = validateParameters("P. Enlace",edtEthPuerta.getText().toString());
                             Log.v(TAG,"msg " + msg);
-                            if(msg.length()==0){
+                            if(msg.replace(" ","").length() > 0){
                                 Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
                             }else{
                                 Log.v(TAG,"Parametros Validos (STATIC)");
