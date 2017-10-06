@@ -17,6 +17,7 @@ import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.model.Marcaciones;
 import com.tempus.proyectos.data.tables.TableMarcaciones;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
+import com.tempus.proyectos.threads.ThreadHorariosRelay;
 import com.tempus.proyectos.util.Fechahora;
 
 /**
@@ -31,6 +32,7 @@ public class QueriesMarcaciones {
     private Context context;
     private SQLiteDatabase database;
     CameraLocalManager cameraLocalManager = new CameraLocalManager();
+    ThreadHorariosRelay threadHorariosRelay = new ThreadHorariosRelay();
 
     public QueriesMarcaciones() {
 
@@ -222,6 +224,7 @@ public class QueriesMarcaciones {
 
         String output;
         String apellidosnombres = "";
+        String icono = "";
         String valortarjeta = ValorTarjeta;
         String mensaje = "";
         String mensajedetalle = "";
@@ -254,6 +257,7 @@ public class QueriesMarcaciones {
             try{
                 autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,1);
                 apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                icono = autorizaciones.getIcono();
                 valortarjeta = autorizaciones.getValorTarjeta();
                 mensaje = autorizaciones.getMensaje();
                 mensajedetalle = autorizaciones.getMensajeDetalle();
@@ -261,8 +265,9 @@ public class QueriesMarcaciones {
                 lectorasiguiente = "0";
 
             }catch(Exception e){
-                Log.e("Autorizaciones",e.getMessage());
+                //Log.e(TAG,"Marcación directa obteniedo autorizaciones " + e.getMessage());
                 apellidosnombres = "";
+                icono = "";
                 valortarjeta = ValorTarjeta;
                 mensaje = autorizaciones.getMensaje();
                 mensajedetalle = autorizaciones.getMensajeDetalle();
@@ -307,6 +312,7 @@ public class QueriesMarcaciones {
                         try{
                             autorizaciones = this.GestionarMarcaciones(ValorTarjeta,Idterminal,IdTipoLect,FlgActividad,Fechahora,insert);
                             apellidosnombres = autorizaciones.getApellidoPaterno() + " " + autorizaciones.getApellidoMaterno() + " " + autorizaciones.getNombres().substring(0,1);
+                            icono = autorizaciones.getIcono();
                             valortarjeta = autorizaciones.getValorTarjeta();
                             mensaje = autorizaciones.getMensaje();
                             mensajedetalle = autorizaciones.getMensajeDetalle();
@@ -325,6 +331,7 @@ public class QueriesMarcaciones {
                         }catch(Exception e){
                             Log.e("Autorizaciones",e.getMessage());
                             apellidosnombres = "";
+                            icono = "";
                             valortarjeta = ValorTarjeta;
                             mensaje = autorizaciones.getMensaje();
                             mensajedetalle = autorizaciones.getMensajeDetalle();
@@ -341,19 +348,19 @@ public class QueriesMarcaciones {
             }
         }
 
-        output = apellidosnombres + "," + valortarjeta + "," + mensaje + "," + mensajedetalle + "," + lectorasiguiente + "," + ModoMarcacion;
-        Log.d("Autorizaciones","output = " + output);
+        output = apellidosnombres + "," + valortarjeta + "," + mensaje + "," + mensajedetalle + "," + lectorasiguiente + "," + ModoMarcacion + "," + icono;
+        Log.v(TAG,"ModoMarcacion output = " + output);
         return output;
     }
 
     public Autorizaciones GestionarMarcaciones(String ValorTarjeta, String Idterminal, int IdTipoLect, String FlgActividad, String Fechahora, int Insert){
 
-        Log.d("Autorizaciones","GestionarMarcaciones: " + ValorTarjeta);
-        Log.d("Autorizaciones","GestionarMarcaciones: " + Idterminal);
-        Log.d("Autorizaciones","GestionarMarcaciones: " + IdTipoLect);
-        Log.d("Autorizaciones","GestionarMarcaciones: " + FlgActividad);
-        Log.d("Autorizaciones","GestionarMarcaciones: " + Fechahora);
-        Log.d("Autorizaciones","GestionarMarcaciones: " + Insert);
+        Log.v(TAG,"ValorTarjeta: " + ValorTarjeta);
+        Log.v(TAG,"Idterminal: " + Idterminal);
+        Log.v(TAG,"IdTipoLect: " + IdTipoLect);
+        Log.v(TAG,"FlgActividad: " + FlgActividad);
+        Log.v(TAG,"Fechahora: " + Fechahora);
+        Log.v(TAG,"Insert: " + Insert);
 
         int a = 0;
         int flagEnableidtipolect = 1;
@@ -365,65 +372,62 @@ public class QueriesMarcaciones {
         List<Autorizaciones> autorizacionesList = new ArrayList<Autorizaciones>();
         Autorizaciones autorizaciones = new Autorizaciones();
 
+        //Variable que sirve para consultar si se va a insertar la marcación según sea el caso
+        // tmpListar = 0 (Solo inserta con MARCACION AUTORIZADA, modo default)
+        // tmpListar = 1 (Consultar si se inserta con MARCACION AUTORIZADA)
+        // tmpListar = 2 (Consultar si se inserta con MARCACION NO AUTORIZADA: NO TIENE PERMISO EN ESTA LECTORA)
+        // tmpListar = 3 (Consultar si se inserta con MARCACION NO AUTORIZADA: ESTADO NO PERMITE MARCACION)
+        // tmpListar = 4 (Consultar si se inserta con MARCACION REPETIDA)
+        // tmpListar = 5 (Consultar si se inserta con MARCACION NO AUTORIZADA: TARJETA/BIOME NO REGISTRADA)
+        // tmpListar = 6 (Consultar si se inserta con MARCACION NO AUTORIZADA: TARJETA/BIOME NO SE RECONOCE)
+        // tmpListar = 7 (Consultar si se inserta con MARCACION NO AUTORIZADA: LECTORA NO HABILITADA)
+        String tmpListar = "0";
+
         Log.d("Autorizaciones","QueriesMarcaciones.GestionarMarcaciones: ");
 
-        if(queriesTerminalTipolect.ConsultarLectora(Idterminal,IdTipoLect) == flagEnableidtipolect){
-            if(ValorTarjeta != nullvalortarjeta && ValorTarjeta != null){
-                autorizacionesList = queriesAutorizaciones.buscarAutorizaciones(ValorTarjeta,IdTipoLect,Idterminal);
-                if(!autorizacionesList.isEmpty()){
-                    if(!MarcacionRepetida(autorizacionesList.get(a), Fechahora, FlgActividad)){
-                        if(autorizacionesList.get(a).getEstadoRequiereAsistencia() == estadoPermiteAsistencia){
-                            if(autorizacionesList.get(a).getFlagPerTipoLectTerm() == permisoHabilitado){
+        if(!FlgActividad.equalsIgnoreCase("")){
+            if(queriesTerminalTipolect.ConsultarLectora(Idterminal,IdTipoLect) == flagEnableidtipolect){
+                if(ValorTarjeta != nullvalortarjeta && ValorTarjeta != null){
+                    autorizacionesList = queriesAutorizaciones.buscarAutorizaciones(ValorTarjeta,IdTipoLect,Idterminal);
+                    if(!autorizacionesList.isEmpty()){
+                        if(!MarcacionRepetida(autorizacionesList.get(a), Fechahora, FlgActividad)){
+                            if(autorizacionesList.get(a).getEstadoRequiereAsistencia() == estadoPermiteAsistencia){
+                                if(autorizacionesList.get(a).getFlagPerTipoLectTerm() == permisoHabilitado){
 
-                                autorizaciones.setNombres(autorizacionesList.get(a).getNombres());
-                                autorizaciones.setApellidoPaterno(autorizacionesList.get(a).getApellidoPaterno());
-                                autorizaciones.setApellidoMaterno(autorizacionesList.get(a).getApellidoMaterno());
-                                autorizaciones.setValorTarjeta(ValorTarjeta);
-                                autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
-                                autorizaciones.setMensaje("MARCACION AUTORIZADA");
-                                autorizaciones.setMensajeDetalle("");
+                                    autorizaciones.setNombres(autorizacionesList.get(a).getNombres());
+                                    autorizaciones.setApellidoPaterno(autorizacionesList.get(a).getApellidoPaterno());
+                                    autorizaciones.setApellidoMaterno(autorizacionesList.get(a).getApellidoMaterno());
+                                    autorizaciones.setValorTarjeta(ValorTarjeta);
+                                    autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
+                                    autorizaciones.setMensaje("MARCACION AUTORIZADA");
+                                    autorizaciones.setMensajeDetalle("");
+                                    //threadHorariosRelay.startRelayReading(1);
+                                    tmpListar = "1";
 
-                                //INSERT MARCACION
-                                Fechahora fechahora = new Fechahora();
-
-                                Marcaciones marcaciones = new Marcaciones();
-                                marcaciones.setEmpresa(autorizacionesList.get(a).getEmpresa());
-                                marcaciones.setCodigo(autorizacionesList.get(a).getCodigo());
-                                marcaciones.setFechahora(Fechahora);
-                                marcaciones.setValorTarjeta(autorizacionesList.get(a).getValorTarjeta());
-                                marcaciones.setHoraTxt(fechahora.getHora(Fechahora));
-                                marcaciones.setEntSal("0");
-                                marcaciones.setFlag("1");
-                                marcaciones.setFecha(fechahora.getFechahoracero(Fechahora));
-                                marcaciones.setHora(fechahora.getFechacerohora(Fechahora));
-                                marcaciones.setIdterminal(Idterminal);
-                                marcaciones.setIdTipoLect(IdTipoLect);
-                                marcaciones.setFlgActividad(FlgActividad);
-                                marcaciones.setIdUsuario(1);
-                                marcaciones.setTmpListar("0");
-                                marcaciones.setAutorizado(1);
-                                marcaciones.setTipoOperacion(1);
-                                marcaciones.setSincronizado(0);
-                                //marcaciones.setDatos(null);
-                                //marcaciones.setValorDatoContenido(0);
-                                if(Insert == 1){
-                                    cameraLocalManager.takePhotoFrontCamera(fechahora.setFileName(Fechahora),Idterminal);
-                                    this.insert(marcaciones);
-                                    Log.d("Autorizaciones","Marcacion: " + marcaciones.toString());
-                                    Log.d("Autorizaciones","Marcacion Registrada");
                                 }else{
-                                    Log.d("Autorizaciones","Marcacion: " + marcaciones.toString());
-                                    Log.d("Autorizaciones","Marcacion Verificada");
-                                }
 
+                                    autorizaciones.setNombres(autorizacionesList.get(a).getNombres());
+                                    autorizaciones.setApellidoPaterno(autorizacionesList.get(a).getApellidoPaterno());
+                                    autorizaciones.setApellidoMaterno(autorizacionesList.get(a).getApellidoMaterno());
+                                    autorizaciones.setValorTarjeta(ValorTarjeta);
+                                    autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
+                                    //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
+                                    autorizaciones.setMensaje("NO AUTORIZADA");
+                                    autorizaciones.setMensajeDetalle("NO TIENE PERMISO EN ESTA LECTORA");
+                                    //threadHorariosRelay.startRelayReading(2);
+                                    tmpListar = "2";
+                                }
                             }else{
                                 autorizaciones.setNombres(autorizacionesList.get(a).getNombres());
                                 autorizaciones.setApellidoPaterno(autorizacionesList.get(a).getApellidoPaterno());
                                 autorizaciones.setApellidoMaterno(autorizacionesList.get(a).getApellidoMaterno());
-                                autorizaciones.setValorTarjeta(ValorTarjeta);
                                 autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
-                                autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                                autorizaciones.setMensajeDetalle("NO TIENE PERMISO EN ESTA LECTORA");
+                                autorizaciones.setValorTarjeta(ValorTarjeta);
+                                //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
+                                autorizaciones.setMensaje("NO AUTORIZADA");
+                                autorizaciones.setMensajeDetalle("ESTADO NO PERMITE MARCACION");
+                                //threadHorariosRelay.startRelayReading(2);
+                                tmpListar = "3";
                             }
                         }else{
                             autorizaciones.setNombres(autorizacionesList.get(a).getNombres());
@@ -431,42 +435,113 @@ public class QueriesMarcaciones {
                             autorizaciones.setApellidoMaterno(autorizacionesList.get(a).getApellidoMaterno());
                             autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
                             autorizaciones.setValorTarjeta(ValorTarjeta);
-                            autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                            autorizaciones.setMensajeDetalle("ESTADO NO PERMITE MARCACION");
+                            autorizaciones.setMensaje("MARCACION REPETIDA");
+                            autorizaciones.setMensajeDetalle("");
+                            //threadHorariosRelay.startRelayReading(2);
+                            tmpListar = "4";
                         }
-                    }else{
-                        autorizaciones.setNombres(autorizacionesList.get(a).getNombres());
-                        autorizaciones.setApellidoPaterno(autorizacionesList.get(a).getApellidoPaterno());
-                        autorizaciones.setApellidoMaterno(autorizacionesList.get(a).getApellidoMaterno());
-                        autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
-                        autorizaciones.setValorTarjeta(ValorTarjeta);
-                        autorizaciones.setMensaje("MARCACION REPETIDA");
-                        autorizaciones.setMensajeDetalle("");
                     }
-                }
-                else{
+                    else{
+                        autorizaciones.setValorTarjeta(ValorTarjeta);
+                        //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
+                        autorizaciones.setMensaje("NO AUTORIZADA");
+                        autorizaciones.setMensajeDetalle("TARJETA/BIOME NO REGISTRADA");
+                        //threadHorariosRelay.startRelayReading(2);
+                        tmpListar = "5";
+                    }
+                }else{
                     autorizaciones.setValorTarjeta(ValorTarjeta);
-                    autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                    autorizaciones.setMensajeDetalle("TARJETA/BIOME NO REGISTRADA");
+                    //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
+                    autorizaciones.setMensaje("NO AUTORIZADA");
+                    autorizaciones.setMensajeDetalle("TARJETA/BIOME NO SE RECONOCE");
+                    //threadHorariosRelay.startRelayReading(2);
+                    tmpListar = "6";
                 }
             }else{
-                autorizaciones.setValorTarjeta(ValorTarjeta);
-                autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                autorizaciones.setMensajeDetalle("TARJETA/BIOME NO SE RECONOCE");
+                //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
+                autorizaciones.setMensaje("NO AUTORIZADA");
+                autorizaciones.setMensajeDetalle("LECTORA NO HABILITADA");
+                //threadHorariosRelay.startRelayReading(2);
+                tmpListar = "7";
             }
         }else{
-            autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-            autorizaciones.setMensajeDetalle("LECTORA NO HABILITADA");
+            tmpListar = "8";
         }
 
 
 
+
+        if(getInsertMarcaciones(tmpListar)){
+            try{
+                //Agregar a la lista de autorizaciones el objeto autorizaciones
+                autorizacionesList.add(autorizaciones);
+
+                Log.v(TAG,"autorizacionesList = " + autorizacionesList.toString());
+                //INSERT MARCACION
+                Fechahora fechahora = new Fechahora();
+
+                String Empresa = autorizacionesList.get(a).getEmpresa();
+                String Codigo = autorizacionesList.get(a).getCodigo();
+                String vTarjeta = autorizacionesList.get(a).getValorTarjeta();
+
+                if(Empresa == null){
+                    Empresa = "00";
+                }
+                if(Codigo == null){
+                    Codigo = "MAC" + ActivityPrincipal.macWlan.replace(":","");
+                }
+                if(vTarjeta == null){
+                    vTarjeta = ValorTarjeta;
+                }
+
+                Marcaciones marcaciones = new Marcaciones();
+                //marcaciones.setEmpresa(autorizacionesList.get(a).getEmpresa());
+                //marcaciones.setCodigo(autorizacionesList.get(a).getCodigo());
+                marcaciones.setEmpresa(Empresa);
+                marcaciones.setCodigo(Codigo);
+                marcaciones.setFechahora(Fechahora);
+                marcaciones.setValorTarjeta(vTarjeta);
+                marcaciones.setHoraTxt(fechahora.getHora(Fechahora));
+                marcaciones.setEntSal("0");
+                marcaciones.setFlag("1");
+                marcaciones.setFecha(fechahora.getFechahoracero(Fechahora));
+                marcaciones.setHora(fechahora.getFechacerohora(Fechahora));
+                marcaciones.setIdterminal(Idterminal);
+                marcaciones.setIdTipoLect(IdTipoLect);
+                marcaciones.setFlgActividad(FlgActividad);
+                marcaciones.setIdUsuario(1);
+                marcaciones.setTmpListar(tmpListar);
+                marcaciones.setAutorizado(1);
+                marcaciones.setTipoOperacion(1);
+                marcaciones.setSincronizado(0);
+                //marcaciones.setDatos(null);
+                //marcaciones.setValorDatoContenido(0);
+
+                //Insert = 0;
+
+                if(Insert == 1){
+                    this.insert(marcaciones);
+                    if(tmpListar.equalsIgnoreCase("1")){
+                        cameraLocalManager.takePhotoFrontCamera(fechahora.setFileName(Fechahora),Idterminal);
+                    }
+                    Log.v(TAG,"Marcacion Registrada: " + marcaciones.toString());
+                    //Log.v(TAG,"Marcacion Registrada");
+                }else{
+                    Log.v(TAG,"Marcacion Verificada: " + marcaciones.toString());
+                    //Log.v(TAG,"Marcacion Verificada");
+                }
+            }catch (Exception e){
+                Log.e(TAG,"marcaciones.set = " + e.getMessage());
+            }
+
+        }
+
         for(int i = 0; i < autorizacionesList.size(); i++){
-            Log.d("Autorizaciones",autorizacionesList.get(i).toString());
+            Log.v(TAG,autorizacionesList.get(i).toString());
             a = i;
         }
 
-
+        //Log.v(TAG,"autorizaciones " + autorizaciones.toString());
         return autorizaciones;
     }
 
@@ -475,10 +550,22 @@ public class QueriesMarcaciones {
 
         this.open();
         int count = 0;
-        int pasttime = -600; // -x segundos, minutos, horas en el pasado
+        //Parametro en duro, marcacion repetida en segundos
+        //int pasttime = -600; // -x segundos, minutos, horas en el pasado
+        int pasttime = -3;
         int futuretime = 3; // +x segundos, minutos, horas en el futuro
         int repeatType = 2; //1=MarcaRepetida por ValorTarjeta e IdTipoLect - 2=MarcaRepetida por Empresa y Codigo
 
+
+        try{
+            if(ActivityPrincipal.parameterMarcacionRepetida == 0){
+                pasttime = -3;
+            }else if (ActivityPrincipal.parameterMarcacionRepetida > 0){
+                pasttime = ActivityPrincipal.parameterMarcacionRepetida * -60;
+            }
+        }catch (Exception e){
+            Log.e(TAG,"get ActivityPrincipal.parameterMarcacionRepetida " + e.getMessage());
+        }
 
         String query =
                 "SELECT " +
@@ -558,6 +645,67 @@ public class QueriesMarcaciones {
         cursor.close();
         this.close();
 
+    }
+
+    private boolean getInsertMarcaciones(String tmpListar){
+        String insertMarcaciones = ActivityPrincipal.parametersInsertMarcaciones;
+        if(insertMarcaciones.length() == 0){
+            return true;
+        }
+
+        if(tmpListar.equalsIgnoreCase("0")){
+            return true;
+        }else if(tmpListar.equalsIgnoreCase("1")){
+            if(String.valueOf(insertMarcaciones.charAt(0)).equalsIgnoreCase("1")){
+                return true;
+            }else{
+                return false;
+            }
+        }else if(tmpListar.equalsIgnoreCase("2")){
+            if(String.valueOf(insertMarcaciones.charAt(1)).equalsIgnoreCase("1")){
+                return true;
+            }else{
+                return false;
+            }
+        }else if(tmpListar.equalsIgnoreCase("3")){
+            if(String.valueOf(insertMarcaciones.charAt(2)).equalsIgnoreCase("1")){
+                return true;
+            }else{
+                return false;
+            }
+        }else if(tmpListar.equalsIgnoreCase("4")){
+            if(String.valueOf(insertMarcaciones.charAt(3)).equalsIgnoreCase("1")){
+                return true;
+            }else{
+                return false;
+            }
+        }else if(tmpListar.equalsIgnoreCase("5")){
+            if(String.valueOf(insertMarcaciones.charAt(4)).equalsIgnoreCase("1")){
+                return true;
+            }else{
+                return false;
+            }
+        }else if(tmpListar.equalsIgnoreCase("6")){
+            if(String.valueOf(insertMarcaciones.charAt(5)).equalsIgnoreCase("1")){
+                return true;
+            }else{
+                return false;
+            }
+        }else if(tmpListar.equalsIgnoreCase("7")){
+            if(String.valueOf(insertMarcaciones.charAt(6)).equalsIgnoreCase("1")){
+                return true;
+            }else{
+                return false;
+            }
+        }else if(tmpListar.equalsIgnoreCase("8")){
+            if(String.valueOf(insertMarcaciones.charAt(7)).equalsIgnoreCase("1")){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
 

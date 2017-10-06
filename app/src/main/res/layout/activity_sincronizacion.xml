@@ -147,7 +147,7 @@
 
                     <TextView
                         android:text="Forzar Replica:"
-                        android:layout_width="@dimen/acSincronizacion_lblrep0_width"
+                        android:layout_width="wrap_content"
                         android:layout_height="@dimen/acSincronizacion_lblrep0_height"
                         android:layout_marginTop="@dimen/acSincronizacion_lblrep0_marginTop"
                         android:layout_marginLeft="@dimen/acSincronizacion_lblrep0_marginLeft"

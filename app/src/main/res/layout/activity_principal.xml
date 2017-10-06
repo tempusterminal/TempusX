@@ -91,14 +91,6 @@
         android:background="@color/colorLinea"
         android:id="@+id/txvLinea1" />
 
-    <TextView
-        android:layout_width="@dimen/linea_width"
-        android:layout_height="@dimen/linea_height"
-        android:layout_marginTop="@dimen/linea2_marginTop"
-        android:layout_marginLeft="@dimen/linea2_marginLeft"
-        android:background="@color/colorLinea"
-        android:id="@+id/txvLinea2" />
-
 
     <!-- Componentes -->
 
@@ -224,57 +216,63 @@
 
     <!-- Botones de Eventos-->
 
-    <Button
-        android:text="1"
-        android:layout_width="@dimen/botonAcceso_width"
-        android:layout_height="@dimen/botonAcceso_height"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120px"
         android:layout_marginTop="@dimen/btnEvent_marginTopRow1"
-        android:layout_marginLeft="@dimen/botonAcceso1_marginLeft"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/botonAcceso_textSize"
-        android:textStyle="bold"
-        android:background="@color/colorGrisOscuro"
-        android:id="@+id/btnEvent01" />
+        android:layout_marginLeft="@dimen/act_size02"
+        android:layout_marginRight="@dimen/act_size02"
+        android:orientation="horizontal"
+        >
+        <Button
+            android:text="1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/act_size02"
+            android:layout_marginRight="@dimen/act_size02"
+            android:textSize="@dimen/botonAcceso_textSize"
+            android:textStyle="bold"
+            android:background="@color/colorGrisOscuro"
+            android:id="@+id/btnEvent01" />
 
-    <Button
-        android:text="2"
-        android:layout_width="@dimen/botonAcceso_width"
-        android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="@dimen/btnEvent_marginTopRow1"
-        android:layout_marginLeft="@dimen/botonAcceso2_marginLeft"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/botonAcceso_textSize"
-        android:textStyle="bold"
-        android:background="@color/colorGrisOscuro"
-        android:id="@+id/btnEvent02" />
+        <Button
+            android:text="2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/act_size02"
+            android:layout_marginRight="@dimen/act_size02"
+            android:textSize="@dimen/botonAcceso_textSize"
+            android:textStyle="bold"
+            android:background="@color/colorGrisOscuro"
+            android:id="@+id/btnEvent02" />
 
-    <Button
-        android:text="3"
-        android:layout_width="@dimen/botonAcceso_width"
-        android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="@dimen/btnEvent_marginTopRow1"
-        android:layout_marginLeft="@dimen/botonAcceso3_marginLeft"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/botonAcceso_textSize"
-        android:textStyle="bold"
-        android:background="@color/colorGrisOscuro"
-        android:id="@+id/btnEvent03" />
+        <Button
+            android:text="3"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/act_size02"
+            android:layout_marginRight="@dimen/act_size02"
+            android:textSize="@dimen/botonAcceso_textSize"
+            android:textStyle="bold"
+            android:background="@color/colorGrisOscuro"
+            android:id="@+id/btnEvent03" />
 
-    <Button
-        android:text="4"
-        android:layout_width="@dimen/botonAcceso_width"
-        android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="@dimen/btnEvent_marginTopRow1"
-        android:layout_marginLeft="@dimen/botonAcceso4_marginLeft"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/botonAcceso_textSize"
-        android:textStyle="bold"
-        android:background="@color/colorGrisOscuro"
-        android:id="@+id/btnEvent04" />
+        <Button
+            android:text="4"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/act_size02"
+            android:layout_marginRight="@dimen/act_size02"
+            android:textSize="@dimen/botonAcceso_textSize"
+            android:textStyle="bold"
+            android:background="@color/colorGrisOscuro"
+            android:id="@+id/btnEvent04" />
+
+    </LinearLayout>
 
     <Button
         android:text="5"
@@ -512,27 +510,38 @@
         android:id="@+id/txvHuellaGif" />
      -->
 
+
+    <ImageView
+        android:layout_width="@dimen/act_size18"
+        android:layout_height="@dimen/act_size24"
+        android:layout_marginTop="@dimen/act_size16"
+        android:layout_marginLeft="@dimen/act_size04"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/fotopersonal"
+        android:id="@+id/imgFotoPersonal"
+        />
+
     <TextView
-        android:layout_width="@dimen/fondo2_width"
-        android:layout_height="@dimen/mWidgetNombre_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/mWidgetNombre_marginTop"
+        android:layout_marginLeft="@dimen/act_size25"
         android:layout_alignParentTop="true"
         android:text="NOMBRES APE01 APE02"
         android:textSize="@dimen/mWidgetNombre_textSize"
         android:textStyle="bold"
-        android:gravity="center"
         android:id="@+id/txvMarcacionNombre"/>
 
     <TextView
-        android:layout_width="@dimen/fondo2_width"
-        android:layout_height="@dimen/mWidgetTarjeta_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/mWidgetTarjeta_marginTop"
+        android:layout_marginLeft="@dimen/act_size25"
         android:layout_alignParentTop="true"
         android:text="00000000"
         android:id="@+id/txvMarcacionTarjeta"
         android:textSize="@dimen/mWidgetTarjeta_textSize"
         android:textStyle="bold"
-        android:gravity="center"
         android:textAlignment="center"/>
 
     <TextView
@@ -652,6 +661,14 @@
         android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/buttonWarning02" />
 
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginLeft="@dimen/linea2_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea2"
+        android:layout_below="@+id/txvSecret01"
+        android:layout_alignParentStart="true" />
 
 
 </RelativeLayout>

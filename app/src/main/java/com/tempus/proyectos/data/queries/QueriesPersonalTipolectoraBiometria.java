@@ -38,6 +38,7 @@ public class QueriesPersonalTipolectoraBiometria {
     private Context context;
     private SQLiteDatabase database;
     private Utilities util;
+    public static String statusReplicate = "";
 
     public QueriesPersonalTipolectoraBiometria(Context context) {
         this.context = context;
@@ -349,17 +350,21 @@ public class QueriesPersonalTipolectoraBiometria {
                         objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"EnrollByTemplate",parametro);
                         isReplicatingTemplate = true;
 
-
-
+                        /*
                         while(isReplicatingTemplate){
                             //Esperando que termine de replicar
                             //Log.v("TEMPUS: ","Esperando is Replicatinfg False");
                             //isReplicatingTemplate = true;
-
-
-
-
                         }
+                        */
+
+                        for(int i = 0; i < 3; i++){
+                            if(isReplicatingTemplate){
+                                i = 3;
+                            }
+                            Thread.sleep(1000);
+                        }
+
 
                         Log.v("TEMPUS: ","+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
                         Log.v("TEMPUS: ","Biometria Replicada con Exito");
@@ -393,6 +398,7 @@ public class QueriesPersonalTipolectoraBiometria {
                 objSuprema.limpiarTramaSuprema();
 
                 Log.v("TEMPUS: ","Cantidad de Biometrias: " + biometriasPorReplicar + " > (+) Replicadas: " + biometriasReplicadas + " > (x) No Replicadas: " + biometriasNoReplicadas + " > (o) Actualizadas: " + biometriasActualizadas);
+                statusReplicate = "(BIO=" + biometriasPorReplicar + ") " + "(OK=" + biometriasReplicadas + ") " + "(KO=" + biometriasNoReplicadas + ") " + "(UP=" + biometriasActualizadas + ")";
 
 
             }while(cursor.moveToNext());
@@ -416,7 +422,7 @@ public class QueriesPersonalTipolectoraBiometria {
         Log.v("TEMPUS: ","oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
         Log.v("TEMPUS: ","Resumen -> Biometrias: " + biometriasPorReplicar + " > (+) Replicadas: " + biometriasReplicadas + " > (x) No Replicadas: " + biometriasNoReplicadas + " > (o) Actualizadas: " + biometriasActualizadas);
         Log.v("TEMPUS: ","oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo");
-
+        statusReplicate = "(RES)> " + "(BIO=" + biometriasPorReplicar + ") " + "(OK=" + biometriasReplicadas + ") " + "(KO=" + biometriasNoReplicadas + ") " + "(UP=" + biometriasActualizadas + ")";
         isReplicating = false;
 
         cursor.close();

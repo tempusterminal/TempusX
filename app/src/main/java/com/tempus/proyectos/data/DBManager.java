@@ -210,6 +210,8 @@ public class DBManager {
     public class BackupBd extends Thread{
         private Thread hilo;
         private String nombreHilo;
+        private int type;
+        private String filename = "";
 
         public BackupBd(String nombreHilo) {
             this.nombreHilo = nombreHilo;
@@ -218,6 +220,13 @@ public class DBManager {
 
         public void run(){
             Log.v(TAG,"Ejecutando Hilo " + nombreHilo);
+
+            if(type == 1){
+                filename = "/tempus/config/config.sql";
+            }else if(type == 2){
+                filename = "/tempus/backupdb.sql";
+            }
+
             try{
                 Log.v(TAG,"BackupBd inicio");
                 deletealltables();
@@ -225,7 +234,7 @@ public class DBManager {
                 DBManager dbManager = new DBManager(context);
                 dbManager.open();
 
-                FileReader fr = new FileReader(Environment.getExternalStoragePublicDirectory("") + "/tempus/backupdb.sql"); // /storage/emulated/0/
+                FileReader fr = new FileReader(Environment.getExternalStoragePublicDirectory("") + filename); // /storage/emulated/0/ + filename
                 BufferedReader br = new BufferedReader(fr);
 
                 String linea;
@@ -250,11 +259,10 @@ public class DBManager {
             }
         }
 
-        public void start(){
+        public void start(int type){
             //Looper.prepare();
             Log.v(TAG,"Iniciando Hilo " + nombreHilo);
-
-
+            this.type = type;
             if(hilo == null){
                 hilo = new Thread(nombreHilo);
                 super.start();
@@ -263,9 +271,9 @@ public class DBManager {
 
     }
 
-    public void startBackupBd(){
+    public void startBackupBd(int type){
         BackupBd backupBd = new BackupBd("startBackupBd");
-        backupBd.start();
+        backupBd.start(type);
     }
 
 

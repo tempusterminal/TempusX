@@ -103,8 +103,10 @@
             android:screenOrientation="landscape"></activity>
         <activity
             android:name=".ActivityGeomano"
-            android:screenOrientation="landscape">
-        </activity>
+            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".ActivityEnergia"
+            android:screenOrientation="landscape"></activity>
     </application>
 
 </manifest>

@@ -15,11 +15,22 @@
     <string name="titulo_configini">ADMINISTRAR</string>
     <string name="titulo_usuario">USUARIO</string>
     <string name="titulo_geomano">GEOMANO</string>
+    <string name="titulo_energia">ENERGÍA</string>
 
-    <string-array name="planets_array">
-        <item>Dni</item>
-        <item>Dnie</item>
-        <item>C.E.</item>
-        <item>Pas.</item>
+    <string name="Cancelar">Cancelar</string>
+    <string name="Aceptar">Aceptar</string>
+
+    <string-array name="relays">
+        <item>Relays</item>
     </string-array>
+
+
+    <string-array name="intervalosrelay">
+        <item>Horarios</item>
+    </string-array>
+
+    <string-array name="parameters">
+        <item>No disponible</item>
+    </string-array>
+
 </resources>

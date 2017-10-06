@@ -4,6 +4,7 @@
     android:id="@+id/activity_sistema"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorBlanco"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -13,20 +14,12 @@
     <!-- Fondos -->
 
     <TextView
+        android:id="@+id/Fondo1"
         android:layout_width="@dimen/fondo1_width"
         android:layout_height="@dimen/fondo1alt_height"
-        android:layout_marginTop="@dimen/fondo1_marginTop"
         android:layout_marginLeft="@dimen/fondo1_marginLeft"
-        android:background="@color/colorFondoBarra"
-        android:id="@+id/Fondo1" />
-
-    <TextView
-        android:layout_width="@dimen/fondo2_width"
-        android:layout_height="@dimen/fondo2alt_height"
-        android:layout_marginTop="@dimen/fondo2alt_marginTop"
-        android:layout_marginLeft="@dimen/fondo2_marginLeft"
-        android:background="@color/colorFondoCuerpo"
-        android:id="@+id/Fondo2" />
+        android:layout_marginTop="@dimen/fondo1_marginTop"
+        android:background="@color/colorFondoBarra"/>
 
     <!--
     <fragment
@@ -42,215 +35,335 @@
      -->
 
 
-
     <TextView
+        android:id="@+id/txvBarraInf"
         android:layout_width="@dimen/fondo3_width"
         android:layout_height="@dimen/fondo3_height"
-        android:layout_marginTop="@dimen/fondo3_marginTop"
         android:layout_marginLeft="@dimen/fondo3_marginLeft"
-        android:background="@color/colorFondoBarra"
-        android:id="@+id/txvBarraInf" />
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:background="@color/colorFondoBarra"/>
 
     <TextView
+        android:id="@+id/txvLinea3"
         android:layout_width="@dimen/linea_width"
         android:layout_height="@dimen/linea_height"
-        android:layout_marginTop="@dimen/fondo3_marginTop"
         android:layout_marginLeft="@dimen/linea3_marginLeft"
-        android:background="@color/colorLinea"
-        android:id="@+id/txvLinea3" />
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:background="@color/colorLinea"/>
 
     <TextView
+        android:id="@+id/txvLinea4"
         android:layout_width="@dimen/linea_width"
         android:layout_height="@dimen/linea_height"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="@dimen/linea3_marginLeft"
-        android:background="@color/colorLinea"
-        android:id="@+id/txvLinea4" />
-
+        android:background="@color/colorLinea"/>
 
 
     <!-- Lineas -->
 
     <TextView
+        android:id="@+id/linea1"
         android:layout_width="@dimen/linea_width"
         android:layout_height="@dimen/linea_height"
-        android:layout_marginTop="@dimen/linea1_marginTop"
         android:layout_marginLeft="@dimen/linea1_marginLeft"
-        android:background="@color/colorLinea"
-        android:id="@+id/linea1" />
+        android:layout_marginTop="@dimen/linea1_marginTop"
+        android:background="@color/colorLinea"/>
 
     <TextView
+        android:id="@+id/linea2"
         android:layout_width="@dimen/linea_width"
         android:layout_height="@dimen/linea_height"
-        android:layout_marginTop="@dimen/linea2alt_marginTop"
         android:layout_marginLeft="@dimen/linea2alt_marginLeft"
-        android:background="@color/colorLinea"
-        android:id="@+id/linea2" />
+        android:layout_marginTop="@dimen/linea2alt_marginTop"
+        android:background="@color/colorLinea"/>
 
 
     <!-- Titulo -->
 
     <ImageView
+        android:id="@+id/btnMasterSistema"
         android:layout_width="@dimen/logo_width"
         android:layout_height="@dimen/logo_height"
-        android:layout_marginTop="@dimen/logo_marginTop"
-        android:layout_marginLeft="@dimen/logo_marginLeft"
         android:layout_alignParentLeft="true"
-        android:src="@drawable/logo"
-        android:id="@+id/btnMasterSistema" />
+        android:layout_marginLeft="@dimen/logo_marginLeft"
+        android:layout_marginTop="@dimen/logo_marginTop"
+        android:src="@drawable/logo"/>
 
     <TextView
+        android:id="@+id/Titulo"
         android:layout_width="@dimen/titulo_width"
         android:layout_height="@dimen/titulo_height"
-        android:layout_marginTop="@dimen/titulo_marginTop"
         android:layout_marginLeft="@dimen/titulo_marginLeft"
-        android:text="@string/titulo_sistema"
-        android:textSize="@dimen/titulo_textSize"
-        android:textColor="@color/colorTexto"
-        android:textStyle="bold"
+        android:layout_marginTop="@dimen/titulo_marginTop"
         android:gravity="center_vertical"
-        android:id="@+id/Titulo" />
+        android:text="@string/titulo_sistema"
+        android:textColor="@color/colorTexto"
+        android:textSize="@dimen/titulo_textSize"
+        android:textStyle="bold"/>
 
 
     <!-- COMPONENTES -->
 
-    <TextView
-        android:text="ID Terminal:"
-        android:layout_width="@dimen/acSistema_lblItemAll_width"
-        android:layout_height="@dimen/acSistema_lblItemAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem1_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:id="@+id/textView14" />
+    <TabHost
+        android:id="@+id/tabHostSys"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fondo2alt_height"
+        android:layout_marginTop="@dimen/fondo2alt_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:layout_alignParentLeft="true">
 
-    <TextView
-        android:text="Firmware:"
-        android:layout_width="@dimen/acSistema_lblItemAll_width"
-        android:layout_height="@dimen/acSistema_lblItemAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem2_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:id="@+id/textView15" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-    <TextView
-        android:text="Software:"
-        android:layout_width="@dimen/acSistema_lblItemAll_width"
-        android:layout_height="@dimen/acSistema_lblItemAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem3_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:id="@+id/textView16" />
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorTabNonFocusedNone">
+            </TabWidget>
 
-    <TextView
-        android:text="Dirección IP:"
-        android:layout_width="@dimen/acSistema_lblItemAll_width"
-        android:layout_height="@dimen/acSistema_lblItemAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem4_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:id="@+id/textView17" />
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
 
-    <TextView
-        android:text="Tecnologías:"
-        android:layout_width="@dimen/acSistema_lblItemAll_width"
-        android:layout_height="@dimen/acSistema_lblItemAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem5_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:textStyle="bold"
-        android:gravity="center_vertical"
-        android:id="@+id/textView19" />
-
-    <EditText
-        android:layout_width="@dimen/acSistema_txtItemDesc1_width"
-        android:layout_height="@dimen/acSistema_txtItemDesc1_height"
-        android:inputType="textPersonName"
-        android:text=""
-        android:ems="10"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem1_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:background="@color/colorFondoBarra"
-        android:gravity="center_horizontal|center_vertical"
-        android:id="@+id/edtSistIdTerminal" />
-
-    <TextView
-        android:text="Lorem Ipsum"
-        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
-        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem2_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:gravity="center_vertical"
-        android:id="@+id/txvSistFirmware" />
-
-    <TextView
-        android:text="Lorem Ipsum"
-        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
-        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem3_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:gravity="center_vertical"
-        android:id="@+id/txvSistSoftware" />
-
-    <TextView
-        android:text="Lorem Ipsum"
-        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
-        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem4_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:gravity="center_vertical"
-        android:id="@+id/txvSistIp" />
-
-    <TextView
-        android:text="T1"
-        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
-        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="@dimen/acSistema_lblItem5_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
-        android:textColor="@color/colorTexto"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:gravity="center_vertical"
-        android:id="@+id/txvSistTec1" />
+                <RelativeLayout
+                    android:id="@+id/tabSys1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    >
 
 
-    <Button
-        android:text="Actualizar"
-        android:layout_width="@dimen/acSistema_btnActualizarID_width"
-        android:layout_height="@dimen/acSistema_btnActualizarID_height"
-        android:layout_marginTop="@dimen/acSistema_btnActualizarID_marginTop"
-        android:layout_marginLeft="@dimen/acSistema_btnActualizarID_marginLeft"
-        android:textSize="@dimen/cuerpo_min_textSize"
-        android:id="@+id/btnActualizarID" />
+                    <TextView
+                        android:text="ID Terminal:"
+                        android:layout_width="@dimen/acSistema_lblItemAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem1_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:gravity="center_vertical"
+                        android:id="@+id/textView14" />
+
+                    <TextView
+                        android:text="Firmware:"
+                        android:layout_width="@dimen/acSistema_lblItemAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem2_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:gravity="center_vertical"
+                        android:id="@+id/textView15" />
+
+                    <TextView
+                        android:text="Software:"
+                        android:layout_width="@dimen/acSistema_lblItemAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem3_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:gravity="center_vertical"
+                        android:id="@+id/textView16" />
+
+                    <TextView
+                        android:text="Dirección IP:"
+                        android:layout_width="@dimen/acSistema_lblItemAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem4_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:gravity="center_vertical"
+                        android:id="@+id/textView17" />
+
+
+                    <TextView
+                        android:text="Tecnologías:"
+                        android:layout_width="@dimen/acSistema_lblItemAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem5_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:gravity="center_vertical"
+                        android:id="@+id/textView19" />
+
+                    <EditText
+                        android:layout_width="@dimen/acSistema_txtItemDesc1_width"
+                        android:layout_height="@dimen/acSistema_txtItemDesc1_height"
+                        android:inputType="textPersonName"
+                        android:text=""
+                        android:ems="10"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem1_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:background="@color/colorFondoBarra"
+                        android:gravity="center_horizontal|center_vertical"
+                        android:id="@+id/edtSistIdTerminal" />
+
+                    <TextView
+                        android:text="Lorem Ipsum"
+                        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem2_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvSistFirmware" />
+
+                    <TextView
+                        android:text="Lorem Ipsum"
+                        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem3_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvSistSoftware" />
+
+                    <TextView
+                        android:text="Lorem Ipsum"
+                        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem4_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvSistIp" />
+
+                    <TextView
+                        android:text="T1"
+                        android:layout_width="@dimen/acSistema_lblItemDescAll_width"
+                        android:layout_height="@dimen/acSistema_lblItemDescAll_height"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/acSistema_lblItem5_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_lblItemDescAll_marginLeft"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvSistTec1" />
+
+
+                    <Button
+                        android:text="Restaurar"
+                        android:layout_width="@dimen/acSistema_btnActualizarID_width"
+                        android:layout_height="@dimen/acSistema_btnActualizarID_height"
+                        android:layout_marginTop="@dimen/acSistema_btnActualizarID_marginTop"
+                        android:layout_marginLeft="@dimen/acSistema_btnActualizarID_marginLeft"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnActualizarID" />
+
+
+
+
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tabSys2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:text="Marca Repetida (mm):"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <TextView
+                        android:id="@+id/lblmarcacionrepetida"
+                        android:text="00"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:layout_marginLeft="@dimen/act_size34"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <ImageButton
+                        android:id="@+id/btnConfmarcacionrepetida"
+                        android:layout_width="@dimen/act_btnConf_width"
+                        android:layout_height="@dimen/act_btnConf_height"
+                        android:layout_marginTop="@dimen/act_size06"
+                        android:layout_marginLeft="@dimen/act_size45"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/setting"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <Button
+                        android:id="@+id/btnGuardarAvanzado"
+                        android:text="Guardar"
+                        android:layout_width="@dimen/act_size20"
+                        android:layout_height="@dimen/act_size05"
+                        android:layout_marginTop="@dimen/act_size34"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:visibility="invisible"
+                        />
+
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/tabSys3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+
+                    <Spinner
+                        android:id="@+id/spinnerparameters"
+                        android:layout_width="@dimen/act_size18"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:spinnerMode="dialog"
+                        android:background="@color/colorGrisOscuro"
+                        android:textSize="@dimen/cuerpo_textSize"
+                        android:entries="@array/parameters" />
+
+
+
+                </RelativeLayout>
+
+
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+
 
 </RelativeLayout>

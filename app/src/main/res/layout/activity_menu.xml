@@ -190,14 +190,15 @@
     <ImageButton
         android:layout_width="@dimen/acMenu_btnOpcAll_width"
         android:layout_height="@dimen/acMenu_btnOpcAll_height"
-        android:src="@drawable/icon10"
+        android:src="@drawable/icon11"
         android:scaleType="fitXY"
         android:background="@color/colorFondoCuerpo"
         android:padding="@dimen/acMenu_btnOpcAllPadding"
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
         android:layout_marginLeft="@dimen/acMenu_btnOpc2_marginLeft"
-        android:id="@+id/ibtn07" />
+        android:id="@+id/ibtn11"
+        />
 
     <ImageButton
         android:layout_width="@dimen/acMenu_btnOpcAll_width"
@@ -209,6 +210,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
         android:layout_marginLeft="@dimen/acMenu_btnOpc3_marginLeft"
+        android:visibility="invisible"
         android:id="@+id/ibtn08" />
 
     <ImageButton
@@ -221,6 +223,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
         android:layout_marginLeft="@dimen/acMenu_btnOpc4_marginLeft"
+        android:visibility="invisible"
         android:id="@+id/ibtn09" />
 
 
@@ -234,6 +237,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/acMenu_btnOpcInfAll_marginTop"
         android:layout_marginLeft="@dimen/acMenu_btnOpc5_marginLeft"
+        android:visibility="invisible"
         android:id="@+id/ibtn10" />
 
 
@@ -316,7 +320,7 @@
         android:id="@+id/itxv06" />
 
     <TextView
-        android:text="USUARIO"
+        android:text="ENERGÍA"
         android:layout_width="@dimen/acMenu_lblOpcAll_width"
         android:layout_height="@dimen/acMenu_lblOpcAll_height"
         android:textColor="@color/colorTexto"
@@ -326,7 +330,8 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
         android:layout_marginLeft="@dimen/acMenu_lblOpc2_marginLeft"
-        android:id="@+id/itxv07" />
+        android:id="@+id/itxv11"
+        />
 
     <TextView
         android:text="ADMINISTRAR"
@@ -339,6 +344,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
         android:layout_marginLeft="@dimen/acMenu_lblOpc3_marginLeft"
+        android:visibility="invisible"
         android:id="@+id/itxv08" />
 
     <TextView
@@ -352,6 +358,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
         android:layout_marginLeft="@dimen/acMenu_lblOpc4_marginLeft"
+        android:visibility="invisible"
         android:id="@+id/itxv09" />
 
     <TextView
@@ -365,6 +372,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="@dimen/acMenu_lblOpcInfAll_marginTop"
         android:layout_marginLeft="@dimen/acMenu_lblOpc5_marginLeft"
+        android:visibility="invisible"
         android:id="@+id/itxv10" />
 
 </RelativeLayout>

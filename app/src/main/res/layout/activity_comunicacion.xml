@@ -166,7 +166,8 @@
                         android:thumb="@drawable/switchbutton"
                         android:textColor="@color/colorBlanco"
                         android:textOff="Off "
-                        android:textOn=" On " />
+                        android:textOn=" On "
+                        android:visibility="invisible"/>
 
                     <Switch
                         android:layout_width="wrap_content"

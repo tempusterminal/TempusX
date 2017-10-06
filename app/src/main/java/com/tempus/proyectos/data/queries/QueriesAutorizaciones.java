@@ -101,7 +101,7 @@ public class QueriesAutorizaciones {
                         "AND TARJETA_PERSONAL_TIPOLECTORA.ID_TIPO_LECT = PER_TIPOLECT_TERM.ID_TIPO_LECT " + "" +
                         "LEFT OUTER JOIN TERMINAL_TIPOLECT AS TERMINAL_TIPOLECT " + "" +
                         "ON PER_TIPOLECT_TERM.ID_TERMINAL_TIPOLECT = TERMINAL_TIPOLECT.ID_TERMINAL_TIPOLECT " + "" +
-                        "WHERE (PERSONAL.ESTADO != '002' OR PERSONAL.FECHA_DE_CESE IS NULL)" +
+                        "WHERE (PERSONAL.ESTADO != '002' AND PERSONAL.FECHA_DE_CESE IS NULL)" +
                         ";"
         );
         Log.d("Autorizaciones",
@@ -153,7 +153,7 @@ public class QueriesAutorizaciones {
                         "AND TARJETA_PERSONAL_TIPOLECTORA.ID_TIPO_LECT = PER_TIPOLECT_TERM.ID_TIPO_LECT " + "" +
                         "LEFT OUTER JOIN TERMINAL_TIPOLECT AS TERMINAL_TIPOLECT " + "" +
                         "ON PER_TIPOLECT_TERM.ID_TERMINAL_TIPOLECT = TERMINAL_TIPOLECT.ID_TERMINAL_TIPOLECT " + "" +
-                        "WHERE (PERSONAL.ESTADO != '002' OR PERSONAL.FECHA_DE_CESE IS NULL)" +
+                        "WHERE (PERSONAL.ESTADO != '002' AND PERSONAL.FECHA_DE_CESE IS NULL)" +
                         ";"
         );
         Log.d("Autorizaciones","Vista creada exitosamente");

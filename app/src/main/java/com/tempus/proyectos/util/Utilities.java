@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * Created by ecernar on 02/11/2016.
@@ -156,7 +157,36 @@ public class Utilities {
         return iarray;
     }
 
+    public String decimalToHex(int num) {
+        if(num >= 0 && num <= 9){
+            return "0" + String.valueOf(num);
+        }else if(num > 9){
+            // For storing remainder
+            int rem;
 
+            // For storing result
+            String str2="";
+
+            // Digits in hexadecimal number system
+            char hex[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
+            while(num>0)
+            {
+                rem=num%16;
+                str2=hex[rem]+str2;
+                num=num/16;
+            }
+
+            if(str2.length() == 1){
+                str2 = "0" + str2;
+            }
+
+            return str2;
+        }else{
+            return "30";
+        }
+
+    }
 
     public void sleep(int milisegundos){
         try {

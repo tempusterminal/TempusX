@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_energia"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.tempus.proyectos.tempusx.ActivityEnergia">
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- FONDOS (ini) - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <TextView
+        android:layout_width="@dimen/fondo1_width"
+        android:layout_height="@dimen/fondo1alt_height"
+        android:layout_marginTop="@dimen/fondo1_marginTop"
+        android:layout_marginLeft="@dimen/fondo1_marginLeft"
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/Fondo1" />
+
+    <TextView
+        android:layout_width="@dimen/fondo2_width"
+        android:layout_height="@dimen/fondo2alt_height"
+        android:layout_marginTop="@dimen/fondo2alt_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:background="@color/colorFondoCuerpo"
+        android:id="@+id/Fondo2" />
+
+    <TextView
+        android:layout_width="@dimen/fondo3_width"
+        android:layout_height="@dimen/fondo3_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/fondo3_marginLeft"
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/txvBarraInf" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- FONDOS (fin) - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- LINEAS (ini) - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/linea1_marginTop"
+        android:layout_marginLeft="@dimen/linea1_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/linea1" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/linea2alt_marginTop"
+        android:layout_marginLeft="@dimen/linea2alt_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/linea2" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:layout_marginLeft="@dimen/linea3_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea3" />
+
+    <TextView
+        android:layout_width="@dimen/linea_width"
+        android:layout_height="@dimen/linea_height"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="@dimen/linea3_marginLeft"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea4" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- LINEAS (fin) - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- TITULO (ini) - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/titulo_marginTop"
+        android:layout_marginLeft="@dimen/titulo_marginLeft"
+        android:text="@string/titulo_energia"
+        android:textSize="@dimen/titulo_textSize"
+        android:textColor="@color/colorTexto"
+        android:textStyle="bold"
+        android:id="@+id/Titulo" />
+
+    <ImageView
+        android:layout_width="@dimen/logo_width"
+        android:layout_height="@dimen/logo_height"
+        android:layout_marginTop="@dimen/logo_marginTop"
+        android:layout_marginLeft="@dimen/logo_marginLeft"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/logo"
+        android:id="@+id/btnMaster" />
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- TITULO (fin) - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- COMPONENTES (ini) - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+    <TabHost
+        android:id="@+id/tabHost"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fondo2alt_height"
+        android:layout_marginTop="@dimen/fondo2alt_marginTop"
+        android:layout_marginLeft="@dimen/fondo2_marginLeft"
+        android:layout_alignParentLeft="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TabWidget
+                android:background="@color/colorTabNonFocusedNone"
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            </TabWidget>
+
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <RelativeLayout
+                    android:id="@+id/tab1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <Spinner
+                        android:id="@+id/spinnerrelays"
+                        android:layout_width="@dimen/act_size18"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:spinnerMode="dialog"
+                        android:background="@color/colorGrisOscuro"
+                        android:textSize="@dimen/cuerpo_textSize"
+                        android:entries="@array/relays" />
+
+                    <ImageButton
+                        android:id="@+id/btnTestingRelay"
+                        android:layout_width="@dimen/act_size04"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginRight="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/testing"
+                        android:background="@color/colorBlanco"
+                        />
+
+                    <TextView
+                        android:text="Tiempo activo (ss):"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <TextView
+                        android:id="@+id/lbltiempoactivorelay"
+                        android:text="00"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:layout_marginLeft="@dimen/act_size34"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <ImageButton
+                        android:id="@+id/btnConftiempoactivorelay"
+                        android:layout_width="@dimen/act_btnConf_width"
+                        android:layout_height="@dimen/act_btnConf_height"
+                        android:layout_marginTop="@dimen/act_size06"
+                        android:layout_marginLeft="@dimen/act_size45"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/setting"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <RadioGroup
+                        android:id="@+id/opciones_relay"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size12"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:gravity="left"
+                        android:orientation="vertical">
+
+                        <RadioButton
+                            android:id="@+id/desactivado"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="5px"
+                            android:paddingTop="5px"
+                            android:textColor="@color/colorTexto"
+                            android:textSize="@dimen/cuerpo_min_textSize"
+                            android:checked="true"
+                            android:text="Desactivado"
+                            />
+
+                        <RadioButton
+                            android:id="@+id/marcaok"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="5px"
+                            android:paddingTop="5px"
+                            android:textColor="@color/colorTexto"
+                            android:textSize="@dimen/cuerpo_min_textSize"
+                            android:checked="false"
+                            android:text="Activar con Marcación OK"
+                            />
+
+                        <RadioButton
+                            android:id="@+id/marcako"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="5px"
+                            android:paddingTop="5px"
+                            android:textColor="@color/colorTexto"
+                            android:textSize="@dimen/cuerpo_min_textSize"
+                            android:checked="false"
+                            android:text="Activar con Marcación KO"
+                            />
+
+                        <RadioButton
+                            android:id="@+id/acceso"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="5px"
+                            android:paddingTop="5px"
+                            android:textColor="@color/colorTexto"
+                            android:textSize="@dimen/cuerpo_min_textSize"
+                            android:checked="false"
+                            android:text="Alarma de Acceso"
+                            />
+
+                        <RadioButton
+                            android:id="@+id/horario"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="5px"
+                            android:paddingTop="5px"
+                            android:textColor="@color/colorTexto"
+                            android:textSize="@dimen/cuerpo_min_textSize"
+                            android:checked="false"
+                            android:text="Activar con Horario"
+                            />
+                    </RadioGroup>
+
+
+                    <Button
+                        android:id="@+id/btnGuardarRelay"
+                        android:text="Guardar"
+                        android:layout_width="@dimen/act_size20"
+                        android:layout_height="@dimen/act_size05"
+                        android:layout_marginTop="@dimen/act_size34"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                         />
+
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/tab2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+
+                    <Spinner
+                        android:id="@+id/spinnerhorariosrelay"
+                        android:layout_width="@dimen/act_size18"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:spinnerMode="dialog"
+                        android:background="@color/colorGrisOscuro"
+                        android:textSize="@dimen/cuerpo_textSize"
+                        android:entries="@array/intervalosrelay" />
+
+                    <TextClock
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size03"
+                        android:layout_marginLeft="@dimen/act_size34"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textColor="@color/colorTexto"
+                        android:textStyle="bold"
+                        android:format24Hour="HH:mm:ss"
+                        android:includeFontPadding="false"
+                        />
+
+                    <TextView
+                        android:text="Horario inicio (hh:mm:ss):"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <TextView
+                        android:id="@+id/lblhorainicio"
+                        android:text="00:00:00"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:layout_marginLeft="@dimen/act_size34"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <ImageButton
+                        android:id="@+id/btnConfhorainiciohorario"
+                        android:layout_width="@dimen/act_btnConf_width"
+                        android:layout_height="@dimen/act_btnConf_height"
+                        android:layout_marginTop="@dimen/act_size06"
+                        android:layout_marginLeft="@dimen/act_size45"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/setting"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <TextView
+                        android:text="Horario fin (hh:mm:ss):"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size12"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <TextView
+                        android:id="@+id/lblhorafin"
+                        android:text="00:00:00"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size12"
+                        android:layout_marginLeft="@dimen/act_size34"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <ImageButton
+                        android:id="@+id/btnConfhorafinhorario"
+                        android:layout_width="@dimen/act_btnConf_width"
+                        android:layout_height="@dimen/act_btnConf_height"
+                        android:layout_marginTop="@dimen/act_size11"
+                        android:layout_marginLeft="@dimen/act_size45"
+                        android:scaleType="fitXY"
+                        android:src="@drawable/setting"
+                        android:textSize="@dimen/cuerpo_min_textSize"/>
+
+                    <CheckBox
+                        android:id="@+id/checkbox_horario_lunes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size17"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:text="Lunes"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:checked="true"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/checkbox_horario_martes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size20"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:text="Martes"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/checkbox_horario_miercoles"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size23"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:text="Miercoles"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/checkbox_horario_jueves"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size26"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:text="Jueves"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/checkbox_horario_viernes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size29"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:text="Viernes"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/checkbox_horario_sabado"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size32"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:text="Sabado"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <CheckBox
+                        android:id="@+id/checkbox_horario_domingo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size35"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:text="Domingo"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        />
+
+                    <Button
+                        android:text="Guardar"
+                        android:layout_width="@dimen/act_size20"
+                        android:layout_height="@dimen/act_size05"
+                        android:layout_marginTop="@dimen/act_size34"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:id="@+id/btnGuardarHorarioRelay" />
+
+                    <ImageButton
+                        android:id="@+id/btnRestartHorarioRelay"
+                        android:layout_width="@dimen/act_size04"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginRight="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/restart"
+                        android:background="@color/colorBlanco"
+                        />
+
+                </RelativeLayout>
+
+            </FrameLayout>
+        </LinearLayout>
+    </TabHost>
+
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <!-- COMPONENTES (fin) - - - - - - - - - - - - - - - - - - - - -->
+    <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+
+</RelativeLayout>

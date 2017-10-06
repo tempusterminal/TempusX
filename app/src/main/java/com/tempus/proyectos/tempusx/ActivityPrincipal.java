@@ -15,7 +15,9 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -25,6 +27,7 @@ import android.os.PowerManager;
 import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -44,7 +47,9 @@ import android.hardware.Camera;
 
 import com.tempus.proyectos.battery.BatteryLife;
 import com.tempus.proyectos.bluetoothSerial.Bluetooth;
+import com.tempus.proyectos.bluetoothSerial.BluetoothPair;
 import com.tempus.proyectos.bluetoothSerial.BluetoothSuperAdmin;
+import com.tempus.proyectos.bluetoothSerial.BluetothPairingThread;
 import com.tempus.proyectos.bluetoothSerial.MainArduino;
 import com.tempus.proyectos.bluetoothSerial.MainEthernet;
 import com.tempus.proyectos.bluetoothSerial.MainHandPunch;
@@ -66,12 +71,14 @@ import com.tempus.proyectos.data.queries.QueriesBiometrias;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesParameters;
+import com.tempus.proyectos.data.queries.QueriesPersonal;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.log.LogManager;
 import com.tempus.proyectos.log.MonitorApp;
 import com.tempus.proyectos.picture.ResizePic;
 import com.tempus.proyectos.threads.ThreadConnectSerial;
+import com.tempus.proyectos.threads.ThreadHorariosRelay;
 import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.InternalFile;
@@ -100,6 +107,8 @@ import java.util.Set;
 
 public class ActivityPrincipal extends Activity {
 
+
+
     int SCORE_MANO = 0;
 
     /* Variables Globales */
@@ -120,6 +129,7 @@ public class ActivityPrincipal extends Activity {
     LogManager logManager;
 
     ThreadConnectSerial threadConnectSerial;
+    ThreadHorariosRelay threadHorariosRelay;
 
     String TAG = "TX-AP";
 
@@ -134,10 +144,14 @@ public class ActivityPrincipal extends Activity {
     Date TIEMPO_PRESENTE_BT03;
     Date TIEMPO_PASADO_BT03;
 
-    String MAC_BT_00 = "";
-    String MAC_BT_01 = "";
-    String MAC_BT_02 = "";
-    String MAC_BT_03 = "";
+    public static String MAC_BT_00 = "";
+    public static String MAC_BT_01 = "";
+    public static String MAC_BT_02 = "";
+    public static String MAC_BT_03 = "";
+    public static String PASS_BT_00 = "";
+    public static String PASS_BT_01 = "";
+    public static String PASS_BT_02 = "";
+    public static String PASS_BT_03 = "";
 
     public static boolean STATUS_ETHERNET = false;
     public static boolean STATUS_CONNECT_01 = false;
@@ -161,9 +175,12 @@ public class ActivityPrincipal extends Activity {
 
     /* --- ADC --- */
 
+
     public static double ExternalEnergy = -1;
     public static double UPSCharge = -1;
     public static double levelUPS = -1;
+    public static int turnOnRelay01 = -1;
+    public static int turnOnRelay02 = -1;
     public static int turnOnLan = -1;
     public static int turnOnAndroid = -1;
     public static int turnOnSuprema = -1;
@@ -178,6 +195,15 @@ public class ActivityPrincipal extends Activity {
     /* --- Variables Ethernet --- */
     public static ArrayList<String> parametersEthernet = new ArrayList<String>();
     public static ArrayList<String> parametersSock = new ArrayList<String>();
+
+    /* --- Variables Marcaciones --- */
+    public static String parametersInsertMarcaciones;
+    public static int parameterMarcacionRepetida;
+
+    public static String relay01 = "4e";
+    public static String relay02 = "4e";
+    public static String tiempoActivoRelay01 = "4e";
+    public static String tiempoActivoRelay02 = "4e";
 
     /* --- ACCESO ESTÁTICO --- */
 
@@ -234,6 +260,8 @@ public class ActivityPrincipal extends Activity {
     public static boolean INTERFACE_ETH;
     public static boolean INTERFACE_PPP;
 
+    public static String macWlan;
+
     List<String> lectoras;
 
     String tarjetaKey;
@@ -242,6 +270,8 @@ public class ActivityPrincipal extends Activity {
     String mTarjeta;
     String mMensajePrincipal;
     String mMensajeSecundario;
+    String mFotoPersonal;
+    File fileFotoPersonal;
     String patronAcceso;
     boolean areaMarcaEnabled;
     boolean areaAccessEnabled;
@@ -288,6 +318,7 @@ public class ActivityPrincipal extends Activity {
     Button btnKeyBorrar;
     Button btnKeyIntro;
 
+    ImageView imgFotoPersonal;
     TextView txvMarcacionFondo;
     TextView txvMarcacionNombre;
     TextView txvMarcacionTarjeta;
@@ -339,6 +370,8 @@ public class ActivityPrincipal extends Activity {
     // Testing BT on off
     InternalFile internalFile = new InternalFile();
 
+    private QueriesParameters queriesParameters;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -347,6 +380,37 @@ public class ActivityPrincipal extends Activity {
         turnOnScreen();
 
         try{
+            context = getApplicationContext();
+
+            queriesParameters = new QueriesParameters(ActivityPrincipal.context);
+            dbManager = new DBManager(ActivityPrincipal.context);
+
+            //Set Parameters iniciales por carga de archivo
+            Log.v(TAG, "SET TABLE PARAMETERS");
+            //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
+            try {
+                dbManager.startBackupBd(1);
+                Thread.sleep(3000);
+            } catch (Exception e) {
+                Log.e(TAG, "SET TABLE PARAMETERS " + e.getMessage());
+            }
+
+
+
+            /* --- Variables Parameters TABLE PARAMETERS --- */
+            parametersInsertMarcaciones = queriesParameters.idparameterToValue("INSERTMARCACIONES");
+            //parametersInsertMarcaciones = "11111111"; ARIS
+            //parametersInsertMarcaciones = "10000000"; SHOUGANG
+            Log.v(TAG,"parametersInsertMarcaciones = " + parametersInsertMarcaciones);
+
+            try{
+                parameterMarcacionRepetida = Integer.valueOf(queriesParameters.idparameterToValue("MARCACIONREPETIDA"));
+            }catch (Exception e){
+                parameterMarcacionRepetida = 0;
+                Log.e(TAG,"parameterMarcacionRepetida " + e.getMessage());
+            }
+            Log.v(TAG,"parameterMarcacionRepetida = " + parameterMarcacionRepetida);
+
             logManager = new LogManager();
             logManager.RegisterLogTXT("INICIO TEMPUSX");
 
@@ -365,7 +429,7 @@ public class ActivityPrincipal extends Activity {
 
             Log.v(TAG,"**********************************************01");
             activityActive = "Principal";
-            context = getApplicationContext();
+
 
             Thread.setDefaultUncaughtExceptionHandler(new TXExceptionHandler(this));
 
@@ -386,6 +450,7 @@ public class ActivityPrincipal extends Activity {
             txvTextoInicial = (TextView) findViewById(R.id.txvTextoInicial);
             pbrCargaInicial = (ProgressBar) findViewById(R.id.pbrCargaInicial);
 
+            imgFotoPersonal = (ImageView) findViewById(R.id.imgFotoPersonal);
             txvMarcacionFondo = (TextView) findViewById(R.id.txvMarcacionFondo);
             txvMarcacionNombre = (TextView) findViewById(R.id.txvMarcacionNombre);
             txvMarcacionTarjeta = (TextView) findViewById(R.id.txvMarcacionTarjeta);
@@ -448,7 +513,11 @@ public class ActivityPrincipal extends Activity {
             fechahora = new Fechahora();
             connectivity = new Connectivity();
 
-            dbManager = new DBManager(this);
+            Shell sh = new Shell();
+            String params[] = {"su","-c","busybox ifconfig"};
+            String cadena = sh.exec(params);
+            macWlan = connectivity.getMacAddress(cadena,"wlan0");
+
             queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this);
 
             // Iniciar UI
@@ -499,7 +568,7 @@ public class ActivityPrincipal extends Activity {
             processSyncDatetime.start(this);
             Log.v(TAG,"**********************************************05-c");
             threadFechahora.start();
-            //threadEthernet.start();
+            threadStatusADC.start();
             Log.v(TAG,"**********************************************05-d");
             mainEthernet.startEthernetReading();
             mainEthernet.startEthernetExecuting();
@@ -509,6 +578,11 @@ public class ActivityPrincipal extends Activity {
 
             batteryLife.startBatteryLifeReading();
             Log.v(TAG,"**********************************************05-f");
+
+
+            threadHorariosRelay = new ThreadHorariosRelay();
+            threadHorariosRelay.startHorariosRelayReading();
+
             //threadTestingBTonoff.start();
 
             ResizePic resizePic = new ResizePic(null);
@@ -525,6 +599,9 @@ public class ActivityPrincipal extends Activity {
             //}
 
 
+            BluetoothPair bluetoothPair = new BluetoothPair(ActivityPrincipal.this);
+            bluetoothPair.registerReceiver();
+            new BluetothPairingThread(bluetoothPair).start();
 
             Log.v(TAG,"**********************************************06");
 
@@ -758,6 +835,25 @@ public class ActivityPrincipal extends Activity {
                 @Override
                 public void onClick(View v) {
                     if (flag == null || flag == "") {
+
+                        //Mofidicado el 28/09/2017 para cambiar el toast 'DEBE SELECCIONAR UN EVENTO'
+                        //El nuevo mensaje es 'debe selecionar evento' y aparece en toda la pantalla
+                        //Fondo negro y letras blancas, con un tiempo activo = 2 segundos
+
+                        MarcacionMaster("TECLADO","");
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                turnOnScreen();
+                                manageLayerMarcacion(true);
+                                actualizarFlag(null,null);
+                            }
+                        });
+
+
+
+                        /*
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -768,6 +864,8 @@ public class ActivityPrincipal extends Activity {
                                 }
                             }
                         });
+                        */
+
                     } else {
                         if (visibleKey) {
                             manageKeyboard(false);
@@ -1133,6 +1231,8 @@ public class ActivityPrincipal extends Activity {
 
         try {
             idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL");
+            //dbManager.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('MARCACIONREPETIDA','','10','','0','" + fechahora.getFechahora() + "');");
+            //dbManager.execSQL("UPDATE PARAMETERS SET VALUE = 'RELAY_01,0,00;RELAY_02,0,00' WHERE IDPARAMETER = 'RELAYS';");
             //dbManager.execSQL("UPDATE MARCACIONES SET SINCRONIZADO = 0");
             //dbManager.execSQL("UPDATE PERSONAL_TIPOLECTORA_BIOMETRIA SET SINCRONIZADO = 2 WHERE SINCRONIZADO = 4");
         } catch(Exception e) {
@@ -1141,20 +1241,57 @@ public class ActivityPrincipal extends Activity {
 
         txvIdTerminalInfo.setText(idTerminal);
 
-        QueriesParameters queriesParameters = new QueriesParameters(this);
         Parameters parameters;
 
         try {
-            parameters = queriesParameters.selectParameter("BT_01");
-            MAC_BT_01 = parameters.getValue();
-            MAC_BT_01 = "20:16:08:10:42:63";
-            Log.d(TAG, "CargarDatosIniciales > MAC_BT_01 = OK");
+            String macypass = "00:00:00:00:00:00,1234";
+            macypass = queriesParameters.idparameterToValue("BT_00");
+            MAC_BT_00 = macypass.split(",")[0];
+            PASS_BT_00 = macypass.split(",")[1];
+            Log.v(TAG, "MAC_BT_00=" + MAC_BT_00 + "," + PASS_BT_00);
         } catch (Exception e) {
-            //MAC_BT_01 = "98:D3:34:90:87:DC";//CARRION
-            //MAC_BT_01 = "20:16:05:03:24:64"; carrion 11
-            MAC_BT_01 = "20:16:08:10:42:63";
+            Log.e(TAG,"set MAC_BT_00 " + e.getMessage());
+            MAC_BT_00 = "00:00:00:00:00:00";
+            PASS_BT_00 = "1234";
         }
 
+        try {
+            String macypass = "00:00:00:00:00:00,1234";
+            macypass = queriesParameters.idparameterToValue("BT_01");
+            MAC_BT_01 = macypass.split(",")[0];
+            PASS_BT_01 = macypass.split(",")[1];
+            Log.v(TAG, "MAC_BT_01=" + MAC_BT_01 + "," + PASS_BT_01);
+        } catch (Exception e) {
+            Log.e(TAG,"set MAC_BT_01 " + e.getMessage());
+            MAC_BT_01 = "00:00:00:00:00:00";
+            PASS_BT_01 = "1234";
+        }
+
+        try {
+            String macypass = "00:00:00:00:00:00,1234";
+            macypass = queriesParameters.idparameterToValue("BT_02");
+            MAC_BT_02 = macypass.split(",")[0];
+            PASS_BT_02 = macypass.split(",")[1];
+            Log.v(TAG, "MAC_BT_02=" + MAC_BT_02 + "," + PASS_BT_02);
+        } catch (Exception e) {
+            Log.e(TAG,"set MAC_BT_02 " + e.getMessage());
+            MAC_BT_02 = "00:00:00:00:00:00";
+            PASS_BT_02 = "1234";
+        }
+
+        try {
+            String macypass = "00:00:00:00:00:00,1234";
+            macypass = queriesParameters.idparameterToValue("BT_03");
+            MAC_BT_03 = macypass.split(",")[0];
+            PASS_BT_03 = macypass.split(",")[1];
+            Log.v(TAG, "MAC_BT_03=" + MAC_BT_03 + "," + PASS_BT_03);
+        } catch (Exception e) {
+            Log.e(TAG,"set MAC_BT_03 " + e.getMessage());
+            MAC_BT_03 = "00:00:00:00:00:00";
+            PASS_BT_03 = "1234";
+        }
+
+        /*
         try {
             parameters = queriesParameters.selectParameter("BT_02");
             MAC_BT_02 = parameters.getValue();
@@ -1176,6 +1313,7 @@ public class ActivityPrincipal extends Activity {
             MAC_BT_03 = "20:16:08:10:46:09";//
 
         }
+        */
 
         try {
             parameters = queriesParameters.selectParameter("TIPO_TERMINAL");
@@ -1241,6 +1379,8 @@ public class ActivityPrincipal extends Activity {
         MARCACION_ACTIVA = false;
         TIEMPO_ACTIVO = 0;
         MODO_MARCACION = "";
+        //MAC_BTS
+
         //Ethernet test
         //MAC_BT_00 = "20:16:08:10:60:93"; //5555
 
@@ -1249,12 +1389,13 @@ public class ActivityPrincipal extends Activity {
         //MAC_BT_02 = "00:12:03:16:02:08"; // linvor
         //MAC_BT_03 = "00:00:00:00:00:00";
 
-        // CARRION 01
-        //MAC_BT_01 = "20:16:05:03:24:64";
-        //MAC_BT_02 = "20:16:08:10:42:29";
+        // CARRION ID 12 02/10/2017
+        //MAC_BT_00 = "00:00:00:00:00:00";
+        //MAC_BT_01 = "20:17:05:23:47:80";
+        //MAC_BT_02 = "20:17:05:23:47:83";
         //MAC_BT_03 = "00:00:00:00:00:00";
 
-        // PUERTA ANTGUO
+        // PUERTA ANTIGUO
         //MAC_BT_01 = "20:16:08:04:87:50";
         //MAC_BT_02 = "20:16:08:10:62:98";
         //MAC_BT_03 = "00:00:00:00:00:00";
@@ -1294,6 +1435,11 @@ public class ActivityPrincipal extends Activity {
         //MAC_BT_00 = "00:21:13:00:CC:2D"; //1234
         //MAC_BT_02 = "00:15:83:35:7A:66";
         //MAC_BT_01 = "98:D3:34:90:88:89";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+        // new bt
+        //MAC_BT_00 = "00:21:13:00:CC:2D";
+        //MAC_BT_01 = "20:16:06:30:84:85";
+        //MAC_BT_02 = "20:16:09:21:44:42";
         //MAC_BT_03 = "00:00:00:00:00:00";
 
 
@@ -1353,11 +1499,37 @@ public class ActivityPrincipal extends Activity {
         //MAC_BT_02 = "20:16:08:10:62:98";
         //MAC_BT_03 = "00:00:00:00:00:00";
 
-        // ARIS 1 PULSADORES Y RELAY
-        MAC_BT_00 = "00:21:13:01:7E:06";
-        MAC_BT_01 = "20:16:08:10:64:50";
-        MAC_BT_02 = "20:16:08:10:65:26";
-        MAC_BT_03 = "00:00:00:00:00:00";
+        // ARIS 1 PULSADORES Y RELAY (DESARROLLADOR)
+        //MAC_BT_00 = "00:21:13:01:7D:B9";
+        //MAC_BT_01 = "20:16:08:10:64:50";
+        //MAC_BT_02 = "20:16:08:10:65:26";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+
+        // ARIS ID=1 PULSADORES Y RELAY (OFICIAL)
+        //MAC_BT_00 = "00:21:13:01:7E:10";
+        //MAC_BT_01 = "20:16:07:14:09:92";
+        //MAC_BT_02 = "20:16:07:18:49:76";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // ARIS ID=2 PULSADORES Y RELAY (OFICIAL)
+        //MAC_BT_00 = "00:21:13:01:7F:1A";
+        //MAC_BT_01 = "20:16:06:30:84:11";
+        //MAC_BT_02 = "20:16:06:30:86:16";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // ARIS ID=3 PULSADORES Y RELAY (OFICIAL)
+        //MAC_BT_00 = "00:21:13:01:7D:63";
+        //MAC_BT_01 = "20:16:09:21:91:21";
+        //MAC_BT_02 = "20:16:07:18:32:13";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
+        // ARIS ID=4 PULSADORES Y RELAY (OFICIAL)
+        //MAC_BT_00 = "00:21:13:01:7F:25";
+        //MAC_BT_01 = "20:16:08:10:67:76";
+        //MAC_BT_02 = "20:16:08:10:58:54";
+        //MAC_BT_03 = "00:00:00:00:00:00";
+
 
         MODO_EVENTO = true;
         TIPO_TERMINAL = 2;
@@ -1370,15 +1542,15 @@ public class ActivityPrincipal extends Activity {
 
             buttonsVisibility[0] = true;
             buttonsVisibility[1] = true;
-            buttonsVisibility[2] = true;
-            buttonsVisibility[3] = true;
+            buttonsVisibility[2] = false;
+            buttonsVisibility[3] = false;
             buttonsVisibility[4] = false;
             buttonsVisibility[5] = false;
             buttonsVisibility[6] = false;
             buttonsVisibility[7] = false;
 
-            buttonsText[0] = "1";
-            buttonsText[1] = "2";
+            buttonsText[0] = "INGRESO";
+            buttonsText[1] = "SALIDA";
             buttonsText[2] = "3";
             buttonsText[3] = "4";
             buttonsText[4] = "5";
@@ -1518,28 +1690,28 @@ public class ActivityPrincipal extends Activity {
             btnEvent01.setVisibility(View.VISIBLE);
             btnEvent01.setText(buttonsText[0]);
         } else {
-            btnEvent01.setVisibility(View.INVISIBLE);
+            btnEvent01.setVisibility(View.GONE);
         }
 
         if (buttonsVisibility[1]) {
             btnEvent02.setVisibility(View.VISIBLE);
             btnEvent02.setText(buttonsText[1]);
         } else {
-            btnEvent02.setVisibility(View.INVISIBLE);
+            btnEvent02.setVisibility(View.GONE);
         }
 
         if (buttonsVisibility[2]) {
             btnEvent03.setVisibility(View.VISIBLE);
             btnEvent03.setText(buttonsText[2]);
         } else {
-            btnEvent03.setVisibility(View.INVISIBLE);
+            btnEvent03.setVisibility(View.GONE);
         }
 
         if (buttonsVisibility[3]) {
             btnEvent04.setVisibility(View.VISIBLE);
             btnEvent04.setText(buttonsText[3]);
         } else {
-            btnEvent04.setVisibility(View.INVISIBLE);
+            btnEvent04.setVisibility(View.GONE);
         }
 
         if (buttonsVisibility[4]) {
@@ -1917,7 +2089,7 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG, "SYSTEM_MAIN_INSTRUCTION " + "COMANDO: BACKUP RESTARING BD");
                 //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
                 try {
-                    dbManager.startBackupBd();
+                    dbManager.startBackupBd(2);
                 } catch (Exception e) {
                     Log.e(TAG, "ERROR_SYSTEM_MAIN " + "COMANDO: BACKUP RESTARING BD -> " + e.getMessage());
                 }
@@ -1941,13 +2113,11 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "4422":
-                Log.v(TAG,"");
-                //writeData(ActivityPrincipal.btSocket01.getOutputStream(), "244F415841004430303030303030");
                 try{
-                    Log.v(TAG,"statusExternalEnergy: ");
-                    btSocket01.getOutputStream().write(util.hexStringToByteArray("244F41584100304430303030303030"));
+                    QueriesPersonal queriesPersonal = new QueriesPersonal(context);
+                    queriesPersonal.getFotoPersonalBySync();
                 }catch (Exception e){
-                    Log.e(TAG,"statusExternalEnergy: " + e.getMessage());
+                    Log.e(TAG,"allfotopersonal " + e.getMessage());
                 }
                 break;
 
@@ -1956,6 +2126,16 @@ public class ActivityPrincipal extends Activity {
 
                 break;
 
+            case "1324222":
+                Log.v(TAG,"REINICIAR TABLA DE PARAMETROS");
+                try{
+                    //REINICIAR TABLA DE PARAMETROS
+                    queriesParameters.poblar();
+                }catch (Exception e){
+                    Log.e(TAG,"queriesParameters.poblar() (REINICIAR TABLA DE PARAMETROS): " + e.getMessage());
+                }
+
+                break;
 
             default:
                 break;
@@ -2031,8 +2211,8 @@ public class ActivityPrincipal extends Activity {
 
         //String TAG = "TX-AP";
 
-        Log.d(TAG, "lectoraName: " + lectoraName);
-        Log.d(TAG, "tarjeta: " + tarjeta);
+        Log.v(TAG, "lectoraName: " + lectoraName);
+        Log.v(TAG, "tarjeta: " + tarjeta);
 
         runOnUiThread(new Runnable() {
             @Override
@@ -2042,13 +2222,75 @@ public class ActivityPrincipal extends Activity {
         });
 
         if (lectoras.contains(lectoraName)) {
+
             if (flag == null || flag == "") {
 
-            } else {
-                //Date date = new Date();
-                //tiempoPasado = date;
+                Log.v(TAG,"No selecionó ningun evento");
 
-                TIEMPO_ACTIVO = 5;
+                //Si no ha selecionado ningun evento(entrada, salida, etc)
+                //Entonces se procede a asignar por defecto el valor 000 cuando modo evento no esta activo
+                // So modo evento esta activo entonces se asignar el valor 001
+
+                flag = "";
+
+                try{
+                    //LimpiarDatosMarcacion();
+                    String lectora = lectoraName;
+                    Log.v(TAG, "Lectora: " + lectora);
+
+                    if (lectora != null) {
+
+
+                        Log.v(TAG, lectora);
+                        if (lectora == "HUELLA SUPREMA") {
+                            //tarjeta = String.valueOf(util.convertHexToDecimal(tarjeta.substring(6,8) + tarjeta.substring(4,6) + tarjeta.substring(2,4) + tarjeta.substring(0,2)));
+                        } else {
+                            if (lectora == "PROXIMIDAD CHINA") {
+                                tarjeta = hexToDecimalStringProx(tarjeta);
+                            }else if(lectora == "PROXIMIDAD HID"){
+                                tarjeta = util.convertHexToString(tarjeta);
+                                if(tarjeta.length()>5){
+                                    tarjeta = tarjeta.substring(tarjeta.length()-5);
+                                }
+                            }
+                            else {
+                                if (lectora != "TECLADO") {
+                                    tarjeta = util.convertHexToString(tarjeta);
+                                }
+                            }
+                        }
+
+
+                        Log.v(TAG, "TARJETA " + tarjeta);
+
+
+                        FLG_AUX = flag;
+                        queriesMarcaciones = new QueriesMarcaciones(this);
+
+                        Log.v(TAG, "MarcacionMaster Exec >");
+                        Log.v(TAG, " > Tarjeta: " + tarjeta);
+                        Log.v(TAG, " > ID Terminal: " + idTerminal);
+                        Log.v(TAG, " > ID Lectora: " + getNroLectora(lectora));
+                        Log.v(TAG, " > Flag: " + flag + " - FLG_AUX: " + FLG_AUX);
+                        Log.v(TAG, " > FechaHora: " + fechahora.getFechahora());
+
+
+                        String autorizacion = "";
+                        autorizacion = queriesMarcaciones.ModoMarcacion(tarjeta, idTerminal, Integer.parseInt(getNroLectora(lectora)), FLG_AUX, fechahora.getFechahora(), "");
+                        Log.v(TAG,"autorizacion: " + autorizacion.toString());
+
+                    }
+
+                }catch (Exception e){
+                    Log.e(TAG,"No selecionó ningun evento " + e.getMessage());
+                }
+
+
+
+            }else{
+                // MARCACION CON FLAG SELECCIONADO O CON FLAG POR DEFECTO 001 (MODO EVENTO deshabilitado)
+
+                TIEMPO_ACTIVO = 2;
 
                 LimpiarDatosMarcacion();
                 String lectora = lectoraName;
@@ -2063,7 +2305,10 @@ public class ActivityPrincipal extends Activity {
                         if (lectora == "PROXIMIDAD CHINA") {
                             tarjeta = hexToDecimalStringProx(tarjeta);
                         }else if(lectora == "PROXIMIDAD HID"){
-                            tarjeta = String.valueOf(Integer.valueOf(util.convertHexToString(tarjeta)));
+                            tarjeta = util.convertHexToString(tarjeta);
+                            if(tarjeta.length()>5){
+                                tarjeta = tarjeta.substring(tarjeta.length()-5);
+                            }
                         }
                         else {
                             if (lectora != "TECLADO") {
@@ -2123,12 +2368,27 @@ public class ActivityPrincipal extends Activity {
                                         Log.d(TAG, "FINALIZO MARCACION");
                                         MARCACION_ACTIVA = false;
                                         MODO_MARCACION = "";
-                                        TIEMPO_ACTIVO = 5;
+                                        TIEMPO_ACTIVO = 2;
                                         MarcacionOK(btSocket01.getOutputStream());
+                                        //threadHorariosRelay.startRelayReading(1);
+                                        //Thread.sleep(100);
+                                        //threadHorariosRelay.startRelayReading(1);
+                                        //Thread.sleep(200);
+                                        //btSocket01.getOutputStream().write(util.hexStringToByteArray("AAAAAAAAAA"+"244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e314e4e4e00000041"));
+                                        //Thread.sleep(1000);
+                                        //btSocket01.getOutputStream().write(util.hexStringToByteArray("AAAAAAAAAA"+"244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e304e4e4e00000041"));
                                         mNombre = array_autorizaciones[0];
                                         mTarjeta = array_autorizaciones[1];
                                         mMensajePrincipal = array_autorizaciones[2];
                                         mMensajeSecundario = array_autorizaciones[3];
+                                        try{
+                                            mFotoPersonal = array_autorizaciones[6];
+                                        }catch (Exception e){
+                                            Log.e(TAG,"mFotoPersonal = array_autorizaciones[6] " + e.getMessage());
+                                            mFotoPersonal = "";
+                                        }
+
+
                                         MarcacionUI();
 
                                     } else { // Marcacion Continua
@@ -2222,8 +2482,9 @@ public class ActivityPrincipal extends Activity {
                                                         Log.d(TAG,"MarcacionMasterTAG " + "FINALIZO MARCACION");
                                                         MARCACION_ACTIVA = false;
                                                         MODO_MARCACION = "";
-                                                        TIEMPO_ACTIVO = 5;
+                                                        TIEMPO_ACTIVO = 2;
                                                         MarcacionKO(btSocket01.getOutputStream());
+                                                        //threadHorariosRelay.startRelayReading(2);
                                                         mNombre = NOMBRE_PERSONAL_MANO;
                                                         mTarjeta = INDICE;
                                                         mMensajePrincipal = "MARCACION NO AUTORIZADA";
@@ -2272,8 +2533,9 @@ public class ActivityPrincipal extends Activity {
                                                                     Log.d(TAG,"MarcacionMasterTAG " + "FINALIZO MARCACION 1");
                                                                     MARCACION_ACTIVA = false;
                                                                     MODO_MARCACION = "";
-                                                                    TIEMPO_ACTIVO = 5;
+                                                                    TIEMPO_ACTIVO = 2;
                                                                     MarcacionOK(btSocket01.getOutputStream());
+                                                                    //threadHorariosRelay.startRelayReading(1);
                                                                     mNombre = array_autorizaciones[0];
                                                                     mTarjeta = array_autorizaciones[1];
                                                                     mMensajePrincipal = array_autorizaciones[2];
@@ -2284,8 +2546,9 @@ public class ActivityPrincipal extends Activity {
                                                                     Log.d(TAG,"MarcacionMasterTAG " + "FINALIZO MARCACION 2");
                                                                     MARCACION_ACTIVA = false;
                                                                     MODO_MARCACION = "";
-                                                                    TIEMPO_ACTIVO = 5;
+                                                                    TIEMPO_ACTIVO = 2;
                                                                     MarcacionKO(btSocket01.getOutputStream());
+                                                                    //threadHorariosRelay.startRelayReading(2);
                                                                     mNombre = array_autorizaciones[0];
                                                                     mTarjeta = array_autorizaciones[1];
                                                                     mMensajePrincipal = array_autorizaciones[2];
@@ -2299,8 +2562,9 @@ public class ActivityPrincipal extends Activity {
                                                                 Log.d(TAG,"MarcacionMasterTAG " + "FINALIZO MARCACION 3");
                                                                 MARCACION_ACTIVA = false;
                                                                 MODO_MARCACION = "";
-                                                                TIEMPO_ACTIVO = 5;
+                                                                TIEMPO_ACTIVO = 2;
                                                                 MarcacionKO(btSocket01.getOutputStream());
+                                                                //threadHorariosRelay.startRelayReading(2);
                                                                 mNombre = NOMBRE_PERSONAL_MANO;
                                                                 mTarjeta = INDICE;
                                                                 mMensajePrincipal = "MARCACION NO AUTORIZADA";
@@ -2326,12 +2590,14 @@ public class ActivityPrincipal extends Activity {
                                                 Log.d(TAG, "FINALIZO MARCACION");
                                                 MARCACION_ACTIVA = false;
                                                 MODO_MARCACION = "";
-                                                TIEMPO_ACTIVO = 5;
+                                                TIEMPO_ACTIVO = 2;
                                                 mNombre = array_autorizaciones[0];
                                                 mTarjeta = array_autorizaciones[1];
-                                                mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                                //mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                                mMensajePrincipal = "NO AUTORIZADA";
                                                 mMensajeSecundario = "NO EXISTE BIOMETRIA";
                                                 MarcacionKO(btSocket01.getOutputStream());
+                                                //threadHorariosRelay.startRelayReading(2);
                                             }
 
                                             MarcacionUI();
@@ -2355,21 +2621,30 @@ public class ActivityPrincipal extends Activity {
 
                                     MARCACION_ACTIVA = false;
                                     MODO_MARCACION = "";
-                                    TIEMPO_ACTIVO = 5;
+                                    TIEMPO_ACTIVO = 2;
 
                                     if (autorizacion.equalsIgnoreCase("")) { // TEMPORAL Error NO EXISTE TARJETA
                                         MarcacionKO(btSocket01.getOutputStream());
+                                        //threadHorariosRelay.startRelayReading(2);
                                         mNombre = "";
                                         mTarjeta = tarjeta;
-                                        mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                        //mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                                        mMensajePrincipal = "NO AUTORIZADA";
                                         mMensajeSecundario = "(*)";
                                         MarcacionUI();
                                     } else {
                                         MarcacionKO(btSocket01.getOutputStream());
+                                        //threadHorariosRelay.startRelayReading(2);
                                         mNombre = array_autorizaciones[0];
                                         mTarjeta = array_autorizaciones[1];
                                         mMensajePrincipal = array_autorizaciones[2];
                                         mMensajeSecundario = array_autorizaciones[3];
+                                        try{
+                                            mFotoPersonal = array_autorizaciones[6];
+                                        }catch (Exception e){
+                                            Log.e(TAG,"mFotoPersonal = array_autorizaciones[6] " + e.getMessage());
+                                            mFotoPersonal = "";
+                                        }
                                         MarcacionUI();
                                     }
 
@@ -2381,28 +2656,34 @@ public class ActivityPrincipal extends Activity {
 
 
                     } catch (Exception e) {
+                        Log.e(TAG," Intento de setear valores para marcacion " + e.getMessage());
                         MARCACION_ACTIVA = false;
                         MODO_MARCACION = "";
-                        TIEMPO_ACTIVO = 5;
-                        Log.d(TAG, e.getMessage());
+                        TIEMPO_ACTIVO = 2;
                         MarcacionKO(btSocket01.getOutputStream());
+                        //threadHorariosRelay.startRelayReading(2);
                         mNombre = "";
                         mTarjeta = tarjeta;
-                        mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                        //mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                        mMensajePrincipal = "NO AUTORIZADA";
                         mMensajeSecundario = "e000";
+                        mFotoPersonal = "";
                         MarcacionUI();
                     }
 
                 } else {
                     MARCACION_ACTIVA = false;
                     MODO_MARCACION = "";
-                    TIEMPO_ACTIVO = 5;
+                    TIEMPO_ACTIVO = 2;
                     Log.v(TAG, "LECTORA NO HABILITADA");
                     MarcacionKO(btSocket01.getOutputStream());
+                    //threadHorariosRelay.startRelayReading(2);
                     mNombre = "";
                     mTarjeta = "";
-                    mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                    mMensajeSecundario = "e001";
+                    //mMensajePrincipal = "MARCACION NO AUTORIZADA";
+                    mMensajePrincipal = "NO AUTORIZADA";
+                    mMensajeSecundario = "No existe Base de Datos";
+                    mFotoPersonal = "";
                     MarcacionUI();
                 }
             }
@@ -2414,6 +2695,7 @@ public class ActivityPrincipal extends Activity {
         mTarjeta = "";
         mMensajePrincipal = "";
         mMensajeSecundario = "";
+        mFotoPersonal = "";
     }
 
     public void MarcacionUI(){
@@ -2425,6 +2707,18 @@ public class ActivityPrincipal extends Activity {
                 txvMarcacionTarjeta.setText(mTarjeta);
                 txvMarcacionMsjPrincipal.setText(mMensajePrincipal);
                 txvMarcacionMsjSecundario.setText(mMensajeSecundario);
+                fileFotoPersonal = new File(Environment.getExternalStorageDirectory().toString() + "/tempus/img/personal/sync/original/" + mFotoPersonal);
+                if(fileFotoPersonal.isFile()){
+                    try{
+                        Log.v(TAG,"imgFotoPersonal " + fileFotoPersonal.toString());
+                        imgFotoPersonal.setImageBitmap(BitmapFactory.decodeFile(fileFotoPersonal.toString()));
+                    }catch (Exception e){
+                        Log.e(TAG,"imgFotoPersonal " + e.getMessage());
+                    }
+                }else{
+                    imgFotoPersonal.setImageResource(R.drawable.fotopersonal);
+                }
+
 
                 if (false) {
                     try {
@@ -2569,18 +2863,40 @@ public class ActivityPrincipal extends Activity {
     public void MarcacionOK(OutputStream out) {
         Log.v(TAG, "MARCACION OK");
         try {
-            out.write(util.hexStringToByteArray("244F415841000C3531000041"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionOK));
+            //out.write(util.hexStringToByteArray("244F415841000C3531000041"));
+            //out.write(util.hexStringToByteArray("244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e314e4e00000041"));
+            threadHorariosRelay.startRelayReading(1);
+            Thread.sleep(200);
+            out.write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "31" + tiempoActivoRelay02 + tiempoActivoRelay01 + "00000041"));
+            Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay01 + relay02 + "31" + tiempoActivoRelay01 + tiempoActivoRelay02 + "00000041");
+            relay01 = "4e";
+            relay02 = "4e";
+            tiempoActivoRelay01 = "4e";
+            tiempoActivoRelay02 = "4e";
+            //Thread.sleep(100);
+        } catch (Exception e) {
+            Log.e(TAG,"MarcacionOK " + e.getMessage());
         }
     }
 
     public void MarcacionKO(OutputStream out) {
         Log.v(TAG, "MARCACION KO");
         try {
-            out.write(util.hexStringToByteArray("244F415841000C3530000041"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionKO));
+            //out.write(util.hexStringToByteArray("244F415841000C3530000041"));
+            //out.write(util.hexStringToByteArray("244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e304e4e00000041"));
+            threadHorariosRelay.startRelayReading(2);
+            Thread.sleep(200);
+            out.write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01 + "00000041"));
+            Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay01 + relay02 + "30" + tiempoActivoRelay01 + tiempoActivoRelay02 + "00000041");
+            relay01 = "4e";
+            relay02 = "4e";
+            tiempoActivoRelay01 = "4e";
+            tiempoActivoRelay02 = "4e";
+            //Thread.sleep(100);
+        } catch (Exception e) {
+            Log.e(TAG,"MarcacionKO " + e.getMessage());
         }
     }
 
@@ -2731,6 +3047,23 @@ public class ActivityPrincipal extends Activity {
     public void manageLayerMarcacion(boolean visible){
         if(flag == null || flag == ""){
             if(visible){
+                try{
+                    txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionKO));
+                    threadHorariosRelay.startRelayReading(2);
+                    Thread.sleep(200);
+                    btSocket01.getOutputStream().write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e30" + tiempoActivoRelay02 + tiempoActivoRelay01 + "00000041"));
+                    Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e30" + tiempoActivoRelay02 + tiempoActivoRelay01 + "00000041");
+                }catch (Exception e){
+                    Log.e(TAG,"threadHorariosRelay + btSocket01 " + e.getMessage());
+                }
+
+                relay01 = "4e";
+                relay02 = "4e";
+                tiempoActivoRelay01 = "4e";
+                tiempoActivoRelay02 = "4e";
+                //Modificado para todaslas tecnologias, al marcar sin evento emitirá mensaje selecionar evento
+                TIEMPO_ACTIVO = 1;
+                imgFotoPersonal.setVisibility(View.INVISIBLE);
                 txvMarcacionNombre.setVisibility(View.INVISIBLE);
                 txvMarcacionTarjeta.setVisibility(View.INVISIBLE);
                 txvMarcacionMsjPrincipal.setVisibility(View.VISIBLE);
@@ -2739,6 +3072,7 @@ public class ActivityPrincipal extends Activity {
                 txvMarcacionMsjSecundario.setVisibility(View.INVISIBLE);
 
             }else{
+                imgFotoPersonal.setVisibility(View.INVISIBLE);
                 txvMarcacionNombre.setVisibility(View.INVISIBLE);
                 txvMarcacionTarjeta.setVisibility(View.INVISIBLE);
                 txvMarcacionFondo.setVisibility(View.INVISIBLE);
@@ -2749,6 +3083,7 @@ public class ActivityPrincipal extends Activity {
             }
         }else{
             if (visible) {
+                imgFotoPersonal.setVisibility(View.VISIBLE);
                 txvMarcacionNombre.setVisibility(View.VISIBLE);
                 txvMarcacionTarjeta.setVisibility(View.VISIBLE);
                 txvMarcacionFondo.setVisibility(View.VISIBLE);
@@ -2756,6 +3091,7 @@ public class ActivityPrincipal extends Activity {
                 txvMarcacionMsjSecundario.setVisibility(View.VISIBLE);
 
             } else {
+                imgFotoPersonal.setVisibility(View.INVISIBLE);
                 txvMarcacionNombre.setVisibility(View.INVISIBLE);
                 txvMarcacionTarjeta.setVisibility(View.INVISIBLE);
                 txvMarcacionFondo.setVisibility(View.INVISIBLE);
@@ -2885,8 +3221,12 @@ public class ActivityPrincipal extends Activity {
                 objArduino.setValorMascara();
                 //Log.v(TAG,"trama -------------------------> " + trama);
                 //26 4011000000000000000069ba0a
+
+
                 Log.v(TAG,"evaluar objArduino.getTipoMensaje=" + objArduino.getTipoMensaje() + " - " + "objArduino.getNroLector=" + objArduino.getNroLector() + " - " + "objArduino.getMensaje=" + objArduino.getMensaje());
                 Log.v(TAG,"evaluar objArduino.toString()=" + objArduino.toString());
+
+
 
                 switch (objArduino.getTipoMensaje()){
                     case "00":
@@ -2896,21 +3236,25 @@ public class ActivityPrincipal extends Activity {
                         //Log.v(TAG,"isADC " + isADC);
                         if(objArduino.getNroLector().equalsIgnoreCase("44")){
                             statusADC(objArduino.getMensaje());
+                            break;
                         }
 
                         if (activityActive.equals("Principal") && lectoras.contains(objArduino.getFlagRead())){
 
+                            // Analizar Flg_Actividad --------------------------------------
+                            if(objArduino.getNroLector().equalsIgnoreCase("06")){
+                                keytoFlg_Actividad(objArduino.getMensaje());
+                                break;
+                            }
+                            // -------------------------------------------------------------
+
                             if( MODO_EVENTO ){
 
-                                // no aceptamos nada de marcaciones
-                                if (flag !="" || flag !=null){
 
-                                    // Analizar Flg_Actividad --------------------------------------
-                                    if(objArduino.getNroLector().equalsIgnoreCase("06")){
-                                        keytoFlg_Actividad(objArduino.getMensaje());
-                                        break;
-                                    }
-                                    // -------------------------------------------------------------
+
+                                // no aceptamos nada de marcaciones
+                                if (flag !="" && flag !=null){
+
                                     // Enviar Tarjeta para evaluar marcacion -----------------------
                                     String flagRead = objArduino.getFlagRead();
                                     String tarjeta = objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin());
@@ -2930,6 +3274,22 @@ public class ActivityPrincipal extends Activity {
                                 } else {
                                     Log.v(TAG,"DEBE SELECCIONAR UN EVENTO");
 
+                                    // Enviar Tarjeta para evaluar marcacion -----------------------
+                                    String flagRead = objArduino.getFlagRead();
+                                    String tarjeta = objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin());
+                                    Log.v(TAG,tarjeta);
+                                    MarcacionMaster(flagRead,tarjeta);
+
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            turnOnScreen();
+                                            manageLayerMarcacion(true);
+                                            actualizarFlag(null,null);
+                                        }
+                                    });
+
+                                    /*
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
@@ -2941,8 +3301,18 @@ public class ActivityPrincipal extends Activity {
                                             }
                                         }
                                     });
+                                    */
                                 }
                             } else {
+
+                                // Analizar Flg_Actividad --------------------------------------
+                                if(objArduino.getNroLector().equalsIgnoreCase("06")){
+                                    //keytoFlg_Actividad(objArduino.getMensaje());
+                                    break;
+                                }
+                                // -------------------------------------------------------------
+
+
                                 // Enviar Tarjeta para evaluar marcacion ---------------------------
                                 String flagRead = objArduino.getFlagRead();
                                 String tarjeta = objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin());
@@ -3021,7 +3391,7 @@ public class ActivityPrincipal extends Activity {
 
 
                             if ( MODO_EVENTO ){
-                                if (flag == "" || flag!=null) {
+                                if (flag !="" && flag !=null) {
                                     String flagRead = "HUELLA SUPREMA";
                                     String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
                                     if (objSuprema.getFlag().equalsIgnoreCase("69")){
@@ -3040,16 +3410,45 @@ public class ActivityPrincipal extends Activity {
                                         }
                                     });
                                 } else {
-                                    Log.d(TAG,"TEMPUS: " + "DEBE SELEECIONAR UN EVENTO");
-                                    MarcacionKO(btSocket01.getOutputStream());
+                                    //En el caso que no seleccione un evento
+                                    //solo se emitira el sonido delñ buzzer y luz de led
+                                    //no se incluye el encendido de relay ni el tiempo activo de relay
+                                    Log.v(TAG,"DEBE SELECCIONAR UN EVENTO");
+                                    //MarcacionKO(btSocket01.getOutputStream());
+                                    //threadHorariosRelay.startRelayReading(2);
+
+                                    /*
+                                    try{
+                                        btSocket01.getOutputStream().write(util.hexStringToByteArray("244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e304e4e00000041"));
+                                    }catch (Exception e){
+                                    }
+                                    */
+
+                                    String flagRead = "HUELLA SUPREMA";
+                                    String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
+                                    if (objSuprema.getFlag().equalsIgnoreCase("69")){
+                                        tarjeta = "00000000";
+                                    }
+                                    Log.v(TAG,"TEMPUS: " + tarjeta);
+                                    //Log.v("TEMPUS: ",String.valueOf(Integer.parseInt(tarjeta)));
+                                    MarcacionMaster(flagRead,String.valueOf(Integer.parseInt(tarjeta)));
 
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
+                                            turnOnScreen();
+                                            manageLayerMarcacion(true);
+                                            actualizarFlag(null,null);
+                                        }
+                                    });
+
+                                    /*
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
                                             //Toast.makeText(ActivityPrincipal.this, "DEBE SELECCIONAR UN EVENTO", Toast.LENGTH_LONG).show();
-
                                             try {
-
+                                                btSocket01.getOutputStream().write(util.hexStringToByteArray("244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e304e4e00000041"));
                                                 ui.showAlert(ActivityPrincipal.this,"warning","   DEBE SELECCIONAR UN EVENTO   ");
 
                                             } catch(Exception e) {
@@ -3058,6 +3457,7 @@ public class ActivityPrincipal extends Activity {
 
                                         }
                                     });
+                                    */
                                 }
                             } else {
                                 String flagRead = "HUELLA SUPREMA";
@@ -3287,7 +3687,7 @@ public class ActivityPrincipal extends Activity {
         if (c1 && c2 && c3){ // Si todos los seriales estan conectados podemos hacer algo
 
             //Obtener status ADC
-            statusADC("");
+            //statusADC("");
 
             if (isBooting){
                 isBooting = false;
@@ -3334,10 +3734,30 @@ public class ActivityPrincipal extends Activity {
                 showMsgBoot(true,"Iniciando Sistema \n"+detail+"]");
 
             } else {
+
+
+
                 if (!isCharging) {
 
-                    logManager.RegisterLogTXT("APAGANDO EQUIPO 15s");
-                    showMsgBoot(true,"Apagando Equipo en 15 segundos ... espere ...");
+                    //logManager.RegisterLogTXT("APAGANDO EQUIPO 15s");
+                    //showMsgBoot(true,"Apagando Equipo en 15 segundos ... espere ...");
+                    showMsgBoot(true,"Energía insuficiente, conecte cargador");
+
+                    //Intent intent01 = new Intent(ActivityPrincipal.this, ActivityLogin.class);
+                    //intent01.putExtra("llave", "valor");
+                    //startActivityForResult(intent01, 1);
+
+                    //UserInterfaceM userInterfaceM = new UserInterfaceM();
+                    //userInterfaceM.goToActivity(ActivityPrincipal.this, ActivityLogin.class,"","");
+
+                    /*
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+
+                        }
+                    });
+                    */
 
                     c = 15;
 
@@ -3362,8 +3782,8 @@ public class ActivityPrincipal extends Activity {
                         }
                     });
 
-                    logManager.RegisterLogTXT("Apagando");
-                    threadShutdown.start();
+                    //logManager.RegisterLogTXT("Apagando");
+                    //threadShutdown.start();
 
                 } else {
                     logManager.RegisterLogTXT("Reconectando Interfaces");
@@ -3395,6 +3815,10 @@ public class ActivityPrincipal extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        //Solo para test bluetooth true ------------------------------------
+                        // BT_01_IS_CONNECTED = BT_02_IS_CONNECTED = BT_03_IS_CONNECTED = true;
+                        // -----------------------------------------------------------------
+
                         switch ( TIPO_TERMINAL ) {
                             case 1:
                                 controlGeneral(BT_01_IS_CONNECTED,true,true);
@@ -3661,23 +4085,21 @@ public class ActivityPrincipal extends Activity {
     });
 
 
-    Thread threadEthernet = new Thread(new Runnable() {
+    Thread threadStatusADC = new Thread(new Runnable() {
         @Override
         public void run() {
-
             while (true) {
-                Date date = new Date();
-                TIEMPO_PRESENTE_BT01 = date;
-
-                if (STATUS_ETHERNET) {
-                    Log.v(TAG,"STATUS_ETHERNET: OK");
-                } else {
-                    STATUS_ETHERNET = btSocketEthernet.ConnectBT();
-                    util.sleep(1000);
+                try{
+                    statusADC("");
+                    Thread.sleep(1000);
+                }catch (Exception e){
+                    try{
+                        Thread.sleep(1000);
+                    }catch (Exception ex){
+                    }
+                    Log.e(TAG,"threadStatusADC " + e.getMessage());
                 }
-                util.sleep(1000);
             }
-
         }
     });
 
@@ -3820,10 +4242,10 @@ public class ActivityPrincipal extends Activity {
 
 
     private void statusADC(String status){
-
         if(status.equalsIgnoreCase("")){
             try{
                 btSocket01.getOutputStream().write(util.hexStringToByteArray("244F41584100304430303030303030"));
+                //Thread.sleep(100);
             }catch (Exception e){
                 Log.e(TAG,"statusADC write" + e.getMessage());
             }
@@ -3845,6 +4267,8 @@ public class ActivityPrincipal extends Activity {
                 ExternalEnergy = util.convertHexToDecimal(status.substring(24,26)) * 0.0613725490196078;
                 UPSCharge = util.convertHexToDecimal(status.substring(26,28)) * 0.0613725490196078;
                 levelUPS = ((UPSCharge-9) * 100)/3.3;
+                turnOnRelay02 = Integer.valueOf(util.convertHexToString(status.substring(70,72)));
+                turnOnRelay01 = Integer.valueOf(util.convertHexToString(status.substring(72,74)));
                 turnOnLan = Integer.valueOf(util.convertHexToString(status.substring(74,76)));
                 turnOnAndroid = Integer.valueOf(util.convertHexToString(status.substring(76,78)));
                 turnOnSuprema = Integer.valueOf(util.convertHexToString(status.substring(78,80)));
@@ -3855,12 +4279,17 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG,"ExternalEnergy=" + ExternalEnergy); // (x * 5 / 255) * 3.13 -> voltios
                 Log.v(TAG,"UPSCharge=" + UPSCharge); // (x * 5 / 255) * 3.13 -> voltios
                 Log.v(TAG,"levelUPS=" + levelUPS); // (x * 5 / 255) * 3.13 -> voltios
+                Log.v(TAG,"turnOnRelay02=" + turnOnRelay02);
+                Log.v(TAG,"turnOnRelay01=" + turnOnRelay01);
                 Log.v(TAG,"turnOnLan=" + turnOnLan);
                 Log.v(TAG,"turnOnAndroid=" + turnOnAndroid);
                 Log.v(TAG,"turnOnSuprema=" + turnOnSuprema);
                 Log.v(TAG,"turnOnLectorBarra=" + turnOnLectorBarra);
                 Log.v(TAG,"turnOnProximidad=" + turnOnProximidad);
                 Log.v(TAG,"turnOnExternalEnergy=" + turnOnExternalEnergy);
+
+                Log.v(TAG,"parametersInsertMarcaciones = " + parametersInsertMarcaciones);
+                Log.v(TAG,"parameterMarcacionRepetida = " + parameterMarcacionRepetida);
             }catch (Exception e){
                 Log.e(TAG,"statusADC status" + e.getMessage());
             }
@@ -3868,6 +4297,8 @@ public class ActivityPrincipal extends Activity {
             ExternalEnergy = -1;
             UPSCharge = -1;
             levelUPS = -1;
+            turnOnRelay02 = -1;
+            turnOnRelay01 = -1;
             turnOnLan = -1;
             turnOnAndroid = -1;
             turnOnSuprema = -1;
@@ -3875,6 +4306,7 @@ public class ActivityPrincipal extends Activity {
             turnOnProximidad = -1;
             turnOnExternalEnergy = -1;
         }
+
     }
 
     private void keytoFlg_Actividad(String trama){
@@ -3887,6 +4319,10 @@ public class ActivityPrincipal extends Activity {
                         @Override
                         public void run() {
                             try {
+                                turnOnScreen();
+                                manageAccessButtons(false);
+                                manageLayerMarcacion(false);
+
                                 txvMensajePantalla.setText("PASE SU TARJ/BIOM");
                                 if(flag.equalsIgnoreCase("001")){
                                     actualizarFlag("001", btnEvent01);

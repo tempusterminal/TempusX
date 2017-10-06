@@ -11,24 +11,31 @@ import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by ECERNAR on 12/05/2017.
  */
 
 public class Bluetooth {
 
+    private String TAG = "BTS-BT";
+
     BluetoothAdapter mBluetoothAdapter;
     BluetoothSocket mmSocket;
     BluetoothDevice mmDevice;
     String mac;
+    String pin;
     OutputStream outputStream;
     InputStream inputStream;
 
     public Bluetooth(String mac) {
         this.mac = mac;
+        this.pin = "1234";
     }
 
     public boolean ConnectBT(){
+
         clearDat();
         boolean bt = findBT();
         if (bt){

@@ -39,6 +39,7 @@ import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
 import com.tempus.proyectos.data.process.ProcessSyncUSB;
 import com.tempus.proyectos.data.queries.QueriesParameters;
+import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.servicios.OverlayShowingService;
 import com.tempus.proyectos.tcpSerial.UsrTCP;
@@ -108,6 +109,7 @@ public class ActivitySincronizacion extends Activity {
     boolean servidor = false;
     boolean basedatos = false;
 
+    TextView lblrep0;
     TextView lblHora1;
     TextView lblHora2;
     TextView lblHora3;
@@ -181,6 +183,7 @@ public class ActivitySincronizacion extends Activity {
 
         btnReplicar = (Button) findViewById(R.id.btnReplicar);
 
+        lblrep0 = (TextView) findViewById(R.id.lblrep0);
         lblHora1 = (TextView) findViewById(R.id.lblHora1);
         lblHora2 = (TextView) findViewById(R.id.lblHora2);
         lblHora3 = (TextView) findViewById(R.id.lblHora3);
@@ -924,6 +927,10 @@ public class ActivitySincronizacion extends Activity {
             e.printStackTrace();
         }
 
+        //
+        Log.v(TAG,"statusReplicateReading.start()");
+        statusReplicateReading.start();
+
     }
 
     @Override
@@ -1140,6 +1147,42 @@ public class ActivitySincronizacion extends Activity {
         threadHttpcfg.start();
 
     }
+
+    Thread statusReplicateReading = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Log.v(TAG,"lblrep0.setText");
+            while (true) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+
+                            if(QueriesPersonalTipolectoraBiometria.statusReplicate.equalsIgnoreCase("")){
+                                if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:")){
+                                    lblrep0.setText("Forzar Replica:.");
+                                }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:.")){
+                                    lblrep0.setText("Forzar Replica:..");
+                                }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:..")){
+                                    lblrep0.setText("Forzar Replica:...");
+                                }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:...")){
+                                    lblrep0.setText("Forzar Replica:");
+                                }
+                            }else{
+                                lblrep0.setText("Forzar Replica: " + QueriesPersonalTipolectoraBiometria.statusReplicate);
+                            }
+
+                        } catch (Exception e) {
+
+                            Log.wtf(TAG,"statusReplicateReading lblrep0.setText " +e.getMessage());
+                        }
+                    }
+                });
+                util.sleep(500);
+            }
+        }
+    });
 
 
 

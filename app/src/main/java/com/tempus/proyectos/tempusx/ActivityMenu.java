@@ -36,10 +36,11 @@ public class ActivityMenu extends Activity {
     ImageButton ibtn04;
     ImageButton ibtn05;
     ImageButton ibtn06;
-    ImageButton ibtn07;
-    ImageButton ibtn08;
-    ImageButton ibtn09;
-    ImageButton ibtn10;
+    //ImageButton ibtn07;
+    //ImageButton ibtn08;
+    //ImageButton ibtn09;
+    //ImageButton ibtn10;
+    ImageButton ibtn11;
 
     TextView itxv01;
     TextView itxv02;
@@ -47,10 +48,11 @@ public class ActivityMenu extends Activity {
     TextView itxv04;
     TextView itxv05;
     TextView itxv06;
-    TextView itxv07;
-    TextView itxv08;
-    TextView itxv09;
-    TextView itxv10;
+    //TextView itxv07;
+    //TextView itxv08;
+    //TextView itxv09;
+    //TextView itxv10;
+    TextView itxv11;
 
     TextView ilblNone1;
     TextView ilblNone2;
@@ -81,10 +83,11 @@ public class ActivityMenu extends Activity {
         ibtn04 = (ImageButton) findViewById(R.id.ibtn04);
         ibtn05 = (ImageButton) findViewById(R.id.ibtn05);
         ibtn06 = (ImageButton) findViewById(R.id.ibtn06);
-        ibtn07 = (ImageButton) findViewById(R.id.ibtn07);
-        ibtn08 = (ImageButton) findViewById(R.id.ibtn08);
-        ibtn09 = (ImageButton) findViewById(R.id.ibtn09);
-        ibtn10 = (ImageButton) findViewById(R.id.ibtn10);
+        //ibtn07 = (ImageButton) findViewById(R.id.ibtn07);
+        //ibtn08 = (ImageButton) findViewById(R.id.ibtn08);
+        //ibtn09 = (ImageButton) findViewById(R.id.ibtn09);
+        //ibtn10 = (ImageButton) findViewById(R.id.ibtn10);
+        ibtn11 = (ImageButton) findViewById(R.id.ibtn11);
 
         itxv01 = (TextView) findViewById(R.id.itxv01);
         itxv02 = (TextView) findViewById(R.id.itxv02);
@@ -92,24 +95,25 @@ public class ActivityMenu extends Activity {
         itxv04 = (TextView) findViewById(R.id.itxv04);
         itxv05 = (TextView) findViewById(R.id.itxv05);
         itxv06 = (TextView) findViewById(R.id.itxv06);
-        itxv07 = (TextView) findViewById(R.id.itxv07);
-        itxv08 = (TextView) findViewById(R.id.itxv08);
-        itxv09 = (TextView) findViewById(R.id.itxv09);
-        itxv10 = (TextView) findViewById(R.id.itxv10);
+        //itxv07 = (TextView) findViewById(R.id.itxv07);
+        //itxv08 = (TextView) findViewById(R.id.itxv08);
+        //itxv09 = (TextView) findViewById(R.id.itxv09);
+        //itxv10 = (TextView) findViewById(R.id.itxv10);
+        itxv11 = (TextView) findViewById(R.id.itxv11);
 
         btnMasterMenu = (ImageView) findViewById(R.id.btnMasterMenu);
 
         /* --- Inicialización de Métodos --- */
 
-        itxv07.setVisibility(View.INVISIBLE);
-        itxv08.setVisibility(View.INVISIBLE);
-        itxv09.setVisibility(View.INVISIBLE);
-        itxv10.setVisibility(View.INVISIBLE);
+        //itxv07.setVisibility(View.INVISIBLE);
+        //itxv08.setVisibility(View.INVISIBLE);
+        //itxv09.setVisibility(View.INVISIBLE);
+        //itxv10.setVisibility(View.INVISIBLE);
 
-        ibtn07.setVisibility(View.INVISIBLE);
-        ibtn08.setVisibility(View.INVISIBLE);
-        ibtn09.setVisibility(View.INVISIBLE);
-        ibtn10.setVisibility(View.INVISIBLE);
+        //ibtn07.setVisibility(View.INVISIBLE);
+        //ibtn08.setVisibility(View.INVISIBLE);
+        //ibtn09.setVisibility(View.INVISIBLE);
+        //ibtn10.setVisibility(View.INVISIBLE);
 
         /* --- Inicialización de Parametros Generales --- */
 
@@ -153,6 +157,7 @@ public class ActivityMenu extends Activity {
             }
         });
 
+        /*
         ibtn07.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AccessMenuItem(itxv07.getText().toString());
@@ -174,6 +179,14 @@ public class ActivityMenu extends Activity {
         ibtn10.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 AccessMenuItem(itxv10.getText().toString());
+            }
+        });
+
+        */
+
+        ibtn11.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                AccessMenuItem(itxv11.getText().toString());
             }
         });
 
@@ -261,6 +274,9 @@ public class ActivityMenu extends Activity {
                 break;
             case "USUARIO":
                 ui.goToActivity(ActivityMenu.this,ActivityUsuario.class,"","");
+                break;
+            case "ENERGÍA":
+                ui.goToActivity(ActivityMenu.this,ActivityEnergia.class,"","");
                 break;
             case "NONE":
                 ui.goToActivity(ActivityMenu.this,ActivityProduccion.class,"","");

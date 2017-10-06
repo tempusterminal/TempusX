@@ -23,6 +23,8 @@ import com.tempus.proyectos.util.Fechahora;
 
 public class QueriesTerminal {
 
+    private String TAG = "DQ-QUETER";
+
     private Conexion conexion;
     private Context context;
     private SQLiteDatabase database;
@@ -128,14 +130,6 @@ public class QueriesTerminal {
         contentValues.put(TableTerminal.Idterminal,Idterminal);
         contentValues.put(TableTerminal.FechaHoraSinc,fechahora.getFechahora());
 
-        while(ActivityPrincipal.controlFlagSyncAutorizaciones){
-            // //////////////////////////////////
-            try{
-                Thread.sleep(100);
-            }catch(Exception e){
-
-            }
-        }
         try{
             if(!ActivityPrincipal.controlFlagSyncAutorizaciones){
                 database.update(TableTerminal.TABLE_NAME,contentValues,null,null);
@@ -144,11 +138,11 @@ public class QueriesTerminal {
                 // Limpiar los registros de las tablas
                 dbManager.all("0,1,0,0,0,0");
 
-                Log.v("TEMPUS: ","Idterminal Actualizado a " + Idterminal);
+                Log.v(TAG,"Idterminal Actualizado a " + Idterminal);
             }
             return 1;
         }catch(Exception e){
-            Log.v("TEMPUS: ","QueriesTerminal.ActualizarIdterminal Error " + e.getMessage());
+            Log.e(TAG,"QueriesTerminal.ActualizarIdterminal Error " + e.getMessage());
             return 0;
         }finally {
             this.close();
@@ -156,8 +150,55 @@ public class QueriesTerminal {
 
     }
 
+    private class ActualizarIdterminal extends Thread{
+        private Thread hilo;
+        private String nombreHilo;
 
+        private String Idterminal;
 
+        public ActualizarIdterminal(String nombreHilo) {
+            this.nombreHilo = nombreHilo;
+            Log.v(TAG,"Creando Hilo " + nombreHilo);
+        }
+
+        public void run(){
+            Log.v(TAG,"Ejecutando Hilo " + nombreHilo);
+
+            try{
+
+                while(ActivityPrincipal.controlFlagSyncAutorizaciones){
+                    Thread.sleep(250);
+                }
+
+                ActualizarIdterminal(Idterminal);
+
+                Log.v(TAG,"Fin de ejecución Hilo");
+            }catch (Exception e){
+                Log.e(TAG,"Error General Hilo " + nombreHilo + ": " + e.getMessage());
+                try{
+                    Thread.sleep(1000);
+                }catch(Exception ex){
+
+                }
+            }
+        }
+
+        public void start(String Idterminal){
+            //Looper.prepare();
+            Log.v(TAG,"Iniciando Hilo " + nombreHilo);
+            this.Idterminal = Idterminal;
+            if(hilo == null){
+                hilo = new Thread(nombreHilo);
+                super.start();
+            }
+        }
+
+    }
+
+    public void startActualizarIdterminal(String Idterminal){
+        ActualizarIdterminal actualizarIdterminal = new ActualizarIdterminal("ActualizarIdterminal");
+        actualizarIdterminal.start(Idterminal);
+    }
 
 
 
