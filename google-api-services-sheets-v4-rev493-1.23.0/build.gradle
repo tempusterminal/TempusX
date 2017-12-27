@@ -1,0 +1,2 @@
+configurations.maybeCreate("default")
+artifacts.add("default", file('google-api-services-sheets-v4-rev493-1.23.0.jar'))

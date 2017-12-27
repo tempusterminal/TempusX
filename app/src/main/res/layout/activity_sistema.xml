@@ -14,69 +14,55 @@
     <!-- Fondos -->
 
     <TextView
-        android:id="@+id/Fondo1"
-        android:layout_width="@dimen/fondo1_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/fondo1alt_height"
-        android:layout_marginLeft="@dimen/fondo1_marginLeft"
         android:layout_marginTop="@dimen/fondo1_marginTop"
-        android:background="@color/colorFondoBarra"/>
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/txvFondo1" />
 
-    <!--
-    <fragment
-        android:layout_width="@dimen/fondo3_width"
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/fondo2alt_height"
+        android:layout_marginTop="@dimen/fondo2alt_marginTop"
+        android:background="@color/colorFondoCuerpo"
+        android:id="@+id/txvFondo2" />
+
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="@dimen/fondo3_height"
         android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:layout_marginLeft="@dimen/fondo3_marginLeft"
-        android:name="com.tempus.proyectos.tempusx.FragmentBar"
-        android:layout_marginBottom="0dp"
-        android:id="@+id/fragment1"
-        android:layout_alignParentTop="true"
-        tools:layout="@layout/fragment_bar" />
-     -->
-
-
-    <TextView
-        android:id="@+id/txvBarraInf"
-        android:layout_width="@dimen/fondo3_width"
-        android:layout_height="@dimen/fondo3_height"
-        android:layout_marginLeft="@dimen/fondo3_marginLeft"
-        android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:background="@color/colorFondoBarra"/>
-
-    <TextView
-        android:id="@+id/txvLinea3"
-        android:layout_width="@dimen/linea_width"
-        android:layout_height="@dimen/linea_height"
-        android:layout_marginLeft="@dimen/linea3_marginLeft"
-        android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:background="@color/colorLinea"/>
-
-    <TextView
-        android:id="@+id/txvLinea4"
-        android:layout_width="@dimen/linea_width"
-        android:layout_height="@dimen/linea_height"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="@dimen/linea3_marginLeft"
-        android:background="@color/colorLinea"/>
-
+        android:background="@color/colorFondoBarra"
+        android:id="@+id/txvBarraInf" />
 
     <!-- Lineas -->
 
     <TextView
-        android:id="@+id/linea1"
-        android:layout_width="@dimen/linea_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/linea_height"
-        android:layout_marginLeft="@dimen/linea1_marginLeft"
         android:layout_marginTop="@dimen/linea1_marginTop"
-        android:background="@color/colorLinea"/>
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea1" />
 
     <TextView
-        android:id="@+id/linea2"
-        android:layout_width="@dimen/linea_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/linea_height"
-        android:layout_marginLeft="@dimen/linea2alt_marginLeft"
-        android:layout_marginTop="@dimen/linea2alt_marginTop"
-        android:background="@color/colorLinea"/>
+        android:background="@color/colorLinea"
+        android:layout_alignBottom="@+id/txvFondo1"
+        android:id="@+id/txvLinea2" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea3" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/linea_height"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea4" />
 
 
     <!-- Titulo -->

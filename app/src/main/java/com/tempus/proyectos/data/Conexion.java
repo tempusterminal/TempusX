@@ -16,6 +16,7 @@ import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.tables.TableEmpresas;
 import com.tempus.proyectos.data.tables.TableEstados;
 import com.tempus.proyectos.data.tables.TableLlamadas;
+import com.tempus.proyectos.data.tables.TableLogTerminal;
 import com.tempus.proyectos.data.tables.TableMarcaciones;
 import com.tempus.proyectos.data.tables.TableParameters;
 import com.tempus.proyectos.data.tables.TablePerTipolectTerm;
@@ -35,6 +36,8 @@ import com.tempus.proyectos.data.view.ViewBiometrias;
 
 
 public class Conexion extends SQLiteOpenHelper{
+
+    private String TAG = "DA-CO";
 
 
     static final String DB_NAME = "TEMPUSPLUS.db";
@@ -72,6 +75,8 @@ public class Conexion extends SQLiteOpenHelper{
         TableLlamadas tableLlamadas = new TableLlamadas();
         TableTerminalSerial terminalSerial = new TableTerminalSerial();
         TableParameters tableParameters = new TableParameters();
+
+        TableLogTerminal tableLogTerminal = new TableLogTerminal();
 
 
         // -----------------------------------------------------
@@ -236,6 +241,17 @@ public class Conexion extends SQLiteOpenHelper{
         try{
             db.execSQL(tableParameters.DROP_TABLE);
             db.execSQL(tableParameters.CREATE_TABLE);
+        }catch (SQLException e){
+            //Log.d("Autorizaciones",e.getMessage());
+        }
+        // ------------------------------------------------------
+
+        // ------------------------------------------------------
+        Log.v(TAG,tableLogTerminal.CREATE_TABLE);
+        // CREATE tableTipoLectora
+        try{
+            db.execSQL(tableLogTerminal.DROP_TABLE);
+            db.execSQL(tableLogTerminal.CREATE_TABLE);
         }catch (SQLException e){
             //Log.d("Autorizaciones",e.getMessage());
         }

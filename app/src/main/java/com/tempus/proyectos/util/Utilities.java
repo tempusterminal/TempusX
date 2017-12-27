@@ -14,6 +14,7 @@ import java.math.BigInteger;
 import java.net.ConnectException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -25,6 +26,8 @@ import java.util.Scanner;
  */
 
 public class Utilities {
+
+    private String TAG = "UT-UT";
 
     public String getCRC16CCITT(String inputStr, int polynomial, int crc, boolean isHex) {
         int strLen = inputStr.length();
@@ -158,7 +161,7 @@ public class Utilities {
     }
 
     public String decimalToHex(int num) {
-        if(num >= 0 && num <= 9){
+        if(num > 0 && num <= 9){
             return "0" + String.valueOf(num);
         }else if(num > 9){
             // For storing remainder
@@ -186,6 +189,16 @@ public class Utilities {
             return "30";
         }
 
+    }
+
+    public String asciiToHex(String asciiValue){
+        char[] chars = asciiValue.toCharArray();
+        StringBuffer hex = new StringBuffer();
+        for (int i = 0; i < chars.length; i++){
+            hex.append(Integer.toHexString((int) chars[i]));
+            //Log.v(TAG,"asciiToHex " + asciiValue + ">" + hex.toString());
+        }
+        return hex.toString();
     }
 
     public void sleep(int milisegundos){
@@ -278,6 +291,64 @@ public class Utilities {
             Log.d("APK", "Source dir : " + packageInfo.sourceDir);
             Log.d("APK", "Launch Activity :" + pm.getLaunchIntentForPackage(packageInfo.packageName));
         }
+    }
+
+
+    public String getChecksum(String hex, int l){
+        hex = hex.replace(" ","");
+        String sumHex = "";
+        int sum = 0;
+        if(hex.length() % 2 == 0){
+            while(hex.length() > 0){
+                if(hex.length()>2){
+                    sum += Integer.parseInt(hex.substring(0,2),16);
+                    hex = hex.substring(2);
+                }else if(hex.length() == 2){
+                    sum += Integer.parseInt(hex,16);
+                    hex = "";
+                }
+            }
+        }else{
+            sum = 0;
+        }
+
+        sumHex = Integer.toHexString(sum);
+
+        if(sumHex.length() == l){
+            return sumHex;
+        }else if(sumHex.length() > l){
+            return sumHex.substring(sumHex.length() - l);
+        }else if(sumHex.length() < l){
+            while(!(sumHex.length() == l)){
+                sumHex = "0" + sumHex;
+            }
+            return sumHex;
+        }
+
+        return "";
+
+    }
+
+    public String invertHex(String hex, int part){
+        int l = hex.length();
+        ArrayList<String> stringArrayList = new ArrayList<String>();
+        String output = "";
+        try{
+            for(int i = 0; i < l/part; i++){
+                stringArrayList.add(hex.substring(0,part));
+                if(hex.length() > part){
+                    hex = hex.substring(part);
+                }
+            }
+
+            for(int i = 1; i <= stringArrayList.size(); i++){
+                output += stringArrayList.get(stringArrayList.size() - i);
+            }
+        }catch (Exception e){
+            Log.e(TAG,"invertHex " + e.getMessage());
+        }
+
+        return output;
     }
 
 

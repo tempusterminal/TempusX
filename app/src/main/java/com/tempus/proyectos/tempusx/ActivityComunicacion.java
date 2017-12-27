@@ -116,6 +116,14 @@ public class ActivityComunicacion extends Activity {
 
     /* --- Declaración de Componentes de la Interfaz --- */
 
+    TextView txvFondo1;
+    TextView txvFondo2;
+    TextView txvBarraInf;
+    TextView txvLinea1;
+    TextView txvLinea2;
+    TextView txvLinea3;
+    TextView txvLinea4;
+
     ImageView btnMasterComunicacion;
     EditText edtEthIp;
     EditText edtEthMascara;
@@ -195,11 +203,28 @@ public class ActivityComunicacion extends Activity {
 
         /* --- Inicialización de Componentes de la Interfaz --- */
 
+        txvFondo1 = (TextView) findViewById(R.id.txvFondo1);
+        txvFondo2 = (TextView) findViewById(R.id.txvFondo2);
+        txvBarraInf = (TextView) findViewById(R.id.txvBarraInf);
+        txvLinea1 = (TextView) findViewById(R.id.txvLinea1);
+        txvLinea2 = (TextView) findViewById(R.id.txvLinea2);
+        txvLinea3 = (TextView) findViewById(R.id.txvLinea3);
+        txvLinea4 = (TextView) findViewById(R.id.txvLinea4);
+
+        ActivityPrincipal.setBackgroundColorOnTextView(txvFondo1,ActivityPrincipal.parametersColorsUI.split(",")[0],"#cecece");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvFondo2,ActivityPrincipal.parametersColorsUI.split(",")[1],"#cecece");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvBarraInf,ActivityPrincipal.parametersColorsUI.split(",")[2],"#cecece");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvLinea1,ActivityPrincipal.parametersColorsUI.split(",")[3],"#777777");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvLinea2,ActivityPrincipal.parametersColorsUI.split(",")[4],"#777777");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvLinea3,ActivityPrincipal.parametersColorsUI.split(",")[5],"#777777");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvLinea4,ActivityPrincipal.parametersColorsUI.split(",")[6],"#777777");
+
         edtWlanIp = (EditText) findViewById(R.id.edtWlanIp);
         edtWlanMascara = (EditText) findViewById(R.id.edtWlanMascara);
         edtWlanPuerta = (EditText) findViewById(R.id.edtWlanPuerta);
 
         btnMasterComunicacion = (ImageView) findViewById(R.id.btnMasterComunicacion);
+        ActivityPrincipal.setImageBitmapOnImageView(btnMasterComunicacion,"/tempus/img/config/","logo.png");
 
         edtEthIp = (EditText) findViewById(R.id.edtEthIp);
         edtEthMascara = (EditText) findViewById(R.id.edtEthMascara);

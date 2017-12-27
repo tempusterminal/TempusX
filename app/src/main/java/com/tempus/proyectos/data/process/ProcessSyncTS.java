@@ -20,6 +20,13 @@ import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 /**
  * Created by gurrutiam on 12/12/2016.
  */
@@ -103,10 +110,11 @@ public class ProcessSyncTS extends Thread{
                             Log.v(TAG,"Sin marcaciones por pasar");
                         }else{
                             Log.v(TAG,"Marcacion a sincronizar: " + marcacionesList.get(0).toString());
+
                             try{
                                 if(processSync.syncMarcaciones(marcacionesList.get(0)) > 0){
                                     //queriesMarcaciones = new QueriesMarcaciones(context);
-                                    queriesMarcaciones.ActualizarSincronizado(marcacionesList.get(0),1);
+                                    //queriesMarcaciones.ActualizarSincronizado(marcacionesList.get(0),1);
                                 }else{
                                     Log.v(TAG,"No se completo la sincronización de marcaciones");
                                 }
@@ -115,6 +123,7 @@ public class ProcessSyncTS extends Thread{
                             }catch(Exception e){
                                 Log.e(TAG,"ProcessSyncTS.run Exception: " + e.toString());
                             }
+
                         }
                         // //////////////////////////////////
 
@@ -141,6 +150,52 @@ public class ProcessSyncTS extends Thread{
                     }
                 }
 
+                try{
+                    // -----------------------------------------------------------------------------
+                    // -----------------------------------------------------------------------------
+                    // -----------------------------------------------------------------------------
+                    // Sincronizacion por Google Drive
+                    // Sincronizacion por Google Drive
+
+                    List<Marcaciones> marcacionesList = queriesMarcaciones.select_one_row();
+                    ProcessSync processSync = new ProcessSync();
+
+                    // Deshabilitar temporalmente sincro GoogleDrive 27/12/2017
+                    /*
+                    if(marcacionesList.isEmpty()){
+                        Log.v(TAG,"Sin marcaciones por pasar");
+                    }else{
+                        Log.v(TAG,"Marcacion a sincronizar: " + marcacionesList.get(0).toString());
+
+                        try{
+                            if(processSync.syncMarcacionesWsG(marcacionesList.get(0)) > 0){
+                                Log.v(TAG,"Marcación sincronizada");
+                                //queriesMarcaciones = new QueriesMarcaciones(context);
+                                queriesMarcaciones.ActualizarSincronizado(marcacionesList.get(0),1);
+                            }else{
+                                Log.v(TAG,"No se completo la sincronización de marcaciones");
+                            }
+                        }catch(Exception e){
+                            Log.e(TAG,"syncMarcacionesWsG " + e.toString());
+                        }
+
+                    }
+                    */
+                    // //////////////////////////////////
+
+                    Thread.sleep(5000);
+
+
+                }catch (SQLException e){
+                    Log.e(TAG,"ProcessSyncTS.run SQLException SQLServer Hilo " + nombreHilo + ": " + e.getMessage());
+                }catch (InterruptedException e){
+                    Log.e(TAG,"ProcessSyncTS.run InterruptedException Hilo " + nombreHilo + ": " + e.getMessage());
+                }catch (ExceptionInInitializerError e){
+                    Log.e(TAG,"ProcessSyncTS.run ExceptionInInitializerError Hilo " + nombreHilo + ": " + e.getMessage());
+                }catch (Exception e){
+                    Log.e(TAG,"ProcessSyncTS.run Exception Hilo " + nombreHilo + ": " + e.getMessage());
+                }
+
             }catch (Exception e){
                 Log.e(TAG,"" + e.getMessage());
                 try{
@@ -161,5 +216,8 @@ public class ProcessSyncTS extends Thread{
         }
         this.context = context;
     }
+
+
+
 
 }

@@ -7,6 +7,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,6 +20,7 @@ import com.tempus.proyectos.data.tables.TableMarcaciones;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.threads.ThreadHorariosRelay;
 import com.tempus.proyectos.util.Fechahora;
+import com.tempus.proyectos.util.Utilities;
 
 /**
  * Created by gurrutiam on 10/11/2016.
@@ -33,6 +35,8 @@ public class QueriesMarcaciones {
     private SQLiteDatabase database;
     CameraLocalManager cameraLocalManager = new CameraLocalManager();
     ThreadHorariosRelay threadHorariosRelay = new ThreadHorariosRelay();
+    Utilities utilities = new Utilities();
+    private String printerMessage = "";
 
     public QueriesMarcaciones() {
 
@@ -399,8 +403,10 @@ public class QueriesMarcaciones {
                                     autorizaciones.setApellidoMaterno(autorizacionesList.get(a).getApellidoMaterno());
                                     autorizaciones.setValorTarjeta(ValorTarjeta);
                                     autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
-                                    autorizaciones.setMensaje("MARCACION AUTORIZADA");
+                                    //autorizaciones.setMensaje("MARCACION AUTORIZADA");
                                     autorizaciones.setMensajeDetalle("");
+                                    autorizaciones.setMensaje(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[0].split(",")[0]);
+                                    //autorizaciones.setMensajeDetalle(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[0].split(",")[1]);
                                     //threadHorariosRelay.startRelayReading(1);
                                     tmpListar = "1";
 
@@ -412,8 +418,10 @@ public class QueriesMarcaciones {
                                     autorizaciones.setValorTarjeta(ValorTarjeta);
                                     autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
                                     //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                                    autorizaciones.setMensaje("NO AUTORIZADA");
-                                    autorizaciones.setMensajeDetalle("NO TIENE PERMISO EN ESTA LECTORA");
+                                    //autorizaciones.setMensaje("ERROR");
+                                    //autorizaciones.setMensajeDetalle("NO TIENE PERMISO EN ESTA LECTORA");
+                                    autorizaciones.setMensaje(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[1].split(",")[0]);
+                                    autorizaciones.setMensajeDetalle(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[1].split(",")[1]);
                                     //threadHorariosRelay.startRelayReading(2);
                                     tmpListar = "2";
                                 }
@@ -424,8 +432,10 @@ public class QueriesMarcaciones {
                                 autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
                                 autorizaciones.setValorTarjeta(ValorTarjeta);
                                 //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                                autorizaciones.setMensaje("NO AUTORIZADA");
-                                autorizaciones.setMensajeDetalle("ESTADO NO PERMITE MARCACION");
+                                //autorizaciones.setMensaje("ERROR");
+                                //autorizaciones.setMensajeDetalle("ESTADO NO PERMITE MARCACION");
+                                autorizaciones.setMensaje(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[2].split(",")[0]);
+                                autorizaciones.setMensajeDetalle(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[2].split(",")[1]);
                                 //threadHorariosRelay.startRelayReading(2);
                                 tmpListar = "3";
                             }
@@ -435,8 +445,10 @@ public class QueriesMarcaciones {
                             autorizaciones.setApellidoMaterno(autorizacionesList.get(a).getApellidoMaterno());
                             autorizaciones.setIcono(autorizacionesList.get(a).getIcono());
                             autorizaciones.setValorTarjeta(ValorTarjeta);
-                            autorizaciones.setMensaje("MARCACION REPETIDA");
+                            //autorizaciones.setMensaje("MARCACION REPETIDA");
                             autorizaciones.setMensajeDetalle("");
+                            autorizaciones.setMensaje(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[3].split(",")[0]);
+                            //autorizaciones.setMensajeDetalle(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[3].split(",")[1]);
                             //threadHorariosRelay.startRelayReading(2);
                             tmpListar = "4";
                         }
@@ -444,23 +456,29 @@ public class QueriesMarcaciones {
                     else{
                         autorizaciones.setValorTarjeta(ValorTarjeta);
                         //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                        autorizaciones.setMensaje("NO AUTORIZADA");
-                        autorizaciones.setMensajeDetalle("TARJETA/BIOME NO REGISTRADA");
+                        //autorizaciones.setMensaje("ERROR");
+                        //autorizaciones.setMensajeDetalle("TARJETA/BIOME NO REGISTRADA");
+                        autorizaciones.setMensaje(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[4].split(",")[0]);
+                        autorizaciones.setMensajeDetalle(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[4].split(",")[1]);
                         //threadHorariosRelay.startRelayReading(2);
                         tmpListar = "5";
                     }
                 }else{
                     autorizaciones.setValorTarjeta(ValorTarjeta);
                     //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                    autorizaciones.setMensaje("NO AUTORIZADA");
-                    autorizaciones.setMensajeDetalle("TARJETA/BIOME NO SE RECONOCE");
+                    //autorizaciones.setMensaje("ERROR");
+                    //autorizaciones.setMensajeDetalle("TARJETA/BIOME NO SE RECONOCE");
+                    autorizaciones.setMensaje(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[5].split(",")[0]);
+                    autorizaciones.setMensajeDetalle(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[5].split(",")[1]);
                     //threadHorariosRelay.startRelayReading(2);
                     tmpListar = "6";
                 }
             }else{
                 //autorizaciones.setMensaje("MARCACION NO AUTORIZADA");
-                autorizaciones.setMensaje("NO AUTORIZADA");
-                autorizaciones.setMensajeDetalle("LECTORA NO HABILITADA");
+                //autorizaciones.setMensaje("ERROR");
+                //autorizaciones.setMensajeDetalle("LECTORA NO HABILITADA");
+                autorizaciones.setMensaje(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[6].split(",")[0]);
+                autorizaciones.setMensajeDetalle(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[6].split(",")[1]);
                 //threadHorariosRelay.startRelayReading(2);
                 tmpListar = "7";
             }
@@ -522,7 +540,42 @@ public class QueriesMarcaciones {
                 if(Insert == 1){
                     this.insert(marcaciones);
                     if(tmpListar.equalsIgnoreCase("1")){
-                        cameraLocalManager.takePhotoFrontCamera(fechahora.setFileName(Fechahora),Idterminal);
+
+                        if(ActivityPrincipal.MODO_PRINTER){
+                            printerMessage = ActivityPrincipal.PRINTER_MESSAGE.replace(" ","");
+                            //6 values
+                            String varPrint = ActivityPrincipal.flagPrint + "@" + fechahora.getFechaddmmyy(Fechahora) + "@" + fechahora.getHora(Fechahora) + "@" + Codigo + "@" + vTarjeta + "@" + autorizacionesList.get(a).getApellidoPaterno() + " " + autorizacionesList.get(a).getApellidoMaterno() + ", " + autorizacionesList.get(a).getNombres();
+                            String[] varPrintArray = varPrint.split("@");
+
+                            for(int i = 0; i < ActivityPrincipal.VALUES_PRINTER_MESSAGE.split(";").length; i++){
+                                //ActivityPrincipal.VALUES_PRINTER_MESSAGE = "0,1;0,2;0,3;0,4;0,5;0,6";
+                                int posicionPrinterMessage = Integer.valueOf(ActivityPrincipal.VALUES_PRINTER_MESSAGE.split(";")[i].split(",")[0]);
+                                int posicionArray = Integer.valueOf(ActivityPrincipal.VALUES_PRINTER_MESSAGE.split(";")[i].split(",")[1]);
+                                String variable = utilities.asciiToHex(varPrintArray[posicionArray]).toString();
+                                int longitud = 0;
+                                if(variable.length() > 64){
+                                    variable = variable.substring(0,64);
+                                    longitud = variable.length();
+                                }else{
+                                    longitud = variable.length();
+                                }
+
+                                //Log.v(TAG,"posicion=" + posicionPrinterMessage + " - " + "longitud=" + longitud);
+                                printerMessage = printerMessage.substring(0,posicionPrinterMessage) + variable + printerMessage.substring(posicionPrinterMessage + longitud);
+                                //Log.v(TAG,"varPrintArray[" + posicionArray + "]=" + varPrintArray[posicionArray]);
+                            }
+                            //Log.v(TAG,"printerMessage=" + printerMessage);
+
+                            writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),printerMessage);
+
+                        }
+
+                        try{
+                            cameraLocalManager.takePhotoFrontCamera(fechahora.setFileName(Fechahora),Idterminal);
+                        }catch (Exception e){
+                            Log.e(TAG,"cameraLocalManager.takePhotoFrontCamera " + e.getMessage());
+                        }
+
                     }
                     Log.v(TAG,"Marcacion Registrada: " + marcaciones.toString());
                     //Log.v(TAG,"Marcacion Registrada");
@@ -546,7 +599,7 @@ public class QueriesMarcaciones {
     }
 
 
-    public boolean MarcacionRepetida(Autorizaciones autorizaciones, String Fechahora,String FlgActividad){
+    public boolean MarcacionRepetida(Autorizaciones autorizaciones, String Fechahora, String FlgActividad){
 
         this.open();
         int count = 0;
@@ -707,6 +760,43 @@ public class QueriesMarcaciones {
             return false;
         }
     }
+
+
+    public void writeToArduino(OutputStream out, String printerMessage) {
+
+        //244F415841 0013 42 3131313131303031
+        String cabecera = "244F415841";
+
+        String longitud = "0013";
+
+        String mensaje = "";
+        String checksum = "0000";
+        String cola = "41";
+
+        //cabecera = "$0AXA";
+        //longitud = "";
+        //checksum = "";
+        //cola = "A";
+
+        //mensaje = "50" + "4e4e4e4e 4e4e 4e4e 4e4e4e 4e4e 4e4e4e";
+        mensaje = "50" + "00" + utilities.decimalToHex(printerMessage.length()/2) + "4e4e 4e4e 4e4e 4e4e4e 4e4e 4e4e4e";
+
+        mensaje = mensaje.replace(" ","");
+        checksum = utilities.getChecksum(cabecera + longitud + mensaje,4);
+        String tramaFinal = cabecera + longitud + mensaje + checksum + cola + printerMessage;
+
+        Log.v(TAG,"Salio - " + " -> " + tramaFinal);
+
+        Log.v(TAG, "Write Activado");
+        try {
+            out.write(utilities.hexStringToByteArray(tramaFinal));
+            Log.v(TAG, "Write Finalizado");
+        } catch (Exception e) {
+            Log.e(TAG,"writeToArduino: " + e.getMessage());
+        }
+        /**/
+    }
+
 
 
 

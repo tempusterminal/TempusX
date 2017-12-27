@@ -1,5 +1,7 @@
 package com.tempus.proyectos.data.tables;
 
+import com.tempus.proyectos.util.Fechahora;
+
 /**
  * Created by gurrutiam on 09/11/2016.
  */
@@ -21,6 +23,8 @@ public class TablePersonalTipolectoraBiometria {
     public static final String IdAutorizacion = "ID_AUTORIZACION";
     public static final String Sincronizado = "SINCRONIZADO";
     public static final String FechaHoraSinc = "FECHA_HORA_SINC";
+
+    private static Fechahora fechahora = new Fechahora();
 
 
     public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " ( " +
@@ -99,6 +103,60 @@ public class TablePersonalTipolectoraBiometria {
             "WHERE " + Sincronizado + " = 2 " +
             "ORDER BY " + IndiceBiometria + " ASC " +
             "LIMIT 1 " +
+            "; ";
+
+    public static final String SELECT_INDICE_BIOMETRIA_REPLICAR = "SELECT " +
+            IdPerTipolectBio + ", " +
+            IndiceBiometria + ", " +
+            Empresa + ", " +
+            Codigo + ", " +
+            IdTipoLect + ", " +
+            ValorTarjeta + ", " +
+            IdTipoDetaBio + ", " +
+            ValorBiometria + ", " +
+            FechaBiometria + ", " +
+            ImagenBiometria + ", " +
+            IdAutorizacion + ", " +
+            Sincronizado + ", " +
+            FechaHoraSinc + " " +
+            "FROM " + TABLE_NAME + " "
+            //"WHERE " + ValorBiometria + " IS NOT NULL " +
+            //"AND " + Sincronizado + " = 0 " +
+            //"ORDER BY " + IndiceBiometria + " ASC " +
+            //"ORDER BY " + IdTipoDetaBio + " ASC " +
+            //"; "
+            ;
+
+    public static final String SELECT_PERSONAL_CESADO_CON_SIN_HUELLA = "SELECT " +
+            "DISTINCT " + IndiceBiometria + " " +
+            "FROM " + TABLE_NAME + " " +
+            "INNER JOIN PERSONAL " +
+            "ON PERSONAL_TIPOLECTORA_BIOMETRIA.EMPRESA = PERSONAL.EMPRESA " +
+            "AND PERSONAL_TIPOLECTORA_BIOMETRIA.CODIGO = PERSONAL.CODIGO " +
+            "WHERE " + Sincronizado + " = 0 " +
+            "AND (PERSONAL.FECHA_DE_CESE <= DATETIME ('" + fechahora.getFechahoracero(fechahora.getFechahora()) + "') OR ESTADO = '002') " +
+            "; ";
+
+    public static final String SELECT_PERSONAL_ACTIVO_SIN_HUELLA = "SELECT " +
+            "DISTINCT " + IndiceBiometria + " " +
+            "FROM " + TABLE_NAME + " " +
+            "INNER JOIN PERSONAL " +
+            "ON PERSONAL_TIPOLECTORA_BIOMETRIA.EMPRESA = PERSONAL.EMPRESA " +
+            "AND PERSONAL_TIPOLECTORA_BIOMETRIA.CODIGO = PERSONAL.CODIGO " +
+            "WHERE " + Sincronizado + " = 0 " +
+            "AND PERSONAL_TIPOLECTORA_BIOMETRIA.VALOR_BIOMETRIA IS NULL " +
+            "AND (PERSONAL.FECHA_DE_CESE IS NULL AND PERSONAL.ESTADO != '002') " +
+            "; ";
+
+    public static final String SELECT_PERSONAL_ACTIVO_CON_HUELLA = "SELECT " +
+            "DISTINCT " + IndiceBiometria + " " +
+            "FROM " + TABLE_NAME + " " +
+            "INNER JOIN PERSONAL " +
+            "ON PERSONAL_TIPOLECTORA_BIOMETRIA.EMPRESA = PERSONAL.EMPRESA " +
+            "AND PERSONAL_TIPOLECTORA_BIOMETRIA.CODIGO = PERSONAL.CODIGO " +
+            "WHERE " + Sincronizado + " = 0 " +
+            "AND PERSONAL_TIPOLECTORA_BIOMETRIA.VALOR_BIOMETRIA IS NOT NULL " +
+            "AND (PERSONAL.FECHA_DE_CESE IS NULL AND PERSONAL.ESTADO != '002') " +
             "; ";
 
 

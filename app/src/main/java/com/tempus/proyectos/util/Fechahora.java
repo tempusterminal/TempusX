@@ -23,6 +23,12 @@ public class Fechahora {
         return formatofechahora.format(fechahora);
     }
 
+    public String getFechahoraFull(){
+        DateFormat formatofechahora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        Date fechahora = new Date();
+        return formatofechahora.format(fechahora);
+    }
+
     public String getFechahoraName(){
         DateFormat formatofechahora = new SimpleDateFormat("yyyyMMddHHmmss");
         Date fechahora = new Date();
@@ -60,9 +66,20 @@ public class Fechahora {
         return fechahora;
     }
 
+    public String getFechahoraFullSqlServer(String fechahora){
+        fechahora = fechahora.substring(0,5) + fechahora.substring(8,10) + "-" + fechahora.substring(5,7) + " " + fechahora.substring(11,23);
+        //2016-14-12 12:37:13
+        return fechahora;
+    }
+
     public String setFileName(String fechahora){
         //yyyy-MM-dd HH:mm:ss -> yyyyMMddHHmmss
         return fechahora.replace("-","").replace(":","").replace(" ","");
+    }
+
+    public String getFechaddmmyy(String fechahora){ //yyyy-MM-dd HH:mm:ss -> dd/MM/yy
+        fechahora = fechahora.substring(8,10) + "/" + fechahora.substring(5,7) + "/" + fechahora.substring(2,4);
+        return fechahora;
     }
 
 

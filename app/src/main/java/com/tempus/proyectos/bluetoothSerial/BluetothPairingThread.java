@@ -6,6 +6,7 @@ package com.tempus.proyectos.bluetoothSerial;
 
 import android.util.Log;
 
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 
@@ -21,6 +22,7 @@ public class BluetothPairingThread extends Thread{
     private ArrayList<String>  listBonded;
     private ArrayList<String> listDevice = new ArrayList<String>();
     private java.lang.String datalog;
+    private QueriesLogTerminal queriesLogTerminal = new QueriesLogTerminal();
 
 
 
@@ -116,6 +118,11 @@ public class BluetothPairingThread extends Thread{
                         if (!listBonded.contains(currMac)) {
                             Log.v(TAG,"Intentando Vincular device " + currMac);
                             btmanager.pairDevice(currPin, currMac);
+                            try{
+                                Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"Vinculando " + currMac,""));
+                            }catch (Exception e){
+                                Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
+                            }
                             listBonded = btmanager.getBondedDevices();
                             Thread.sleep(10000);
                         }

@@ -101,7 +101,7 @@
     <dimen name="botonAcceso_width_two">220dp</dimen>
     <dimen name="botonAcceso_height">120dp</dimen>
     <dimen name="botonAcceso_marginTop">160dp</dimen>
-    <dimen name="botonAcceso_textSize">50sp</dimen>
+    <dimen name="botonAcceso_textSize">25sp</dimen>
 
     <!-- Boton Acceso para 4 (1 fila) u 8 (2 filas) botones -->
     <!-- Boton Acceso 1 -->
@@ -219,6 +219,7 @@
     <!-- Texto Estandar -->
     <dimen name="cuerpo_textSize">45sp</dimen>
     <dimen name="cuerpo_min_textSize">25sp</dimen>
+    <dimen name="cuerpo_minx2_textSize">15sp</dimen>
 
     <!-- ==================================================================== -->
 

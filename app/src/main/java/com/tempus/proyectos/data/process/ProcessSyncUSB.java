@@ -69,20 +69,21 @@ public class ProcessSyncUSB {
         switch (opcion){
             //case "AndroidPWRoff":
             //    longitud = "0013";
-            //    mensaje = "42" + "31313131 3030 3130 3131 303030303030" + "00";
+            //    mensaje = "42" + "31313131 3030 3130 3131 303030303030";
             //    break;
             //case "AndroidPWRon":
             //    longitud = "0013";
-            //    mensaje = "42" + "31313131 3030 3131 3131 303030303030" + "00";
+            //    mensaje = "42" + "31313131 3030 3131 3131 303030303030";
             //    break;
             case "OTGenable":
                 longitud = "0013";
-                mensaje = "42" + "31313131 3131 3130 3130 303030303030" + "00";
+                //mensaje = "42" + "31313131 3131 3130 3130 303030303030";
+                mensaje = "42" + "4e4e4e01 4e4e 4e4e 4e4e 014e4e4e4e4e";
                 //mensaje = "B" + "1111111011000000";
                 break;
             case "OTGdisable":
                 longitud = "0013";
-                mensaje = "42" + "31313131 3130 3131 3130 303030303030" + "00";
+                mensaje = "42" + "31313131 3130 3131 3130 303030303030";
                 //mensaje = "B" + "1111101111000000";
                 break;
 
@@ -93,6 +94,7 @@ public class ProcessSyncUSB {
         //longitud = "";
 
         mensaje = mensaje.replace(" ","");
+        checksum = utilities.getChecksum(cabecera + longitud + mensaje,4);
         String tramaFinal = cabecera + longitud + mensaje + checksum + cola;
 
         Log.v(TAG,"Salio - " + opcion + " -> " + tramaFinal);
@@ -100,14 +102,7 @@ public class ProcessSyncUSB {
         Log.v(TAG, "Write Activado");
         try {
             byte[] a = tramaFinal.getBytes();
-            // 244F41584100134231313131 3130 3031
-            // 244f41584100134431313131 3030 3130 3030303030303030000041
-            //byte[] a = utilities.hexStringToByteArray(tramaFinal.trim());
-            //Log.v(TAG,"a = " + utilities.hexStringToByteArray(tramaFinal));
-            //Log.v(TAG,"a = " + a.toString());
-            //Log.v(TAG,"a = " + new String(a, "UTF-8"));
             out.write(utilities.hexStringToByteArray(tramaFinal));
-            //out.write(a);
             Log.v(TAG, "Write Finalizado");
         } catch (Exception e) {
             Log.e(TAG,"writeToArduino: " + e.getMessage());
@@ -208,6 +203,7 @@ public class ProcessSyncUSB {
                         //Tiempo de espera para crear el archivo
                         long templfm = getSizeFile(rutaotg,filename);
                         for(int i = 1; i <= 7; i++){
+                            writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGenable");
                             if(templfm == -1){
                                 Log.v(TAG,"Creando archivo");
                             }else if(templfm >= 0) {
@@ -227,6 +223,7 @@ public class ProcessSyncUSB {
 
                         //Tiempo de espera para escribir en el archivo
                         for(int i = 1; i <= 7; i++){
+                            writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGenable");
                             if(lfilenamemarcaciones > 0) {
                                 Log.v(TAG, "Escribiendo archivo");
                                 lfilenamemarcaciones = getSizeFile(rutaotg,filename);
@@ -247,6 +244,7 @@ public class ProcessSyncUSB {
                         }
 
                         while(lfilenamemarcaciones < templfm){
+                            writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGenable");
                             lfilenamemarcaciones = getSizeFile(rutaotg,filename);
                             Thread.sleep(3000);
                             templfm = getSizeFile(rutaotg,filename);
@@ -278,7 +276,7 @@ public class ProcessSyncUSB {
                         Log.v(TAG,"Escribiendo archivo -> " + saveFile(ruta + "/tempus/log/","BCK_ERROR_" + fechahora.getFechahoraName(),error));
                     }
 
-                    writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGdisable");
+                    //writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGdisable");
                     Thread.sleep(2000);
 
                 }else if(marcacionesList.size() == 0){

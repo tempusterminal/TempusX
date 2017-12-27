@@ -141,7 +141,7 @@ public class QueriesPersonal {
         ArrayList<String> allfotopersonaldb =  new ArrayList<String>();
 
         this.open();
-        Cursor cursor = database.rawQuery(TablePersonal.SELECT_TABLE + " WHERE ICONO != \"\" AND ICONO IS NOT NULL ", null);
+        Cursor cursor = database.rawQuery(TablePersonal.SELECT_TABLE + " WHERE ICONO LIKE '%.%' ", null);
         if(cursor.moveToNext()){
             do{
                 allfotopersonaldb.add(cursor.getString(cursor.getColumnIndex(TablePersonal.Icono)));

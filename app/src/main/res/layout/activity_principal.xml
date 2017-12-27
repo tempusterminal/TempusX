@@ -14,41 +14,23 @@
     <!-- Fondos -->
 
     <TextView
-        android:layout_width="@dimen/fondo1_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/fondo1_height"
         android:layout_marginTop="@dimen/fondo1_marginTop"
-        android:layout_marginLeft="@dimen/fondo1_marginLeft"
         android:background="@color/colorFondoBarra"
         android:id="@+id/txvFondo1" />
 
     <TextView
-        android:layout_width="@dimen/fondo2_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/fondo2_height"
         android:layout_marginTop="@dimen/fondo2_marginTop"
-        android:layout_marginLeft="@dimen/fondo2_marginLeft"
         android:background="@color/colorFondoCuerpo"
         android:id="@+id/txvFondo2" />
 
-    <!--
-    <fragment
-        android:layout_width="@dimen/fondo3_width"
-        android:layout_height="@dimen/fondo3_height"
-        android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:layout_marginLeft="@dimen/fondo3_marginLeft"
-        android:name="com.tempus.proyectos.tempusx.FragmentBar"
-        android:layout_marginBottom="0dp"
-        android:id="@+id/fragment1"
-        android:layout_alignParentTop="true"
-        tools:layout="@layout/fragment_bar" />
-     -->
-
-
-
     <TextView
-        android:layout_width="@dimen/fondo3_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/fondo3_height"
         android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:layout_marginLeft="@dimen/fondo3_marginLeft"
         android:background="@color/colorFondoBarra"
         android:id="@+id/txvBarraInf" />
 
@@ -59,37 +41,38 @@
         android:layout_width="50dp"
         android:layout_height="@dimen/fondo3_height"
         android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:layout_marginLeft="@dimen/fondo3_marginLeft"
         android:id="@+id/txvIdTerminalInfo"/>
-
-    <TextView
-        android:layout_width="@dimen/linea_width"
-        android:layout_height="@dimen/linea_height"
-        android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:layout_marginLeft="@dimen/linea3_marginLeft"
-        android:background="@color/colorLinea"
-        android:id="@+id/txvLinea3" />
-
-    <TextView
-        android:layout_width="@dimen/linea_width"
-        android:layout_height="@dimen/linea_height"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="@dimen/linea3_marginLeft"
-        android:background="@color/colorLinea"
-        android:id="@+id/txvLinea4" />
-
-
 
 
     <!-- Lineas -->
 
     <TextView
-        android:layout_width="@dimen/linea_width"
+        android:layout_width="match_parent"
         android:layout_height="@dimen/linea_height"
         android:layout_marginTop="@dimen/linea1_marginTop"
-        android:layout_marginLeft="@dimen/linea1_marginLeft"
         android:background="@color/colorLinea"
         android:id="@+id/txvLinea1" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/linea_height"
+        android:background="@color/colorLinea"
+        android:layout_alignBottom="@+id/txvFondo1"
+        android:id="@+id/txvLinea2" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/linea_height"
+        android:layout_marginTop="@dimen/fondo3_marginTop"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea3" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/linea_height"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorLinea"
+        android:id="@+id/txvLinea4" />
 
 
     <!-- Componentes -->
@@ -119,7 +102,7 @@
         android:id="@+id/txvSecret03" />
 
     <TextClock
-        android:layout_width="@dimen/hora_width"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/hora_marginTop"
         android:layout_marginLeft="@dimen/hora_marginLeft"
@@ -131,8 +114,8 @@
         android:id="@+id/txcHora" />
 
     <TextClock
-        android:layout_width="@dimen/fecha_width"
-        android:layout_height="@dimen/fecha_height"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/fecha_marginTop"
         android:layout_marginLeft="@dimen/fecha_marginLeft"
         android:layout_alignParentLeft="true"
@@ -213,9 +196,6 @@
 
 
     <!-- Botones de Eventos-->
-
-    <!-- Botones de Eventos-->
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="120px"
@@ -274,57 +254,65 @@
 
     </LinearLayout>
 
-    <Button
-        android:text="5"
-        android:layout_width="@dimen/botonAcceso_width"
-        android:layout_height="@dimen/botonAcceso_height"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120px"
         android:layout_marginTop="@dimen/btnEvent_marginTopRow2"
-        android:layout_marginLeft="@dimen/botonAcceso1_marginLeft"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/botonAcceso_textSize"
-        android:textStyle="bold"
-        android:background="@color/colorGrisOscuro"
-        android:id="@+id/btnEvent05" />
+        android:layout_marginLeft="@dimen/act_size02"
+        android:layout_marginRight="@dimen/act_size02"
+        android:orientation="horizontal"
+        >
 
-    <Button
-        android:text="6"
-        android:layout_width="@dimen/botonAcceso_width"
-        android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="@dimen/btnEvent_marginTopRow2"
-        android:layout_marginLeft="@dimen/botonAcceso2_marginLeft"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/botonAcceso_textSize"
-        android:textStyle="bold"
-        android:background="@color/colorGrisOscuro"
-        android:id="@+id/btnEvent06" />
+        <Button
+            android:text="5"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/act_size02"
+            android:layout_marginRight="@dimen/act_size02"
+            android:textSize="@dimen/botonAcceso_textSize"
+            android:textStyle="bold"
+            android:background="@color/colorGrisOscuro"
+            android:id="@+id/btnEvent05" />
 
-    <Button
-        android:text="7"
-        android:layout_width="@dimen/botonAcceso_width"
-        android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="@dimen/btnEvent_marginTopRow2"
-        android:layout_marginLeft="@dimen/botonAcceso3_marginLeft"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/botonAcceso_textSize"
-        android:textStyle="bold"
-        android:background="@color/colorGrisOscuro"
-        android:id="@+id/btnEvent07" />
+        <Button
+            android:text="6"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/act_size02"
+            android:layout_marginRight="@dimen/act_size02"
+            android:textSize="@dimen/botonAcceso_textSize"
+            android:textStyle="bold"
+            android:background="@color/colorGrisOscuro"
+            android:id="@+id/btnEvent06" />
 
-    <Button
-        android:text="8"
-        android:layout_width="@dimen/botonAcceso_width"
-        android:layout_height="@dimen/botonAcceso_height"
-        android:layout_marginTop="@dimen/btnEvent_marginTopRow2"
-        android:layout_marginLeft="@dimen/botonAcceso4_marginLeft"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:textSize="@dimen/botonAcceso_textSize"
-        android:textStyle="bold"
-        android:background="@color/colorGrisOscuro"
-        android:id="@+id/btnEvent08" />
+        <Button
+            android:text="7"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/act_size02"
+            android:layout_marginRight="@dimen/act_size02"
+            android:textSize="@dimen/botonAcceso_textSize"
+            android:textStyle="bold"
+            android:background="@color/colorGrisOscuro"
+            android:id="@+id/btnEvent07" />
+
+        <Button
+            android:text="8"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="@dimen/act_size02"
+            android:layout_marginRight="@dimen/act_size02"
+            android:textSize="@dimen/botonAcceso_textSize"
+            android:textStyle="bold"
+            android:background="@color/colorGrisOscuro"
+            android:id="@+id/btnEvent08" />
+
+    </LinearLayout>
+
 
 
     <TextView
@@ -661,14 +649,7 @@
         android:textSize="@dimen/cuerpo_min_textSize"
         android:id="@+id/buttonWarning02" />
 
-    <TextView
-        android:layout_width="@dimen/linea_width"
-        android:layout_height="@dimen/linea_height"
-        android:layout_marginLeft="@dimen/linea2_marginLeft"
-        android:background="@color/colorLinea"
-        android:id="@+id/txvLinea2"
-        android:layout_below="@+id/txvSecret01"
-        android:layout_alignParentStart="true" />
+
 
 
 </RelativeLayout>

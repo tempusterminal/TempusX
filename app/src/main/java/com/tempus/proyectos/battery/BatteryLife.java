@@ -6,19 +6,27 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
+import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.InternalFile;
 import com.tempus.proyectos.util.Utilities;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.Calendar;
+
+import static android.content.Context.BATTERY_SERVICE;
 
 /**
  * Created by gurrutiam on 20/07/2017.
@@ -28,23 +36,22 @@ public class BatteryLife {
 
     String TAG = "BA-BL";
 
-    public static int isCharging;
-    public static int levelBattery;
-    public static int chargePlug;
-    public static long capacity;
-    public int usbCharge;
-    public int acCharge;
+    public int levelBattery;
+    public long capacity;
+    public int currentBattery;
     public int voltage;
+    public int healthBattery;
+    public int statusBattery;
+    public int plugged;
+    public int temperature;
 
     private static final String DIRECTORY = Environment.getExternalStorageDirectory().toString() + "/tempus/";
     private static final String FILE = "batterylife.txt";
     private static final String FILE_FULL = "batterylife_full.txt";
     InternalFile internalFile = new InternalFile();
     Fechahora fechahora = new Fechahora();
+    private String logterminal = "";
 
-    Utilities util = new Utilities();
-    private byte[] rawBytes = new byte[64];
-    private String statusEB;
 
     public void getBatteryLife(){
         IntentFilter intentFilter = new IntentFilter();
@@ -57,46 +64,10 @@ public class BatteryLife {
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            /*
-                BatteryManager
-                    The BatteryManager class contains strings and constants used for values in the
-                    ACTION_BATTERY_CHANGED Intent, and provides a method for querying battery
-                    and charging properties.
-            */
-            /*
-                public static final String EXTRA_SCALE
-                    Extra for ACTION_BATTERY_CHANGED: integer containing the maximum battery level.
-                    Constant Value: "scale"
-            */
-
-            // Get the Battery status
-            int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,-1);
-            //Log.v(TAG,"batteryManager.EXTRA_STATUS: " + status);
-
-            // get BATTERY_STATUS_CHARGING
-
-            if(status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL){
-                isCharging = 1;
-                ActivityPrincipal.isCharging = true;
-            }else{
-                isCharging = 0;
-                ActivityPrincipal.isCharging = false;
-            }
-
-            //Log.v(TAG,"BatteryManager.BATTERY_STATUS_CHARGING: " + isCharging);
 
             // Get the battery scale
             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE,-1);
-            // Display the battery scale in TextView
-            //Log.v(TAG,"BatteryManager.EXTRA_SCALE: " + (float) scale);
 
-            /*
-                public static final String EXTRA_LEVEL
-                    Extra for ACTION_BATTERY_CHANGED: integer field containing the current battery
-                    level, from 0 to EXTRA_SCALE.
-
-                    Constant Value: "level"
-            */
             // get the battery level
             int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL,-1);
             // Display the battery level in TextView
@@ -107,101 +78,77 @@ public class BatteryLife {
             // Update the progress bar to display current battery charged percentage
             //Log.v(TAG,"percentage: " + levelBattery + "%");
 
-            chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-            if(chargePlug == BatteryManager.BATTERY_PLUGGED_USB){
-                usbCharge = 1;
-            }else{
-                usbCharge = 0;
+            try{
+                currentBattery = Integer.valueOf(readFile("/sys/class/power_supply/battery/BatteryAverageCurrent"));
+            }catch (Exception e){
+                currentBattery = -1;
+                Log.v(TAG,"currentBattery " + e.getMessage());
             }
-            if(chargePlug == BatteryManager.BATTERY_PLUGGED_AC){
-                acCharge = 1;
-            }else{
-                acCharge = 0;
-            }
-
-            capacity = getBatteryCapacity();
-            //Log.v(TAG,"capacity: " + capacity);
-
 
             voltage = intent.getIntExtra(BatteryManager.EXTRA_VOLTAGE, 0);
             //Log.v(TAG,"voltage " + voltage);
 
+            //BATTERY_HEALTH_COLD = 7;
+            //BATTERY_HEALTH_DEAD = 4;
+            //BATTERY_HEALTH_GOOD = 2;
+            //BATTERY_HEALTH_OVERHEAT = 3;
+            //BATTERY_HEALTH_OVER_VOLTAGE = 5;
+            //BATTERY_HEALTH_UNKNOWN = 1;
+            //BATTERY_HEALTH_UNSPECIFIED_FAILURE = 6;
+            healthBattery = intent.getIntExtra(BatteryManager.EXTRA_HEALTH, 0);
+            //Log.v(TAG,"healthBattery " + healthBattery);
 
-            // Show the battery charged percentage text inside progress bar
-            //mTextViewPercentage.setText("" + mProgressStatus + "%");
+            //BATTERY_STATUS_CHARGING = 2;
+            //BATTERY_STATUS_DISCHARGING = 3;
+            //BATTERY_STATUS_FULL = 5;
+            //BATTERY_STATUS_NOT_CHARGING = 4;
+            //BATTERY_STATUS_UNKNOWN = 1;
+            statusBattery = intent.getIntExtra(BatteryManager.EXTRA_STATUS, 0);
+            //Log.v(TAG,"statusBattery " + statusBattery);
 
-            // Show the battery charged percentage in TextView
-            //mTextViewInfo.setText(mTextViewInfo.getText() +
-            //        "\nPercentage : "+ mProgressStatus + "%");
+            //BATTERY_PLUGGED_AC = 1;
+            //BATTERY_PLUGGED_USB = 2;
+            //BATTERY_PLUGGED_WIRELESS = 4;
+            plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+            //Log.v(TAG,"plugged " + plugged);
 
-            // Display the battery charged percentage in progress bar
-            //mProgressBar.setProgress(mProgressStatus);
-
-            /*
-            try{
-                Calendar calendar = Calendar.getInstance();
-                Toast toast = Toast.makeText(ActivityPrincipal.context,"isCharging " + isCharging + "/" + levelBattery + "%" + " - " + "usbCharge->" + usbCharge + "/" + "acCharge->" + acCharge + " - " + "voltage " + voltage + " " + calendar.getTime(), Toast.LENGTH_SHORT);
-                //toast.cancel();
-                toast.show();
-            }catch(Exception e){
-                Log.e(TAG,"BroadcastReceiver " + e.getMessage());
-            }
-            */
-
-
-
+            //current battery temperature in tenths of a degree Centigrade
+            temperature = intent.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0);
+            //Log.v(TAG,"temperature " + temperature);
 
         }
     };
 
+    private String readFile(String filename){
+        String linea = "";
 
-    private long getBatteryCapacity() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            BatteryManager batteryManager = (BatteryManager) ActivityPrincipal.context.getSystemService(Context.BATTERY_SERVICE);
-            Long chargeCounter = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
-            Long capacity = batteryManager.getLongProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
-
-            if (chargeCounter != null && capacity != null) {
-                long value = (long) (((float) chargeCounter / (float) capacity) * 100f);
-                return value;
+        try{
+            FileReader fr = new FileReader(filename);
+            BufferedReader br = new BufferedReader(fr);
+            String tempLinea = "";
+            while((tempLinea = br.readLine()) != null){
+                try{
+                    linea = tempLinea;
+                    //Log.v(TAG,"linea = " + "<<<" + linea + ">>>");
+                }catch (Exception e){
+                    Log.e(TAG,"linea " + e.getMessage());
+                }
             }
+
+            fr.close();
+        }catch (Exception e){
+            Log.e(TAG,"readFile " + e.getMessage());
         }
 
-        return 0;
+        return linea;
     }
-
-
-    private long getCapacity() {
-        Object mPowerProfile_ = null;
-        long batteryCapacity = -1;
-
-        final String POWER_PROFILE_CLASS = "com.android.internal.os.PowerProfile";
-
-        try {
-            mPowerProfile_ = Class.forName(POWER_PROFILE_CLASS)
-                    .getConstructor(Context.class);
-        } catch (Exception e) {
-            Log.e(TAG,"mPowerProfile_ " + e.getMessage());
-        }
-
-        try {
-            batteryCapacity = (Long) Class
-                    .forName(POWER_PROFILE_CLASS)
-                    .getMethod("getAveragePower", java.lang.String.class)
-                    .invoke(mPowerProfile_, "battery.capacity");
-        } catch (Exception e) {
-            Log.e(TAG,"batteryCapacity " + e.getMessage());
-        }
-
-        return batteryCapacity;
-    }
-
 
     private class BatteryLifeReading extends Thread{
         private Thread hilo;
         private String nombreHilo;
-        private int levelB = -1;
-        private int isC = -1;
+        private int lB = -1;
+        private int sB = -1;
+        private int pl = -1;
         private double uC = -1;
         private int toEE = -1;
         private String line = "";
@@ -219,6 +166,9 @@ public class BatteryLife {
 
         private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         //btnUsbMarcas.setText(decimalFormat.format(ProcessSyncUSB.lfilenamemarcaciones / 1000) + " KB");
+
+        QueriesLogTerminal queriesLogTerminal = new QueriesLogTerminal();
+        QueriesParameters queriesParameters = new QueriesParameters(ActivityPrincipal.context);
 
         public BatteryLifeReading(String nombreHilo) {
             this.nombreHilo = nombreHilo;
@@ -259,43 +209,57 @@ public class BatteryLife {
                 try{
                     getBatteryLife();
                     getStatusADC();
-                    line = fechahora.getFechahora() + ": " + "isC=" + isCharging + " " + "level=" + levelBattery + "%" + " " + "usbC=" + usbCharge + " " + "acC=" + acCharge + " " + "mV=" + voltage + " ";
-                    line += "exEy=" + exEy + " " + "upsC=" + upsC + " " + "levelU=" + levelU + "%" + " " + "toLn=" + toLn + " " + "toAd=" + toAd + " " + "toSu=" + toSu + " " + "toBa=" + toBa + " " + "toPr=" + toPr + " " + "toExEy=" + toExEy;
+                    line = "sB=" + statusBattery + " " + "lB=" + levelBattery + " " + "pl=" + plugged + " " + "mV=" + voltage + " " + "mAh=" + currentBattery + " " + "hB=" + healthBattery + " " + "T=" + temperature + " ";
+                    line += "exEy=" + exEy + " " + "upsC=" + upsC + " " + "levelU=" + levelU + " " + "toLn=" + toLn + " " + "toAd=" + toAd + " " + "toSu=" + toSu + " " + "toBa=" + toBa + " " + "toPr=" + toPr + " " + "toExEy=" + toExEy;
+                    String s = "|";
+                    logterminal = statusBattery + s + levelBattery + s + plugged + s + voltage + s + currentBattery + s + healthBattery + s + temperature + s;
+                    logterminal += exEy + s + upsC + s + levelU + s + toLn + s + toAd + s + toSu + s + toBa + s + toPr + s + toExEy;
                     //Log.v(TAG,"getBatteryLife() internalFile.writeToAppend...");
-                    if(isC != isCharging || uC != upsC || toEE != toExEy || levelB != levelBattery){
+                    if(sB != statusBattery || uC != upsC || toEE != toExEy || lB != levelBattery){
+                        if(sB != statusBattery || toEE != toExEy || lB != levelBattery){
+                            try{
+                                Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG, logterminal, ""));
+                            }catch (Exception e){
+                                Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
+                            }
+                        }
                         //Log.v(TAG,"getBatteryLife() internalFile.writeToAppend... isCharging");
-                        internalFile.writeToAppend(line, DIRECTORY + FILE);
-                        isC = isCharging;
+                        internalFile.writeToAppend(fechahora.getFechahora() + ": " + line, DIRECTORY + FILE);
+                        sB = statusBattery;
                         uC = upsC;
                         toEE = toExEy;
-                        levelB = levelBattery;
+                        lB = levelBattery;
                     }
-
-                    /*
-                    if(isC != isCharging){
-                        //Log.v(TAG,"getBatteryLife() internalFile.writeToAppend... isCharging");
-                        internalFile.writeToAppend(line, DIRECTORY + FILE);
-                        isC = isCharging;
-                    }else if(uC != upsC){
-                        //Log.v(TAG,"getBatteryLife() internalFile.writeToAppend... levelBattery");
-                        internalFile.writeToAppend(line, DIRECTORY + FILE);
-                        uC = upsC;
-                    }else if(toEE != toExEy){
-                        //Log.v(TAG,"getBatteryLife() internalFile.writeToAppend... levelBattery");
-                        internalFile.writeToAppend(line, DIRECTORY + FILE);
-                        toEE = toExEy;
-                    }else if(levelB != levelBattery){
-                        //Log.v(TAG,"getBatteryLife() internalFile.writeToAppend... levelBattery");
-                        internalFile.writeToAppend(line, DIRECTORY + FILE);
-                        levelB = levelBattery;
-                    }
-                    */
 
                     //Log.v(TAG,"second = " + fechahora.getFechahora().substring(17,19));
                     if(Integer.valueOf(fechahora.getFechahora().substring(17,19)) == 0){
-                        internalFile.writeToAppend(line, DIRECTORY + FILE_FULL);
+                        internalFile.writeToAppend(fechahora.getFechahora() + ": " + line, DIRECTORY + FILE_FULL);
                     }
-                    Log.v(TAG,"" + line);
+                    Log.v(TAG,fechahora.getFechahora() + ": " + line);
+
+                    if(levelBattery <= 30 && levelBattery > 0 && statusBattery == 4){
+                        try{
+                            Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"Apagando " + logterminal,""));
+                        }catch (Exception e){
+                            Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
+                        }
+
+                        try {
+                            Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: APAGAR");
+                            Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
+                            proc.waitFor();
+                        } catch (Exception e) {
+                            Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: APAGAR -> " + e.getMessage());
+                        }
+                    }
+
+                    // Si statusBattery = 4 (no cargando) o statusBattery = 1 (no cargando)
+                    if(statusBattery == 4 || statusBattery == 1){
+                        ActivityPrincipal.isCharging = false;
+                    }else{
+                        ActivityPrincipal.isCharging = true;
+                    }
+
                     Thread.sleep(1000);
                 }catch (Exception e){
                     Log.e(TAG,"Error General Hilo " + nombreHilo + ": " + e.getMessage());

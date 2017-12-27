@@ -93,40 +93,41 @@ public class ThreadHorariosRelay {
             case "RELAY_01_RELAY_02":
                 longitud = "0013";
                 if(turnon){
-                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 3131 4e4e4e" + "00";
+                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 3131 4e4e4e";
                 }else{
-                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 3030 4e4e4e" + "00";
+                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 3030 4e4e4e";
                 }
-                //mensaje = "42" + "31313131 3130 3131 313030 3131 303030" + "00";
+                //mensaje = "42" + "31313131 3130 3131 313030 3131 303030";
                 break;
             case "RELAY_01":
                 longitud = "0013";
                 if(turnon){
-                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 4e31 4e4e4e" + "00";
+                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 4e31 4e4e4e";
                 }else{
-                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 4e30 4e4e4e" + "00";
+                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 4e30 4e4e4e";
                 }
-                //mensaje = "42" + "31313131 3130 3131 313030 3031 303030" + "00";
+                //mensaje = "42" + "31313131 3130 3131 313030 3031 303030";
                 break;
             case "RELAY_02":
                 longitud = "0013";
                 if(turnon){
-                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 314e 4e4e4e" + "00";
+                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 314e 4e4e4e";
                 }else{
-                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 304e 4e4e4e" + "00";
+                    mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 304e 4e4e4e";
                 }
-                //mensaje = "42" + "31313131 3130 3131 313030 3130 303030" + "00";
+                //mensaje = "42" + "31313131 3130 3131 313030 3130 303030";
                 break;
             case "RELAY_OFF":
                 longitud = "0013";
-                mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 3030 4e4e4e" + "00";
-                //mensaje = "42" + "31313131 3130 3131 313030 3030 303030" + "00";
+                mensaje = "42" + "4e4e4e4e 4e4e 4e4e 4e4e4e 3030 4e4e4e";
+                //mensaje = "42" + "31313131 3130 3131 313030 3030 303030";
                 break;
             default:
                 break;
         }
 
         mensaje = mensaje.replace(" ","");
+        checksum = utilities.getChecksum(cabecera + longitud + mensaje,4);
         String tramaFinal = cabecera + longitud + mensaje + checksum + cola;
 
         Log.v(TAG,"Salio - " + opcion + " -> " + tramaFinal);

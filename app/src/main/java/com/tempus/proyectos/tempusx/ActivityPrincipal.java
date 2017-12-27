@@ -2,38 +2,34 @@ package com.tempus.proyectos.tempusx;
 
 // utimo
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Application;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.BatteryManager;
-import android.os.Build;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.view.ContextThemeWrapper;
-import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -48,34 +44,27 @@ import android.hardware.Camera;
 import com.tempus.proyectos.battery.BatteryLife;
 import com.tempus.proyectos.bluetoothSerial.Bluetooth;
 import com.tempus.proyectos.bluetoothSerial.BluetoothPair;
-import com.tempus.proyectos.bluetoothSerial.BluetoothSuperAdmin;
 import com.tempus.proyectos.bluetoothSerial.BluetothPairingThread;
 import com.tempus.proyectos.bluetoothSerial.MainArduino;
 import com.tempus.proyectos.bluetoothSerial.MainEthernet;
 import com.tempus.proyectos.bluetoothSerial.MainHandPunch;
 import com.tempus.proyectos.bluetoothSerial.MainSuprema;
 import com.tempus.proyectos.crash.TXExceptionHandler;
-import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
-import com.tempus.proyectos.data.DBManagerServidor;
-import com.tempus.proyectos.data.model.Autorizaciones;
-import com.tempus.proyectos.data.model.Llamadas;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
+import com.tempus.proyectos.data.process.ProcessSync;
 import com.tempus.proyectos.data.process.ProcessSyncDatetime;
 import com.tempus.proyectos.data.process.ProcessSyncST;
 import com.tempus.proyectos.data.process.ProcessSyncTS;
-import com.tempus.proyectos.data.process.ProcessSyncUSB;
-import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
-import com.tempus.proyectos.data.queries.QueriesBiometrias;
-import com.tempus.proyectos.data.queries.QueriesLlamadas;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesParameters;
-import com.tempus.proyectos.data.queries.QueriesPersonal;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
+import com.tempus.proyectos.data.tables.TableLogTerminal;
+import com.tempus.proyectos.geolocation.GeoLocationListener;
 import com.tempus.proyectos.log.LogManager;
-import com.tempus.proyectos.log.MonitorApp;
 import com.tempus.proyectos.picture.ResizePic;
 import com.tempus.proyectos.threads.ThreadConnectSerial;
 import com.tempus.proyectos.threads.ThreadHorariosRelay;
@@ -88,26 +77,19 @@ import com.tempus.proyectos.util.Utilities;
 
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.Set;
 
 public class ActivityPrincipal extends Activity {
 
-
+    private static String TAG = "TX-AP";
 
     int SCORE_MANO = 0;
 
@@ -116,8 +98,6 @@ public class ActivityPrincipal extends Activity {
     boolean esperando_mano = false;
     boolean fallo_mano = false;
     boolean marcacion_mano = false;
-    boolean buttonsVisibility[] = new boolean[8];
-    String buttonsText[] = new String[8];
 
     boolean MARCACION_ACTIVA;
     int TIEMPO_ACTIVO;
@@ -131,11 +111,17 @@ public class ActivityPrincipal extends Activity {
     ThreadConnectSerial threadConnectSerial;
     ThreadHorariosRelay threadHorariosRelay;
 
-    String TAG = "TX-AP";
-
     int c = 100;
 
     boolean MODO_EVENTO = false;
+    public static String BOTONES_EVENTO = "00000000";
+    public static String TEXTO_BOTONES_EVENTO = "1,2,3,4,5,6,7,8";
+    public static String VALOR_BOTONES_EVENTO = "001,002,003,004,005,006,007,008";
+    public static boolean MODO_PRINTER = false;
+    public static String VALUES_PRINTER_MESSAGE = "0,0;0,1;0,2;0,3;0,4;0,5";
+    public static String PRINTER_MESSAGE = "";
+    public static boolean MODO_REFRIGERIO = false;
+    public static String MENSAJE_MARCACIONES = "MARCACION AUTORIZADA,;ERROR,NO TIENE PERMISO EN ESTA LECTORA;ERROR,ESTADO NO PERMITE MARCACION;MARCACION REPETIDA,;ERROR,TARJETA/BIOME NO REGISTRADA;ERROR,TARJETA/BIOME NO SE RECONOCE;ERROR,LECTORA NO HABILITADA";
 
     Date TIEMPO_PRESENTE_BT01;
     Date TIEMPO_PASADO_BT01;
@@ -174,8 +160,6 @@ public class ActivityPrincipal extends Activity {
     public int acCharge;
 
     /* --- ADC --- */
-
-
     public static double ExternalEnergy = -1;
     public static double UPSCharge = -1;
     public static double levelUPS = -1;
@@ -188,6 +172,9 @@ public class ActivityPrincipal extends Activity {
     public static int turnOnProximidad = -1;
     public static int turnOnExternalEnergy = -1;
 
+    /* --- Variables UI --- */
+    public static String parametersColorsUI = "";
+
     /* --- Variables Fotos --- */
     public static Camera camera;
     public static SurfaceView surfaceView;
@@ -199,11 +186,15 @@ public class ActivityPrincipal extends Activity {
     /* --- Variables Marcaciones --- */
     public static String parametersInsertMarcaciones;
     public static int parameterMarcacionRepetida;
+    public static boolean parameterFotoPersonal;
 
     public static String relay01 = "4e";
     public static String relay02 = "4e";
     public static String tiempoActivoRelay01 = "4e";
     public static String tiempoActivoRelay02 = "4e";
+
+    /* --- Variables Servicios --- */
+    public static String parametersWebService_01 = "";
 
     /* --- ACCESO ESTÁTICO --- */
 
@@ -219,6 +210,8 @@ public class ActivityPrincipal extends Activity {
     public static boolean BT_01_IS_CONNECTED = false;
     public static boolean BT_02_IS_CONNECTED = false;
     public static boolean BT_03_IS_CONNECTED = false;
+    private boolean BT_01_IS_C = false;
+    private boolean BT_02_IS_C = false;
 
     public static Bluetooth btSocketEthernet;
     public static Bluetooth btSocket01;
@@ -231,17 +224,24 @@ public class ActivityPrincipal extends Activity {
     public static MainArduino objArduino;
     public static MainSuprema objSuprema;
     public static MainHandPunch objHandPunch;
-
     public static boolean isEnrolling;
     public static boolean isReplicating;
     public static boolean isReplicatingTemplate;
     public static boolean isDeleting;
+    public static boolean iswithX;
+    public static boolean isWriting;
+    public static String huellaEnrollFlag;
     public static String huellaEnrollFlag1;
     public static String huellaEnrollFlag2;
+    public static String huellaEnroll;
     public static String huellaEnroll1;
     public static String huellaEnroll2;
     public static String huellaDelete1;
     public static String huellaDeleteFlag1;
+    public static String withx;
+    public static String huellaWrite;
+    public static String huellaWriteFlag;
+
 
     public static String activityActive;
     public static String idTerminal;
@@ -255,6 +255,7 @@ public class ActivityPrincipal extends Activity {
     public static boolean ctrlThreadReplicadoEnabled;
 
     public static String flag;
+    public static String flagPrint = "";
 
     public static boolean INTERFACE_WLAN;
     public static boolean INTERFACE_ETH;
@@ -298,6 +299,15 @@ public class ActivityPrincipal extends Activity {
 
 
     /* --- Declaración de Componentes de la Interfaz --- */
+
+    TextView txvFondo1;
+    TextView txvFondo2;
+    TextView txvBarraInf;
+    TextView txvLinea1;
+    TextView txvLinea2;
+    TextView txvLinea3;
+    TextView txvLinea4;
+
 
     TextClock txcHora;
 
@@ -371,6 +381,7 @@ public class ActivityPrincipal extends Activity {
     InternalFile internalFile = new InternalFile();
 
     private QueriesParameters queriesParameters;
+    private QueriesLogTerminal queriesLogTerminal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -378,9 +389,10 @@ public class ActivityPrincipal extends Activity {
         setContentView(R.layout.activity_principal);
 
         turnOnScreen();
+        context = getApplicationContext();
+        queriesLogTerminal = new QueriesLogTerminal();
 
         try{
-            context = getApplicationContext();
 
             queriesParameters = new QueriesParameters(ActivityPrincipal.context);
             dbManager = new DBManager(ActivityPrincipal.context);
@@ -389,18 +401,28 @@ public class ActivityPrincipal extends Activity {
             Log.v(TAG, "SET TABLE PARAMETERS");
             //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
             try {
-                dbManager.startBackupBd(1);
+                dbManager.startBackupBd(1,0);
                 Thread.sleep(3000);
             } catch (Exception e) {
                 Log.e(TAG, "SET TABLE PARAMETERS " + e.getMessage());
             }
 
-
+            /* --- Variables Parameters Colors UI --- */
+            try {
+                parametersColorsUI = queriesParameters.idparameterToValue("COLORSUI");
+                Log.v(TAG,"parametersColorsUI = " + parametersColorsUI);
+            } catch (Exception e) {
+                parametersColorsUI = "#cecece,#cecece,#cecece,#777777,#777777,#777777,#777777,#000000,#ffffff";
+                Log.e(TAG, "parametersColorsUI " + e.getMessage());
+            }
 
             /* --- Variables Parameters TABLE PARAMETERS --- */
-            parametersInsertMarcaciones = queriesParameters.idparameterToValue("INSERTMARCACIONES");
-            //parametersInsertMarcaciones = "11111111"; ARIS
-            //parametersInsertMarcaciones = "10000000"; SHOUGANG
+            try{
+                parametersInsertMarcaciones = queriesParameters.idparameterToValue("INSERTMARCACIONES");
+            }catch (Exception e){
+                parametersInsertMarcaciones = "10000000";
+                Log.e(TAG,"parametersInsertMarcaciones " + e.getMessage());
+            }
             Log.v(TAG,"parametersInsertMarcaciones = " + parametersInsertMarcaciones);
 
             try{
@@ -410,6 +432,94 @@ public class ActivityPrincipal extends Activity {
                 Log.e(TAG,"parameterMarcacionRepetida " + e.getMessage());
             }
             Log.v(TAG,"parameterMarcacionRepetida = " + parameterMarcacionRepetida);
+
+            try{
+                parameterFotoPersonal = Boolean.valueOf(queriesParameters.idparameterToValue("FOTOPERSONAL"));
+            }catch (Exception e){
+                parameterFotoPersonal = false;
+                Log.e(TAG,"parameterFotoPersonal " + e.getMessage());
+            }
+            Log.v(TAG,"parameterFotoPersonal = " + parameterFotoPersonal);
+
+            try{
+                parametersWebService_01 = queriesParameters.idparameterToValue("WEBSERVICE_01");
+            }catch (Exception e){
+                parametersWebService_01 = "";
+                Log.e(TAG,"parametersWebService_01 " + e.getMessage());
+            }
+            Log.v(TAG,"parametersWebService_01 = " + parametersWebService_01);
+
+            try {
+                MODO_EVENTO = Boolean.valueOf(queriesParameters.idparameterToValue("MODO_EVENTO"));
+            } catch (Exception e) {
+                MODO_EVENTO = false;
+                Log.e(TAG,"set MODO_EVENTO " + e.getMessage());
+            }
+            Log.v(TAG, "MODO_EVENTO = " + MODO_EVENTO);
+
+            try {
+                BOTONES_EVENTO = queriesParameters.idparameterToValue("BOTONES_EVENTO");
+            } catch (Exception e) {
+                BOTONES_EVENTO = "00000000";
+                Log.e(TAG,"set BOTONES_EVENTO " + e.getMessage());
+            }
+            Log.v(TAG, "BOTONES_EVENTO = " + BOTONES_EVENTO);
+
+            try {
+                TEXTO_BOTONES_EVENTO = queriesParameters.idparameterToValue("TEXTO_BOTONES_EVENTO");
+            } catch (Exception e) {
+                TEXTO_BOTONES_EVENTO = "1,2,3,4,5,6,7,8";
+                Log.e(TAG,"set TEXTO_BOTONES_EVENTO " + e.getMessage());
+            }
+            Log.v(TAG, "TEXTO_BOTONES_EVENTO = " + TEXTO_BOTONES_EVENTO);
+
+            try {
+                VALOR_BOTONES_EVENTO = queriesParameters.idparameterToValue("VALOR_BOTONES_EVENTO");
+            } catch (Exception e) {
+                VALOR_BOTONES_EVENTO = "001,002,003,004,005,006,007,008";
+                Log.e(TAG,"set VALOR_BOTONES_EVENTO " + e.getMessage());
+            }
+            Log.v(TAG, "VALOR_BOTONES_EVENTO = " + VALOR_BOTONES_EVENTO);
+
+            try {
+                MODO_PRINTER = Boolean.valueOf(queriesParameters.idparameterToValue("MODO_PRINTER"));
+            } catch (Exception e) {
+                MODO_PRINTER = false;
+                Log.e(TAG,"set MODO_PRINTER " + e.getMessage());
+            }
+            Log.v(TAG, "MODO_PRINTER = " + MODO_PRINTER);
+
+            try {
+                VALUES_PRINTER_MESSAGE = queriesParameters.idparameterToValue("VALUES_PRINTER_MESSAGE");
+            } catch (Exception e) {
+                VALUES_PRINTER_MESSAGE = "0,0;0,1;0,2;0,3;0,4;0,5";
+                Log.e(TAG,"set VALUES_PRINTER_MESSAGE " + e.getMessage());
+            }
+            Log.v(TAG, "VALUES_PRINTER_MESSAGE = " + VALUES_PRINTER_MESSAGE);
+
+            try {
+                PRINTER_MESSAGE = queriesParameters.idparameterToValue("PRINTER_MESSAGE");
+            } catch (Exception e) {
+                PRINTER_MESSAGE = "";
+                Log.e(TAG,"set PRINTER_MESSAGE " + e.getMessage());
+            }
+            Log.v(TAG, "PRINTER_MESSAGE = " + PRINTER_MESSAGE);
+
+            try {
+                MODO_REFRIGERIO = Boolean.valueOf(queriesParameters.idparameterToValue("MODO_REFRIGERIO"));
+            } catch (Exception e) {
+                MODO_REFRIGERIO = false;
+                Log.e(TAG,"set MODO_REFRIGERIO " + e.getMessage());
+            }
+            Log.v(TAG, "MODO_REFRIGERIO = " + MODO_REFRIGERIO);
+
+            try {
+                MENSAJE_MARCACIONES = queriesParameters.idparameterToValue("MENSAJE_MARCACIONES");
+            } catch (Exception e) {
+                MENSAJE_MARCACIONES = "MARCACION AUTORIZADA,;ERROR,NO TIENE PERMISO EN ESTA LECTORA;ERROR,ESTADO NO PERMITE MARCACION;MARCACION REPETIDA,;ERROR,TARJETA/BIOME NO REGISTRADA;ERROR,TARJETA/BIOME NO SE RECONOCE;ERROR,LECTORA NO HABILITADA";
+                Log.e(TAG,"set MENSAJE_MARCACIONES " + e.getMessage());
+            }
+            Log.v(TAG, "MENSAJE_MARCACIONES = " + MENSAJE_MARCACIONES);
 
             logManager = new LogManager();
             logManager.RegisterLogTXT("INICIO TEMPUSX");
@@ -441,6 +551,22 @@ public class ActivityPrincipal extends Activity {
 
 
             // Inicializacion de componentes
+            txvFondo1 = (TextView) findViewById(R.id.txvFondo1);
+            txvFondo2 = (TextView) findViewById(R.id.txvFondo2);
+            txvBarraInf = (TextView) findViewById(R.id.txvBarraInf);
+            txvLinea1 = (TextView) findViewById(R.id.txvLinea1);
+            txvLinea2 = (TextView) findViewById(R.id.txvLinea2);
+            txvLinea3 = (TextView) findViewById(R.id.txvLinea3);
+            txvLinea4 = (TextView) findViewById(R.id.txvLinea4);
+
+            setBackgroundColorOnTextView(txvFondo1,parametersColorsUI.split(",")[0],"#cecece");
+            setBackgroundColorOnTextView(txvFondo2,parametersColorsUI.split(",")[1],"#cecece");
+            setBackgroundColorOnTextView(txvBarraInf,parametersColorsUI.split(",")[2],"#cecece");
+            setBackgroundColorOnTextView(txvLinea1,parametersColorsUI.split(",")[3],"#777777");
+            setBackgroundColorOnTextView(txvLinea2,parametersColorsUI.split(",")[4],"#777777");
+            setBackgroundColorOnTextView(txvLinea3,parametersColorsUI.split(",")[5],"#777777");
+            setBackgroundColorOnTextView(txvLinea4,parametersColorsUI.split(",")[6],"#777777");
+
 
             txvIdTerminalInfo = (TextView) findViewById(R.id.txvIdTerminalInfo);
 
@@ -462,7 +588,15 @@ public class ActivityPrincipal extends Activity {
             txvMarcacionLed03 = (TextView) findViewById(R.id.txvMarcacionLed03);
             txvMarcacionLed04 = (TextView) findViewById(R.id.txvMarcacionLed04);
 
+            setBackgroundColorOnTextView(txvMarcacionFondo,parametersColorsUI.split(",")[7],"#000000");
+            setTextColorOnTextView(txvMarcacionNombre,parametersColorsUI.split(",")[8],"#ffffff");
+            setTextColorOnTextView(txvMarcacionTarjeta,parametersColorsUI.split(",")[8],"#ffffff");
+            setTextColorOnTextView(txvMarcacionMsjPrincipal,parametersColorsUI.split(",")[8],"#ffffff");
+            setTextColorOnTextView(txvMarcacionMsjSecundario,parametersColorsUI.split(",")[8],"#ffffff");
+
             btnMaster = (ImageView) findViewById(R.id.btnMaster);
+            setImageBitmapOnImageView(btnMaster,"/tempus/img/config/","logo.png");
+            //+ "/tempus/img/config/" + "logo.png");
 
             btnAccess1 = (Button) findViewById(R.id.btnAccess1);
             btnAccess2 = (Button) findViewById(R.id.btnAccess2);
@@ -505,6 +639,17 @@ public class ActivityPrincipal extends Activity {
             txvSecret01 = (TextView) findViewById(R.id.txvSecret01);
             txvSecret02 = (TextView) findViewById(R.id.txvSecret02);
             txvSecret03 = (TextView) findViewById(R.id.txvSecret03);
+
+
+
+            /*
+            try{
+                Log.v(TAG,"btnMaster.setImageBitmap " + Environment.getExternalStorageDirectory().toString() + "/tempus/img/config/" + "logo.png");
+                btnMaster.setImageBitmap(BitmapFactory.decodeFile(new  File(Environment.getExternalStorageDirectory().toString() + "/tempus/img/config/" + "logo.png").toString()));
+            }catch (Exception e){
+                Log.e(TAG,"btnMaster.setImageBitmap " + e.getMessage());
+            }
+            */
 
             Log.v(TAG,"**********************************************03");
 
@@ -712,10 +857,11 @@ public class ActivityPrincipal extends Activity {
             btnEvent01.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    flag = "001";
-                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    flag = VALOR_BOTONES_EVENTO.split(",")[0];
+                    flagPrint = btnEvent01.getText().toString();
+                    Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
                     txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                    actualizarFlag("001", btnEvent01);
+                    actualizarFlag(flag, btnEvent01);
                     //Date date = new Date();
                     //tiempoPasado = date;
 
@@ -727,10 +873,11 @@ public class ActivityPrincipal extends Activity {
             btnEvent02.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    flag = "002";
-                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    flag = VALOR_BOTONES_EVENTO.split(",")[1];
+                    flagPrint = btnEvent02.getText().toString();
+                    Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
                     txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                    actualizarFlag("002", btnEvent02);
+                    actualizarFlag(flag, btnEvent02);
                     //Date date = new Date();
                     //tiempoPasado = date;
 
@@ -742,10 +889,11 @@ public class ActivityPrincipal extends Activity {
             btnEvent03.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    flag = "003";
-                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    flag = VALOR_BOTONES_EVENTO.split(",")[2];
+                    flagPrint = btnEvent03.getText().toString();
+                    Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
                     txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                    actualizarFlag("003", btnEvent03);
+                    actualizarFlag(flag, btnEvent03);
                     //Date date = new Date();
                     //tiempoPasado = date;
 
@@ -757,10 +905,11 @@ public class ActivityPrincipal extends Activity {
             btnEvent04.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    flag = "004";
-                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    flag = VALOR_BOTONES_EVENTO.split(",")[3];
+                    flagPrint = btnEvent04.getText().toString();
+                    Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
                     txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                    actualizarFlag("004", btnEvent04);
+                    actualizarFlag(flag, btnEvent04);
                     //Date date = new Date();
                     //tiempoPasado = date;
 
@@ -772,10 +921,11 @@ public class ActivityPrincipal extends Activity {
             btnEvent05.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    flag = "005";
-                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    flag = VALOR_BOTONES_EVENTO.split(",")[4];
+                    flagPrint = btnEvent05.getText().toString();
+                    Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
                     txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                    actualizarFlag("005", btnEvent05);
+                    actualizarFlag(flag, btnEvent05);
                     //Date date = new Date();
                     //tiempoPasado = date;
 
@@ -787,10 +937,11 @@ public class ActivityPrincipal extends Activity {
             btnEvent06.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    flag = "006";
-                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    flag = VALOR_BOTONES_EVENTO.split(",")[5];
+                    flagPrint = btnEvent06.getText().toString();
+                    Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
                     txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                    actualizarFlag("006", btnEvent06);
+                    actualizarFlag(flag, btnEvent06);
                     //Date date = new Date();
                     //tiempoPasado = date;
 
@@ -802,10 +953,11 @@ public class ActivityPrincipal extends Activity {
             btnEvent07.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    flag = "007";
-                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    flag = VALOR_BOTONES_EVENTO.split(",")[6];
+                    flagPrint = btnEvent07.getText().toString();
+                    Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
                     txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                    actualizarFlag("007", btnEvent07);
+                    actualizarFlag(flag, btnEvent07);
                     //Date date = new Date();
                     //tiempoPasado = date;
 
@@ -817,10 +969,11 @@ public class ActivityPrincipal extends Activity {
             btnEvent08.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    flag = "008";
-                    Log.v(TAG, "Flg_Actividad: " + flag);
+                    flag = VALOR_BOTONES_EVENTO.split(",")[7];
+                    flagPrint = btnEvent08.getText().toString();
+                    Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
                     txvMensajePantalla.setText("PASE SU TARJ/BIOM");
-                    actualizarFlag("008", btnEvent08);
+                    actualizarFlag(flag, btnEvent08);
                     //Date date = new Date();
                     //tiempoPasado = date;
 
@@ -1039,19 +1192,25 @@ public class ActivityPrincipal extends Activity {
 
             /* --- Variables Fotos --- */
             try{
-                Log.v(TAG,"camera/surfaceView iniciando");
-                camera = Camera.open(1);
-                surfaceView = new SurfaceView(context);
+                Log.v(TAG,"camera iniciando");
+                camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);
+                Log.v(TAG,"surfaceView iniciando");
+                surfaceView = new SurfaceView(ActivityPrincipal.context);
                 Log.v(TAG,"camera/surfaceView iniciado");
             }catch (Exception e){
                 Log.e(TAG,"camera/surfaceView " + e.getMessage());
             }
 
-
         }catch (Exception e){
             Log.e(TAG,"onCreate " + e.getMessage());
+
         }
 
+        try{
+            Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"Inicio completado",""));
+        }catch (Exception e){
+            Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
+        }
 
 
     }
@@ -1235,6 +1394,10 @@ public class ActivityPrincipal extends Activity {
             //dbManager.execSQL("UPDATE PARAMETERS SET VALUE = 'RELAY_01,0,00;RELAY_02,0,00' WHERE IDPARAMETER = 'RELAYS';");
             //dbManager.execSQL("UPDATE MARCACIONES SET SINCRONIZADO = 0");
             //dbManager.execSQL("UPDATE PERSONAL_TIPOLECTORA_BIOMETRIA SET SINCRONIZADO = 2 WHERE SINCRONIZADO = 4");
+            //dbManager.execSQL("DELETE FROM LOG_TERMINAL");
+            //dbManager.execSQL("DELETE FROM PERSONAL_TIPOLECTORA_BIOMETRIA");
+            //dbManager.execSQL("UPDATE PERSONAL_TIPOLECTORA_BIOMETRIA SET SINCRONIZADO = 0 WHERE SINCRONIZADO = 1");
+            dbManager.execSQL(TableLogTerminal.CREATE_TABLE);
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -1242,6 +1405,14 @@ public class ActivityPrincipal extends Activity {
         txvIdTerminalInfo.setText(idTerminal);
 
         Parameters parameters;
+
+        try {
+            TIPO_TERMINAL = Integer.valueOf(queriesParameters.idparameterToValue("TIPO_TERMINAL"));
+            Log.v(TAG, "TIPO_TERMINAL=" + TIPO_TERMINAL);
+        } catch (Exception e) {
+            Log.e(TAG,"set TIPO_TERMINAL " + e.getMessage());
+            TIPO_TERMINAL = 2;
+        }
 
         try {
             String macypass = "00:00:00:00:00:00,1234";
@@ -1321,20 +1492,6 @@ public class ActivityPrincipal extends Activity {
             Log.d(TAG, "CargarDatosIniciales > TIPO_TERMINAL = OK");
         } catch (Exception e) {
             TIPO_TERMINAL = 2;
-        }
-
-        try {
-            parameters = queriesParameters.selectParameter("MODO_EVENTO");
-            String enable_evento = parameters.getValue();
-            if (enable_evento == "0") {
-                MODO_EVENTO = false;
-            } else {
-                MODO_EVENTO = true;
-            }
-            Log.d(TAG, "CargarDatosIniciales > MODO_EVENTO = OK " + "(" + MODO_EVENTO + ")");
-            MODO_EVENTO = false;
-        } catch (Exception e) {
-            MODO_EVENTO = false;
         }
 
         try {
@@ -1531,122 +1688,14 @@ public class ActivityPrincipal extends Activity {
         //MAC_BT_03 = "00:00:00:00:00:00";
 
 
-        MODO_EVENTO = true;
-        TIPO_TERMINAL = 2;
+        //MODO_EVENTO = true;
+        //TIPO_TERMINAL = 2;
         INTERFACE_ETH = true;
         INTERFACE_WLAN = true;
         INTERFACE_PPP = true;
         SCORE_MANO = 120;
 
         if (MODO_EVENTO) {
-
-            buttonsVisibility[0] = true;
-            buttonsVisibility[1] = true;
-            buttonsVisibility[2] = false;
-            buttonsVisibility[3] = false;
-            buttonsVisibility[4] = false;
-            buttonsVisibility[5] = false;
-            buttonsVisibility[6] = false;
-            buttonsVisibility[7] = false;
-
-            buttonsText[0] = "INGRESO";
-            buttonsText[1] = "SALIDA";
-            buttonsText[2] = "3";
-            buttonsText[3] = "4";
-            buttonsText[4] = "5";
-            buttonsText[5] = "6";
-            buttonsText[6] = "7";
-            buttonsText[7] = "8";
-
-            /*
-            try {
-                parameters = queriesParameters.selectParameter("BTN_EVENTO_1");
-                int visible_0 = parameters.getEnable();
-                buttonsText[0] = parameters.getValue();
-                if (visible_0 == 0) {
-                    buttonsVisibility[0] = true;
-                }
-                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_1 = OK");
-            } catch (Exception e) {
-            }
-
-            try {
-                parameters = queriesParameters.selectParameter("BTN_EVENTO_2");
-                int visible_1 = parameters.getEnable();
-                buttonsText[1] = parameters.getValue();
-                if (visible_1 == 0) {
-                    buttonsVisibility[1] = true;
-                }
-                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_2 = OK");
-            } catch (Exception e) {
-            }
-
-            try {
-                parameters = queriesParameters.selectParameter("BTN_EVENTO_3");
-                int visible_2 = parameters.getEnable();
-                buttonsText[2] = parameters.getValue();
-                if (visible_2 == 0) {
-                    buttonsVisibility[2] = true;
-                }
-                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_3 = OK");
-            } catch (Exception e) {
-            }
-
-            try {
-                parameters = queriesParameters.selectParameter("BTN_EVENTO_4");
-                int visible_3 = parameters.getEnable();
-                buttonsText[3] = parameters.getValue();
-                if (visible_3 == 0) {
-                    buttonsVisibility[3] = true;
-                }
-                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_4 = OK");
-            } catch (Exception e) {
-            }
-
-            try {
-                parameters = queriesParameters.selectParameter("BTN_EVENTO_5");
-                int visible_4 = parameters.getEnable();
-                buttonsText[4] = parameters.getValue();
-                if (visible_4 == 0) {
-                    buttonsVisibility[4] = true;
-                }
-                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_5 = OK");
-            } catch (Exception e) {
-            }
-
-            try {
-                parameters = queriesParameters.selectParameter("BTN_EVENTO_6");
-                int visible_5 = parameters.getEnable();
-                buttonsText[5] = parameters.getValue();
-                if (visible_5 == 0) {
-                    buttonsVisibility[5] = true;
-                }
-                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_6 = OK");
-            } catch (Exception e) {
-            }
-
-            try {
-                parameters = queriesParameters.selectParameter("BTN_EVENTO_7");
-                int visible_6 = parameters.getEnable();
-                buttonsText[6] = parameters.getValue();
-                if (visible_6 == 0) {
-                    buttonsVisibility[6] = true;
-                }
-                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_7 = OK");
-            } catch (Exception e) {
-            }
-
-            try {
-                parameters = queriesParameters.selectParameter("BTN_EVENTO_8");
-                int visible_7 = parameters.getEnable();
-                buttonsText[7] = parameters.getValue();
-                if (visible_7 == 0) {
-                    buttonsVisibility[7] = true;
-                }
-                Log.d(TAG, "CargarDatosIniciales > BTN_EVENTO_8 = OK");
-            } catch (Exception e) {
-            }
-            */
 
             flag = null;
             txvMensajePantalla.setText("SELECCIONE UN EVENTO");
@@ -1686,60 +1735,60 @@ public class ActivityPrincipal extends Activity {
     }
 
     public void InicializarModoEvento() {
-        if (buttonsVisibility[0]) {
+        if (BOTONES_EVENTO.substring(0,1).equalsIgnoreCase("1")) {
             btnEvent01.setVisibility(View.VISIBLE);
-            btnEvent01.setText(buttonsText[0]);
+            btnEvent01.setText(TEXTO_BOTONES_EVENTO.split(",")[0]);
         } else {
             btnEvent01.setVisibility(View.GONE);
         }
 
-        if (buttonsVisibility[1]) {
+        if (BOTONES_EVENTO.substring(1,2).equalsIgnoreCase("1")) {
             btnEvent02.setVisibility(View.VISIBLE);
-            btnEvent02.setText(buttonsText[1]);
+            btnEvent02.setText(TEXTO_BOTONES_EVENTO.split(",")[1]);
         } else {
             btnEvent02.setVisibility(View.GONE);
         }
 
-        if (buttonsVisibility[2]) {
+        if (BOTONES_EVENTO.substring(2,3).equalsIgnoreCase("1")) {
             btnEvent03.setVisibility(View.VISIBLE);
-            btnEvent03.setText(buttonsText[2]);
+            btnEvent03.setText(TEXTO_BOTONES_EVENTO.split(",")[2]);
         } else {
             btnEvent03.setVisibility(View.GONE);
         }
 
-        if (buttonsVisibility[3]) {
+        if (BOTONES_EVENTO.substring(3,4).equalsIgnoreCase("1")) {
             btnEvent04.setVisibility(View.VISIBLE);
-            btnEvent04.setText(buttonsText[3]);
+            btnEvent04.setText(TEXTO_BOTONES_EVENTO.split(",")[3]);
         } else {
             btnEvent04.setVisibility(View.GONE);
         }
 
-        if (buttonsVisibility[4]) {
+        if (BOTONES_EVENTO.substring(4,5).equalsIgnoreCase("1")) {
             btnEvent05.setVisibility(View.VISIBLE);
-            btnEvent05.setText(buttonsText[4]);
+            btnEvent05.setText(TEXTO_BOTONES_EVENTO.split(",")[4]);
         } else {
-            btnEvent05.setVisibility(View.INVISIBLE);
+            btnEvent05.setVisibility(View.GONE);
         }
 
-        if (buttonsVisibility[5]) {
+        if (BOTONES_EVENTO.substring(5,6).equalsIgnoreCase("1")) {
             btnEvent06.setVisibility(View.VISIBLE);
-            btnEvent06.setText(buttonsText[5]);
+            btnEvent06.setText(TEXTO_BOTONES_EVENTO.split(",")[5]);
         } else {
-            btnEvent06.setVisibility(View.INVISIBLE);
+            btnEvent06.setVisibility(View.GONE);
         }
 
-        if (buttonsVisibility[6]) {
+        if (BOTONES_EVENTO.substring(6,7).equalsIgnoreCase("1")) {
             btnEvent07.setVisibility(View.VISIBLE);
-            btnEvent07.setText(buttonsText[6]);
+            btnEvent07.setText(TEXTO_BOTONES_EVENTO.split(",")[6]);
         } else {
-            btnEvent07.setVisibility(View.INVISIBLE);
+            btnEvent07.setVisibility(View.GONE);
         }
 
-        if (buttonsVisibility[7]) {
+        if (BOTONES_EVENTO.substring(7).equalsIgnoreCase("1")) {
             btnEvent08.setVisibility(View.VISIBLE);
-            btnEvent08.setText(buttonsText[7]);
+            btnEvent08.setText(TEXTO_BOTONES_EVENTO.split(",")[7]);
         } else {
-            btnEvent08.setVisibility(View.INVISIBLE);
+            btnEvent08.setVisibility(View.GONE);
         }
 
     }
@@ -1815,14 +1864,21 @@ public class ActivityPrincipal extends Activity {
             isReplicating = false;
             isReplicatingTemplate = false;
             isDeleting = false;
+            iswithX = false;
+            isWriting = false;
 
+            huellaEnrollFlag = "";
             huellaEnrollFlag1 = "";
             huellaEnrollFlag2 = "";
             huellaDeleteFlag1 = "";
+            huellaWriteFlag = "";
 
+            huellaEnroll = "";
             huellaEnroll1 = "";
             huellaEnroll2 = "";
             huellaDelete1 = "";
+            huellaWrite = "";
+            withx = "";
         }
 
         if (BT_03_ENABLED) {
@@ -1949,6 +2005,7 @@ public class ActivityPrincipal extends Activity {
                 //logManager.RegisterLogTXT("COMANDO: OCULTAR SYSTEMUI");
                 try {
                     hideNavigationBar(true);
+                    runShellCommand("wm overscan -50,0,-50,0 \n");
                 } catch (Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: OCULTAR SYSTEMUI -> " + e.getMessage());
                 }
@@ -1959,6 +2016,7 @@ public class ActivityPrincipal extends Activity {
                 //logManager.RegisterLogTXT("COMANDO: MOSTRAR SYSTEMUI");
                 try {
                     hideNavigationBar(false);
+                    runShellCommand("wm overscan reset \n");
                 } catch (Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: MOSTRAR SYSTEMUI -> " + e.getMessage());
                 }
@@ -1976,7 +2034,7 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "113322443241324": // APAGAR
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: APAGAR");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: APAGAR");
                 //logManager.RegisterLogTXT("COMANDO: APAGAR");
                 try {
                     Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
@@ -2089,7 +2147,7 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG, "SYSTEM_MAIN_INSTRUCTION " + "COMANDO: BACKUP RESTARING BD");
                 //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
                 try {
-                    dbManager.startBackupBd(2);
+                    dbManager.startBackupBd(2,0);
                 } catch (Exception e) {
                     Log.e(TAG, "ERROR_SYSTEM_MAIN " + "COMANDO: BACKUP RESTARING BD -> " + e.getMessage());
                 }
@@ -2114,16 +2172,45 @@ public class ActivityPrincipal extends Activity {
 
             case "4422":
                 try{
-                    QueriesPersonal queriesPersonal = new QueriesPersonal(context);
-                    queriesPersonal.getFotoPersonalBySync();
+                    //244F4158410013443030303030303030303030303030303004A441
+                    //24 4F 41 58 41 00 13 35 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 04 95 41
+                    //Log.v(TAG,"Calcular Checksum <<<<" + util.getChecksum("00000602000046530000060200017479000007020000016c000007020001b163000000040000885e000000040001625d0000040500006b67000004050001ee5d0000060500008a65000006050001f459000007050000a266000007050001665d000000060000e060000000060001975f000007060000655d000007060001af5c00000707000048610000070700015b6b000004090000785c000004090001975d0000070900009a5a000007090001a3620000001000003d70000000100001e95d0000071000002a590000071000010d5f000007130000045d000007130001b05e000000140000ce5a000000140001a45c000003140000ef68000003140001d74e000000150000946e000000150001616a000007160000e85e000007160001ad660000071700002d4a0000071700014959000000180000c1760000001800014d6d000006180000bb69000006180001355400000718000032600000071800010c5a00000721000013770000072100015f59000007220000ef68000007220001b75a000003230000925e000003230001415e0000072600000f5d0000072600012d5d000006350000f3730000063500016465000006370000b45e000006370001175c0000064600009168000006460001845600000547000000630000054700013167000001480000b1610000065000006253000006500001d9610000065200004955000006520001b057000006550000a15a0000065500014e52000002640000236d000002640001c15c0000066500007a61000006650001bd580000056900003460000005690001e1740000066900009a6a000006690001b163000006780000ed56000006780001e55d000006790000c06400000679000123630000068800007f68000006880001355800000096000029480000009600014f5c00000699000010550000069900015d5d",8) + ">>>>");
+                    queriesPersonalTipolectoraBiometria.listarIndicesEnrrolados();
+                    //queriesPersonalTipolectoraBiometria.freeScanOnOffSuprema(false);
+                    //queriesPersonalTipolectoraBiometria.freeScanOnOffSuprema(true);
+
+                    //Log.v(TAG,"geoLocationListener inicio");
+                    //GeoLocationListener geoLocationListener = new GeoLocationListener();
+
                 }catch (Exception e){
-                    Log.e(TAG,"allfotopersonal " + e.getMessage());
+                    //Log.e(TAG,"Calcular Checksum " + e.getMessage());
+                    Log.e(TAG,"queriesPersonalTipolectoraBiometria.EliminarBiometriasPersonalCesado " + e.getMessage());
                 }
                 break;
 
             case "4433":
-                Log.v(TAG,"");
+                Log.v(TAG,"Suprema Commands----------------------------------------------------------------------------------------------");
+                try{
 
+                    //btSocket02.getOutputStream().write(util.hexStringToByteArray("4018000000000000000000580A")); // LT : List User ID
+
+
+                    //iswithX = true;
+                    //btSocket02.getOutputStream().write(util.hexStringToByteArray("4086000000000010000000D60A")); // LT : List User ID
+                    //Thread.sleep(1000);
+                    //iswithX = false;
+                    //btSocket02.getOutputStream().write(util.hexStringToByteArray("4086000000000010000083490A")); // LT : List User ID
+
+
+                    //Log.v(TAG,"objSuprema.convertCardToEnroll(602)=" + objSuprema.convertCardToEnroll("602"));
+                    //Log.v(TAG,"getChecksum=" + util.getChecksum("44290a0ec22255461c01888c1f03110d44076786180b9009250c0c094a0ce40511121e883f146a083615f68a4f15e8041e1789101a19230b302108124f24e4841225258524279692002aa6821c2e2e09492fde8f4f30508d333415ab3c34f29a4638d9914f3b4d09343c385605402d8b37414ca1124b3c880e4c3e08444ed0903c52d88c0a58348a4d58d786135b4c0e0e634814286362063367e1844f69df87096b2a1b0c6e4aac286fe105ccdde01222bccde01233bbccde2233bbbcce2333aaabcd2344aaaabc2344aa99ab245599889955669877776667887776666687666655559765554444975544444497544444440000000000000000000000000000441a0f13962255464303fd85181192874e117903411304864e16fb89381b87032c1d130d5635060412379d84683f7c830f501c0a2753218868596c8d6164f495616761154d688c9c696fe38557706ea12c74a684577c4c97607c530c507e36941585220555893c8e5f8e4a922092a786fffddee00000ffffffddee000001ffffcddeee00011fffccdddee000111fccccccde0000112ccccccdde000112ccccccddee0011fccccccddee0011fcccccccdee00111ccccccccee00111bbbbbbbbde01112bbbbbbbbcd01122fababbbbcd01233fbbaabbbbd01334fabbaaaaaa74444fbaaaaaaa976554fbaaaaaa9986555ffabbbbaa987655fffbbbbaa98755f000",8));
+                    //btSocket02.getOutputStream().write(util.hexStringToByteArray("4087000006020001000200D20A"));
+                    //btSocket02.getOutputStream().write(util.hexStringToByteArray("4087010000000002000000CA0A" + "44290a0ec22255461c01888c1f03110d44076786180b9009250c0c094a0ce40511121e883f146a083615f68a4f15e8041e1789101a19230b302108124f24e4841225258524279692002aa6821c2e2e09492fde8f4f30508d333415ab3c34f29a4638d9914f3b4d09343c385605402d8b37414ca1124b3c880e4c3e08444ed0903c52d88c0a58348a4d58d786135b4c0e0e634814286362063367e1844f69df87096b2a1b0c6e4aac286fe105ccdde01222bccde01233bbccde2233bbbcce2333aaabcd2344aaaabc2344aa99ab245599889955669877776667887776666687666655559765554444975544444497544444440000000000000000000000000000441a0f13962255464303fd85181192874e117903411304864e16fb89381b87032c1d130d5635060412379d84683f7c830f501c0a2753218868596c8d6164f495616761154d688c9c696fe38557706ea12c74a684577c4c97607c530c507e36941585220555893c8e5f8e4a922092a786fffddee00000ffffffddee000001ffffcddeee00011fffccdddee000111fccccccde0000112ccccccdde000112ccccccddee0011fccccccddee0011fcccccccdee00111ccccccccee00111bbbbbbbbde01112bbbbbbbbcd01122fababbbbcd01233fbbaabbbbd01334fabbaaaaaa74444fbaaaaaaa976554fbaaaaaa9986555ffabbbbaa987655fffbbbbaa98755f000" + "BACC0000"));
+                    //btSocket02.getOutputStream().write(util.hexStringToByteArray("4019000006020000000000610A")); //Check User ID
+                    //btSocket02.getOutputStream().write(util.hexStringToByteArray("4066000006020000000000AE0A")); //Read Administration Level of a User
+                }catch (Exception e){
+                    Log.e(TAG,"Suprema Commands " + e.getMessage());
+                }
                 break;
 
             case "1324222":
@@ -2145,7 +2232,7 @@ public class ActivityPrincipal extends Activity {
     public void ShutdownArduino(OutputStream out) {
         Log.v(TAG, "SHUTDOWN OK");
         try {
-            out.write(util.hexStringToByteArray("244F415841 0013 42 30 30303030303030000041 "));
+            out.write(util.hexStringToByteArray("244F41584100134230303030303030303030303030303030" + util.getChecksum("244F41584100134230303030303030303030303030303030",4) + "41"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -2208,8 +2295,6 @@ public class ActivityPrincipal extends Activity {
     }
 
     public void MarcacionMaster(String lectoraName, String tarjeta){
-
-        //String TAG = "TX-AP";
 
         Log.v(TAG, "lectoraName: " + lectoraName);
         Log.v(TAG, "tarjeta: " + tarjeta);
@@ -2361,8 +2446,8 @@ public class ActivityPrincipal extends Activity {
                                 }
 
                                 //String autorizacion = autorizaciones.getMensaje();
-
-                                if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
+                                // Verificar que es MARCACION AUTORIZADA
+                                if (array_autorizaciones[2].equalsIgnoreCase(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[0].split(",")[0])) {
 
                                     if (array_autorizaciones[4].equals("0")){ // Finalizo Marcacion
                                         Log.d(TAG, "FINALIZO MARCACION");
@@ -2528,7 +2613,8 @@ public class ActivityPrincipal extends Activity {
 
                                                                 Log.d(TAG,"MarcacionMasterTAG " + "res_marcacion: "+res_marcacion);
                                                                 array_autorizaciones = res_marcacion.split(",");
-                                                                if (array_autorizaciones[2].equalsIgnoreCase("marcacion autorizada")) {
+                                                                // Verificar que es MARCACION AUTORIZADA
+                                                                if (array_autorizaciones[2].equalsIgnoreCase(ActivityPrincipal.MENSAJE_MARCACIONES.split(";")[0].split(",")[0])) {
 
                                                                     Log.d(TAG,"MarcacionMasterTAG " + "FINALIZO MARCACION 1");
                                                                     MARCACION_ACTIVA = false;
@@ -2594,7 +2680,7 @@ public class ActivityPrincipal extends Activity {
                                                 mNombre = array_autorizaciones[0];
                                                 mTarjeta = array_autorizaciones[1];
                                                 //mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                                                mMensajePrincipal = "NO AUTORIZADA";
+                                                mMensajePrincipal = "ERROR";
                                                 mMensajeSecundario = "NO EXISTE BIOMETRIA";
                                                 MarcacionKO(btSocket01.getOutputStream());
                                                 //threadHorariosRelay.startRelayReading(2);
@@ -2629,7 +2715,7 @@ public class ActivityPrincipal extends Activity {
                                         mNombre = "";
                                         mTarjeta = tarjeta;
                                         //mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                                        mMensajePrincipal = "NO AUTORIZADA";
+                                        mMensajePrincipal = "ERROR";
                                         mMensajeSecundario = "(*)";
                                         MarcacionUI();
                                     } else {
@@ -2665,7 +2751,7 @@ public class ActivityPrincipal extends Activity {
                         mNombre = "";
                         mTarjeta = tarjeta;
                         //mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                        mMensajePrincipal = "NO AUTORIZADA";
+                        mMensajePrincipal = "ERROR";
                         mMensajeSecundario = "e000";
                         mFotoPersonal = "";
                         MarcacionUI();
@@ -2681,7 +2767,7 @@ public class ActivityPrincipal extends Activity {
                     mNombre = "";
                     mTarjeta = "";
                     //mMensajePrincipal = "MARCACION NO AUTORIZADA";
-                    mMensajePrincipal = "NO AUTORIZADA";
+                    mMensajePrincipal = "ERROR";
                     mMensajeSecundario = "No existe Base de Datos";
                     mFotoPersonal = "";
                     MarcacionUI();
@@ -2707,17 +2793,28 @@ public class ActivityPrincipal extends Activity {
                 txvMarcacionTarjeta.setText(mTarjeta);
                 txvMarcacionMsjPrincipal.setText(mMensajePrincipal);
                 txvMarcacionMsjSecundario.setText(mMensajeSecundario);
-                fileFotoPersonal = new File(Environment.getExternalStorageDirectory().toString() + "/tempus/img/personal/sync/original/" + mFotoPersonal);
-                if(fileFotoPersonal.isFile()){
+                if(parameterFotoPersonal){
+                    fileFotoPersonal = new File(Environment.getExternalStorageDirectory().toString() + "/tempus/img/personal/sync/original/" + mFotoPersonal);
+                    if(fileFotoPersonal.isFile()){
+                        try{
+                            Log.v(TAG,"imgFotoPersonal " + fileFotoPersonal.toString());
+                            imgFotoPersonal.setImageBitmap(BitmapFactory.decodeFile(fileFotoPersonal.toString()));
+                        }catch (Exception e){
+                            Log.e(TAG,"imgFotoPersonal " + e.getMessage());
+                        }
+                    }else{
+                        imgFotoPersonal.setImageResource(R.drawable.fotopersonal);
+                    }
+                }else{
                     try{
-                        Log.v(TAG,"imgFotoPersonal " + fileFotoPersonal.toString());
-                        imgFotoPersonal.setImageBitmap(BitmapFactory.decodeFile(fileFotoPersonal.toString()));
+                        Log.v(TAG,"imgFotoPersonal " + parameterFotoPersonal);
+                        imgFotoPersonal.setColorFilter(Color.parseColor(parametersColorsUI.split(",")[7]));
                     }catch (Exception e){
                         Log.e(TAG,"imgFotoPersonal " + e.getMessage());
                     }
-                }else{
-                    imgFotoPersonal.setImageResource(R.drawable.fotopersonal);
                 }
+
+
 
 
                 if (false) {
@@ -2863,13 +2960,13 @@ public class ActivityPrincipal extends Activity {
     public void MarcacionOK(OutputStream out) {
         Log.v(TAG, "MARCACION OK");
         try {
-            txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionOK));
+            //txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionOK));
             //out.write(util.hexStringToByteArray("244F415841000C3531000041"));
             //out.write(util.hexStringToByteArray("244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e314e4e00000041"));
             threadHorariosRelay.startRelayReading(1);
             Thread.sleep(200);
-            out.write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "31" + tiempoActivoRelay02 + tiempoActivoRelay01 + "00000041"));
-            Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay01 + relay02 + "31" + tiempoActivoRelay01 + tiempoActivoRelay02 + "00000041");
+            out.write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "31" + tiempoActivoRelay02 + tiempoActivoRelay01 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "31" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41"));
+            Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "31" + tiempoActivoRelay02 + tiempoActivoRelay01 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "31" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41");
             relay01 = "4e";
             relay02 = "4e";
             tiempoActivoRelay01 = "4e";
@@ -2883,13 +2980,13 @@ public class ActivityPrincipal extends Activity {
     public void MarcacionKO(OutputStream out) {
         Log.v(TAG, "MARCACION KO");
         try {
-            txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionKO));
+            //txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionKO));
             //out.write(util.hexStringToByteArray("244F415841000C3530000041"));
             //out.write(util.hexStringToByteArray("244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e304e4e00000041"));
             threadHorariosRelay.startRelayReading(2);
             Thread.sleep(200);
-            out.write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01 + "00000041"));
-            Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay01 + relay02 + "30" + tiempoActivoRelay01 + tiempoActivoRelay02 + "00000041");
+            out.write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41"));
+            Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay01 + relay02 + "30" + tiempoActivoRelay01 + tiempoActivoRelay02 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41");
             relay01 = "4e";
             relay02 = "4e";
             tiempoActivoRelay01 = "4e";
@@ -3048,11 +3145,11 @@ public class ActivityPrincipal extends Activity {
         if(flag == null || flag == ""){
             if(visible){
                 try{
-                    txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionKO));
+                    //txvMarcacionFondo.setBackgroundColor(getResources().getColor(R.color.colorMarcacionKO));
                     threadHorariosRelay.startRelayReading(2);
                     Thread.sleep(200);
-                    btSocket01.getOutputStream().write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e30" + tiempoActivoRelay02 + tiempoActivoRelay01 + "00000041"));
-                    Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e30" + tiempoActivoRelay02 + tiempoActivoRelay01 + "00000041");
+                    btSocket01.getOutputStream().write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e30" + tiempoActivoRelay02 + tiempoActivoRelay01 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e30" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41"));
+                    Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e30" + tiempoActivoRelay02 + tiempoActivoRelay01 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e4e4e30" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41");
                 }catch (Exception e){
                     Log.e(TAG,"threadHorariosRelay + btSocket01 " + e.getMessage());
                 }
@@ -3223,8 +3320,8 @@ public class ActivityPrincipal extends Activity {
                 //26 4011000000000000000069ba0a
 
 
-                Log.v(TAG,"evaluar objArduino.getTipoMensaje=" + objArduino.getTipoMensaje() + " - " + "objArduino.getNroLector=" + objArduino.getNroLector() + " - " + "objArduino.getMensaje=" + objArduino.getMensaje());
-                Log.v(TAG,"evaluar objArduino.toString()=" + objArduino.toString());
+                //Log.v(TAG,"evaluar objArduino.getTipoMensaje=" + objArduino.getTipoMensaje() + " - " + "objArduino.getNroLector=" + objArduino.getNroLector() + " - " + "objArduino.getMensaje=" + objArduino.getMensaje());
+                //Log.v(TAG,"evaluar objArduino.toString()=" + objArduino.toString());
 
 
 
@@ -3345,12 +3442,19 @@ public class ActivityPrincipal extends Activity {
 
                 switch (objSuprema.getComando()){
                     case "01": // Write
+                        Log.v(TAG,"objSuprema>>> Write>>>" + trama);
+                        if(isWriting){
+                            huellaWrite = trama;
+                            huellaWriteFlag = objSuprema.getFlagError();
+                        }
+                        //Log.v(TAG,"objSuprema>>> Write>>>" + objSuprema.getFlagError() + " - " + huellaWriteFlag + " - " + huellaWrite);
                         break;
                     case "02": // Save
+                        Log.v(TAG,"objSuprema>>>" + trama);
                         break;
                     case "03": // Read
 
-                        Log.d(TAG,"TEMPUS: " + "Llego READ 03 ---- " + objSuprema.getTrama());
+                        Log.v(TAG,"TEMPUS: " + "Llego READ 03 ---- " + objSuprema.getTrama());
 
                         objSuprema.writeToSuprema(btSocket02.getOutputStream(),"Cancel",null);
                         Log.d(TAG,"Autorizaciones " + "objSuprema.toString(): " + objSuprema.toString());
@@ -3388,27 +3492,30 @@ public class ActivityPrincipal extends Activity {
 
                         if (activityActive.equals("Principal")){
 
-
-
                             if ( MODO_EVENTO ){
                                 if (flag !="" && flag !=null) {
-                                    String flagRead = "HUELLA SUPREMA";
-                                    String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
-                                    if (objSuprema.getFlag().equalsIgnoreCase("69")){
-                                        tarjeta = "00000000";
-                                    }
-                                    Log.v(TAG,"TEMPUS: " + tarjeta);
-                                    //Log.v("TEMPUS: ",String.valueOf(Integer.parseInt(tarjeta)));
-                                    MarcacionMaster(flagRead,String.valueOf(Integer.parseInt(tarjeta)));
-                                    // Marcando
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            turnOnScreen();
-                                            manageLayerMarcacion(true);
-                                            actualizarFlag(null,null);
+                                    try{
+                                        String flagRead = "HUELLA SUPREMA";
+                                        String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
+                                        if (objSuprema.getFlag().equalsIgnoreCase("69")){
+                                            tarjeta = "00000000";
                                         }
-                                    });
+                                        Log.v(TAG,"TEMPUS: " + tarjeta);
+                                        //Log.v("TEMPUS: ",String.valueOf(Integer.parseInt(tarjeta)));
+                                        MarcacionMaster(flagRead,String.valueOf(Integer.parseInt(tarjeta)));
+                                        // Marcando
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                turnOnScreen();
+                                                manageLayerMarcacion(true);
+                                                actualizarFlag(null,null);
+                                            }
+                                        });
+                                    }catch(Exception e){
+                                        Log.e(TAG,"IdentifyByScan" + e.getMessage());
+                                    }
+
                                 } else {
                                     //En el caso que no seleccione un evento
                                     //solo se emitira el sonido delñ buzzer y luz de led
@@ -3423,25 +3530,27 @@ public class ActivityPrincipal extends Activity {
                                     }catch (Exception e){
                                     }
                                     */
-
-                                    String flagRead = "HUELLA SUPREMA";
-                                    String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
-                                    if (objSuprema.getFlag().equalsIgnoreCase("69")){
-                                        tarjeta = "00000000";
-                                    }
-                                    Log.v(TAG,"TEMPUS: " + tarjeta);
-                                    //Log.v("TEMPUS: ",String.valueOf(Integer.parseInt(tarjeta)));
-                                    MarcacionMaster(flagRead,String.valueOf(Integer.parseInt(tarjeta)));
-
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            turnOnScreen();
-                                            manageLayerMarcacion(true);
-                                            actualizarFlag(null,null);
+                                    try{
+                                        String flagRead = "HUELLA SUPREMA";
+                                        String tarjeta = objSuprema.getFinalValue(objSuprema.getParametro());
+                                        if (objSuprema.getFlag().equalsIgnoreCase("69")){
+                                            tarjeta = "00000000";
                                         }
-                                    });
+                                        Log.v(TAG,"TEMPUS: " + tarjeta);
+                                        //Log.v("TEMPUS: ",String.valueOf(Integer.parseInt(tarjeta)));
+                                        MarcacionMaster(flagRead,String.valueOf(Integer.parseInt(tarjeta)));
 
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                turnOnScreen();
+                                                manageLayerMarcacion(true);
+                                                actualizarFlag(null,null);
+                                            }
+                                        });
+                                    }catch(Exception e){
+                                        Log.e(TAG,"IdentifyByScan" + e.getMessage());
+                                    }
                                     /*
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -3499,8 +3608,11 @@ public class ActivityPrincipal extends Activity {
                         }
                         break;
                     case "16": // DeleteTemplate
-                        Log.v(TAG,"TEMPUS: " + "DeleteTemplate >>>");
+                        Log.v(TAG,"objSuprema>>> DeleteTemplate>>>");
                         if (isDeleting){
+                            huellaDelete1 = trama;
+                            huellaDeleteFlag1 = objSuprema.getFlagError();
+                            /*
                             if (objSuprema.getFlagError().equalsIgnoreCase("SUCCESS") || objSuprema.getFlagError().equalsIgnoreCase("NOT_FOUND")){
                                 huellaDelete1 = trama;
                                 huellaDeleteFlag1 = objSuprema.getFlagError();
@@ -3508,20 +3620,40 @@ public class ActivityPrincipal extends Activity {
                                 huellaDelete1 = "";
                                 huellaDeleteFlag1 = objSuprema.getFlagError();
                             }
-                            Log.v(TAG, "TEMPUS: " + objSuprema.getFlagError() + " - " + huellaDeleteFlag1);
+                            */
+                            Log.v(TAG,"objSuprema>>> DeleteTemplate>>>" + objSuprema.getFlagError() + " - " + huellaDeleteFlag1 + " - " + huellaDelete1);
                         }
                         break;
                     case "17": // DeleteAllTemplates
-                        Log.v(TAG,"TEMPUS: " + "DeleteAllTemplates >>>");
+                        Log.v(TAG,"objSuprema>>> DeleteAllTemplates >>>");
+                        Log.v(TAG,"objSuprema>>>" + trama);
                         break;
                     case "18": // ListUserID
                         Log.v(TAG,"TEMPUS: " + "ListUserID >>>");
+                        //Log.v(TAG,"TEMPUS: " + "ListUserID >>>" + trama);
+                        Log.v(TAG,"TEMPUS: " + "ListUserID >>>" + objSuprema.getTrama());
                         break;
                     case "60": // Cancel
-                        Log.v(TAG,"TEMPUS: " + "Cancel >>>");
+                        Log.v(TAG,"objSuprema>>> Cancel >>>");
+                        Log.v(TAG,"objSuprema>>>" + trama);
                         break;
+                    case "86": // Enroll Template with Extended Data Transfer Protocol
+                        Log.v(TAG,"objSuprema>>> ListUserIDX>>>");
+                        //Log.v(TAG,"TEMPUS: " + "ListUserID >>>" + trama);
+                        Log.v(TAG,"objSuprema>>> ListUserIDX>>>" + objSuprema.getTrama());
+                        break;
+                    case "87": // Enroll Template with Extended Data Transfer Protocol
+                        Log.v(TAG,"objSuprema>>> Enroll Template with Extended Data Transfer Protocol>>>");
+                        Log.v(TAG,"objSuprema>>> Enroll Template with Extended Data Transfer Protocol>>>" + objSuprema.getTrama());
 
+                        if(isReplicatingTemplate){
+                            huellaEnroll = trama;
+                            huellaEnrollFlag = objSuprema.getFlagError();
+                        }
+
+                        break;
                     default:
+                        Log.v(TAG,"objSuprema>>>" + objSuprema.getTrama());
                         objSuprema.limpiarTramaSuprema();
                         break;
                 }
@@ -3627,6 +3759,16 @@ public class ActivityPrincipal extends Activity {
                         //Log.v(TAG,"btSocket02 ----- 2");
                         acumulador = acumulador + util.byteArrayToHexString(rawBytes);
                         //Log.v(TAG,"btSocket02 ----- 3");
+
+                        Log.v(TAG,"acumulador>>>" + acumulador);
+                        if(iswithX){
+                            withx += acumulador;
+                            acumulador = "";
+                            Log.v(TAG,"withx=" + withx);
+                        }else if(!iswithX){
+                            withx = "";
+                        }
+
                         if (acumulador.length() == 2){
                             if (!acumulador.equals("40")) {
                                 acumulador = "";
@@ -3646,12 +3788,13 @@ public class ActivityPrincipal extends Activity {
                         }
 
                         if (acumulador.length() == tamano) {
-                            Log.v(TAG,tamano + " " +acumulador);
+                            Log.v(TAG,tamano + " " + acumulador);
                             evaluarTrama("Suprema",acumulador);
                             objSuprema.limpiarTramaSuprema();
                             acumulador = "";
                         }
                         //Log.v(TAG,"btSocket02 ----- 4");
+
 
                     } catch (Exception e) {
                         if (!isBooting){
@@ -3677,7 +3820,6 @@ public class ActivityPrincipal extends Activity {
 
     /* --- CONTROL PRINCIPAL --- */
     public void controlGeneral(boolean c1,boolean c2, boolean c3) {
-
         Log.v(TAG,"CONTROL GENERAL");
         Log.v(TAG,"isCharging: " + isCharging);
         Log.v(TAG,"isBooting: " + isBooting);
@@ -3765,8 +3907,6 @@ public class ActivityPrincipal extends Activity {
                         @Override
                         public void run() {
 
-                            util.sleep(15000);
-
                             try {
                                 ShutdownArduino(btSocket01.getOutputStream());
                             } catch (Exception e) {
@@ -3774,6 +3914,7 @@ public class ActivityPrincipal extends Activity {
                             }
 
                             try {
+                                Thread.sleep(15000);
                                 Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
                                 proc.waitFor();
                             } catch (Exception e) {
@@ -3796,11 +3937,36 @@ public class ActivityPrincipal extends Activity {
                     }
                     */
                     showMsgBoot(true,"Reconectando Interfaces \n"+detail+"]");
+                    if(INICIADO){
+                        try{
+                            Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"Reconectando Interfaces",""));
+                        }catch (Exception e){
+                            Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
+                        }
+                    }
                     INICIADO = false;
                 }
 
             }
 
+        }
+
+        if(BT_01_IS_C != BT_01_IS_CONNECTED){
+            try{
+                Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"BT_01_IS_CONNECTED=" + BT_01_IS_CONNECTED,""));
+            }catch (Exception e){
+                Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
+            }
+            BT_01_IS_C = BT_01_IS_CONNECTED;
+        }
+
+        if(BT_02_IS_C != BT_02_IS_CONNECTED){
+            try{
+                Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"BT_02_IS_CONNECTED=" + BT_02_IS_CONNECTED,""));
+            }catch (Exception e){
+                Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
+            }
+            BT_02_IS_C = BT_02_IS_CONNECTED;
         }
     }
 
@@ -4205,7 +4371,6 @@ public class ActivityPrincipal extends Activity {
         }
     });
 
-
     private void appCaida(String app) {
         Log.e( TAG, "appCaida: Preparando para cerrar"  );
         this.forceStop(app);
@@ -4244,10 +4409,21 @@ public class ActivityPrincipal extends Activity {
     private void statusADC(String status){
         if(status.equalsIgnoreCase("")){
             try{
-                btSocket01.getOutputStream().write(util.hexStringToByteArray("244F41584100304430303030303030"));
+                btSocket01.getOutputStream().write(util.hexStringToByteArray("244F41584100134430303030303030303030303030303030" + util.getChecksum("244F41584100134430303030303030303030303030303030",4) + "41"));
                 //Thread.sleep(100);
             }catch (Exception e){
-                Log.e(TAG,"statusADC write" + e.getMessage());
+                Log.e(TAG,"statusADC write " + e.getMessage());
+                ExternalEnergy = -1;
+                UPSCharge = -1;
+                levelUPS = -1;
+                turnOnRelay02 = -1;
+                turnOnRelay01 = -1;
+                turnOnLan = -1;
+                turnOnAndroid = -1;
+                turnOnSuprema = -1;
+                turnOnLectorBarra = -1;
+                turnOnProximidad = -1;
+                turnOnExternalEnergy = -1;
             }
             //longitud es de 88
         }else if(status.length()>80){
@@ -4276,17 +4452,17 @@ public class ActivityPrincipal extends Activity {
                 turnOnProximidad = Integer.valueOf(util.convertHexToString(status.substring(82,84)));
                 turnOnExternalEnergy = Integer.valueOf(util.convertHexToString(status.substring(84,86)));
 
-                Log.v(TAG,"ExternalEnergy=" + ExternalEnergy); // (x * 5 / 255) * 3.13 -> voltios
-                Log.v(TAG,"UPSCharge=" + UPSCharge); // (x * 5 / 255) * 3.13 -> voltios
-                Log.v(TAG,"levelUPS=" + levelUPS); // (x * 5 / 255) * 3.13 -> voltios
-                Log.v(TAG,"turnOnRelay02=" + turnOnRelay02);
-                Log.v(TAG,"turnOnRelay01=" + turnOnRelay01);
-                Log.v(TAG,"turnOnLan=" + turnOnLan);
-                Log.v(TAG,"turnOnAndroid=" + turnOnAndroid);
-                Log.v(TAG,"turnOnSuprema=" + turnOnSuprema);
-                Log.v(TAG,"turnOnLectorBarra=" + turnOnLectorBarra);
-                Log.v(TAG,"turnOnProximidad=" + turnOnProximidad);
-                Log.v(TAG,"turnOnExternalEnergy=" + turnOnExternalEnergy);
+                //Log.v(TAG,"ExternalEnergy=" + ExternalEnergy); // (x * 5 / 255) * 3.13 -> voltios
+                //Log.v(TAG,"UPSCharge=" + UPSCharge); // (x * 5 / 255) * 3.13 -> voltios
+                //Log.v(TAG,"levelUPS=" + levelUPS); // (x * 5 / 255) * 3.13 -> voltios
+                //Log.v(TAG,"turnOnRelay02=" + turnOnRelay02);
+                //Log.v(TAG,"turnOnRelay01=" + turnOnRelay01);
+                //Log.v(TAG,"turnOnLan=" + turnOnLan);
+                //Log.v(TAG,"turnOnAndroid=" + turnOnAndroid);
+                //Log.v(TAG,"turnOnSuprema=" + turnOnSuprema);
+                //Log.v(TAG,"turnOnLectorBarra=" + turnOnLectorBarra);
+                //Log.v(TAG,"turnOnProximidad=" + turnOnProximidad);
+                //Log.v(TAG,"turnOnExternalEnergy=" + turnOnExternalEnergy);
 
                 Log.v(TAG,"parametersInsertMarcaciones = " + parametersInsertMarcaciones);
                 Log.v(TAG,"parameterMarcacionRepetida = " + parameterMarcacionRepetida);
@@ -4349,10 +4525,51 @@ public class ActivityPrincipal extends Activity {
         }
     }
 
+    public static void setImageBitmapOnImageView(ImageView imageView, String ruta, String filename){
+
+        try{
+            Log.v(TAG,"setImageBitmapOnImageView " + Environment.getExternalStorageDirectory().toString() + ruta + filename);
+            imageView.setImageBitmap(BitmapFactory.decodeFile(new  File(Environment.getExternalStorageDirectory().toString() + ruta + filename).toString()));
+        }catch (Exception e){
+            Log.e(TAG,"setImageBitmapOnImageView " + e.getMessage());
+        }
+
+    }
+
+    public static void setBackgroundColorOnTextView(TextView textView, String color, String colorex){
+        try{
+            Log.v(TAG,"setBackgroundColorOnTextView ");
+            textView.setBackgroundColor(Color.parseColor(color));
+        }catch (Exception e){
+            textView.setBackgroundColor(Color.parseColor(colorex));
+            Log.e(TAG,"setBackgroundColorOnTextView " + e.getMessage());
+        }
+
+    }
+
+    public static void setTextColorOnTextView(TextView textView, String color, String colorex){
+        try{
+            Log.v(TAG,"setTextColorOnTextView ");
+            textView.setTextColor(Color.parseColor(color));
+        }catch (Exception e){
+            textView.setTextColor(Color.parseColor(colorex));
+            Log.e(TAG,"setTextColorOnTextView " + e.getMessage());
+        }
+
+    }
 
 
-
-
+    private void runShellCommand(String command) {
+        try {
+            Process process = Runtime.getRuntime().exec(command);
+            process.waitFor();
+            Log.v(TAG,"runShellCommand ejecutado");
+        } catch (InterruptedException e) {
+            Log.e(TAG, "runShellCommand: " + e.getMessage(), e);
+        } catch (IOException e) {
+            Log.e(TAG, "runShellCommand: " + e.getMessage(), e);
+        }
+    }
 
 
 }

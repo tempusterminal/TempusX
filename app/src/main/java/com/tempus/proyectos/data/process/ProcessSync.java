@@ -3,9 +3,11 @@ package com.tempus.proyectos.data.process;
 import android.app.AlarmManager;
 import android.content.Context;
 import android.database.SQLException;
+import android.os.StrictMode;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
@@ -21,6 +23,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
@@ -29,9 +32,19 @@ import com.tempus.proyectos.data.model.Marcaciones;
 import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesEstados;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
+import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
+
+import okhttp3.FormBody;
+import okhttp3.HttpUrl;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 /**
@@ -513,6 +526,77 @@ public class ProcessSync {
         return rowaffected;
     }
 
+    public int syncMarcacionesWsG(Marcaciones marcaciones){
+        //Este método o función envía las marcaciones pors sincronizar al servidor Google
+        int rowaffected = 0;
+
+        try {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            //URL url = new URL("https://script.google.com/macros/s/AKfycbzGBO_zkOSZke0B4DHmpxGaDd9tOc9TsuWW2X_fG-SOB2s9KfE/exec");
+            String url = HttpUrl.parse("https://script.google.com/macros/s/AKfycbzQQcRUoudjcNTDRQJ98fovIBfXaW1wq0nmwPkJXBJ_6LKNkmqG/exec").toString();
+
+            Log.v(TAG,"marcaciones>>>" + marcaciones.toString());
+
+            String datos = "";
+            if(marcaciones.getDatos() == null){
+                datos = "";
+            }else if(marcaciones.getDatos().equalsIgnoreCase("null")){
+                datos = "";
+            }else{
+                datos = marcaciones.getDatos();
+            }
+            RequestBody formBody = new FormBody.Builder()
+                    .add("empresa",marcaciones.getEmpresa())
+                    .add("codigo",marcaciones.getCodigo())
+                    .add("fechahora",marcaciones.getFechahora())
+                    .add("numero_tarjeta",marcaciones.getValorTarjeta())
+                    .add("horatxt",marcaciones.getHoraTxt())
+                    .add("ent_sal",marcaciones.getEntSal())
+                    .add("flag",marcaciones.getFlag())
+                    .add("fecha",marcaciones.getFecha())
+                    .add("hora",marcaciones.getHora())
+                    .add("idterminal",marcaciones.getIdterminal())
+                    .add("idlectora",String.valueOf(marcaciones.getIdTipoLect()))
+                    .add("flg_actividad",marcaciones.getFlgActividad())
+                    .add("idusuario",String.valueOf(marcaciones.getIdUsuario()))
+                    .add("tmp_listar",marcaciones.getTmpListar())
+                    .add("datos",datos)
+                    .add("id","1tWS9sGSc3ULsW1ODR9N9skGDr_pnhNgHr2mhtGUXZZI")
+                    .build();
+
+            Log.v(TAG,"formBody>>>" + formBody.toString());
+
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    //.connectTimeout(2, TimeUnit.SECONDS)
+                    //.readTimeout(2, TimeUnit.SECONDS)
+                    //.writeTimeout(2, TimeUnit.SECONDS)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+            Log.v(TAG,"request>>>" + request.toString());
+
+            Response response = client.newCall(request).execute();
+            String respuesta = response.body().string();
+            Log.v(TAG,"response>>>" + respuesta);
+
+            if(respuesta.contains("Insertion successful")){
+                rowaffected = 1;
+                Log.v(TAG,"Registro insertado");
+            }
+
+            Log.v(TAG,"callWSGoogle OK");
+        } catch (Exception e) {
+            Log.e(TAG,"callWSGoogle " + e.getMessage());
+        }
+
+        Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
+        return rowaffected;
+    }
+
     public int syncBiometrias(PersonalTipolectoraBiometria personalTipolectoraBiometria) {
         //Este método o función envía las biometrias pors sincronizar al servidor principal
         Fechahora fechahora = new Fechahora();
@@ -754,7 +838,7 @@ public class ProcessSync {
             }
 
         }catch(Exception e){
-            Log.v(TAG,"ProcessSync.syncFechahora Error: " + e.getMessage());
+            Log.e(TAG,"syncFechahora() " + e.getMessage());
         }
 
     }
@@ -1007,6 +1091,72 @@ public class ProcessSync {
         }
 
     }
+
+    public void callWSGoogle1(){
+        //QueriesMarcaciones queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
+        //List<Marcaciones> marcacionesList = queriesMarcaciones.select_one_row();
+
+        //if(marcacionesList.size() > 0){
+            try{
+                Log.v(TAG,"callWSGoogle iniciar");
+                Map<String, Object> map = new LinkedHashMap<>();
+                map.put("name","TERMINAL");
+                map.put("country","Peru");
+                map.put("id","1ExnrFxJRovzdGNfrkO5BSG3ef_z0omCF_1UIQ27CQ4g");
+                //map.put("USER","TEMPUS");
+                //map.put("PASS","TEMPUSSCA");
+                //map.put("IP","0.0.0.0");
+                //map.put("MAC","00-00-00-00-00-00");
+                //map.put("HOSTNAME","TERMINAL");
+
+                StringBuilder stringBuilder = new StringBuilder();
+                for (Map.Entry<String, Object> param : map.entrySet()) {
+                    if (stringBuilder.length() != 0) {
+                        stringBuilder.append('&');
+                    }
+                    stringBuilder.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                    stringBuilder.append('=');
+                    stringBuilder.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+                }
+                Log.v(TAG,"stringBuilder>" + stringBuilder);
+                byte[] postDataBytes = stringBuilder.toString().getBytes("UTF-8");
+
+                Log.v(TAG,"callWSGoogle conectando");
+                URL url = new URL("https://script.google.com/macros/u/0/s/AKfycbzQQcRUoudjcNTDRQJ98fovIBfXaW1wq0nmwPkJXBJ_6LKNkmqG/exec");
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                Log.v(TAG,"callWSGoogle conexion ok " + httpURLConnection.toString());
+
+                httpURLConnection.setRequestMethod("POST");
+                httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+                httpURLConnection.setDoOutput(true);
+
+                httpURLConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
+                httpURLConnection.getOutputStream().write(postDataBytes);
+                Log.v(TAG,"callWSGoogle finalizar");
+
+                /*
+                Reader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
+                String respuesta = "";
+                for (int c; (c = in.read()) >= 0; respuesta = respuesta + (char) c){
+                    Log.v(TAG,"Sin horarios de Replicado");
+                }
+                */
+
+            }catch(Exception e){
+                Log.e(TAG,"callWSGoogle " + e.getMessage());
+            }
+        //}
+
+    }
+
+
+
+
+
+
+
+
+
 
 
 

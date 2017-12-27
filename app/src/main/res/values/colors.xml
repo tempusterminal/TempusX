@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- SHOUGANG Y ARIS -->
+    <!-- DEFAULT -->
+
+    <color name="colorLinea">#777777</color>
+    <color name="colorFondoBarra">#cecece</color>
+    <color name="colorFondoCuerpo">#ffffff</color>
+    <color name="colorTexto">#000000</color>
+    <color name="colorBlanco">#ffffff</color>
+    <color name="colorFondoMarcacion">#000000</color>
+    <!-- -->
+
+    <!-- SHOUGANG Y ARIS
     <color name="colorLinea">#ff6600</color>
     <color name="colorFondoBarra">#ffe9d9</color>
     <color name="colorFondoCuerpo">#ffffff</color>
     <color name="colorTexto">#000000</color>
     <color name="colorBlanco">#ffffff</color>
     <color name="colorFondoMarcacion">#000000</color>
-    <!-- -->
+    -->
 
     <!-- DIRESA
     <color name="colorLinea">#369</color>

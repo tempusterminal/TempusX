@@ -211,6 +211,7 @@ public class DBManager {
         private Thread hilo;
         private String nombreHilo;
         private int type;
+        private int delete;
         private String filename = "";
 
         public BackupBd(String nombreHilo) {
@@ -229,7 +230,10 @@ public class DBManager {
 
             try{
                 Log.v(TAG,"BackupBd inicio");
-                deletealltables();
+
+                if(delete == 1){
+                    deletealltables();
+                }
 
                 DBManager dbManager = new DBManager(context);
                 dbManager.open();
@@ -259,10 +263,11 @@ public class DBManager {
             }
         }
 
-        public void start(int type){
+        public void start(int type, int delete){
             //Looper.prepare();
             Log.v(TAG,"Iniciando Hilo " + nombreHilo);
             this.type = type;
+            this.delete = delete;
             if(hilo == null){
                 hilo = new Thread(nombreHilo);
                 super.start();
@@ -271,9 +276,9 @@ public class DBManager {
 
     }
 
-    public void startBackupBd(int type){
+    public void startBackupBd(int type, int delete){
         BackupBd backupBd = new BackupBd("startBackupBd");
-        backupBd.start(type);
+        backupBd.start(type, delete);
     }
 
 

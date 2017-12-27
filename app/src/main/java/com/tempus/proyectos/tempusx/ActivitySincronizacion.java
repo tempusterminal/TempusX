@@ -44,6 +44,7 @@ import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.servicios.OverlayShowingService;
 import com.tempus.proyectos.tcpSerial.UsrTCP;
 import com.tempus.proyectos.util.Connectivity;
+import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
@@ -83,6 +84,14 @@ public class ActivitySincronizacion extends Activity {
 
     /* --- Declaración de Componentes de la Interfaz --- */
 
+    TextView txvFondo1;
+    TextView txvFondo2;
+    TextView txvBarraInf;
+    TextView txvLinea1;
+    TextView txvLinea2;
+    TextView txvLinea3;
+    TextView txvLinea4;
+
     TabHost host;
 
     ImageView btnMasterSincronizacion;
@@ -103,7 +112,12 @@ public class ActivitySincronizacion extends Activity {
     Button btnWsGuardar;
 
     EditText edtWsServer;
+    EditText edtWsCompany;
     EditText edtWsPort;
+    EditText edtWsUser;
+    EditText edtWsPass;
+
+    TextView txvLogWs;
 
     boolean internet = false;
     boolean servidor = false;
@@ -135,6 +149,8 @@ public class ActivitySincronizacion extends Activity {
     /* --- UsrTCP --- */
     UsrTCP usrTCP = new UsrTCP();
 
+    private Fechahora fechahora = new Fechahora();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -161,7 +177,24 @@ public class ActivitySincronizacion extends Activity {
 
         /* --- Inicialización de Componentes de la Interfaz --- */
 
+        txvFondo1 = (TextView) findViewById(R.id.txvFondo1);
+        txvFondo2 = (TextView) findViewById(R.id.txvFondo2);
+        txvBarraInf = (TextView) findViewById(R.id.txvBarraInf);
+        txvLinea1 = (TextView) findViewById(R.id.txvLinea1);
+        txvLinea2 = (TextView) findViewById(R.id.txvLinea2);
+        txvLinea3 = (TextView) findViewById(R.id.txvLinea3);
+        txvLinea4 = (TextView) findViewById(R.id.txvLinea4);
+
+        ActivityPrincipal.setBackgroundColorOnTextView(txvFondo1,ActivityPrincipal.parametersColorsUI.split(",")[0],"#cecece");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvFondo2,ActivityPrincipal.parametersColorsUI.split(",")[1],"#cecece");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvBarraInf,ActivityPrincipal.parametersColorsUI.split(",")[2],"#cecece");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvLinea1,ActivityPrincipal.parametersColorsUI.split(",")[3],"#777777");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvLinea2,ActivityPrincipal.parametersColorsUI.split(",")[4],"#777777");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvLinea3,ActivityPrincipal.parametersColorsUI.split(",")[5],"#777777");
+        ActivityPrincipal.setBackgroundColorOnTextView(txvLinea4,ActivityPrincipal.parametersColorsUI.split(",")[6],"#777777");
+
         btnMasterSincronizacion = (ImageView) findViewById(R.id.btnMasterSincronizacion);
+        ActivityPrincipal.setImageBitmapOnImageView(btnMasterSincronizacion,"/tempus/img/config/","logo.png");
         btnAccessVPN = (Button) findViewById(R.id.btnAccessVPN);
         btnTest = (Button) findViewById(R.id.btnTest);
         txvInternet = (TextView) findViewById(R.id.txvInternet);
@@ -179,7 +212,12 @@ public class ActivitySincronizacion extends Activity {
         btnWsGuardar = (Button) findViewById(R.id.btnWsGuardar);
 
         edtWsServer = (EditText) findViewById(R.id.edtWsServer);
+        edtWsCompany = (EditText) findViewById(R.id.edtWsCompany);
         edtWsPort = (EditText) findViewById(R.id.edtWsPort);
+        edtWsUser = (EditText) findViewById(R.id.edtWsUser);
+        edtWsPass = (EditText) findViewById(R.id.edtWsPass);
+
+        txvLogWs = (TextView) findViewById(R.id.txvLogWs);
 
         btnReplicar = (Button) findViewById(R.id.btnReplicar);
 
@@ -198,8 +236,6 @@ public class ActivitySincronizacion extends Activity {
         swtHoraConf2 = (Switch) findViewById(R.id.swtHoraConf2);
         swtHoraConf3 = (Switch) findViewById(R.id.swtHoraConf3);
         swtHoraConf4 = (Switch) findViewById(R.id.swtHoraConf4);
-
-        btnReplicar = (Button) findViewById(R.id.btnReplicar);
 
         btnUsbMarcas = (Button) findViewById(R.id.btnUsbMarcas);
 
@@ -281,7 +317,11 @@ public class ActivitySincronizacion extends Activity {
             //AT+SOCK=<Protocol>,<IP address>,<Port><CR>
             Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
             edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
+            edtWsCompany.setText(ActivityPrincipal.parametersWebService_01.split(",")[1]);
             edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
+            edtWsUser.setText(ActivityPrincipal.parametersWebService_01.split(",")[3]);
+            edtWsPass.setText(ActivityPrincipal.parametersWebService_01.split(",")[4]);
+
 
         }
 
@@ -382,7 +422,10 @@ public class ActivitySincronizacion extends Activity {
                                 @Override
                                 public void run() {
                                     edtWsServer.setEnabled(false);
+                                    edtWsCompany.setEnabled(false);
                                     edtWsPort.setEnabled(false);
+                                    edtWsUser.setEnabled(false);
+                                    edtWsPass.setEnabled(false);
                                     btnWsGuardar.setEnabled(false);
                                     btnWsGuardar.setText("Configurando");
                                 }
@@ -421,7 +464,10 @@ public class ActivitySincronizacion extends Activity {
                                 @Override
                                 public void run() {
                                     edtWsServer.setEnabled(true);
+                                    edtWsCompany.setEnabled(true);
                                     edtWsPort.setEnabled(true);
+                                    edtWsUser.setEnabled(true);
+                                    edtWsPass.setEnabled(true);
                                     btnWsGuardar.setEnabled(true);
                                     btnWsGuardar.setText("Configurar");
                                 }
@@ -448,14 +494,20 @@ public class ActivitySincronizacion extends Activity {
                                             edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
                                             edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
 
+                                            ActivityPrincipal.parametersWebService_01 = "192.168.0.1" + "," + edtWsCompany.getText().toString() + "," + "80" + "," + edtWsUser.getText().toString() + "," + edtWsPass.getText().toString();
+                                            saveParameter("WEBSERVICE_01",ActivityPrincipal.parametersWebService_01);
+
+
                                         }
                                     }catch (Exception e){
                                         Log.e(TAG,"parametersArray " + e.getMessage());
                                     }
 
                                     edtWsServer.setEnabled(true);
+                                    edtWsCompany.setEnabled(true);
                                     edtWsPort.setEnabled(true);
-                                    btnWsGuardar.setEnabled(true);
+                                    edtWsUser.setEnabled(true);
+                                    edtWsPass.setEnabled(true);
                                     btnWsGuardar.setText("Configurar");
                                 }
                             });
@@ -737,7 +789,9 @@ public class ActivitySincronizacion extends Activity {
 
                 // Iniciar proceso para guardar marcaciones BCK
                 ProcessSyncUSB processSyncUSB = new ProcessSyncUSB();
+                //Hilo para la extracción de marcas y escritura del archivo .json de marcas en el USB externo
                 processSyncUSB.startOTGOnOff();
+                // Hilo para la UI
                 threadUsbMarcas.start();
 
                 //Toast.makeText(ActivityPrincipal.context,"Procesando",Toast.LENGTH_SHORT).show();
@@ -931,6 +985,9 @@ public class ActivitySincronizacion extends Activity {
         Log.v(TAG,"statusReplicateReading.start()");
         statusReplicateReading.start();
 
+        Log.v(TAG,"statusLog.start()");
+        statusLog.start();
+
     }
 
     @Override
@@ -1054,7 +1111,10 @@ public class ActivitySincronizacion extends Activity {
                         @Override
                         public void run() {
                             edtWsServer.setEnabled(false);
+                            edtWsCompany.setEnabled(false);
                             edtWsPort.setEnabled(false);
+                            edtWsUser.setEnabled(false);
+                            edtWsPass.setEnabled(false);
                             btnWsGuardar.setEnabled(false);
                             btnWsGuardar.setText("Actualizando");
                         }
@@ -1093,7 +1153,10 @@ public class ActivitySincronizacion extends Activity {
                         @Override
                         public void run() {
                             edtWsServer.setEnabled(true);
+                            edtWsCompany.setEnabled(true);
                             edtWsPort.setEnabled(true);
+                            edtWsUser.setEnabled(true);
+                            edtWsPass.setEnabled(true);
                             btnWsGuardar.setEnabled(true);
                             btnWsGuardar.setText("Configurar");
                         }
@@ -1121,7 +1184,10 @@ public class ActivitySincronizacion extends Activity {
                                     Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
 
                                     edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
+                                    edtWsCompany.setText(ActivityPrincipal.parametersWebService_01.split(",")[1]);
                                     edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
+                                    edtWsUser.setText(ActivityPrincipal.parametersWebService_01.split(",")[3]);
+                                    edtWsPass.setText(ActivityPrincipal.parametersWebService_01.split(",")[4]);
 
                                 }
                             }catch (Exception e){
@@ -1129,8 +1195,10 @@ public class ActivitySincronizacion extends Activity {
                             }
 
                             edtWsServer.setEnabled(true);
+                            edtWsCompany.setEnabled(true);
                             edtWsPort.setEnabled(true);
-                            btnWsGuardar.setEnabled(true);
+                            edtWsUser.setEnabled(true);
+                            edtWsPass.setEnabled(true);
                             btnWsGuardar.setText("Configurar");
                         }
                     });
@@ -1180,6 +1248,50 @@ public class ActivitySincronizacion extends Activity {
                     }
                 });
                 util.sleep(500);
+            }
+        }
+    });
+
+    private long saveParameter(String idparameter,String value){
+        Parameters parameters = new Parameters();
+        parameters.setIdparameter(idparameter);
+        parameters.setParameter("");
+        parameters.setValue(value);
+        parameters.setSubparameters("");
+        parameters.setEnable(1);
+        parameters.setFechaHoraSinc(fechahora.getFechahora());
+        Log.v(TAG,"parameters " + parameters.toString());
+        long output = -2;
+        try{
+            output =  queriesParameters.updateParameter(parameters);
+            Log.v(TAG,"saveParameter " + output);
+        }catch (Exception e){
+            Log.e(TAG,"saveParameter " + e.getMessage());
+        }
+
+        return output;
+
+    }
+
+
+    Thread statusLog = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            Log.v(TAG,"statusLog");
+            while (true) {
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            txvLogWs.setText(MainEthernet.logEthernet);
+                        } catch (Exception e) {
+
+                            Log.wtf(TAG,"statusReplicateReading lblrep0.setText " +e.getMessage());
+                        }
+                    }
+                });
+                util.sleep(1000);
             }
         }
     });

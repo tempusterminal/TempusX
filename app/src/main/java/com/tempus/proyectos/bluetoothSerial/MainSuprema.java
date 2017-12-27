@@ -14,6 +14,8 @@ import java.io.OutputStream;
 
 public class MainSuprema {
 
+    private String TAG = "BTS-MASU";
+
     Utilities util = new Utilities();
 
     private String trama;
@@ -180,11 +182,11 @@ public class MainSuprema {
 
 
     public String getFinalValue(String tarjeta) {
-        Log.v("TEMPUS: ","Tarjeta >>> " + tarjeta);
+        Log.v(TAG,"Tarjeta >>> " + tarjeta);
         String resultado = "";
         String temporal = "";
         temporal = tarjeta.replaceAll("^\\s+","0");
-        Log.v("TEMPUS: ","temporal >>> " + temporal);
+        Log.v(TAG,"temporal >>> " + temporal);
         if (temporal.length() == 0) {
             resultado = "00";
         } else {
@@ -197,6 +199,17 @@ public class MainSuprema {
         String trama = "";
         String mascara = "";
         switch (opcion) {
+            case "ExtendedDataTransferProtocol":
+                //40 87 01000000 00020000 00 CA 0A + huellas... + checkSum(00000000)
+                mascara = "40" + parametros[0] + parametros[1] + parametros[2] + parametros[3] + "000a";
+                trama = addChecksum(mascara);
+                trama += parametros[4];
+                break;
+            case "LTwithExtendedDataTransferProtocol":
+                //40 86 01000000 00020000 00 CA 0A + huellas... + checkSum(00000000)
+                mascara = "4086000000000010000000D60A";
+                trama = "4086000000000010000000D60A";
+                break;
             case "Timeout":
                 mascara = "400100000000" + parametros[0] + "00000062000a";
                 trama = addChecksum(mascara);
@@ -227,6 +240,14 @@ public class MainSuprema {
                 break;
             case "EnrollByTemplate":
                 mascara = "4007" + parametros[0] + "" + parametros[1] + "71000a" + parametros[2]+ "0a";  //4007 00000603 00010000 71 00 0a - huella 0a
+                //Log.d("TEMPUS: ", ">>>>>>>>>>>mascara: " + mascara);
+                trama = addChecksum(mascara);
+                //Log.d("TEMPUS: ", ">>>>>>>>>>>trama: " + trama);
+                break;
+            case "EnrollByTemplateX":
+                // 40 87 00000602 00010002 00 D2 0A
+                // cabeza + comando + indice + size y nro templates + flag + checkSum + fin
+                mascara = "4087" + parametros[0] + "" + parametros[1] + "00000A";
                 //Log.d("TEMPUS: ", ">>>>>>>>>>>mascara: " + mascara);
                 trama = addChecksum(mascara);
                 //Log.d("TEMPUS: ", ">>>>>>>>>>>trama: " + trama);
@@ -305,7 +326,7 @@ public class MainSuprema {
                 break;
         }
 
-        Log.v("TEMPUS: ","Salio - " + opcion + " -> " + trama);
+        Log.v(TAG,"Salio - " + opcion + " -> " + trama);
 
 
 
@@ -354,6 +375,9 @@ public class MainSuprema {
                 break;
             case "74":
                 msj = "CONTINUE";
+                break;
+            case "82":
+                msj = "DATA_ERROR";
                 break;
             default:
                 msj = "NUMERO "+ this.trama.substring(20,22);

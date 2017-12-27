@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/commons-net-3.5" />
+            <option value="$PROJECT_DIR$/google-api-services-sheets-v4-rev493-1.23.0" />
             <option value="$PROJECT_DIR$/jtds-1.2.7" />
             <option value="$PROJECT_DIR$/mysql-connector-java-3.0.17-ga-bin" />
           </set>

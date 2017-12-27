@@ -30,5 +30,6 @@ dependencies {
     compile project(':commons-net-3.5')
     compile project(':mysql-connector-java-3.0.17-ga-bin')
     compile 'com.google.code.gson:gson:2.8.0'
+    compile 'com.squareup.okhttp3:okhttp:3.9.1'
     testCompile 'junit:junit:4.12'
 }

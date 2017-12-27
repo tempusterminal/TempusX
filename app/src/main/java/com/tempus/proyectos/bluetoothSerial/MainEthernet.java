@@ -10,9 +10,11 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.tempus.proyectos.data.model.Llamadas;
+import com.tempus.proyectos.data.model.LogTerminal;
 import com.tempus.proyectos.data.model.Marcaciones;
 import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.process.ProcessSync;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesPersonal;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
@@ -77,11 +79,14 @@ public class MainEthernet {
 
     private QueriesMarcaciones queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
     private QueriesPersonal queriesPersonal = new QueriesPersonal(ActivityPrincipal.context);
+    private QueriesLogTerminal queriesLogTerminal = new QueriesLogTerminal();
     private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityPrincipal.context);
 
     EthernetReading ethernetReading;
     EthernetExecuting ethernetExecuting;
     EthernetFixing ethernetFixing;
+
+    public static String logEthernet = "";
 
     public void writeData(OutputStream out, String data) {
         Log.v(TAG, "Write Activado");
@@ -254,11 +259,24 @@ public class MainEthernet {
             hearing = true;
             if(e.getMessage().contains("bt socket closed")){
                 Log.e(TAG,"Socket opening...");
+                if(ActivityPrincipal.STATUS_ETHERNET){
+                    try{
+                        Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"STATUS_ETHERNET=false bt socket closed",""));
+                    }catch (Exception ex){
+                        Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + ex.getMessage());
+                    }
+                }
                 ActivityPrincipal.STATUS_ETHERNET = false;
                 ActivityPrincipal.STATUS_ETHERNET = ActivityPrincipal.btSocketEthernet.ConnectBT();
-
             }else if(e.getMessage().contains("null object")){
                 Log.e(TAG,"Socket opening - null object...");
+                if(ActivityPrincipal.STATUS_ETHERNET){
+                    try{
+                        Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"STATUS_ETHERNET=false null object",""));
+                    }catch (Exception ex){
+                        Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + ex.getMessage());
+                    }
+                }
                 ActivityPrincipal.STATUS_ETHERNET = false;
                 ActivityPrincipal.STATUS_ETHERNET = ActivityPrincipal.btSocketEthernet.ConnectBT();
             }else{
@@ -549,6 +567,8 @@ public class MainEthernet {
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(),"");
         }
 
+        logEthernet = data;
+
     }
 
 
@@ -577,7 +597,9 @@ public class MainEthernet {
             Fechahora fechahora = new Fechahora();
             queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityPrincipal.context);
             queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
+            queriesLogTerminal = new QueriesLogTerminal();
             queriesPersonal = new QueriesPersonal(ActivityPrincipal.context);
+
 
             atCommandMode = false;
 
@@ -598,6 +620,13 @@ public class MainEthernet {
 
                             dataArray = new ArrayList<String>();
 
+                            dataArray.add("EMPRESA=" + ActivityPrincipal.parametersWebService_01.split(",")[1]);
+                            dataArray.add("USER=" + ActivityPrincipal.parametersWebService_01.split(",")[3]);
+                            dataArray.add("PASS=" + ActivityPrincipal.parametersWebService_01.split(",")[4]);
+                            dataArray.add("IP=0.0.0.0");
+                            dataArray.add("MAC=00-00-00-00-00-00");
+                            dataArray.add("HOSTNAME=TERMINAL_T10");
+
                             /*
                             dataArray.add("EMPRESA=ARIS");
                             dataArray.add("USER=45431521");
@@ -608,14 +637,14 @@ public class MainEthernet {
                             */
 
 
-
+                            /*
                             dataArray.add("EMPRESA=TEMPUS_WS_T10");
                             dataArray.add("USER=TEMPUS");
                             dataArray.add("PASS=TEMPUSSCA");
                             dataArray.add("IP=0.0.0.0");
                             dataArray.add("MAC=00-00-00-00-00-00");
                             dataArray.add("HOSTNAME=TERMINAL_T10");
-
+                            */
 
 
                             /*
@@ -644,6 +673,23 @@ public class MainEthernet {
                             }
                             jsonObject = new JSONObject();
                         }
+
+                        // Tiempo de espera para permitir configuración de Ethernet
+                        try{
+                            enableSetEthernet = true;
+                            Log.v(TAG,"enableSetEthernet inicio: " + enableSetEthernet);
+                            Thread.sleep(1000);
+                            while (atCommandMode){
+                                Log.v(TAG,"enableSetEthernet while: " + enableSetEthernet);
+                                Thread.sleep(1000);
+                            }
+                            enableSetEthernet = false;
+                            Log.v(TAG,"enableSetEthernet fin: " + enableSetEthernet);
+                        }catch (Exception e){
+                            enableSetEthernet = false;
+                            Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
+                        }
+
 
                         // 2. Llamada para ejecutar objeto de base de datos del servidor
 
@@ -905,6 +951,14 @@ public class MainEthernet {
                                                     ";pIDUSUARIO," + marcacionesList.get(0).getIdUsuario() +
                                                     ";pTMP_LISTAR," + marcacionesList.get(0).getTmpListar() +
                                                     ";pDATOS," + marcacionesList.get(0).getDatos();
+
+                                            parametersnamesvalues = parametersnamesvalues.replace("\n","").replace("\r","");
+
+                                            if(ActivityPrincipal.MODO_REFRIGERIO){
+                                                parametersnamesvalues += ";pT,2";
+                                            }else if(!ActivityPrincipal.MODO_REFRIGERIO){
+                                                parametersnamesvalues += ";pT,1";
+                                            }
 
                                             dataArray.add("DATA=" + "{\"session\":" + jsonAuthenticate.getString("ID_SESSION") + ",\"llamada\":\"" + jsonAuthenticate.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_MARCACIONES_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
 
@@ -1386,6 +1440,14 @@ public class MainEthernet {
                                                             ";pTMP_LISTAR," + marcacionesList.get(0).getTmpListar() +
                                                             ";pDATOS," + marcacionesList.get(0).getDatos();
 
+                                                    parametersnamesvalues = parametersnamesvalues.replace("\n","").replace("\r","");
+
+                                                    if(ActivityPrincipal.MODO_REFRIGERIO){
+                                                        parametersnamesvalues += ";pT,2";
+                                                    }else if(!ActivityPrincipal.MODO_REFRIGERIO){
+                                                        parametersnamesvalues += ";pT,1";
+                                                    }
+
                                                     dataArray.add("DATA=" + "{\"session\":" + jsonAuthenticate.getString("ID_SESSION") + ",\"llamada\":\"" + jsonAuthenticate.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_MARCACIONES_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
 
 
@@ -1525,10 +1587,10 @@ public class MainEthernet {
                                 Log.v(TAG,"No existen fotos de personal por sincronizar fotoPersonalBySync.size() " + fotoPersonalBySync.size());
                             }else{
                                 int cantidadFotoPersonalSync = 0;
-                                if(fotoPersonalBySync.size()<=10){
+                                if(fotoPersonalBySync.size()<=30){
                                     cantidadFotoPersonalSync = fotoPersonalBySync.size();
                                 }else{
-                                    cantidadFotoPersonalSync = 10;
+                                    cantidadFotoPersonalSync = 30;
                                 }
 
                                 for(int i = 0; i < cantidadFotoPersonalSync; i++){
@@ -1677,6 +1739,151 @@ public class MainEthernet {
                             }
                             //*/
 
+
+
+
+                            // Enviar logTerminal
+                            for(int i = 0; i < 50; i++) {
+
+                                try {
+
+                                    List<LogTerminal> logTerminalList = queriesLogTerminal.select_one_row();
+
+                                    if (logTerminalList.isEmpty()) {
+                                        Log.v(TAG,"Sin logTerminal por pasar");
+                                        i = 50;
+                                    } else {
+                                        Log.v(TAG,"logTerminal a sincronizar: " + logTerminalList.get(0).toString());
+                                        try {
+                                            //String parametersnamesvalues = "";
+                                            String parametersnamesvalues = "pIDTERMINAL," + logTerminalList.get(0).getIdterminal() +
+                                                    ";pTAG," + logTerminalList.get(0).getTag() +
+                                                    ";pVALUE," + logTerminalList.get(0).getValue() +
+                                                    ";pUSER," + logTerminalList.get(0).getUser() +
+                                                    ";pFECHAHORA," + fechahora.getFechahoraFullSqlServer(logTerminalList.get(0).getFechahora());
+
+                                            parametersnamesvalues = parametersnamesvalues.replace("\n","").replace("\r","");
+
+                                            dataArray.add("DATA=" + "{\"session\":" + jsonAuthenticate.getString("ID_SESSION") + ",\"llamada\":\"" + jsonAuthenticate.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_LOG_TERMINAL_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
+
+
+                                            hearing = false;
+                                            jsonItems = "";
+                                            callsws(0, dataArray, "EXEC_DATA");
+                                            dataArray.clear();
+
+                                            while (!hearing) {
+                                                Log.v(TAG, "EthernetExecuting: " + "hearing3 (esperando " + "respuesta de logTerminal" + ") " + String.valueOf(hearing));
+                                                Thread.sleep(2000);
+                                            }
+
+                                            try {
+                                                // revisar resultado de sincronizacion de logTerminal
+                                                dataArray.add("FILENAME=" + jsonObject.getString("NOMBRE_ARCHIVO"));
+                                                dataArray.add("START=" + 0);
+                                                dataArray.add("LENGTH=" + 100000);
+
+                                                Log.v(TAG, "EthernetExecuting: " + "hearing2 " + String.valueOf(hearing));
+                                                hearing = false;
+                                                callsws(0, dataArray, "SUBSTR_FILE");
+                                                //dataArray.clear();
+                                                //jsonObject = new JSONObject();
+
+                                                //writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(),"OPCION=SUBSTR_FILE&FILENAME=" + fn + "&START=" + i*200000 + "&LENGTH=" + (i+1)*200000 + "");
+                                                Log.v(TAG, "EthernetExecuting: " + "hexStrings final parte-" + 1 + "/" + 1 + " -> " + hexStrings);
+                                                while (!hearing) {
+                                                    Log.v(TAG, "EthernetExecuting: " + "hearing3 (esperando parte-" + 1 + "/" + 1 + ") " + String.valueOf(hearing));
+                                                    Thread.sleep(2000);
+                                                }
+                                                Thread.sleep(1000);
+                                            } catch (Exception e) {
+                                                dataArray.clear();
+                                                Log.e(TAG, "EthernetExecuting: " + e.getMessage());
+                                                try {
+                                                    Thread.sleep(1000);
+                                                } catch (Exception ex) {
+                                                }
+                                            }
+
+                                            Log.v(TAG, "EthernetExecuting " + "revisión de jsonObject.toString(): " + jsonObject.toString());
+                                            if (jsonObject.toString().contains("[{\\\"MESSAGE\\\":1}]")) {
+                                                Log.v(TAG,"Sincronización de logTerminal OK (i)");
+                                                queriesLogTerminal.ActualizarSincronizado(logTerminalList.get(0), 1);
+                                            } else if (jsonObject.toString().contains("[{\\\"MESSAGE\\\":\\\"1\\\"}]")) {
+                                                Log.v(TAG,"Sincronización de logTerminal OK (s)");
+                                                queriesLogTerminal.ActualizarSincronizado(logTerminalList.get(0), 1);
+                                            } else if (jsonObject.toString().contains("Infracción de la restricción PRIMARY KEY")) {
+                                                Log.v(TAG,"Sincronización de logTerminal OK (Infracción de la restricción)");
+                                                queriesLogTerminal.ActualizarSincronizado(logTerminalList.get(0), 1);
+                                            }else if (jsonObject.toString().contains("ORA-00001")) {
+                                                Log.v(TAG,"Sincronización de logTerminal OK (ORA-00001)");
+                                                queriesLogTerminal.ActualizarSincronizado(logTerminalList.get(0), 1);
+                                            } else if (jsonObject.toString().contains("No se puede insertar el valor NULL")) {
+                                                Log.v(TAG, "EthernetExecuting " + "No se completo la sincronización de logTerminal -> La columna no admite valores NULL");
+                                            } else {
+                                                Log.v(TAG, "EthernetExecuting " + "No se completo la sincronización de logTerminal");
+                                            }
+
+
+
+                                            // Eliminar el archivo creado en el servidor
+                                            try{
+                                                //dataArray.add("FILENAME=" + jsonObject.getString("NOMBRE_ARCHIVO"));
+                                                Log.v(TAG,"EthernetExecuting: " + "hearing4 " + String.valueOf(hearing));
+                                                hearing = false;
+                                                callsws(0,dataArray,"DELETE");
+                                                dataArray.clear();
+
+                                                Log.v(TAG,"EthernetExecuting: " + "hexStrings final parte-1" + " -> " + hexStrings);
+                                                while(!hearing){
+                                                    Log.v(TAG,"EthernetExecuting: " + "hearing5 (esperando parte-1" +  ") " + String.valueOf(hearing));
+                                                    Thread.sleep(2000);
+                                                }
+                                                Thread.sleep(1000);
+                                            }catch (Exception e){
+                                                dataArray.clear();
+                                                Log.e(TAG,"EthernetExecuting: " + e.getMessage());
+                                                try{
+                                                    Thread.sleep(1000);
+                                                }catch(Exception ex){
+
+                                                }
+                                            }
+
+                                        } catch (SQLException e) {
+                                            Log.e(TAG, "EthernetExecuting " + "SQLException " + e.toString());
+                                        } catch (Exception e) {
+                                            Log.e(TAG, "EthernetExecuting " + "SYNC_LOG_TERMINAL_TX " + e.getMessage());
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    Log.e(TAG, "EthernetExecuting " + "SYNC_LOG_TERMINAL_TX general" + e.getMessage());
+                                }
+                            }
+
+                            // Tiempo de espera para permitir configuración de Ethernet
+                            try{
+                                enableSetEthernet = true;
+                                Log.v(TAG,"enableSetEthernet inicio: " + enableSetEthernet);
+                                Thread.sleep(1000);
+                                while (atCommandMode){
+                                    Log.v(TAG,"enableSetEthernet while: " + enableSetEthernet);
+                                    Thread.sleep(1000);
+                                }
+                                enableSetEthernet = false;
+                                Log.v(TAG,"enableSetEthernet fin: " + enableSetEthernet);
+                            }catch (Exception e){
+                                enableSetEthernet = false;
+                                Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
+                            }
+
+
+                            //AGREGAR MAS LLAMADAS
+                            //AGREGAR MAS LLAMADAS
+                            //AGREGAR MAS LLAMADAS
+                            //AGREGAR MAS LLAMADAS
+                            //AGREGAR MAS LLAMADAS
+                            //AGREGAR MAS LLAMADAS
 
 
 

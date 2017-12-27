@@ -44,7 +44,7 @@ public class ProcessSyncST extends Thread{
                     processSync.syncSuprema(context);
                 }
 
-                Thread.sleep(10000);
+                Thread.sleep(5000);
             }catch (SQLException e){
                 Log.d("Autorizaciones","Error SQL Hilo " + nombreHilo + ": " + e.toString());
             }catch (InterruptedException e){
