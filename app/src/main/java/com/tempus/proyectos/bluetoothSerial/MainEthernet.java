@@ -86,7 +86,10 @@ public class MainEthernet {
     EthernetExecuting ethernetExecuting;
     EthernetFixing ethernetFixing;
 
-    public static String logEthernet = "";
+    public static String logWsLevel01 = "";
+    public static String logWsLevel02 = "";
+    public static String logWsLevel03 = "";
+    public static String logWsLevel04 = "";
 
     public void writeData(OutputStream out, String data) {
         Log.v(TAG, "Write Activado");
@@ -101,7 +104,6 @@ public class MainEthernet {
 
 
     public String prepareHexString(Bluetooth btSocketEthernet){
-
         try{
             Log.v(TAG,"Esperando btSocketEthernet.getInputStream().read(rawBytes)");
             lenghtrawBytes = btSocketEthernet.getInputStream().read(rawBytes);
@@ -111,8 +113,10 @@ public class MainEthernet {
             hs = new String(util.hexStringToByteArray(util.byteArrayToHexString(rawBytes).substring(0,lenghtrawBytes*2)), StandardCharsets.UTF_8);
             hs.replace("\n","").replace("\r","");
 
-            if(atCommandMode){
+            // Set logWsLevel04, respuesta del modulo ethernet
+            logWsLevel04 = hs;
 
+            if(atCommandMode){
                 //Log.v(TAG,"LLEGO ASCCI (config) (" + hs.length() + ") -> " + hs );
                 approximationToFix = 0;
                 hexStringcfg += hs.replace("\n","").replace("\r","");
@@ -533,41 +537,51 @@ public class MainEthernet {
             data = "O=T&" + da.get(0) + "&" + da.get(1) + "&" + da.get(2) + "&" + da.get(3) + "&" + da.get(4) + "&" + da.get(5) + "";
             Log.v(TAG, "Streamdata " + data);
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(), data);
+            logWsLevel01 = data;
         } else if (opcion.equals("EXEC_DATA")) {
             //data = "OPCION=EXEC_DATA&DATA={\"session\":15966,\"llamada\":\"551_EXEC_L2\",\"parametros\":\"'SYNC_PERSONAL_TX','','',' ','','','LOTE_DATA','1','pFECHA_HORA_SINC,05/01/2014 15:15:56.069'\"}";
             data = "O=E&" + da.get(0) + "";
             Log.v(TAG, "Streamdata " + data);
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(), data);
+            logWsLevel01 = data;
         } else if (opcion.equals("SUBSTR_FILE")) {
             //data = "OPCION=SUBSTR_FILE&FILENAME=" + fn + "&START=" + i*200000 + "&LENGTH=" + (i+1)*200000 + "";
             data = "O=S&" + da.get(0) + "&" + da.get(1) + "&" + da.get(2) + "";
             Log.v(TAG, "Streamdata " + data);
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(), data);
+            logWsLevel02 = data;
         } else if(opcion.equals("DELETE")){
             data = "O=D&" + da.get(0);
             Log.v(TAG, "Streamdata " + data);
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(), data);
+            logWsLevel03 = data;
         } else if(opcion.equals("CREAR")) {
             data = "O=C&" + da.get(0) + "&" + da.get(1) + "&" + da.get(2) + "";
             Log.v(TAG, "Streamdata " + data);
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(), data);
+            if(data.length() > 100){
+                logWsLevel01 = data.substring(0,100) + " (" + data.length() + ")";
+            }else{
+                logWsLevel01 = data;
+            }
         } else if(opcion.equals("CREAR_FOTO")) {
             data = "O=C&" + da.get(0) + "&" + da.get(1) + "&" + da.get(2) + "&" + da.get(3) + "";
             Log.v(TAG, "Streamdata " + data);
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(), data);
+            logWsLevel02 = data;
         } else if(opcion.equals("GENERAR")){
             data = "OPCION=GENERAR_DATA&" + da.get(0) + "";
             Log.v(TAG, "Streamdata " + data);
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(), data);
+            logWsLevel01 = data;
         } else if(opcion.equals("FOTO_PERSONAL")){
             data = "O=C&" + da.get(0) + "&" + da.get(1) + "";
             Log.v(TAG, "Streamdata " + data);
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(), data);
+            logWsLevel01 = data;
         } else if(opcion.equals("FIX")){
             writeData(ActivityPrincipal.btSocketEthernet.getOutputStream(),"");
         }
-
-        logEthernet = data;
 
     }
 
@@ -616,8 +630,6 @@ public class MainEthernet {
 
                         if(jsonAuthenticate.length() == 0){
                             // 1. Llamada para iniciar sesión
-
-
                             dataArray = new ArrayList<String>();
 
                             dataArray.add("EMPRESA=" + ActivityPrincipal.parametersWebService_01.split(",")[1]);
@@ -690,6 +702,8 @@ public class MainEthernet {
                             Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                         }
 
+                        logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
+
 
                         // 2. Llamada para ejecutar objeto de base de datos del servidor
 
@@ -741,6 +755,8 @@ public class MainEthernet {
                             }catch (Exception e){
                                 Log.e(TAG,"EthernetExecuting " + "SYNC_SYNC_FECHAHORA_TX_TX general" + e.getMessage());
                             }
+
+                            logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
 
                             ///*
                             // Enviar biometrias
@@ -922,6 +938,8 @@ public class MainEthernet {
                                 Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                             }
 
+                            logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
+
                             // Enviar marcaciones
                             for(int i = 0; i < 31; i++) {
 
@@ -1072,6 +1090,8 @@ public class MainEthernet {
                                 enableSetEthernet = false;
                                 Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                             }
+
+                            logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
 
                             // ---------------------------------------------------------------------
                             // Enviar fotos
@@ -1276,6 +1296,8 @@ public class MainEthernet {
                                 enableSetEthernet = false;
                                 Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                             }
+
+                            logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
                             //*/
 
 
@@ -1402,6 +1424,8 @@ public class MainEthernet {
                                         enableSetEthernet = false;
                                         Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                                     }
+
+                                    logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
 
 
 
@@ -1561,6 +1585,8 @@ public class MainEthernet {
                                         Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                                     }
 
+                                    logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
+
                                     // fin
                                     // Intercalar procesos de envio de marcas con el pedido de autorizaciones
                                     // ----------------------------------------------------------------------
@@ -1582,6 +1608,8 @@ public class MainEthernet {
 
                             //SINCRONIZAR FOTO PERSONAL
                             fotoPersonalBySync = queriesPersonal.getFotoPersonalBySync();
+                            Log.v(TAG,"fotoPersonalBySync.size()=" + fotoPersonalBySync.size());
+                            Log.v(TAG,"fotoPersonalBySync.toString()=" + fotoPersonalBySync.toString());
                             // ¿Existen fotos personal por sincronizar?
                             if(fotoPersonalBySync.size() == 0){
                                 Log.v(TAG,"No existen fotos de personal por sincronizar fotoPersonalBySync.size() " + fotoPersonalBySync.size());
@@ -1707,6 +1735,11 @@ public class MainEthernet {
                                                 }
                                             }
 
+                                        }else if(jsonObject.getString("STATUS").equalsIgnoreCase("false")) {
+                                            if(jsonObject.getString("MENSAJE").contains("no existe")){
+                                                Log.v(TAG,"Archivo no existe en el directorio del servidor, se procede a actualizar el nombre de foto a null");
+                                                queriesLogTerminal.insertLogTerminal(TAG,fotoPersonalBySync.get(i) + " to null (" + queriesPersonal.setFotoPersonalToNull(fotoPersonalBySync.get(i)) + ")","");
+                                            }
                                         }else{
                                             Log.v(TAG,"Error en la lectura de archivo (archivo no existe o archivo vacío)");
                                         }
@@ -1729,14 +1762,19 @@ public class MainEthernet {
                                             Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                                         }
 
+                                        logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
+
                                     }catch (Exception e){
                                         Log.e(TAG,"" + e.getMessage());
                                         //cantidadFotoPersonalSync++;
                                     }
 
 
+
                                 }
                             }
+
+
                             //*/
 
 
@@ -1877,6 +1915,8 @@ public class MainEthernet {
                                 Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                             }
 
+                            logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
+
 
                             //AGREGAR MAS LLAMADAS
                             //AGREGAR MAS LLAMADAS
@@ -1910,6 +1950,8 @@ public class MainEthernet {
                         enableSetEthernet = false;
                         Log.e(TAG,"enableSetEthernet: " + enableSetEthernet);
                     }
+
+                    logWsLevel01 = logWsLevel02 = logWsLevel03 = "...";
                     /*
                     try{
                         Thread.sleep(3000);

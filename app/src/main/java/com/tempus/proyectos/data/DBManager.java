@@ -5,6 +5,7 @@ package com.tempus.proyectos.data;
  */
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,8 +13,17 @@ import android.os.Environment;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.tempus.proyectos.data.model.Estados;
@@ -24,9 +34,11 @@ import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.data.queries.QueriesTerminalConfiguracion;
 import com.tempus.proyectos.data.tables.TableEstados;
+import com.tempus.proyectos.util.Fechahora;
+import com.tempus.proyectos.util.InternalFile;
 
 public class DBManager {
-    private static String TAG = "DA-DBM";
+    private String TAG = "DA-DBM";
     private Conexion conexion;
     private Context context;
     private SQLiteDatabase database;
@@ -51,6 +63,47 @@ public class DBManager {
         this.open();
         conexion.onCreate(database);
         this.close();
+    }
+
+    public void copyDB(String DATABASE_PATH, String DATABASE_NAME){
+        try{
+            Fechahora fechahora = new Fechahora();
+            Log.v(TAG,"preparando copia de " + Conexion.DB_NAME);
+            InputStream inputStream = new FileInputStream(context.getDatabasePath(Conexion.DB_NAME));
+            Log.v(TAG,"inputStream " + Conexion.DB_NAME);
+            String outFileName = DATABASE_PATH + DATABASE_NAME + "_" + fechahora.getFechahoraName() + ".db";
+            Log.v(TAG,"directorio destino " + outFileName);
+            OutputStream mOutputStream = new FileOutputStream(outFileName);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                mOutputStream.write(buffer, 0, length);
+            }
+            mOutputStream.flush();
+            mOutputStream.close();
+            inputStream.close();
+            /*
+            try {
+                String command = "sqlite3 " + outFileName + " \n" +
+                        ".output " + outFileName.replace(".db",".sql") + " \n" +
+                        ".dump " + " \n" +
+                        ".exit " + " \n";
+                Log.v(TAG,"command: \n" + command);
+                Process process = Runtime.getRuntime().exec(command);
+                process.waitFor();
+
+                Log.v(TAG,"runShellCommand ejecutado");
+            } catch (InterruptedException e) {
+                Log.e(TAG, "runShellCommand: " + e.getMessage());
+            } catch (IOException e) {
+                Log.e(TAG, "runShellCommand: " + e.getMessage());
+            }
+            */
+        }catch (IOException e) {
+            Log.e(TAG,"copyDB IO " + e.getMessage());
+        }catch (Exception e) {
+            Log.e(TAG,"copyDB " + e.getMessage());
+        }
     }
 
     public void listarTables(){
@@ -108,6 +161,54 @@ public class DBManager {
         database.execSQL("COMMIT;");
         this.close();
 
+    }
+
+    public String getSizeDB(){
+        File fileBD = context.getDatabasePath("TEMPUSPLUS.db");
+        String longitud = String.valueOf(fileBD.length());
+        String longitudespacios = "";
+
+        int vueltas = (int) longitud.length() / 3;
+        int resto = longitud.length() % 3;
+        for(int i = 0; i <= vueltas; i++){
+            if(i == 0){
+                longitudespacios += longitud.substring(i,resto + (i*3)) + " ";
+            }else{
+                longitudespacios += longitud.substring(resto + ((i-1)*3),resto + (i*3)) + " ";
+            }
+        }
+
+        return longitudespacios;
+    }
+
+    public String getLastModifiedDB(){
+        File fileBD = context.getDatabasePath("TEMPUSPLUS.db");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MM yy HH mm ss");
+        Date lastModified = new Date(fileBD.lastModified());
+
+        return simpleDateFormat.format(lastModified);
+    }
+
+    public ArrayList<ArrayList<String>> getInformationDatabase(){
+        ArrayList<ArrayList<String>> information =  new ArrayList<ArrayList<String>>();
+
+        this.open();
+        Cursor cursor = database.rawQuery(INFORMATION_DATABASE, null);
+        if(cursor.moveToNext()){
+            do{
+                ArrayList<String> info =  new ArrayList<String>();
+                info.add(cursor.getString(0));
+                info.add(cursor.getString(1));
+                info.add(cursor.getString(2));
+                info.add(cursor.getString(3));
+
+                information.add(info);
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        this.close();
+        return information;
     }
 
     public void all(String lote){
@@ -281,6 +382,36 @@ public class DBManager {
         backupBd.start(type, delete);
     }
 
+
+    public static final String INFORMATION_DATABASE = "SELECT 'EMPRESAS' AS TABLA, COUNT(*) AS REGISTROS, MAX(EMPRESAS.FECHA_HORA_SINC) AS MAX, MIN(EMPRESAS.FECHA_HORA_SINC) AS MIN  FROM EMPRESAS " +
+            "UNION " +
+            "SELECT 'ESTADOS', COUNT(*), MAX(ESTADOS.FECHA_HORA_SINC), MIN(ESTADOS.FECHA_HORA_SINC) FROM ESTADOS " +
+            "UNION " +
+            "SELECT 'LLAMADAS', COUNT(*), MAX(LLAMADAS.FECHA_HORA_SINC), MIN(LLAMADAS.FECHA_HORA_SINC) FROM LLAMADAS " +
+            "UNION " +
+            "SELECT 'LOG_TERMINAL', COUNT(*), MAX(LOG_TERMINAL.FECHAHORA), MIN(LOG_TERMINAL.FECHAHORA) FROM LOG_TERMINAL " +
+            "UNION " +
+            "SELECT 'MARCACIONES', COUNT(*), MAX(MARCACIONES.FECHAHORA), MIN(MARCACIONES.FECHAHORA) FROM MARCACIONES " +
+            "UNION " +
+            "SELECT 'PARAMETERS', COUNT(*), MAX(PARAMETERS.FECHA_HORA_SINC), MIN(PARAMETERS.FECHA_HORA_SINC) FROM PARAMETERS " +
+            "UNION " +
+            "SELECT 'PER_TIPOLECT_TERM', COUNT(*), MAX(PER_TIPOLECT_TERM.FECHA_HORA_SINC), MIN(PER_TIPOLECT_TERM.FECHA_HORA_SINC) FROM PER_TIPOLECT_TERM " +
+            "UNION " +
+            "SELECT 'PERSONAL', COUNT(*), MAX(PERSONAL.FECHA_HORA_SINC), MIN(PERSONAL.FECHA_HORA_SINC) FROM PERSONAL " +
+            "UNION " +
+            "SELECT 'PERSONAL_TIPOLECTORA_BIOMETRIA', COUNT(*), MAX(PERSONAL_TIPOLECTORA_BIOMETRIA.FECHA_HORA_SINC), MIN(PERSONAL_TIPOLECTORA_BIOMETRIA.FECHA_HORA_SINC) FROM PERSONAL_TIPOLECTORA_BIOMETRIA " +
+            "UNION " +
+            "SELECT 'SERVICIOS', COUNT(*), MAX(SERVICIOS.FECHA_HORA_SINC), MIN(SERVICIOS.FECHA_HORA_SINC) FROM SERVICIOS " +
+            "UNION " +
+            "SELECT 'TARJETA_PERSONAL_TIPOLECTORA', COUNT(*), MAX(TARJETA_PERSONAL_TIPOLECTORA.FECHA_HORA_SINC), MIN(TARJETA_PERSONAL_TIPOLECTORA.FECHA_HORA_SINC) FROM TARJETA_PERSONAL_TIPOLECTORA " +
+            "UNION " +
+            "SELECT 'TERMINAL', COUNT(*), MAX(TERMINAL.FECHA_HORA_SINC), MIN(TERMINAL.FECHA_HORA_SINC) FROM TERMINAL " +
+            "UNION " +
+            "SELECT 'TERMINAL_TIPOLECT', COUNT(*), MAX(TERMINAL_TIPOLECT.FECHA_HORA_SINC), MIN(TERMINAL_TIPOLECT.FECHA_HORA_SINC) FROM TERMINAL_TIPOLECT " +
+            "UNION " +
+            "SELECT 'TIPO_DETALLE_BIOMETRIA', COUNT(*), MAX(TIPO_DETALLE_BIOMETRIA.FECHA_HORA_SINC), MIN(TIPO_DETALLE_BIOMETRIA.FECHA_HORA_SINC) FROM TIPO_DETALLE_BIOMETRIA " +
+            "UNION " +
+            "SELECT 'TIPO_LECTORA', COUNT(*), MAX(TIPO_LECTORA.FECHA_HORA_SINC), MIN(TIPO_LECTORA.FECHA_HORA_SINC) FROM TIPO_LECTORA;";
 
 
 

@@ -21,6 +21,8 @@ import com.tempus.proyectos.data.view.ViewAutorizaciones;
 
 public class QueriesAutorizaciones {
 
+    private String TAG = "DQ-QUEAU";
+
     private Conexion conexion;
     private Context context;
     private SQLiteDatabase database;
@@ -257,6 +259,69 @@ public class QueriesAutorizaciones {
                 autorizaciones.setEstadoRequiereAsistencia(cursor.getInt(cursor.getColumnIndex(ViewAutorizaciones.EstadoRequiereAsistencia)));
                 autorizaciones.setFlagPerTipoLectTerm(cursor.getInt(cursor.getColumnIndex(ViewAutorizaciones.FlagPerTipolectTerm)));
                 autorizaciones.setFlagTerminalTipoLect(cursor.getInt(cursor.getColumnIndex(ViewAutorizaciones.FlagTerminalTipolect)));
+                autorizaciones.setIdTipoLect(cursor.getInt(cursor.getColumnIndex(ViewAutorizaciones.IdTipoLect)));
+                autorizaciones.setValorTarjeta(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.ValorTarjeta)));
+                autorizaciones.setMensaje(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.Mensaje)));
+                autorizaciones.setMensajeDetalle(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.MensajeDetalle)));
+                autorizacionesList.add(autorizaciones);
+
+                //Log.d("Autorizaciones",autorizaciones.toString());
+
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        this.close();
+
+        return autorizacionesList;
+    }
+
+
+    public ArrayList<Autorizaciones> buscarAutorizacionesByEmpCod(String empresa, String codigo){
+        Autorizaciones autorizaciones = new Autorizaciones();
+
+        ArrayList<Autorizaciones> autorizacionesList =  new ArrayList<Autorizaciones>();
+
+        String query = "SELECT " +
+                ViewAutorizaciones.Empresa + ", " +
+                ViewAutorizaciones.Codigo + ", " +
+                ViewAutorizaciones.ApellidoPaterno + ", " +
+                ViewAutorizaciones.ApellidoMaterno + ", " +
+                ViewAutorizaciones.Nombres + ", " +
+                ViewAutorizaciones.Icono + ", " +
+                ViewAutorizaciones.EstadoRequiereAsistencia + ", " +
+                ViewAutorizaciones.FlagPerTipolectTerm + ", " +
+                ViewAutorizaciones.FlagTerminalTipolect + ", " +
+                ViewAutorizaciones.Idterminal + ", " +
+                ViewAutorizaciones.IdTipoLect + ", " +
+                ViewAutorizaciones.ValorTarjeta + ", " +
+                ViewAutorizaciones.Mensaje + ", " +
+                ViewAutorizaciones.MensajeDetalle + " " +
+                "FROM " + ViewAutorizaciones.VIEW_NAME + " " +
+                "WHERE " + ViewAutorizaciones.Empresa + " = ? " +
+                "AND " + ViewAutorizaciones.Codigo + " = ? " +
+                ";";
+
+        Log.v(TAG,query);
+
+        this.open();
+        Cursor cursor = database.rawQuery(query, new String[] { empresa, codigo});
+
+
+        if(cursor.moveToNext()){
+            do{
+                autorizaciones = new Autorizaciones();
+
+                autorizaciones.setEmpresa(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.Empresa)));
+                autorizaciones.setCodigo(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.Codigo)));
+                autorizaciones.setApellidoPaterno(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.ApellidoPaterno)));
+                autorizaciones.setApellidoMaterno(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.ApellidoMaterno)));
+                autorizaciones.setNombres(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.Nombres)));
+                autorizaciones.setIcono(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.Icono)));
+                autorizaciones.setEstadoRequiereAsistencia(cursor.getInt(cursor.getColumnIndex(ViewAutorizaciones.EstadoRequiereAsistencia)));
+                autorizaciones.setFlagPerTipoLectTerm(cursor.getInt(cursor.getColumnIndex(ViewAutorizaciones.FlagPerTipolectTerm)));
+                autorizaciones.setFlagTerminalTipoLect(cursor.getInt(cursor.getColumnIndex(ViewAutorizaciones.FlagTerminalTipolect)));
+                autorizaciones.setIdterminal(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.Idterminal)));
                 autorizaciones.setIdTipoLect(cursor.getInt(cursor.getColumnIndex(ViewAutorizaciones.IdTipoLect)));
                 autorizaciones.setValorTarjeta(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.ValorTarjeta)));
                 autorizaciones.setMensaje(cursor.getString(cursor.getColumnIndex(ViewAutorizaciones.Mensaje)));

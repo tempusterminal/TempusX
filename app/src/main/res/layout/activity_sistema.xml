@@ -117,6 +117,7 @@
                 android:layout_height="match_parent">
 
 
+
                 <RelativeLayout
                     android:id="@+id/tabSys1"
                     android:layout_width="match_parent"
@@ -343,6 +344,320 @@
                         android:entries="@array/parameters" />
 
 
+
+                </RelativeLayout>
+
+
+
+                <RelativeLayout
+                    android:id="@+id/tabSys4"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+
+                    <TextView
+                        android:text="Data:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/textView18" />
+
+                    <TextView
+                        android:text="0"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:layout_marginLeft="@dimen/act_size10"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvBDSize" />
+
+                    <TextView
+                        android:text="EMPRESAS:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size06"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTEmpresas" />
+
+                    <TextView
+                        android:text="ESTADOS:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size08"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTEstados" />
+
+                    <TextView
+                        android:text="LLAMADAS:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size10"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTLlamadas" />
+
+                    <TextView
+                        android:text="LOG_TERMINAL:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size12"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTLogTerminal" />
+
+                    <TextView
+                        android:text="MARCACIONES:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size14"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTMarcaciones" />
+
+                    <TextView
+                        android:text="PARAMETERS:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size16"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTParameters" />
+
+                    <TextView
+                        android:text="PERSONAL:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size18"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTPersonal" />
+
+                    <TextView
+                        android:text="PERSONAL_TIPOLECTORA_BIOMETRIA:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size20"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTPersonalTipolectoraBiometria" />
+
+                    <TextView
+                        android:text="PER_TIPOLECT_TERM:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size22"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTPerTipolectTerm" />
+
+                    <TextView
+                        android:text="SERVICIOS:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size24"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTServicios" />
+
+                    <TextView
+                        android:text="TARJETA_PERSONAL_TIPOLECTORA:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size26"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTTarjetaPersonalTipolectora" />
+
+                    <TextView
+                        android:text="TERMINAL:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size28"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTTerminal" />
+
+                    <TextView
+                        android:text="TERMINAL_TIPOLECT:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size30"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTTerminalTipolect" />
+
+                    <TextView
+                        android:text="TIPO_DETALLE_BIOMETRIA:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size32"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTTipoDetalleBiometria" />
+
+                    <TextView
+                        android:text="TIPO_LECTORA:"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_marginTop="@dimen/act_size34"
+                        android:layout_marginLeft="@dimen/act_size06"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTTipoLectora" />
+
+                </RelativeLayout>
+
+
+                <RelativeLayout
+                    android:id="@+id/tabSys5"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorFondoCuerpo"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        android:text=""
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:layout_centerHorizontal="true"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textColor="@color/colorTexto"
+                        android:hint="  Ingrese valor  "
+                        android:id="@+id/edtAutorizaValor"
+                        />
+
+                    <ImageView
+                        android:layout_width="@dimen/act_size18"
+                        android:layout_height="@dimen/act_size24"
+                        android:layout_marginTop="@dimen/act_size08"
+                        android:layout_marginLeft="@dimen/act_size04"
+                        android:src="@drawable/fotopersonal"
+                        android:id="@+id/imgFotoPersonalAutoriza"
+                        android:visibility="invisible"
+                        />
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size08"
+                        android:layout_marginLeft="@dimen/act_size24"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvPersonalAutoriza" />
+
+                    <TextView
+                        android:text=""
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/act_size24"
+                        android:layout_marginLeft="@dimen/act_size24"
+                        android:textColor="@color/colorTexto"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="normal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/txvTarjetasAutoriza" />
+
+                    <ImageButton
+                        android:id="@+id/btnBuscarAutoriza"
+                        android:layout_width="@dimen/act_size04"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginRight="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/searchdb"
+                        android:background="@color/colorBlanco"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/btnLimpiarAutoriza"
+                        android:layout_width="@dimen/act_size04"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginRight="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size08"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/restart"
+                        android:background="@color/colorBlanco"
+                        />
 
                 </RelativeLayout>
 

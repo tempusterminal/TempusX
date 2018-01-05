@@ -730,15 +730,48 @@
 
 
                     <TextView
-                        android:text="Log Web Service"
+                        android:text="..."
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textColor="@color/colorTexto"
                         android:layout_centerHorizontal="true"
                         android:layout_marginTop="@dimen/act_size32"
-                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textSize="@dimen/cuerpo_minx3_textSize"
                         android:textStyle="italic"
-                        android:id="@+id/txvLogWs"/>
+                        android:id="@+id/txvLogWsLevel01"/>
+
+                    <TextView
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTexto"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/act_size34"
+                        android:textSize="@dimen/cuerpo_minx3_textSize"
+                        android:textStyle="italic"
+                        android:id="@+id/txvLogWsLevel02"/>
+
+                    <TextView
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTexto"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/act_size36"
+                        android:textSize="@dimen/cuerpo_minx3_textSize"
+                        android:textStyle="italic"
+                        android:id="@+id/txvLogWsLevel03"/>
+
+                    <TextView
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTexto"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/act_size38"
+                        android:textSize="@dimen/cuerpo_minx3_textSize"
+                        android:textStyle="italic"
+                        android:id="@+id/txvLogWsLevel04"/>
 
                 </RelativeLayout>
 

@@ -19,6 +19,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
@@ -64,6 +65,7 @@ import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.data.tables.TableLogTerminal;
 import com.tempus.proyectos.geolocation.GeoLocationListener;
+import com.tempus.proyectos.log.Database;
 import com.tempus.proyectos.log.LogManager;
 import com.tempus.proyectos.picture.ResizePic;
 import com.tempus.proyectos.threads.ThreadConnectSerial;
@@ -90,6 +92,7 @@ import java.util.Set;
 public class ActivityPrincipal extends Activity {
 
     private static String TAG = "TX-AP";
+    public static int versionSDK;
 
     int SCORE_MANO = 0;
 
@@ -296,6 +299,7 @@ public class ActivityPrincipal extends Activity {
     private QueriesMarcaciones queriesMarcaciones;
     MainEthernet mainEthernet = new MainEthernet();
     BatteryLife batteryLife = new BatteryLife();
+    Database database = new Database();
 
 
     /* --- Declaración de Componentes de la Interfaz --- */
@@ -390,10 +394,11 @@ public class ActivityPrincipal extends Activity {
 
         turnOnScreen();
         context = getApplicationContext();
+        versionSDK = Build.VERSION.SDK_INT;
         queriesLogTerminal = new QueriesLogTerminal();
 
         try{
-
+            Log.v(TAG,"versionSDK " + versionSDK);
             queriesParameters = new QueriesParameters(ActivityPrincipal.context);
             dbManager = new DBManager(ActivityPrincipal.context);
 
@@ -722,6 +727,7 @@ public class ActivityPrincipal extends Activity {
 
 
             batteryLife.startBatteryLifeReading();
+            database.startDatabaseReading();
             Log.v(TAG,"**********************************************05-f");
 
 
@@ -1397,6 +1403,8 @@ public class ActivityPrincipal extends Activity {
             //dbManager.execSQL("DELETE FROM LOG_TERMINAL");
             //dbManager.execSQL("DELETE FROM PERSONAL_TIPOLECTORA_BIOMETRIA");
             //dbManager.execSQL("UPDATE PERSONAL_TIPOLECTORA_BIOMETRIA SET SINCRONIZADO = 0 WHERE SINCRONIZADO = 1");
+            //dbManager.execSQL("DELETE FROM PERSONAL");
+            //dbManager.execSQL("DELETE FROM LOG_TERMINAL WHERE VALUE LIKE '% & %' AND TAG = 'LOG-DB'");
             dbManager.execSQL(TableLogTerminal.CREATE_TABLE);
         } catch(Exception e) {
             e.printStackTrace();
@@ -1924,6 +1932,7 @@ public class ActivityPrincipal extends Activity {
                 } catch(Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN: " + "COMANDO: INGRESAR LOGIN -> " + e.getMessage());
                 }
+                Toast.makeText(ActivityPrincipal.this,"Ingreso a Login",Toast.LENGTH_SHORT).show();
                 break;
 
             case "444432":
@@ -1931,10 +1940,10 @@ public class ActivityPrincipal extends Activity {
                 //logManager.RegisterLogTXT("COMANDO: SUPREMA (CANCEL)");
                 try {
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"Cancel",null);
+                    Toast.makeText(ActivityPrincipal.this,"Cancel Suprema",Toast.LENGTH_SHORT).show();
                 } catch(Exception e) {
                     Log.e(TAG, "ERROR_SYSTEM_MAIN: " + "COMANDO: SUPREMA (CANCEL) -> " + e.getMessage());
                 }
-
                 break;
 
             case "222232":
@@ -1942,6 +1951,7 @@ public class ActivityPrincipal extends Activity {
                 //logManager.RegisterLogTXT("COMANDO: SUPREMA (DELETE_ALL_TEMPLATES)");
                 try{
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"DeleteAllTemplates",null);
+                    Toast.makeText(ActivityPrincipal.this,"Eliminando Huellas",Toast.LENGTH_SHORT).show();
                     util.sleep(250);
                 }catch(Exception e){
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: SUPREMA (DELETE_ALL_TEMPLATES) -> " + e.getMessage());
@@ -1956,6 +1966,7 @@ public class ActivityPrincipal extends Activity {
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"NumberTemplate",null);
                     util.sleep(800);
                     objSuprema.limpiarTramaSuprema();
+                    Toast.makeText(ActivityPrincipal.this,"Numero de Templates",Toast.LENGTH_SHORT).show();
                 }catch(Exception e){
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: SUPREMA (NUMBER_TEMPLATES) -> " + e.getMessage());
                 }
@@ -1966,6 +1977,7 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: HABILITAR REPLICADO");
                 //logManager.RegisterLogTXT("COMANDO: HABILITAR REPLICADO");
                 isReplicating = true;
+                Toast.makeText(ActivityPrincipal.this,"Iniciando Replicado",Toast.LENGTH_SHORT).show();
                 break;
 
             case "1324111":
@@ -1973,6 +1985,7 @@ public class ActivityPrincipal extends Activity {
                 //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
                 try {
                     crearBD();
+                    Toast.makeText(ActivityPrincipal.this,"Creación de base de datos",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Log.e(TAG, "ERROR_SYSTEM_MAIN " + "COMANDO: REINICIALIZAR BD -> " + e.getMessage());
                 }
@@ -2004,8 +2017,14 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: OCULTAR SYSTEMUI");
                 //logManager.RegisterLogTXT("COMANDO: OCULTAR SYSTEMUI");
                 try {
-                    hideNavigationBar(true);
-                    runShellCommand("wm overscan -50,0,-50,0 \n");
+                    if(versionSDK >= 23){
+                        Log.v(TAG,"wm overscan -50,0,-50,0");
+                        runShellCommand("wm overscan -50,0,-50,0 \n");
+                    }else{
+                        Log.v(TAG,"hideNavigationBar true");
+                        hideNavigationBar(true);
+                    }
+                    Toast.makeText(ActivityPrincipal.this,"Modo Cliente",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: OCULTAR SYSTEMUI -> " + e.getMessage());
                 }
@@ -2015,8 +2034,14 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: MOSTRAR SYSTEMUI");
                 //logManager.RegisterLogTXT("COMANDO: MOSTRAR SYSTEMUI");
                 try {
-                    hideNavigationBar(false);
-                    runShellCommand("wm overscan reset \n");
+                    if(versionSDK >= 23){
+                        Log.v(TAG,"wm overscan reset");
+                        runShellCommand("wm overscan reset \n");
+                    }else{
+                        Log.v(TAG,"hideNavigationBar false");
+                        hideNavigationBar(false);
+                    }
+                    Toast.makeText(ActivityPrincipal.this,"Modo Desarrollo",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: MOSTRAR SYSTEMUI -> " + e.getMessage());
                 }
@@ -2026,6 +2051,7 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: REINICIAR");
                 //logManager.RegisterLogTXT("COMANDO: REINICIAR");
                 try {
+                    Toast.makeText(ActivityPrincipal.this,"Reiniciar Terminal",Toast.LENGTH_SHORT).show();
                     Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot"});
                     proc.waitFor();
                 } catch (Exception e) {
@@ -2037,6 +2063,7 @@ public class ActivityPrincipal extends Activity {
                 Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: APAGAR");
                 //logManager.RegisterLogTXT("COMANDO: APAGAR");
                 try {
+                    Toast.makeText(ActivityPrincipal.this,"Apagar Terminal",Toast.LENGTH_SHORT).show();
                     Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
                     proc.waitFor();
                 } catch (Exception e) {
@@ -2048,6 +2075,7 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: CONFIGURACION DE ANDROID");
                 //logManager.RegisterLogTXT("COMANDO: CONFIGURACION DE ANDROID");
                 try {
+                    Toast.makeText(ActivityPrincipal.this,"Configurar dispositivo",Toast.LENGTH_SHORT).show();
                     startActivity(new Intent(Settings.ACTION_SETTINGS));
                     Intent startMain = getPackageManager().getLaunchIntentForPackage("com.tempus.ecernar.overlaywifi");
                     startActivity(startMain);
@@ -2057,7 +2085,7 @@ public class ActivityPrincipal extends Activity {
 
                 break;
 
-            case "41444414": // ABRIR CONFIGURACION DE ANDROID
+            case "41444414":
                 Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: APAGAR");
                 //logManager.RegisterLogTXT("COMANDO: CONFIGURACION DE ANDROID");
                 try {
@@ -2148,6 +2176,7 @@ public class ActivityPrincipal extends Activity {
                 //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
                 try {
                     dbManager.startBackupBd(2,0);
+                    Toast.makeText(ActivityPrincipal.this,"Ejecutar archivo SQL",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Log.e(TAG, "ERROR_SYSTEM_MAIN " + "COMANDO: BACKUP RESTARING BD -> " + e.getMessage());
                 }
@@ -2166,8 +2195,6 @@ public class ActivityPrincipal extends Activity {
                 //ProcessSyncUSB processSyncUSB = new ProcessSyncUSB();
                 //processSyncUSB.startOTGOnOff();
 
-
-
                 break;
 
             case "4422":
@@ -2175,12 +2202,16 @@ public class ActivityPrincipal extends Activity {
                     //244F4158410013443030303030303030303030303030303004A441
                     //24 4F 41 58 41 00 13 35 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 04 95 41
                     //Log.v(TAG,"Calcular Checksum <<<<" + util.getChecksum("00000602000046530000060200017479000007020000016c000007020001b163000000040000885e000000040001625d0000040500006b67000004050001ee5d0000060500008a65000006050001f459000007050000a266000007050001665d000000060000e060000000060001975f000007060000655d000007060001af5c00000707000048610000070700015b6b000004090000785c000004090001975d0000070900009a5a000007090001a3620000001000003d70000000100001e95d0000071000002a590000071000010d5f000007130000045d000007130001b05e000000140000ce5a000000140001a45c000003140000ef68000003140001d74e000000150000946e000000150001616a000007160000e85e000007160001ad660000071700002d4a0000071700014959000000180000c1760000001800014d6d000006180000bb69000006180001355400000718000032600000071800010c5a00000721000013770000072100015f59000007220000ef68000007220001b75a000003230000925e000003230001415e0000072600000f5d0000072600012d5d000006350000f3730000063500016465000006370000b45e000006370001175c0000064600009168000006460001845600000547000000630000054700013167000001480000b1610000065000006253000006500001d9610000065200004955000006520001b057000006550000a15a0000065500014e52000002640000236d000002640001c15c0000066500007a61000006650001bd580000056900003460000005690001e1740000066900009a6a000006690001b163000006780000ed56000006780001e55d000006790000c06400000679000123630000068800007f68000006880001355800000096000029480000009600014f5c00000699000010550000069900015d5d",8) + ">>>>");
-                    queriesPersonalTipolectoraBiometria.listarIndicesEnrrolados();
+                    // queriesPersonalTipolectoraBiometria.listarIndicesEnrrolados();
                     //queriesPersonalTipolectoraBiometria.freeScanOnOffSuprema(false);
                     //queriesPersonalTipolectoraBiometria.freeScanOnOffSuprema(true);
 
                     //Log.v(TAG,"geoLocationListener inicio");
                     //GeoLocationListener geoLocationListener = new GeoLocationListener();
+
+                    Log.v(TAG,"dbManager copyDB");
+                    dbManager.copyDB(Environment.getExternalStorageDirectory().toString() + "/tempus/","tempusplus");
+                    //internalFile.writeToAppend("holaaaa",Environment.getExternalStorageDirectory().toString() + "/tempus/testing.txt");
 
                 }catch (Exception e){
                     //Log.e(TAG,"Calcular Checksum " + e.getMessage());
@@ -2218,6 +2249,7 @@ public class ActivityPrincipal extends Activity {
                 try{
                     //REINICIAR TABLA DE PARAMETROS
                     queriesParameters.poblar();
+                    Toast.makeText(ActivityPrincipal.this,"Reiniciar parámetros",Toast.LENGTH_SHORT).show();
                 }catch (Exception e){
                     Log.e(TAG,"queriesParameters.poblar() (REINICIAR TABLA DE PARAMETROS): " + e.getMessage());
                 }

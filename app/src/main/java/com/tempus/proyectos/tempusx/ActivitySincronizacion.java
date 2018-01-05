@@ -15,6 +15,7 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ContextThemeWrapper;
+import android.support.v7.widget.ThemedSpinnerAdapter;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -117,7 +118,10 @@ public class ActivitySincronizacion extends Activity {
     EditText edtWsUser;
     EditText edtWsPass;
 
-    TextView txvLogWs;
+    TextView txvLogWsLevel01;
+    TextView txvLogWsLevel02;
+    TextView txvLogWsLevel03;
+    TextView txvLogWsLevel04;
 
     boolean internet = false;
     boolean servidor = false;
@@ -217,7 +221,10 @@ public class ActivitySincronizacion extends Activity {
         edtWsUser = (EditText) findViewById(R.id.edtWsUser);
         edtWsPass = (EditText) findViewById(R.id.edtWsPass);
 
-        txvLogWs = (TextView) findViewById(R.id.txvLogWs);
+        txvLogWsLevel01 = (TextView) findViewById(R.id.txvLogWsLevel01);
+        txvLogWsLevel02 = (TextView) findViewById(R.id.txvLogWsLevel02);
+        txvLogWsLevel03 = (TextView) findViewById(R.id.txvLogWsLevel03);
+        txvLogWsLevel04 = (TextView) findViewById(R.id.txvLogWsLevel04);
 
         btnReplicar = (Button) findViewById(R.id.btnReplicar);
 
@@ -1211,43 +1218,41 @@ public class ActivitySincronizacion extends Activity {
                 Log.v(TAG,"threadHttpcfg runOnUiThread fin ");
             }
         });
-
         threadHttpcfg.start();
-
     }
 
     Thread statusReplicateReading = new Thread(new Runnable() {
         @Override
         public void run() {
-            Log.v(TAG,"lblrep0.setText");
+            Log.v(TAG,"statusReplicateReading");
             while (true) {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-
-                            if(QueriesPersonalTipolectoraBiometria.statusReplicate.equalsIgnoreCase("")){
-                                if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:")){
-                                    lblrep0.setText("Forzar Replica:.");
-                                }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:.")){
-                                    lblrep0.setText("Forzar Replica:..");
-                                }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:..")){
-                                    lblrep0.setText("Forzar Replica:...");
-                                }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:...")){
-                                    lblrep0.setText("Forzar Replica:");
+                try {
+                    //Log.v(TAG,"inicio statusReplicateReading");
+                    Thread.sleep(500);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                                if(QueriesPersonalTipolectoraBiometria.statusReplicate.equalsIgnoreCase("")){
+                                    if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:")){
+                                        lblrep0.setText("Forzar Replica:.");
+                                    }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:.")){
+                                        lblrep0.setText("Forzar Replica:..");
+                                    }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:..")){
+                                        lblrep0.setText("Forzar Replica:...");
+                                    }else if(lblrep0.getText().toString().equalsIgnoreCase("Forzar Replica:...")){
+                                        lblrep0.setText("Forzar Replica:");
+                                    }
+                                }else{
+                                    lblrep0.setText("Forzar Replica: " + QueriesPersonalTipolectoraBiometria.statusReplicate);
                                 }
-                            }else{
-                                lblrep0.setText("Forzar Replica: " + QueriesPersonalTipolectoraBiometria.statusReplicate);
-                            }
-
-                        } catch (Exception e) {
-
-                            Log.wtf(TAG,"statusReplicateReading lblrep0.setText " +e.getMessage());
                         }
-                    }
-                });
-                util.sleep(500);
+                    });
+                }catch (InterruptedException e){
+                    Log.e(TAG,"statusReplicateReading InterruptedException " + e.toString());
+                    return;
+                }catch (Exception e) {
+                    Log.e(TAG,"statusReplicateReading lblrep0.setText " + e.getMessage());
+                }
             }
         }
     });
@@ -1279,25 +1284,182 @@ public class ActivitySincronizacion extends Activity {
         public void run() {
             Log.v(TAG,"statusLog");
             while (true) {
+                try{
+                    Thread.sleep(500);
+                    //Log.v(TAG,"inicio statusLog");
+                    //Log.v(TAG,"logWsLevel01>>>" + MainEthernet.logWsLevel01);
+                    //Log.v(TAG,"logWsLevel02>>>" + MainEthernet.logWsLevel02);
+                    //Log.v(TAG,"logWsLevel03>>>" + MainEthernet.logWsLevel03);
+                    //Log.v(TAG,"logWsLevel04>>>" + MainEthernet.logWsLevel04);
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            txvLogWs.setText(MainEthernet.logEthernet);
-                        } catch (Exception e) {
-
-                            Log.wtf(TAG,"statusReplicateReading lblrep0.setText " +e.getMessage());
-                        }
+                    if(txvLogWsLevel01.getText().toString().equalsIgnoreCase(MainEthernet.logWsLevel01)){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel01.setText(MainEthernet.logWsLevel01);
+                                txvLogWsLevel01.setTextColor(Color.BLACK);
+                            }
+                        });
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel01.setTextColor(Color.GREEN);
+                                txvLogWsLevel01.setText(MainEthernet.logWsLevel01);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel01.setTextColor(Color.BLACK);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel01.setTextColor(Color.GREEN);
+                            }
+                        });
                     }
-                });
-                util.sleep(1000);
+
+                    if(txvLogWsLevel02.getText().toString().equalsIgnoreCase(MainEthernet.logWsLevel02)){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel02.setText(MainEthernet.logWsLevel02);
+                                txvLogWsLevel02.setTextColor(Color.BLACK);
+                            }
+                        });
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel02.setTextColor(Color.GREEN);
+                                txvLogWsLevel02.setText(MainEthernet.logWsLevel02);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel02.setTextColor(Color.BLACK);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel02.setTextColor(Color.GREEN);
+                            }
+                        });
+                    }
+
+                    if(txvLogWsLevel03.getText().toString().equalsIgnoreCase(MainEthernet.logWsLevel03)){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel03.setText(MainEthernet.logWsLevel03);
+                                txvLogWsLevel03.setTextColor(Color.BLACK);
+                            }
+                        });
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel03.setTextColor(Color.GREEN);
+                                txvLogWsLevel03.setText(MainEthernet.logWsLevel03);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel03.setTextColor(Color.BLACK);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel03.setTextColor(Color.GREEN);
+                            }
+                        });
+                    }
+
+                    if(txvLogWsLevel04.getText().toString().equalsIgnoreCase(MainEthernet.logWsLevel04)){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel04.setText(MainEthernet.logWsLevel04);
+                                txvLogWsLevel04.setTextColor(Color.BLACK);
+                            }
+                        });
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel04.setTextColor(Color.BLUE);
+                                txvLogWsLevel04.setText(MainEthernet.logWsLevel04);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel04.setTextColor(Color.BLACK);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsLevel04.setTextColor(Color.BLUE);
+                            }
+                        });
+                    }
+
+                    /*
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            txvLogWsLevel01.setText(MainEthernet.logWsLevel01);
+                            txvLogWsLevel02.setText(MainEthernet.logWsLevel02);
+                            txvLogWsLevel03.setText(MainEthernet.logWsLevel03);
+                            txvLogWsLevel04.setText(MainEthernet.logWsLevel04);
+                        }
+                    });
+                    */
+                }catch (InterruptedException  e){
+                    Log.e(TAG,"statusLog InterruptedException " + e.toString());
+                    return;
+                }catch (Exception e){
+                    Log.e(TAG,"statusLog " + e.getMessage());
+                }
             }
         }
     });
 
-
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.v(TAG,"onDestroy");
+        try{
+            if(statusLog.isAlive()){
+                Log.v(TAG,"Deteniendo statusLog");
+                statusLog.interrupt();
+                Log.v(TAG,"statusLog detenido");
+            }
+            if(statusReplicateReading.isAlive()){
+                Log.v(TAG,"Deteniendo statusReplicateReading");
+                statusReplicateReading.interrupt();
+                Log.v(TAG,"statusReplicateReading detenido");
+            }
+        }catch (Exception e){
+            Log.e(TAG,"statusLog.stop() " + e.getMessage());
+        }
+    }
 
 
 }

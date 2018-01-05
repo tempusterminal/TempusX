@@ -63,10 +63,10 @@
     <color name="colorTabFocusedSelect">#5e8423</color>
     <color name="colorTabFocusedNone">#719c2e</color>
 
-    <color name="colorInfo">#5cc0de</color>
-    <color name="colorSuccess">#5db85d</color>
-    <color name="colorWarning">#f0ad4f</color>
-    <color name="colorDanger">#c9312e</color>
+    <color name="colorInfo">#03a9f4</color>
+    <color name="colorSuccess">#8bc34a</color>
+    <color name="colorWarning">#FF9800</color>
+    <color name="colorDanger">#f44336</color>
 
     <color name="colorMarcacionOK">#407b00</color>
     <color name="colorMarcacionKO">#a40000</color>

@@ -116,6 +116,39 @@ public class QueriesPersonal {
         return personalList;
     }
 
+    public ArrayList<Personal> selectPersonalByCodNroDoc(String codbrodoc){
+
+        Personal personal = new Personal();
+        ArrayList<Personal> personalList =  new ArrayList<Personal>();
+
+        this.open();
+        Cursor cursor = database.rawQuery(TablePersonal.SELECT_TABLE + " WHERE CODIGO = '" + codbrodoc + "' OR NRO_DOCUMENTO = '" + codbrodoc + "'", null);
+        if(cursor.moveToNext()){
+            do{
+                personal = new Personal();
+                personal.setEmpresa(cursor.getString(cursor.getColumnIndex(TablePersonal.Empresa)));
+                personal.setCodigo(cursor.getString(cursor.getColumnIndex(TablePersonal.Codigo)));
+                personal.setCentroDeCosto(cursor.getString(cursor.getColumnIndex(TablePersonal.CentroDeCosto)));
+                personal.setApellidoPaterno(cursor.getString(cursor.getColumnIndex(TablePersonal.ApellidoPaterno)));
+                personal.setApellidoMaterno(cursor.getString(cursor.getColumnIndex(TablePersonal.ApellidoMaterno)));
+                personal.setNombres(cursor.getString(cursor.getColumnIndex(TablePersonal.Nombres)));
+                personal.setFechaDeNacimiento(cursor.getString(cursor.getColumnIndex(TablePersonal.FechaDeNacimiento)));
+                personal.setFechaDeIngreso(cursor.getString(cursor.getColumnIndex(TablePersonal.FechaDeIngreso)));
+                personal.setFechaDeCese(cursor.getString(cursor.getColumnIndex(TablePersonal.FechaDeCese)));
+                personal.setEstado(cursor.getString(cursor.getColumnIndex(TablePersonal.Estado)));
+                personal.setTipoHorario(cursor.getString(cursor.getColumnIndex(TablePersonal.TipoHorario)));
+                personal.setIcono(cursor.getString(cursor.getColumnIndex(TablePersonal.Icono)));
+                personal.setNroDocumento(cursor.getString(cursor.getColumnIndex(TablePersonal.NroDocumento)));
+                personal.setFechaHoraSinc(cursor.getString(cursor.getColumnIndex(TablePersonal.FechaHoraSinc)));
+                personalList.add(personal);
+            }while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        this.close();
+        return personalList;
+    }
+
     public int count(){
 
         int count = 0;
@@ -228,6 +261,21 @@ public class QueriesPersonal {
 
     }
 
+
+    public long setFotoPersonalToNull(String fotopersonal){
+
+        this.open();
+        long rowaffected = -1;
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.putNull(TablePersonal.Icono);
+        //contentValues.put(TableParameters.FechaHoraSinc, parameters.FechaHoraSinc);
+
+        rowaffected = database.update(TablePersonal.TABLE_NAME,contentValues,TablePersonal.Icono + " = ? ",new String[] { fotopersonal });
+        this.close();
+
+        return rowaffected;
+    }
 
 
 

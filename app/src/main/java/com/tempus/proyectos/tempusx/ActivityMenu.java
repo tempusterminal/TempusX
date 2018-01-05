@@ -2,6 +2,8 @@ package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tempus.proyectos.util.UserInterfaceM;
 
@@ -275,11 +278,20 @@ public class ActivityMenu extends Activity {
             case "BIOMETRIA":
                 Log.v(TAG,"SUBMENU BIOMETRIA -> TIPO_TERMINAL = " + ActivityPrincipal.TIPO_TERMINAL);
                 try {
-                    if (ActivityPrincipal.TIPO_TERMINAL == 2){
+                    if(ActivityPrincipal.TIPO_TERMINAL == 1){
+                        Log.v(TAG,"Terminal NO habilitado para BIOMETRÍA");
+                        Toast toast = Toast.makeText(ActivityMenu.this,"Terminal NO habilitado para BIOMETRÍA",Toast.LENGTH_SHORT);
+                        View view = toast.getView();
+                        GradientDrawable gradientDrawable =  new GradientDrawable();
+                        gradientDrawable.setCornerRadius(30);
+                        gradientDrawable.setColor(getResources().getColor(R.color.colorWarning));
+                        view.setPadding(20,20,20,20);
+                        view.setBackground(gradientDrawable);
+                        toast.show();
+                    }else if(ActivityPrincipal.TIPO_TERMINAL == 2){
                         Log.v(TAG,"ABRIENDO " + ActivityPrincipal.TIPO_TERMINAL + " ActivityBiometria");
                         ui.goToActivity(ActivityMenu.this,ActivityBiometria.class,"","");
-                    }
-                    if (ActivityPrincipal.TIPO_TERMINAL == 3 ){
+                    }else if (ActivityPrincipal.TIPO_TERMINAL == 3){
                         Log.v(TAG,"ABRIENDO " + ActivityPrincipal.TIPO_TERMINAL + " ActivityGeomano");
                         ui.goToActivity(ActivityMenu.this,ActivityGeomano.class,"","");
                     }
