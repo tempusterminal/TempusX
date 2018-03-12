@@ -67,6 +67,8 @@ import java.util.List;
 
 public class ActivitySincronizacion extends Activity {
 
+    // Ultima version
+
     String TAG = "TX-ASY";
 
     /* --- Declaración de Objetos --- */
