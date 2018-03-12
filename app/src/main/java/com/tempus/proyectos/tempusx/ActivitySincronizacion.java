@@ -67,7 +67,7 @@ import java.util.List;
 
 public class ActivitySincronizacion extends Activity {
 
-    // test
+    // test de push
 
     String TAG = "TX-ASY";
 
