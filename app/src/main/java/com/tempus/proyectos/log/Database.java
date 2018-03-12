@@ -65,12 +65,14 @@ public class Database {
                     // En modo activo cada segundo se realiza la consulta de información a la base de datos del terminal
                     // El modo activo se habilita al ingresar a Menu Sistema
                     if(getActive){
+                        Log.v(TAG,"getActive=" + getActive);
                         informationDB = dbManager.getInformationDatabase();
                         sizeDB = dbManager.getSizeDB();
                         lastModifiedDB = dbManager.getLastModifiedDB();
                     // Si no esta en modo activo, cada 5 minutos se realiza la consulta de información a la base de datos del terminal
                     }else{
                         if(Integer.valueOf(fechahora.getFechahora().substring(14,16)) % 5 == 0 && Integer.valueOf(fechahora.getFechahora().substring(17,19)) % 60 == 0){
+                            Log.v(TAG,"getActive OFF, update");
                             informationDB = dbManager.getInformationDatabase();
                             sizeDB = dbManager.getSizeDB();
                             lastModifiedDB = dbManager.getLastModifiedDB();

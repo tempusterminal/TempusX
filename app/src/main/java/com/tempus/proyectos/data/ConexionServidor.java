@@ -24,6 +24,9 @@ import com.tempus.proyectos.tempusx.ActivityPrincipal;
  */
 
 public class ConexionServidor {
+
+    private static String TAG = "DA-CS";
+
     private static ConexionServidor instance = null;
     // private static final String user = "SA";
     // private static final String pass = "D1R3S42013";
@@ -40,6 +43,8 @@ public class ConexionServidor {
 
     private static String url = "";//"jdbc:jtds:sqlserver://" + ip + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";";
     private static Connection connection = null;
+
+    public static String logserverDBLevel01 = "";
 
     public ConexionServidor() {
         //Iniciar Parametros
@@ -58,6 +63,8 @@ public class ConexionServidor {
         url = "jdbc:jtds:sqlserver://" + host + ":" + port + ";" + "databaseName=" + database + ";" + "user=" + user + ";" + "password=" + pass + ";" + "";
         // //////////////////////////////////
 
+        //Log.v(TAG,"ConexionServidor reinicio de parámetros");
+
     }
 
     public static ConexionServidor getInstance(){
@@ -66,7 +73,7 @@ public class ConexionServidor {
                 instance = new ConexionServidor();
             }
         }catch (Exception e){
-            Log.d("Autorizaciones","Error : " + e.getMessage());
+            Log.e(TAG,"getInstance " + e.getMessage());
         }
 
         return instance;
@@ -78,7 +85,7 @@ public class ConexionServidor {
                 connection = conectar();
             }
         }catch (Exception e){
-            Log.d("Autorizaciones","Error : " + e.getMessage());
+            Log.e(TAG,"getConnection " + e.getMessage());
         }
         return connection;
     }
@@ -90,13 +97,18 @@ public class ConexionServidor {
             //Log.d("Autorizaciones","Intentando Conexion MSSQLSERVER...");
             Class.forName("net.sourceforge.jtds.jdbc.Driver").newInstance();
             connection = DriverManager.getConnection(url);
-            //Log.d("Autorizaciones","Conexion MSSQLSERVER OK");
+
+            logserverDBLevel01 = "Conexion Servidor de datos OK " + String.valueOf(connection);
+            Log.v(TAG,"Conexion MSSQLSERVER OK");
         }catch (ClassNotFoundException e) {
-            Log.d("Autorizaciones","Class not Found: " + e.getMessage());
+            Log.v(TAG,"conectar ClassNotFoundException " + e.getMessage());
+            logserverDBLevel01 = e.getMessage();
         }catch (java.sql.SQLException e) {
-            Log.d("Autorizaciones","Sql: " + e.getMessage());
+            Log.v(TAG,"conectar SQLException " + e.getMessage());
+            logserverDBLevel01 = e.getMessage();
         }catch (Exception e){
-            Log.d("Autorizaciones","Error general: " + e.getStackTrace() + " - " + e.toString() + " - " + e.getMessage());
+            Log.v(TAG,"conectar " + e.getStackTrace() + " - " + e.toString() + " - " + e.getMessage());
+            logserverDBLevel01 = e.getMessage();
         }
 
         return connection;
@@ -113,7 +125,7 @@ public class ConexionServidor {
             conn = ConexionServidor.getInstance().getConnection();
         }
 
-        Log.d("Autorizaciones","testConexionServidor Iniciando Test");
+        Log.v(TAG,"testConexionServidor Iniciando Test");
 
         try{
             if(conn.isClosed()){
@@ -124,14 +136,14 @@ public class ConexionServidor {
             resu = prep.executeQuery();
             return resu.next();
         }catch(Exception e){
-            Log.d("Autorizaciones","testConexionServidor Sql Error: " + e.getMessage());
+            Log.e(TAG,"testConexionServidor Sql Error: " + e.getMessage());
             return false;
         }finally {
             try{
                 conn.close();
             }catch (Exception e){
             }
-            Log.d("Autorizaciones","testConexionServidor Finalizando Test");
+            Log.v(TAG,"testConexionServidor Finalizando Test");
         }
     }
 

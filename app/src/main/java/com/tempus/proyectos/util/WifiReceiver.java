@@ -8,6 +8,8 @@ import android.net.wifi.SupplicantState;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import com.tempus.proyectos.tempusx.ActivityPrincipal;
+
 /**
  * Created by ecernar on 22/02/2017.
  */
@@ -60,7 +62,7 @@ public class WifiReceiver extends BroadcastReceiver {
             int supl_error=intent.getIntExtra(WifiManager.EXTRA_SUPPLICANT_ERROR, -1);
             if(supl_error==WifiManager.ERROR_AUTHENTICATING){
                 Log.i("ERROR_AUTHENTICATING", "ERROR_AUTHENTICATING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                WifiManager wifi = (WifiManager) activity.getSystemService(Context.WIFI_SERVICE);
+                WifiManager wifi = (WifiManager) ActivityPrincipal.context.getSystemService(Context.WIFI_SERVICE);
                 Log.i("ERROR_AUTHENTICATING", "SWITCHING WIFIIIIIIIIIIII!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                 wifi.setWifiEnabled(false);
                 try {

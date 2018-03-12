@@ -530,14 +530,41 @@
                         android:hint="••••••"
                         android:id="@+id/edtSyncPass" />
 
-                    <Button
-                        android:text="Guardar"
-                        android:layout_width="@dimen/acSincronizacion_btnTest_width"
-                        android:layout_height="@dimen/acSincronizacion_btnTest_height"
-                        android:textSize="@dimen/cuerpo_min_textSize"
+
+                    <ImageButton
+                        android:id="@+id/btnSaveServerDB"
+                        android:layout_width="@dimen/act_size04"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginRight="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/savedb"
+                        android:background="@color/colorBlanco"
+                        />
+
+                    <ImageButton
+                        android:id="@+id/btnClearServerDB"
+                        android:layout_width="@dimen/act_size04"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginRight="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size08"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/restart"
+                        android:background="@color/colorBlanco"
+                        />
+
+                    <TextView
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTexto"
                         android:layout_centerHorizontal="true"
-                        android:layout_marginTop="@dimen/act_size27"
-                        android:id="@+id/btnSyncGuardar" />
+                        android:layout_marginTop="@dimen/act_size32"
+                        android:textSize="@dimen/cuerpo_minx2_textSize"
+                        android:textStyle="italic"
+                        android:id="@+id/txvLogServerDBLevel01"/>
 
                 </RelativeLayout>
 
@@ -782,7 +809,7 @@
                     android:background="@color/colorFondoCuerpo"
                     android:orientation="vertical">
 
-
+                    <!--
                     <TextView
                         android:text="- Acceso a Internet"
                         android:layout_width="@dimen/acSincronizacion_txvSyncTest_width"
@@ -860,6 +887,258 @@
                         android:layout_marginTop="@dimen/acSincronizacion_btnTest_marginTop"
                         android:layout_centerHorizontal="true"
                         android:id="@+id/btnTest" />
+
+                    -->
+
+
+                    <TextView
+                        android:text="SERVIDOR:"
+                        android:layout_width="@dimen/acSincronizacion_txvServer_width"
+                        android:layout_height="@dimen/acSincronizacion_txvServer_height"
+                        android:textColor="@color/colorTexto"
+                        android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/textView16"/>
+
+                    <TextView
+                        android:text="EMPRESA:"
+                        android:layout_width="@dimen/acSincronizacion_txvServer_width"
+                        android:layout_height="@dimen/acSincronizacion_txvServer_height"
+                        android:textColor="@color/colorTexto"
+                        android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/textView17" />
+
+                    <TextView
+                        android:text="PUERTO:"
+                        android:layout_width="@dimen/acSincronizacion_txvServer_width"
+                        android:layout_height="@dimen/acSincronizacion_txvServer_height"
+                        android:textColor="@color/colorTexto"
+                        android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
+                        android:layout_marginTop="@dimen/act_size12"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/textView18" />
+
+                    <TextView
+                        android:text="USUARIO:"
+                        android:layout_width="@dimen/acSincronizacion_txvServer_width"
+                        android:layout_height="@dimen/acSincronizacion_txvServer_height"
+                        android:textColor="@color/colorTexto"
+                        android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
+                        android:layout_marginTop="@dimen/act_size17"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/textView19" />
+
+                    <TextView
+                        android:text="CONTRASEÑA:"
+                        android:layout_width="@dimen/acSincronizacion_txvServer_width"
+                        android:layout_height="@dimen/acSincronizacion_txvServer_height"
+                        android:textColor="@color/colorTexto"
+                        android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
+                        android:layout_marginTop="@dimen/act_size22"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/textView20" />
+
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size12"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size17"
+                        android:background="@color/colorGris"
+                        />
+
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size22"
+                        android:background="@color/colorGris"
+                        />
+
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:text=""
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:paddingBottom="5dp"
+                        android:inputType="textPersonName"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:textColor="@color/colorTexto"
+                        android:hint="192.168.0.200"
+                        android:id="@+id/edtWsnServer" />
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:text=""
+                        android:inputType="textPersonName"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:paddingBottom="5dp"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:textColor="@color/colorTexto"
+                        android:hint="TEMPUSWS"
+                        android:id="@+id/edtWsnCompany" />
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:text=""
+                        android:inputType="textPersonName"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:paddingBottom="5dp"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size12"
+                        android:textColor="@color/colorTexto"
+                        android:hint="80"
+                        android:id="@+id/edtWsnPort" />
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:text=""
+                        android:inputType="textPersonName"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:paddingBottom="5dp"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size17"
+                        android:textColor="@color/colorTexto"
+                        android:hint="TEMPUS"
+                        android:id="@+id/edtWsnUser" />
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:text=""
+                        android:inputType="textPassword"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:paddingBottom="5dp"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size22"
+                        android:textColor="@color/colorTexto"
+                        android:hint="••••••"
+                        android:id="@+id/edtWsnPass" />
+
+                    <Button
+                        android:text="Guardar"
+                        android:paddingBottom="5dp"
+                        android:layout_width="@dimen/acSincronizacion_btnTest_width"
+                        android:layout_height="@dimen/acSincronizacion_btnTest_height"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:layout_marginTop="@dimen/act_size27"
+                        android:layout_centerHorizontal="true"
+                        android:id="@+id/btnWsnGuardar" />
+
+
+                    <ImageButton
+                        android:layout_width="@dimen/act_size04"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginRight="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size02"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/savedb"
+                        android:background="@color/colorBlanco"
+                        android:id="@+id/btnSaveWsn"
+                        />
+
+                    <ImageButton
+                        android:layout_width="@dimen/act_size04"
+                        android:layout_height="@dimen/act_size04"
+                        android:layout_marginRight="@dimen/act_size04"
+                        android:layout_marginTop="@dimen/act_size08"
+                        android:scaleType="fitXY"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/restart"
+                        android:background="@color/colorBlanco"
+                        android:id="@+id/btnClearWsn"
+                        />
+
+
+                    <TextView
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTexto"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/act_size32"
+                        android:textSize="@dimen/cuerpo_minx3_textSize"
+                        android:textStyle="italic"
+                        android:id="@+id/txvLogWsnLevel01"/>
+
+                    <TextView
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTexto"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/act_size34"
+                        android:textSize="@dimen/cuerpo_minx3_textSize"
+                        android:textStyle="italic"
+                        android:id="@+id/txvLogWsnLevel02"/>
+
+                    <TextView
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTexto"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/act_size36"
+                        android:textSize="@dimen/cuerpo_minx3_textSize"
+                        android:textStyle="italic"
+                        android:id="@+id/txvLogWsnLevel03"/>
+
+                    <TextView
+                        android:text="..."
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/colorTexto"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/act_size38"
+                        android:textSize="@dimen/cuerpo_minx3_textSize"
+                        android:textStyle="italic"
+                        android:id="@+id/txvLogWsnLevel04"/>
+
+
 
                 </RelativeLayout>
 

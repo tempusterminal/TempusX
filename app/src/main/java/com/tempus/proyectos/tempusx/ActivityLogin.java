@@ -16,10 +16,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tempus.proyectos.data.model.Parameters;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.util.UserInterfaceM;
 
 public class ActivityLogin extends Activity {
+
+    private String TAG = "TX-L";
 
     /* --- Declaración de Objetos --- */
 
@@ -44,6 +47,8 @@ public class ActivityLogin extends Activity {
     Button btnCancelar;
     EditText edtUsuario;
     EditText edtContraseña;
+
+    QueriesLogTerminal queriesLogTerminal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +90,8 @@ public class ActivityLogin extends Activity {
         edtUsuario          = (EditText) findViewById(R.id.edtUsuario);
         edtContraseña       = (EditText) findViewById(R.id.edtContraseña);
 
+        queriesLogTerminal = new QueriesLogTerminal();
+
         /* --- Inicialización de Métodos --- */
 
         /* --- Inicialización de Parametros Generales --- */
@@ -111,8 +118,11 @@ public class ActivityLogin extends Activity {
                     //Log.d("Autorizaciones","Pass " + parameters1.toString());
 
                     if (i == 1){
+                        ActivityPrincipal.UserSession = usuario;
+                        queriesLogTerminal.insertLogTerminal(TAG,i + "|" + usuario + "|" +  "",usuario);
                         ui.goToActivity(ActivityLogin.this, ActivityMenu.class, "","");
                     } else {
+                        queriesLogTerminal.insertLogTerminal(TAG,i + "|" + usuario + "|" +  contra,"");
                         ui.showAlert(ActivityLogin.this,"warning","Usuario o Contrasena errado(s) " + i);
                     }
 

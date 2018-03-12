@@ -28,6 +28,7 @@ public class QueriesTerminal {
     private Conexion conexion;
     private Context context;
     private SQLiteDatabase database;
+    QueriesLogTerminal queriesLogTerminal;
 
     public QueriesTerminal(Context context) {
         this.context = context;
@@ -120,25 +121,28 @@ public class QueriesTerminal {
     }
 
 
-    public int ActualizarIdterminal(String Idterminal){
+    public int ActualizarIdterminal(String idterminal, String lastIdterminal, String lastSizeDB){
 
         this.open();
         Fechahora fechahora =  new Fechahora();
         DBManager dbManager = new DBManager(context);
+        queriesLogTerminal = new QueriesLogTerminal();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TableTerminal.Idterminal,Idterminal);
+        contentValues.put(TableTerminal.Idterminal,idterminal);
         contentValues.put(TableTerminal.FechaHoraSinc,fechahora.getFechahora());
 
         try{
             if(!ActivityPrincipal.controlFlagSyncAutorizaciones){
                 database.update(TableTerminal.TABLE_NAME,contentValues,null,null);
                 // Set idterminal con el nuevo Idterminal
-                ActivityPrincipal.idTerminal = Idterminal;
+                ActivityPrincipal.idTerminal = idterminal;
                 // Limpiar los registros de las tablas
                 dbManager.all("0,1,0,0,0,0");
 
-                Log.v(TAG,"Idterminal Actualizado a " + Idterminal);
+                queriesLogTerminal.insertLogTerminal(TAG,"ID" + "|" + lastIdterminal + ">" + idterminal + "|" + lastSizeDB.replace(" ","") + ">" + dbManager.getSizeDB().replace(" ",""),ActivityPrincipal.UserSession);
+
+                Log.v(TAG,"Idterm inal Actualizado a " + idterminal);
             }
             return 1;
         }catch(Exception e){
@@ -154,7 +158,9 @@ public class QueriesTerminal {
         private Thread hilo;
         private String nombreHilo;
 
-        private String Idterminal;
+        private String idterminal;
+        private String lastIdterminal;
+        private String lastSizeDB;
 
         public ActualizarIdterminal(String nombreHilo) {
             this.nombreHilo = nombreHilo;
@@ -170,7 +176,7 @@ public class QueriesTerminal {
                     Thread.sleep(250);
                 }
 
-                ActualizarIdterminal(Idterminal);
+                ActualizarIdterminal(idterminal,lastIdterminal,lastSizeDB);
 
                 Log.v(TAG,"Fin de ejecución Hilo");
             }catch (Exception e){
@@ -183,10 +189,12 @@ public class QueriesTerminal {
             }
         }
 
-        public void start(String Idterminal){
+        public void start(String idterminal, String lastIdterminal, String lastSizeDB){
             //Looper.prepare();
             Log.v(TAG,"Iniciando Hilo " + nombreHilo);
-            this.Idterminal = Idterminal;
+            this.idterminal = idterminal;
+            this.lastIdterminal = lastIdterminal;
+            this.lastSizeDB = lastSizeDB;
             if(hilo == null){
                 hilo = new Thread(nombreHilo);
                 super.start();
@@ -195,9 +203,9 @@ public class QueriesTerminal {
 
     }
 
-    public void startActualizarIdterminal(String Idterminal){
+    public void startActualizarIdterminal(String idterminal, String lastIdterminal, String lastSizeDB){
         ActualizarIdterminal actualizarIdterminal = new ActualizarIdterminal("ActualizarIdterminal");
-        actualizarIdterminal.start(Idterminal);
+        actualizarIdterminal.start(idterminal,lastIdterminal,lastSizeDB);
     }
 
 

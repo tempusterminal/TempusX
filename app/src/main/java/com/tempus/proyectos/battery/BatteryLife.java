@@ -1,5 +1,6 @@
 package com.tempus.proyectos.battery;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,8 +37,7 @@ public class BatteryLife {
 
     String TAG = "BA-BL";
 
-    public int levelBattery;
-    public long capacity;
+    public static int levelBattery;
     public int currentBattery;
     public int voltage;
     public int healthBattery;
@@ -164,6 +164,8 @@ public class BatteryLife {
         private int toPr = -1;
         private int toExEy = -1;
 
+        private int temTer = -1;
+
         private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         //btnUsbMarcas.setText(decimalFormat.format(ProcessSyncUSB.lfilenamemarcaciones / 1000) + " KB");
 
@@ -185,6 +187,18 @@ public class BatteryLife {
             toBa = ActivityPrincipal.turnOnLectorBarra;
             toPr = ActivityPrincipal.turnOnProximidad;
             toExEy = ActivityPrincipal.turnOnExternalEnergy;
+
+            temTer = ActivityPrincipal.temperatureTerminal;
+        }
+
+        public void setStatusBatteryLife(){
+            ActivityPrincipal.levelBattery = levelBattery;
+            ActivityPrincipal.currentBattery = currentBattery;
+            ActivityPrincipal.voltage = voltage;
+            ActivityPrincipal.healthBattery = healthBattery;
+            ActivityPrincipal.statusBattery = statusBattery;
+            ActivityPrincipal.plugged = plugged;
+            ActivityPrincipal.temperature = temperature;
         }
 
         public void run(){
@@ -193,7 +207,7 @@ public class BatteryLife {
                 //line = fechahora.getFechahora() + ": " + "isC=" + isCharging + " " + "level=" + levelBattery + "%" + " " + "usb=" + usbCharge + " " + "ac=" + acCharge + " " + "mV=" + voltage + " ";
                 //line += "exEy=" + exEy + " " + "upsC=" + upsC + " " + "levelU=" + levelU + "%" + " " + "toLn=" + toLn + " " + "toAd=" + toAd + " " + "toSu=" + toSu + " " + "toBa=" + toBa + " " + "toPr=" + toPr + " " + "toExEy=" + toExEy;
                 //getBatteryLife();
-                internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> Iniciado Log ---------------", DIRECTORY + FILE);
+                // internalFile.writeToAppend(fechahora.getFechahora() + ": " + ">>>>>>>>>>>>> Iniciado Log ---------------", DIRECTORY + FILE);
                 //internalFile.writeToAppend(line + voltage, DIRECTORY + FILE);
                 //isC = isCharging;
                 //levelB = levelBattery;
@@ -209,11 +223,12 @@ public class BatteryLife {
                 try{
                     getBatteryLife();
                     getStatusADC();
+                    setStatusBatteryLife();
                     line = "sB=" + statusBattery + " " + "lB=" + levelBattery + " " + "pl=" + plugged + " " + "mV=" + voltage + " " + "mAh=" + currentBattery + " " + "hB=" + healthBattery + " " + "T=" + temperature + " ";
-                    line += "exEy=" + exEy + " " + "upsC=" + upsC + " " + "levelU=" + levelU + " " + "toLn=" + toLn + " " + "toAd=" + toAd + " " + "toSu=" + toSu + " " + "toBa=" + toBa + " " + "toPr=" + toPr + " " + "toExEy=" + toExEy;
+                    line += "exEy=" + exEy + " " + "upsC=" + upsC + " " + "levelU=" + levelU + " " + "toLn=" + toLn + " " + "toAd=" + toAd + " " + "toSu=" + toSu + " " + "toBa=" + toBa + " " + "toPr=" + toPr + " " + "toExEy=" + toExEy + " " + "temTer=" + temTer;
                     String s = "|";
                     logterminal = statusBattery + s + levelBattery + s + plugged + s + voltage + s + currentBattery + s + healthBattery + s + temperature + s;
-                    logterminal += exEy + s + upsC + s + levelU + s + toLn + s + toAd + s + toSu + s + toBa + s + toPr + s + toExEy;
+                    logterminal += exEy + s + upsC + s + levelU + s + toLn + s + toAd + s + toSu + s + toBa + s + toPr + s + toExEy + s + temTer;
                     //Log.v(TAG,"getBatteryLife() internalFile.writeToAppend...");
                     if(sB != statusBattery || uC != upsC || toEE != toExEy || lB != levelBattery){
                         if(sB != statusBattery || toEE != toExEy || lB != levelBattery){
@@ -224,7 +239,7 @@ public class BatteryLife {
                             }
                         }
                         //Log.v(TAG,"getBatteryLife() internalFile.writeToAppend... isCharging");
-                        internalFile.writeToAppend(fechahora.getFechahora() + ": " + line, DIRECTORY + FILE);
+                        //internalFile.writeToAppend(fechahora.getFechahora() + ": " + line, DIRECTORY + FILE);
                         sB = statusBattery;
                         uC = upsC;
                         toEE = toExEy;
@@ -237,6 +252,7 @@ public class BatteryLife {
                     }
                     Log.v(TAG,fechahora.getFechahora() + ": " + line);
 
+                    /*
                     if(levelBattery <= 30 && levelBattery > 0 && statusBattery == 4){
                         try{
                             Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"Apagando " + logterminal,""));
@@ -252,13 +268,24 @@ public class BatteryLife {
                             Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: APAGAR -> " + e.getMessage());
                         }
                     }
+                    */
 
-                    // Si statusBattery = 4 (no cargando) o statusBattery = 1 (no cargando)
+                    // Cada 60 minutos se registra el estado de la base de datos del terminal en la tabla LOG_TERMINAL
+                    if(Integer.valueOf(fechahora.getFechahora().substring(14,16)) % 60 == 0 && Integer.valueOf(fechahora.getFechahora().substring(17,19)) % 60 == 0){
+                        try{
+                            Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG, logterminal, ""));
+                        }catch (Exception e){
+                            Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
+                        }
+                    }
+
+                    // Si statusBattery = 4 (no cargando) o statusBattery = 1 (desconocido)
                     if(statusBattery == 4 || statusBattery == 1){
                         ActivityPrincipal.isCharging = false;
                     }else{
                         ActivityPrincipal.isCharging = true;
                     }
+
 
                     Thread.sleep(1000);
                 }catch (Exception e){

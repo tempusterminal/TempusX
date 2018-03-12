@@ -6,9 +6,14 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.net.ConnectException;
@@ -350,6 +355,117 @@ public class Utilities {
 
         return output;
     }
+
+    // FIXME: 08/01/2018  optimizar cuando el exa sea de 3 de 2 de 1 de 0 etc cifras o mas de 4
+    public String getSizeData(String data) {
+        int temp = data.length() / 2;
+        String len = decimalToHex(temp);
+        if (len.length() == 2)
+            len = "00" + len;
+        else
+            Log.e(TAG, "getSizeData: tamaños diferentes de 2 digitos no validados ", new Exception(" len value is : " + len));
+        return len;
+    }
+
+    public long getApkNameToNumber(String apkName){
+        String apkNameNumber = "";
+        // Verificar que cumple con la medida
+        if(apkName.length() == 14){
+            apkNameNumber = apkName.substring(4,8) + apkName.substring(2,4) + apkName.substring(0,2) + apkName.substring(8);
+            // Verificar que cumple con la medida
+            if(apkNameNumber.length() == 14){
+                try{
+                    return Long.valueOf(apkNameNumber);
+                }catch (Exception e){
+                    return 0;
+                }
+            }else{
+                return 0;
+            }
+        }else{
+            return 0;
+        }
+    }
+
+
+    public String getFilenameInDirectory(String filename, String extension, String directory){
+        // Buscar un archivo con extension (opcional) de un directorio
+        // En caso que la extensión este vacia o sea nula, se buscará el nombre del archivo y se devolverá con la extensión que tenga
+        // En caso que la extensión tenga un valor, se buscará el nombre del archivo junto con la extensión
+        // En caso de no encontrar el nombre del archivo y extension (opcional) se devolvera vacio
+        try{
+            Process process = Runtime.getRuntime().exec("ls " + directory + " -l");
+
+            InputStream inputStream = process.getInputStream();
+            InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+            String line = null;
+            while (true){
+                line = bufferedReader.readLine();
+                if(line != null){
+                    //Log.v(TAG,"" + line);
+                    // Se verifica si la linea enlistada contiene el nombre del archivo
+                    if(line.contains(filename)){
+                        //Log.v(TAG,">>>" + line.substring(line.indexOf(filename),line.indexOf(".")) + "<<<");
+                        // En caso que la linea enlistada contenga el nombre del archivo
+                        // Se verifica que el nombre del archivo encontrado sea igual al nombre del archivo de la variable filename
+                        // por ejemplo: Si se busca el archivo 'config' se enlistará todos los archivos que contengan esos caracteres 'config1', 'config', 'configuracion', etc
+                        // Pero se busca determinar cual es el nombre de archivo igual a la variable filename
+                        if(line.substring(line.indexOf(filename),line.indexOf(".")).equalsIgnoreCase(filename)){
+                            //Log.v(TAG,">>>>>>" + line.substring(line.indexOf(filename),line.indexOf(".")) + "<<<<<<");
+                            //Log.v(TAG,">>>>>>" + line.substring(line.indexOf(filename)) + "<<<<<<");
+                            // En caso se encuentre el archivo buscado
+                            // Se verifica si se buscará con extensión
+                            // Si no se busca la extensión se devolverá el archivo con la extensión que tenga
+                            // por ejemplo: Si se busca el archivo 'config' sin extensión, se devolverá el archivo que cumpla con llamarse config 'config.sql' o 'config.txt'
+                            // Si se busca con extensión se de volverá solo si tiene la misma extensión de la variable extension
+                            // por ejemplo: Si se busca el archivo 'config' con extensión 'sql', se devolverá el archivo que cumpla con llamarse config y que tenga extensión sql 'config.sql', sino se devuelve vacio
+                            if(extension == null || extension.isEmpty()){
+                                return line.substring(line.indexOf(filename));
+                            }else{
+                                if(line.substring(line.indexOf(filename)).contains("." + extension)){
+                                    return line.substring(line.indexOf(filename));
+                                }else{
+                                    return "";
+                                }
+                            }
+                        }
+                    }
+                }else{
+                    break;
+                }
+            }
+            process.waitFor();
+        }catch (Exception e){
+            Log.e(TAG,"getFilenameInDirectory " + e.getMessage());
+        }
+        return "";
+    }
+
+
+
+
+    public boolean isRooted() {
+        boolean rooted = false;
+        Process process;
+        try {
+            process = Runtime.getRuntime().exec("su");
+            process.getOutputStream().close();
+            process.getInputStream().close();
+            int close = process.waitFor();
+            if (0 == close) {
+                rooted = true;
+            }
+        } catch (IOException e) {
+            Log.e(TAG, "isRooted: " + e.getMessage(), e);
+        } catch (InterruptedException e) {
+            Log.e(TAG, "isRooted: " + e.getMessage(), e);
+        }
+        return rooted;
+    }
+
+
 
 
 }

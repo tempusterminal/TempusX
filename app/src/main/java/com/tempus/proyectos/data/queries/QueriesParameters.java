@@ -236,6 +236,7 @@ public class QueriesParameters {
 
         //Parametros Servicios
         database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('WEBSERVICE_01','','192.168.0.1,TEMPUS_WS_T10,80,TEMPUS,TEMPUSSCA','','0','" + fechahora.getFechahora() + "');");
+        database.execSQL("INSERT INTO PARAMETERS(IDPARAMETER,PARAMETER,VALUE,SUBPARAMETER,ENABLE,FECHA_HORA_SINC) VALUES('WEBSERVICEN_01','','192.168.0.1,TEMPUS_WS_T10,80,TEMPUS,TEMPUSSCA','','0','" + fechahora.getFechahora() + "');");
 
         //database.endTransaction();
         this.close();

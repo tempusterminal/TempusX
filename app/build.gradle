@@ -5,10 +5,10 @@ android {
     buildToolsVersion '24.0.2'
     defaultConfig {
         applicationId "com.tempus.proyectos.tempusx"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 5
+        versionName "02032018165800"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

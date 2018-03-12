@@ -1,36 +1,27 @@
 package com.tempus.proyectos.tempusx;
 
-// utimo
-
-import android.Manifest;
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Criteria;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -54,45 +45,56 @@ import com.tempus.proyectos.crash.TXExceptionHandler;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
-import com.tempus.proyectos.data.process.ProcessSync;
 import com.tempus.proyectos.data.process.ProcessSyncDatetime;
 import com.tempus.proyectos.data.process.ProcessSyncST;
 import com.tempus.proyectos.data.process.ProcessSyncTS;
 import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesParameters;
-import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
 import com.tempus.proyectos.data.tables.TableLogTerminal;
-import com.tempus.proyectos.geolocation.GeoLocationListener;
 import com.tempus.proyectos.log.Database;
 import com.tempus.proyectos.log.LogManager;
+import com.tempus.proyectos.log.MonitorApp;
 import com.tempus.proyectos.picture.ResizePic;
 import com.tempus.proyectos.threads.ThreadConnectSerial;
 import com.tempus.proyectos.threads.ThreadHorariosRelay;
+import com.tempus.proyectos.usbSerial.UsbInterface;
 import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.InternalFile;
+import com.tempus.proyectos.util.PowerAdmin;
 import com.tempus.proyectos.util.Shell;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
 
 public class ActivityPrincipal extends Activity {
 
     private static String TAG = "TX-AP";
+
+    // versionSDK es la versión del SDK del SO en donde está corriendo la aplicación
+    // esto permite conocer la versión de SO android del terminal
+    // por ejemplo: versionSDK 23 -> M, versionSDK 22 -> L
     public static int versionSDK;
+
+    // versionNameCode es el nombre de la apk instalada en el terminal,
+    // este nombre permite conocer cual es la versión del software que se está utilizando
+    // la versión del software se puede insertar manualmente
+    public static String versionNameCode = "";
 
     int SCORE_MANO = 0;
 
@@ -115,6 +117,9 @@ public class ActivityPrincipal extends Activity {
     ThreadHorariosRelay threadHorariosRelay;
 
     int c = 100;
+
+    public static boolean MODO_ADB = false;
+    public static boolean MAPP = true;
 
     boolean MODO_EVENTO = false;
     public static String BOTONES_EVENTO = "00000000";
@@ -155,12 +160,21 @@ public class ActivityPrincipal extends Activity {
 
     String PATRON_SECRET = "";
 
+    /* --- Variables Sesion de Usuario --- */
+    // Esta variable pública guardará el nombre de usuario que logre autenticación en la pantalla de login
+    // esta variable se guarda en los eventos registrados en la tabla LOG_TERMINAL
+    public static String UserSession = "";
+
     /* --- Battery Life --- */
     public static boolean isCharging;
-    public static int levelBattery;
-    public static int chargePlug;
-    public int usbCharge;
-    public int acCharge;
+
+    public static int levelBattery = -1;
+    public static int currentBattery = -1;
+    public static int voltage = -1;
+    public static int healthBattery = -1;
+    public static int statusBattery = -1;
+    public static int plugged = -1;
+    public static int temperature = -1;
 
     /* --- ADC --- */
     public static double ExternalEnergy = -1;
@@ -174,6 +188,7 @@ public class ActivityPrincipal extends Activity {
     public static int turnOnLectorBarra = -1;
     public static int turnOnProximidad = -1;
     public static int turnOnExternalEnergy = -1;
+    public static int temperatureTerminal = -1;
 
     /* --- Variables UI --- */
     public static String parametersColorsUI = "";
@@ -185,6 +200,7 @@ public class ActivityPrincipal extends Activity {
     /* --- Variables Ethernet --- */
     public static ArrayList<String> parametersEthernet = new ArrayList<String>();
     public static ArrayList<String> parametersSock = new ArrayList<String>();
+    public static ArrayList<String> parametersWsn = new ArrayList<String>();
 
     /* --- Variables Marcaciones --- */
     public static String parametersInsertMarcaciones;
@@ -203,7 +219,7 @@ public class ActivityPrincipal extends Activity {
 
     public static boolean INICIADO;
 
-    static int TIPO_TERMINAL = 0; // A=1; A+H=2; A+M=3; A+H+M=4
+    public static int TIPO_TERMINAL = 0; // A=1; A+H=2; A+M=3; A+H+M=4
 
     public static boolean BT_00_ENABLED;
     public static boolean BT_01_ENABLED;
@@ -248,6 +264,8 @@ public class ActivityPrincipal extends Activity {
 
     public static String activityActive;
     public static String idTerminal;
+    public static int marcasNoSync;
+    public static int logterminalNoSync;
 
     public static boolean ctrlThreadPantallaEnabled;
     public static boolean ctrlThreadSyncMarcasEnabled;
@@ -295,9 +313,9 @@ public class ActivityPrincipal extends Activity {
     /* --- Variables de DATA --- */
 
     private DBManager dbManager;
-    private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria;
     private QueriesMarcaciones queriesMarcaciones;
     MainEthernet mainEthernet = new MainEthernet();
+    MonitorApp monitorApp;
     BatteryLife batteryLife = new BatteryLife();
     Database database = new Database();
 
@@ -375,17 +393,17 @@ public class ActivityPrincipal extends Activity {
 
     /* Declaración de fragment_bar */
 
-    TextView txvIdterminal;
-
-    TextView txvIdTerminalInfo;
-
-    protected PowerManager.WakeLock mWakeLock;
+    TextView txvBarraTerminalInfo;
 
     // Testing BT on off
     InternalFile internalFile = new InternalFile();
 
     private QueriesParameters queriesParameters;
     private QueriesLogTerminal queriesLogTerminal;
+
+
+    // Variables para conexion por USB ADB
+    UsbInterface usbInterface;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -394,7 +412,15 @@ public class ActivityPrincipal extends Activity {
 
         turnOnScreen();
         context = getApplicationContext();
+
+        // Versión SDK esta relacionada con la versión de OS Android
+        // versionSDK = 23 -> Android 6.0
         versionSDK = Build.VERSION.SDK_INT;
+
+        // Método para obtener el codigo de la version y nombre de la versión (versión del SW)
+        getVersionNameCode(2);
+
+        monitorApp = new MonitorApp(ActivityPrincipal.this);
         queriesLogTerminal = new QueriesLogTerminal();
 
         try{
@@ -542,7 +568,7 @@ public class ActivityPrincipal extends Activity {
 
             // Inicialización nivel cero
 
-            Log.v(TAG,"**********************************************01");
+            // Log.v(TAG,"**********************************************01");
             activityActive = "Principal";
 
 
@@ -552,7 +578,7 @@ public class ActivityPrincipal extends Activity {
                 Toast.makeText(this, "Restarting app after crash ... ", Toast.LENGTH_SHORT).show();
             }
 
-            Log.v(TAG,"**********************************************02");
+            // Log.v(TAG,"**********************************************02");
 
 
             // Inicializacion de componentes
@@ -573,7 +599,7 @@ public class ActivityPrincipal extends Activity {
             setBackgroundColorOnTextView(txvLinea4,parametersColorsUI.split(",")[6],"#777777");
 
 
-            txvIdTerminalInfo = (TextView) findViewById(R.id.txvIdTerminalInfo);
+            txvBarraTerminalInfo = (TextView) findViewById(R.id.txvBarraTerminalInfo);
 
             txcHora = (TextClock) findViewById(R.id.txcHora);
 
@@ -639,24 +665,12 @@ public class ActivityPrincipal extends Activity {
             btnKeyBorrar = (Button) findViewById(R.id.btnKeyBorrar);
             btnKeyIntro = (Button) findViewById(R.id.btnKeyIntro);
 
-            txvIdterminal = (TextView) findViewById(R.id.txvIdterminal);
-
             txvSecret01 = (TextView) findViewById(R.id.txvSecret01);
             txvSecret02 = (TextView) findViewById(R.id.txvSecret02);
             txvSecret03 = (TextView) findViewById(R.id.txvSecret03);
 
 
-
-            /*
-            try{
-                Log.v(TAG,"btnMaster.setImageBitmap " + Environment.getExternalStorageDirectory().toString() + "/tempus/img/config/" + "logo.png");
-                btnMaster.setImageBitmap(BitmapFactory.decodeFile(new  File(Environment.getExternalStorageDirectory().toString() + "/tempus/img/config/" + "logo.png").toString()));
-            }catch (Exception e){
-                Log.e(TAG,"btnMaster.setImageBitmap " + e.getMessage());
-            }
-            */
-
-            Log.v(TAG,"**********************************************03");
+            // Log.v(TAG,"**********************************************03");
 
             ui = new UserInterfaceM();
             util = new Utilities();
@@ -668,20 +682,23 @@ public class ActivityPrincipal extends Activity {
             String cadena = sh.exec(params);
             macWlan = connectivity.getMacAddress(cadena,"wlan0");
 
-            queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(this);
+
 
             // Iniciar UI
             ui.initScreen(this);
 
-            Log.v(TAG,"**********************************************04");
+            // Log.v(TAG,"**********************************************04");
             // Administramos UI
             manageLayerMarcacion(false);        // Ocultar Layer de Marcación
             manageAccessButtons(false);         // Ocultar Botones de Acceso
             manageEventMode(false);             // Ocultar modo Evento
             manageKeyboard(false);              // Ocultar teclado
 
+            if(MODO_ADB){
 
-            showMsgBoot(true, "Iniciando sistema, por favor espere ...");    // Bloquear pantalla hasta conectar
+            }else{
+                showMsgBoot(true, "Iniciando sistema, por favor espere ...");    // Bloquear pantalla hasta conectar
+            }
 
             buttonWarning01.setVisibility(View.INVISIBLE);
             buttonWarning02.setVisibility(View.INVISIBLE);
@@ -704,31 +721,34 @@ public class ActivityPrincipal extends Activity {
             threadControlPrincipal.start();
             threadControlPantalla.start();
 
-            Log.v(TAG,"**********************************************05");
+            // Log.v(TAG,"**********************************************05");
 
             // Iniciar Rutinas en verdadero
 
             ProcessSyncTS processSyncTS = new ProcessSyncTS("Sync_Marcaciones_Biometrias");
-            processSyncTS.start(this);
-            Log.v(TAG,"**********************************************05-a");
+            processSyncTS.start(context,this);
+
             ProcessSyncST processSyncST = new ProcessSyncST("Sync_Autorizacion");
-            processSyncST.start(this);
-            Log.v(TAG,"**********************************************05-b");
+            processSyncST.start(context,this);
+
             ProcessSyncDatetime processSyncDatetime = new ProcessSyncDatetime("Sync_Datetime");
-            processSyncDatetime.start(this);
-            Log.v(TAG,"**********************************************05-c");
+            processSyncDatetime.start(context,this);
+
             threadFechahora.start();
             threadStatusADC.start();
-            Log.v(TAG,"**********************************************05-d");
+            threadBarraTerminalInfo.start();
+            // Deshabilitado, falta realizar análisis para desarrollar modos de ahorro de energía
+            //threadAhorroEnergia.start();
+            // Log.v(TAG,"**********************************************05-d");
             mainEthernet.startEthernetReading();
             mainEthernet.startEthernetExecuting();
             mainEthernet.startEthernetFixing();
-            Log.v(TAG,"**********************************************05-e");
+            // Log.v(TAG,"**********************************************05-e");
 
 
             batteryLife.startBatteryLifeReading();
             database.startDatabaseReading();
-            Log.v(TAG,"**********************************************05-f");
+            // Log.v(TAG,"**********************************************05-f");
 
 
             threadHorariosRelay = new ThreadHorariosRelay();
@@ -739,22 +759,20 @@ public class ActivityPrincipal extends Activity {
             ResizePic resizePic = new ResizePic(null);
             resizePic.startResizeAllPictures();
 
-            //MonitorApp monitorApp = new MonitorApp();
-            //try{
-            //    Log.v(TAG,"LG-MAPP monitorApp");
-            //    //monitorApp.starLookErrorApp(ActivityPrincipal.this);
-            //    monitorApp.execMonitorearApp(ActivityPrincipal.this);
-            //    //LookErrorApp.start();
-            //}catch (Exception e){
-            //    Log.v(TAG,"monitorApp.starLookErrorApp " + e.getMessage());
-            //}
+            monitorApp.start();
 
 
-            BluetoothPair bluetoothPair = new BluetoothPair(ActivityPrincipal.this);
-            bluetoothPair.registerReceiver();
-            new BluetothPairingThread(bluetoothPair).start();
+            if(MODO_ADB){
+                // En MODO_ADB true no se necesita activar el vinculado de bluetooth automatico
+            }else{
+                // Proceso que vincula automaticamente a partir de las MAC de BT registradas en la tabla PARAMETERS
+                BluetoothPair bluetoothPair = new BluetoothPair(ActivityPrincipal.this);
+                bluetoothPair.registerReceiver();
+                new BluetothPairingThread(bluetoothPair).start();
+            }
 
-            Log.v(TAG,"**********************************************06");
+
+            // Log.v(TAG,"**********************************************06");
 
         /* --- EVENTOS SOBRE COMPONENTES --- */
 
@@ -801,7 +819,7 @@ public class ActivityPrincipal extends Activity {
                 }
             });
 
-            Log.v(TAG,"**********************************************07");
+            // Log.v(TAG,"**********************************************07");
 
             // Boton Acceso Patron 1
             btnAccess1.setOnClickListener(new View.OnClickListener() {
@@ -987,7 +1005,7 @@ public class ActivityPrincipal extends Activity {
                 }
             });
 
-            Log.v(TAG,"**********************************************08");
+            // Log.v(TAG,"**********************************************08");
 
             // Boton de Acceso a teclado
             btnAccessKey.setOnClickListener(new View.OnClickListener() {
@@ -1207,16 +1225,24 @@ public class ActivityPrincipal extends Activity {
                 Log.e(TAG,"camera/surfaceView " + e.getMessage());
             }
 
+
+            if(MODO_ADB){
+                usbInterface = new UsbInterface();
+            }
+
+
         }catch (Exception e){
             Log.e(TAG,"onCreate " + e.getMessage());
-
         }
 
         try{
-            Log.v(TAG,"queriesLogTerminal " + queriesLogTerminal.insertLogTerminal(TAG,"Inicio completado",""));
+            queriesLogTerminal.insertLogTerminal(TAG,versionSDK + "|" + TIPO_TERMINAL + "|" + versionNameCode + "|" + (MODO_ADB ? 1 : 0) + "|" + (MODO_EVENTO ? 1 : 0),"");
+            Log.v(TAG,"queriesLogTerminal " + versionSDK + "|" + TIPO_TERMINAL + "|" + versionNameCode + "|" + (MODO_ADB ? 1 : 0) + "|" + (MODO_EVENTO ? 1 : 0));
         }catch (Exception e){
             Log.e(TAG, "queriesLogTerminal.insertLogTerminal " + e.getMessage());
         }
+
+
 
 
     }
@@ -1225,6 +1251,11 @@ public class ActivityPrincipal extends Activity {
     public void onResume(){
         try {
             super.onResume();
+
+            if(MODO_ADB){
+                usbInterface.ResumeAccessory();
+            }
+
             activityActive = "Principal";
             ActivityPrincipal.objSuprema.writeToSuprema(btSocket02.getOutputStream(),"FreeScanOn",null);
         } catch(Exception e) {
@@ -1405,12 +1436,13 @@ public class ActivityPrincipal extends Activity {
             //dbManager.execSQL("UPDATE PERSONAL_TIPOLECTORA_BIOMETRIA SET SINCRONIZADO = 0 WHERE SINCRONIZADO = 1");
             //dbManager.execSQL("DELETE FROM PERSONAL");
             //dbManager.execSQL("DELETE FROM LOG_TERMINAL WHERE VALUE LIKE '% & %' AND TAG = 'LOG-DB'");
+            //dbManager.execSQL("DELETE FROM LOG_TERMINAL WHERE SINCRONIZADO = 0");
             dbManager.execSQL(TableLogTerminal.CREATE_TABLE);
         } catch(Exception e) {
             e.printStackTrace();
         }
 
-        txvIdTerminalInfo.setText(idTerminal);
+        //txvBarraTerminalInfo.setText(idTerminal + "\t" + "M(0000)"  + "\t" + "BD(UP)" );
 
         Parameters parameters;
 
@@ -1470,30 +1502,6 @@ public class ActivityPrincipal extends Activity {
             PASS_BT_03 = "1234";
         }
 
-        /*
-        try {
-            parameters = queriesParameters.selectParameter("BT_02");
-            MAC_BT_02 = parameters.getValue();
-            MAC_BT_02 = "00:00:00:00:00:00";
-            Log.d(TAG, "CargarDatosIniciales > MAC_BT_02 = OK");
-        } catch (Exception e) {
-            //MAC_BT_02 = "00:12:03:16:02:08";//CARRION
-            //MAC_BT_02 = "20:16:08:10:42:29";// carrion 11
-            MAC_BT_02 = "00:00:00:00:00:00";
-        }
-
-        try {
-            parameters = queriesParameters.selectParameter("BT_03");
-            MAC_BT_03 = parameters.getValue();
-            Log.d(TAG, "CargarDatosIniciales > MAC_BT_03 = OK");
-            MAC_BT_03 = "20:16:08:10:46:09";//
-        } catch (Exception e) {
-            //MAC_BT_03 = "00:00:00:00:00:00";//CARRION
-            MAC_BT_03 = "20:16:08:10:46:09";//
-
-        }
-        */
-
         try {
             parameters = queriesParameters.selectParameter("TIPO_TERMINAL");
             TIPO_TERMINAL = Integer.parseInt(parameters.getValue());
@@ -1544,160 +1552,7 @@ public class ActivityPrincipal extends Activity {
         MARCACION_ACTIVA = false;
         TIEMPO_ACTIVO = 0;
         MODO_MARCACION = "";
-        //MAC_BTS
 
-        //Ethernet test
-        //MAC_BT_00 = "20:16:08:10:60:93"; //5555
-
-        // CARRION 02
-        //MAC_BT_01 = "98:D3:34:90:87:DC"; // hc 06
-        //MAC_BT_02 = "00:12:03:16:02:08"; // linvor
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // CARRION ID 12 02/10/2017
-        //MAC_BT_00 = "00:00:00:00:00:00";
-        //MAC_BT_01 = "20:17:05:23:47:80";
-        //MAC_BT_02 = "20:17:05:23:47:83";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // PUERTA ANTIGUO
-        //MAC_BT_01 = "20:16:08:04:87:50";
-        //MAC_BT_02 = "20:16:08:10:62:98";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        //RANSA 1 - 14:1F:78:24:1A:31
-        //MAC_BT_01 = "20:16:08:10:42:63"; //ARDUINO
-        //MAC_BT_02 = "00:00:00:00:00:00";
-        //MAC_BT_03 = "20:16:08:10:46:09";
-
-        //RANSA 2 - 14:1F:78:86:2F:9C
-        //MAC_BT_01 = "20:16:08:10:64:87"; //ARDUINO
-        //MAC_BT_02 = "00:00:00:00:00:00";
-        //MAC_BT_03 = "20:16:08:10:65:94";
-
-        //RANSA 3 - 14:1F:78:86:2F:B1
-        //MAC_BT_01 = "20:16:08:10:58:40"; //ARDUINO
-        //MAC_BT_02 = "00:00:00:00:00:00";
-        //MAC_BT_03 = "20:16:08:10:58:52";
-
-        //RANSA BACKUP -
-        //MAC_BT_01 = "20:16:08:10:57:20";
-        //MAC_BT_02 = "00:00:00:00:00:00";
-        //MAC_BT_03 = "20:16:08:10:60:02";
-
-        //CLINICA INTERNACIONAL 1 (2)
-        //MAC_BT_01 = "00:12:06:04:99:06";
-        //MAC_BT_02 = "00:12:06:04:98:90";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        //CLINICA INTERNACIONAL TEST (1)
-        //MAC_BT_00 = "00:21:13:01:7E:8F"; //1234
-        //MAC_BT_02 = "20:16:08:10:68:89";
-        //MAC_BT_01 = "20:16:08:10:63:74";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        //SHOUGANG
-        //MAC_BT_00 = "00:21:13:00:CC:2D"; //1234
-        //MAC_BT_02 = "00:15:83:35:7A:66";
-        //MAC_BT_01 = "98:D3:34:90:88:89";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-        // new bt
-        //MAC_BT_00 = "00:21:13:00:CC:2D";
-        //MAC_BT_01 = "20:16:06:30:84:85";
-        //MAC_BT_02 = "20:16:09:21:44:42";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-
-        //DIRESA 101 7p
-        //MAC_BT_01 = "20:16:08:10:45:37";
-        //MAC_BT_02 = "20:16:08:10:45:28";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        //DIRESA 100 7p
-        //MAC_BT_01 = "20:16:08:10:62:10";
-        //MAC_BT_02 = "20:16:08:10:64:43";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        //DIRESA 101 4p
-        //MAC_BT_01 = "20:16:08:10:83:58";
-        //MAC_BT_02 = "20:16:08:10:60:73";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        //DIRESA 100 4p
-        //MAC_BT_01 = "20:16:08:10:42:38";
-        //MAC_BT_02 = "20:16:08:09:04:41";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // CLINICA INTERNACIONAL - PUERTA (NUEVA VERSION)
-        // old
-        //MAC_BT_00 = "00:21:13:01:7E:47";
-        //MAC_BT_01 = "20:16:09:21:89:49";
-        //MAC_BT_02 = "20:16:07:14:10:45";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-        // new
-        //MAC_BT_00 = "00:21:13:01:7E:47";
-        //MAC_BT_01 = "20:16:08:10:63:74";
-        //MAC_BT_02 = "20:16:08:10:68:89";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // ARIS TESTER
-        //MAC_BT_00 = "00:00:00:00:00:00";
-        //MAC_BT_01 = "20:16:07:14:12:92";
-        //MAC_BT_02 = "20:16:07:18:33:38"; //
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // DIRESA TEST BATERIA
-        //MAC_BT_00 = "00:21:13:01:7A:CB"; //1234
-        //MAC_BT_01 = "00:12:06:04:81:46";
-        //MAC_BT_02 = "00:12:06:04:80:14";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // ARIS 2 (SECURITAS)
-        //MAC_BT_00 = "00:00:00:00:00:00";
-        //MAC_BT_01 = "20:16:08:04:87:50";
-        //MAC_BT_02 = "20:16:08:10:62:98";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // VENTAS DEMO
-        //MAC_BT_00 = "00:00:00:00:00:00";
-        //MAC_BT_01 = "20:16:08:04:87:50";
-        //MAC_BT_02 = "20:16:08:10:62:98";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // ARIS 1 PULSADORES Y RELAY (DESARROLLADOR)
-        //MAC_BT_00 = "00:21:13:01:7D:B9";
-        //MAC_BT_01 = "20:16:08:10:64:50";
-        //MAC_BT_02 = "20:16:08:10:65:26";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-
-        // ARIS ID=1 PULSADORES Y RELAY (OFICIAL)
-        //MAC_BT_00 = "00:21:13:01:7E:10";
-        //MAC_BT_01 = "20:16:07:14:09:92";
-        //MAC_BT_02 = "20:16:07:18:49:76";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // ARIS ID=2 PULSADORES Y RELAY (OFICIAL)
-        //MAC_BT_00 = "00:21:13:01:7F:1A";
-        //MAC_BT_01 = "20:16:06:30:84:11";
-        //MAC_BT_02 = "20:16:06:30:86:16";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // ARIS ID=3 PULSADORES Y RELAY (OFICIAL)
-        //MAC_BT_00 = "00:21:13:01:7D:63";
-        //MAC_BT_01 = "20:16:09:21:91:21";
-        //MAC_BT_02 = "20:16:07:18:32:13";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-        // ARIS ID=4 PULSADORES Y RELAY (OFICIAL)
-        //MAC_BT_00 = "00:21:13:01:7F:25";
-        //MAC_BT_01 = "20:16:08:10:67:76";
-        //MAC_BT_02 = "20:16:08:10:58:54";
-        //MAC_BT_03 = "00:00:00:00:00:00";
-
-
-        //MODO_EVENTO = true;
-        //TIPO_TERMINAL = 2;
         INTERFACE_ETH = true;
         INTERFACE_WLAN = true;
         INTERFACE_PPP = true;
@@ -1743,9 +1598,18 @@ public class ActivityPrincipal extends Activity {
     }
 
     public void InicializarModoEvento() {
+
+        // Tamaño de letra de el texto de los botones de evento
+        // El tamaño de letra se calcula según la cantidad de botones en la pantalla principal
+        // Entre más botones en la pantalla menos será el tamaño de letra
+        // Entre menos botones en la pantalla mas serpa el tamaño de letra
+        int sizeBtnEvent = 21 + 4 * (8 - BOTONES_EVENTO.replace("0","").length());
+
         if (BOTONES_EVENTO.substring(0,1).equalsIgnoreCase("1")) {
             btnEvent01.setVisibility(View.VISIBLE);
             btnEvent01.setText(TEXTO_BOTONES_EVENTO.split(",")[0]);
+            btnEvent01.setTextSize(sizeBtnEvent);
+
         } else {
             btnEvent01.setVisibility(View.GONE);
         }
@@ -1753,6 +1617,7 @@ public class ActivityPrincipal extends Activity {
         if (BOTONES_EVENTO.substring(1,2).equalsIgnoreCase("1")) {
             btnEvent02.setVisibility(View.VISIBLE);
             btnEvent02.setText(TEXTO_BOTONES_EVENTO.split(",")[1]);
+            btnEvent02.setTextSize(sizeBtnEvent);
         } else {
             btnEvent02.setVisibility(View.GONE);
         }
@@ -1760,6 +1625,7 @@ public class ActivityPrincipal extends Activity {
         if (BOTONES_EVENTO.substring(2,3).equalsIgnoreCase("1")) {
             btnEvent03.setVisibility(View.VISIBLE);
             btnEvent03.setText(TEXTO_BOTONES_EVENTO.split(",")[2]);
+            btnEvent03.setTextSize(sizeBtnEvent);
         } else {
             btnEvent03.setVisibility(View.GONE);
         }
@@ -1767,6 +1633,7 @@ public class ActivityPrincipal extends Activity {
         if (BOTONES_EVENTO.substring(3,4).equalsIgnoreCase("1")) {
             btnEvent04.setVisibility(View.VISIBLE);
             btnEvent04.setText(TEXTO_BOTONES_EVENTO.split(",")[3]);
+            btnEvent04.setTextSize(sizeBtnEvent);
         } else {
             btnEvent04.setVisibility(View.GONE);
         }
@@ -1774,6 +1641,7 @@ public class ActivityPrincipal extends Activity {
         if (BOTONES_EVENTO.substring(4,5).equalsIgnoreCase("1")) {
             btnEvent05.setVisibility(View.VISIBLE);
             btnEvent05.setText(TEXTO_BOTONES_EVENTO.split(",")[4]);
+            btnEvent05.setTextSize(sizeBtnEvent);
         } else {
             btnEvent05.setVisibility(View.GONE);
         }
@@ -1781,6 +1649,7 @@ public class ActivityPrincipal extends Activity {
         if (BOTONES_EVENTO.substring(5,6).equalsIgnoreCase("1")) {
             btnEvent06.setVisibility(View.VISIBLE);
             btnEvent06.setText(TEXTO_BOTONES_EVENTO.split(",")[5]);
+            btnEvent06.setTextSize(sizeBtnEvent);
         } else {
             btnEvent06.setVisibility(View.GONE);
         }
@@ -1788,6 +1657,7 @@ public class ActivityPrincipal extends Activity {
         if (BOTONES_EVENTO.substring(6,7).equalsIgnoreCase("1")) {
             btnEvent07.setVisibility(View.VISIBLE);
             btnEvent07.setText(TEXTO_BOTONES_EVENTO.split(",")[6]);
+            btnEvent07.setTextSize(sizeBtnEvent);
         } else {
             btnEvent07.setVisibility(View.GONE);
         }
@@ -1795,6 +1665,7 @@ public class ActivityPrincipal extends Activity {
         if (BOTONES_EVENTO.substring(7).equalsIgnoreCase("1")) {
             btnEvent08.setVisibility(View.VISIBLE);
             btnEvent08.setText(TEXTO_BOTONES_EVENTO.split(",")[7]);
+            btnEvent08.setTextSize(sizeBtnEvent);
         } else {
             btnEvent08.setVisibility(View.GONE);
         }
@@ -1802,37 +1673,44 @@ public class ActivityPrincipal extends Activity {
     }
 
     public void HabilitarBluetooth() {
-        switch (TIPO_TERMINAL) {
-            case 1:
-                BT_01_ENABLED = true;
-                BT_02_ENABLED = false;
-                BT_03_ENABLED = false;
-                break;
-            case 2:
-                BT_01_ENABLED = true;
-                BT_02_ENABLED = true;
-                BT_03_ENABLED = false;
-                break;
-            case 3:
-                BT_01_ENABLED = true;
-                BT_02_ENABLED = false;
-                BT_03_ENABLED = true;
-                break;
-            case 4:
-                BT_01_ENABLED = true;
-                BT_02_ENABLED = true;
-                BT_03_ENABLED = true;
-                break;
-            case 5:
-                BT_01_ENABLED = false;
-                BT_02_ENABLED = true;
-                BT_03_ENABLED = false;
-                break;
-            default:
-                BT_01_ENABLED = false;
-                BT_02_ENABLED = false;
-                BT_03_ENABLED = false;
-                break;
+        if(MODO_ADB){
+            BT_01_ENABLED = false;
+            BT_02_ENABLED = false;
+            BT_03_ENABLED = false;
+        }else{
+
+            switch (TIPO_TERMINAL) {
+                case 1:
+                    BT_01_ENABLED = true;
+                    BT_02_ENABLED = false;
+                    BT_03_ENABLED = false;
+                    break;
+                case 2:
+                    BT_01_ENABLED = true;
+                    BT_02_ENABLED = true;
+                    BT_03_ENABLED = false;
+                    break;
+                case 3:
+                    BT_01_ENABLED = true;
+                    BT_02_ENABLED = false;
+                    BT_03_ENABLED = true;
+                    break;
+                case 4:
+                    BT_01_ENABLED = true;
+                    BT_02_ENABLED = true;
+                    BT_03_ENABLED = true;
+                    break;
+                case 5:
+                    BT_01_ENABLED = false;
+                    BT_02_ENABLED = true;
+                    BT_03_ENABLED = false;
+                    break;
+                default:
+                    BT_01_ENABLED = false;
+                    BT_02_ENABLED = false;
+                    BT_03_ENABLED = false;
+                    break;
+            }
         }
     }
 
@@ -1848,15 +1726,30 @@ public class ActivityPrincipal extends Activity {
 
         InicializarObjetosSeriales();
 
-        btSocketEthernet = new Bluetooth(MAC_BT_00);
-        btSocket01 = new Bluetooth(MAC_BT_01);
-        btSocket02 = new Bluetooth(MAC_BT_02);
-        btSocket03 = new Bluetooth(MAC_BT_03);
+        // Consultar el tipo de conexion a terminal
+        // modo ADB = true => es una conexion por cables
+        // modo ADB = FALSE => es una conecion por bluetooth
+        if(MODO_ADB){
 
-        //logManager.RegisterLogTXT("Seriales: " + MAC_BT_01 + " - " + MAC_BT_02 + " - " + MAC_BT_03);
+        }else{
+            btSocketEthernet = new Bluetooth(MAC_BT_00);
+            btSocket01 = new Bluetooth(MAC_BT_01);
+            btSocket02 = new Bluetooth(MAC_BT_02);
+            btSocket03 = new Bluetooth(MAC_BT_03);
 
-        threadConnectSerial = new ThreadConnectSerial(this);
-        threadConnectSerial.start();
+            // Registrar las MAC de los BT que utilizará la aplicación
+            queriesLogTerminal.insertLogTerminal(TAG,btSocketEthernet.getMACBTtoLog(MAC_BT_00) + "|" +
+                            btSocket01.getMACBTtoLog(MAC_BT_01) + "|" +
+                            btSocket02.getMACBTtoLog(MAC_BT_02) + "|" +
+                            btSocket03.getMACBTtoLog(MAC_BT_03)
+                    ,"");
+
+            //logManager.RegisterLogTXT("Seriales: " + MAC_BT_01 + " - " + MAC_BT_02 + " - " + MAC_BT_03);
+
+            threadConnectSerial = new ThreadConnectSerial(this);
+            threadConnectSerial.start();
+        }
+
 
     }
 
@@ -1936,7 +1829,7 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "444432":
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: SUPREMA (CANCEL)");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: SUPREMA (CANCEL)");
                 //logManager.RegisterLogTXT("COMANDO: SUPREMA (CANCEL)");
                 try {
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"Cancel",null);
@@ -1947,7 +1840,7 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "222232":
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: SUPREMA (DELETE_ALL_TEMPLATES)");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: SUPREMA (DELETE_ALL_TEMPLATES)");
                 //logManager.RegisterLogTXT("COMANDO: SUPREMA (DELETE_ALL_TEMPLATES)");
                 try{
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"DeleteAllTemplates",null);
@@ -1960,7 +1853,7 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "333332":
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: SUPREMA (NUMBER_TEMPLATES)");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: SUPREMA (NUMBER_TEMPLATES)");
                 //logManager.RegisterLogTXT("COMANDO: SUPREMA (NUMBER_TEMPLATES)");
                 try{
                     objSuprema.writeToSuprema(btSocket02.getOutputStream(),"NumberTemplate",null);
@@ -1974,7 +1867,7 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "111132":
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: HABILITAR REPLICADO");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: HABILITAR REPLICADO");
                 //logManager.RegisterLogTXT("COMANDO: HABILITAR REPLICADO");
                 isReplicating = true;
                 Toast.makeText(ActivityPrincipal.this,"Iniciando Replicado",Toast.LENGTH_SHORT).show();
@@ -2017,12 +1910,12 @@ public class ActivityPrincipal extends Activity {
                 Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: OCULTAR SYSTEMUI");
                 //logManager.RegisterLogTXT("COMANDO: OCULTAR SYSTEMUI");
                 try {
-                    if(versionSDK >= 23){
-                        Log.v(TAG,"wm overscan -50,0,-50,0");
-                        runShellCommand("wm overscan -50,0,-50,0 \n");
-                    }else{
+                    if(util.isRooted()){
                         Log.v(TAG,"hideNavigationBar true");
                         hideNavigationBar(true);
+                    }else{
+                        Log.v(TAG,"wm overscan -50,0,-50,0");
+                        runShellCommand("wm overscan -50,0,-50,0 \n");
                     }
                     Toast.makeText(ActivityPrincipal.this,"Modo Cliente",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -2031,15 +1924,15 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "113322443241322": // MOSTRAR SYSTEMUI
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: MOSTRAR SYSTEMUI");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: MOSTRAR SYSTEMUI");
                 //logManager.RegisterLogTXT("COMANDO: MOSTRAR SYSTEMUI");
                 try {
-                    if(versionSDK >= 23){
-                        Log.v(TAG,"wm overscan reset");
-                        runShellCommand("wm overscan reset \n");
-                    }else{
+                    if(util.isRooted()){
                         Log.v(TAG,"hideNavigationBar false");
                         hideNavigationBar(false);
+                    }else{
+                        Log.v(TAG,"wm overscan reset");
+                        runShellCommand("wm overscan reset \n");
                     }
                     Toast.makeText(ActivityPrincipal.this,"Modo Desarrollo",Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
@@ -2048,12 +1941,18 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "113322443241323": // REINICIAR
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: REINICIAR");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: REINICIAR");
                 //logManager.RegisterLogTXT("COMANDO: REINICIAR");
                 try {
                     Toast.makeText(ActivityPrincipal.this,"Reiniciar Terminal",Toast.LENGTH_SHORT).show();
-                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot"});
-                    proc.waitFor();
+                    if(util.isRooted()){
+                        Log.v(TAG,"su -c reboot");
+                        Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot"});
+                        proc.waitFor();
+                    }else{
+                        PowerAdmin powerAdmin = new PowerAdmin();
+                        powerAdmin.reboot();
+                    }
                 } catch (Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: REINICIAR -> " + e.getMessage());
                 }
@@ -2064,15 +1963,21 @@ public class ActivityPrincipal extends Activity {
                 //logManager.RegisterLogTXT("COMANDO: APAGAR");
                 try {
                     Toast.makeText(ActivityPrincipal.this,"Apagar Terminal",Toast.LENGTH_SHORT).show();
-                    Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
-                    proc.waitFor();
+                    if(util.isRooted()){
+                        Log.v(TAG,"su -c reboot -p");
+                        Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
+                        proc.waitFor();
+                    }else{
+                        PowerAdmin powerAdmin = new PowerAdmin();
+                        powerAdmin.shutdown();
+                    }
                 } catch (Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: APAGAR -> " + e.getMessage());
                 }
                 break;
 
             case "113322443241311": // ABRIR CONFIGURACION DE ANDROID
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: CONFIGURACION DE ANDROID");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: CONFIGURACION DE ANDROID");
                 //logManager.RegisterLogTXT("COMANDO: CONFIGURACION DE ANDROID");
                 try {
                     Toast.makeText(ActivityPrincipal.this,"Configurar dispositivo",Toast.LENGTH_SHORT).show();
@@ -2086,7 +1991,7 @@ public class ActivityPrincipal extends Activity {
                 break;
 
             case "41444414":
-                Log.d(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: APAGAR");
+                Log.v(TAG,"SYSTEM_MAIN_INSTRUCTION " + "COMANDO: APAGAR");
                 //logManager.RegisterLogTXT("COMANDO: CONFIGURACION DE ANDROID");
                 try {
                     ShutdownArduino(btSocket01.getOutputStream());
@@ -2102,76 +2007,17 @@ public class ActivityPrincipal extends Activity {
                 }
 
                 break;
-
+            case "4321":
+                Log.v(TAG, "SYSTEM_MAIN_INSTRUCTION " + "COMANDO: CLOSE APP");
+                //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
+                try {
+                    monitorApp.closeApp();
+                    Toast.makeText(ActivityPrincipal.this,"Close App",Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Log.e(TAG, "ERROR_SYSTEM_MAIN " + "COMANDO: CLOSE APP -> " + e.getMessage());
+                }
+                break;
             case "4411":
-                //QueriesMarcaciones queriesMarcaciones = new QueriesMarcaciones(context);
-                //QueriesParameters queriesParameters = new QueriesParameters(context);
-                //queriesParameters.poblar();
-                //queriesMarcaciones.ModoMarcacion(".#$%&$%","1",2,"127",fechahora.getFechahora(),"");
-                //URRUTIA MENDOZA G,46388059,MARCACION AUTORIZADA,,10,DNI_MANO
-
-                //queriesMarcaciones.ModoMarcacion("1315","1",10,"127",fechahora.getFechahora(),"DNI_MANO");
-                //URRUTIA MENDOZA G,1315,MARCACION AUTORIZADA,,0,DNI_MANO
-
-                //Log.v(TAG,"BTS-MAET ..............................................");
-                //MainEthernet mainEthernet = new MainEthernet();
-                //mainEthernet.testerLlamadas();
-
-
-                /*
-                Log.v(TAG,"AsyncTask---" + " Estado: " + ethernetRead.getStatus());
-
-                try{
-                    if(ethernetRead.getStatus() == AsyncTask.Status.PENDING){
-                        ethernetRead.execute();
-                        Log.v(TAG,"AsyncTask---" + " Ejecutando task (PENDING)");
-                    }else if(ethernetRead.getStatus() == AsyncTask.Status.RUNNING){
-                        ethernetRead.cancel(true);
-                        Log.v(TAG,"AsyncTask---" + " Cancelando task");
-                    }else if(ethernetRead.getStatus() == AsyncTask.Status.FINISHED){
-                        ethernetRead = new EthernetRead();
-                        ethernetRead.execute();
-                        Log.v(TAG,"AsyncTask---" + " Ejecutando task (FINISHED)");
-                    }
-                }catch(Exception e){
-                    Log.e(TAG,"AsyncTask---" + "Error " + e.getMessage());
-                }
-                */
-
-                /*
-                Log.v(TAG,"BTS-MAET ..............................................");
-                try{
-                    //ProcessSyncEthernet processSyncEthernet = new ProcessSyncEthernet();
-                    //processSyncEthernet.execute();
-                    mainEthernet.startEthernetReading();
-                }catch(Exception e){
-                    Log.e(TAG,"BTS-MAET " + e.getMessage());
-                }
-                */
-
-
-                /*
-                mysql mysql = new mysql();
-                try{
-                    mysql.conectar();
-                    mysql.Consulta();
-                    //ArrayAdapter adapter = new ArrayAdapter (ActivityPrincipal.context,android.R.layout.simple_spinner_item,mysql.Consulta());
-                    //spinner.setAdapter(adapter);
-                }catch(Exception e){
-
-                }
-                */
-
-                /*
-                Log.v(TAG,"LLAMADAS JSON");
-                ProcessSync processSync = new ProcessSync();
-                processSync.ProcessLlamadas(context);
-                */
-
-                //Log.v(TAG,"BT " + "Bluetooth");
-                //btSocket01.closeBT();
-
-
                 Log.d(TAG, "SYSTEM_MAIN_INSTRUCTION " + "COMANDO: BACKUP RESTARING BD");
                 //logManager.RegisterLogTXT("COMANDO: REINICIALIZAR BD");
                 try {
@@ -2180,48 +2026,42 @@ public class ActivityPrincipal extends Activity {
                 } catch (Exception e) {
                     Log.e(TAG, "ERROR_SYSTEM_MAIN " + "COMANDO: BACKUP RESTARING BD -> " + e.getMessage());
                 }
-
-                /*
-                Log.v(TAG,"Prueba de Aplicacion no responde");
-                try{
-                    Thread.sleep(30000);
-                    while(true){
-                    }
-                }catch (Exception e){
-                    Log.e(TAG,"Prueba de Aplicacion no responde");
-                }
-                */
-
-                //ProcessSyncUSB processSyncUSB = new ProcessSyncUSB();
-                //processSyncUSB.startOTGOnOff();
-
                 break;
-
             case "4422":
                 try{
-                    //244F4158410013443030303030303030303030303030303004A441
-                    //24 4F 41 58 41 00 13 35 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 04 95 41
-                    //Log.v(TAG,"Calcular Checksum <<<<" + util.getChecksum("00000602000046530000060200017479000007020000016c000007020001b163000000040000885e000000040001625d0000040500006b67000004050001ee5d0000060500008a65000006050001f459000007050000a266000007050001665d000000060000e060000000060001975f000007060000655d000007060001af5c00000707000048610000070700015b6b000004090000785c000004090001975d0000070900009a5a000007090001a3620000001000003d70000000100001e95d0000071000002a590000071000010d5f000007130000045d000007130001b05e000000140000ce5a000000140001a45c000003140000ef68000003140001d74e000000150000946e000000150001616a000007160000e85e000007160001ad660000071700002d4a0000071700014959000000180000c1760000001800014d6d000006180000bb69000006180001355400000718000032600000071800010c5a00000721000013770000072100015f59000007220000ef68000007220001b75a000003230000925e000003230001415e0000072600000f5d0000072600012d5d000006350000f3730000063500016465000006370000b45e000006370001175c0000064600009168000006460001845600000547000000630000054700013167000001480000b1610000065000006253000006500001d9610000065200004955000006520001b057000006550000a15a0000065500014e52000002640000236d000002640001c15c0000066500007a61000006650001bd580000056900003460000005690001e1740000066900009a6a000006690001b163000006780000ed56000006780001e55d000006790000c06400000679000123630000068800007f68000006880001355800000096000029480000009600014f5c00000699000010550000069900015d5d",8) + ">>>>");
-                    // queriesPersonalTipolectoraBiometria.listarIndicesEnrrolados();
-                    //queriesPersonalTipolectoraBiometria.freeScanOnOffSuprema(false);
-                    //queriesPersonalTipolectoraBiometria.freeScanOnOffSuprema(true);
-
-                    //Log.v(TAG,"geoLocationListener inicio");
-                    //GeoLocationListener geoLocationListener = new GeoLocationListener();
-
                     Log.v(TAG,"dbManager copyDB");
+                    Log.v(TAG,"Directorio>>>" + Environment.getExternalStorageDirectory().toString() + "/tempus/");
                     dbManager.copyDB(Environment.getExternalStorageDirectory().toString() + "/tempus/","tempusplus");
-                    //internalFile.writeToAppend("holaaaa",Environment.getExternalStorageDirectory().toString() + "/tempus/testing.txt");
-
+                    Toast.makeText(ActivityPrincipal.this,"Backup de base de datos",Toast.LENGTH_SHORT).show();
                 }catch (Exception e){
-                    //Log.e(TAG,"Calcular Checksum " + e.getMessage());
-                    Log.e(TAG,"queriesPersonalTipolectoraBiometria.EliminarBiometriasPersonalCesado " + e.getMessage());
+                    Log.e(TAG,"dbManager copyDB" + e.getMessage());
                 }
                 break;
 
             case "4433":
-                Log.v(TAG,"Suprema Commands----------------------------------------------------------------------------------------------");
+                Log.v(TAG,"4433 ----------------------------------------------------------------------------------------------");
+
                 try{
+                    Toast.makeText(ActivityPrincipal.this,"4433",Toast.LENGTH_SHORT).show();
+
+
+                    /*
+                    while(true){
+                        Log.v(TAG,"bucle infinito");
+                    }
+                    */
+
+
+
+                    //usbManager = (UsbManager) ActivityPrincipal.context.getSystemService(Context.USB_SERVICE);
+                    //UsbAccessory[] accessoryList = usbManager.getAccessoryList();
+                    //for(int i = 0; i < accessoryList.length; i++ ){
+                    //    Log.v(TAG,"accessoryList " + accessoryList[i].toString());
+                    //}
+                    //mPermissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_USB_PERMISSION), 0);
+                    //IntentFilter filter = new IntentFilter(ACTION_USB_PERMISSION);
+                    //registerReceiver(mUsbReceiver, filter);
+
 
                     //btSocket02.getOutputStream().write(util.hexStringToByteArray("4018000000000000000000580A")); // LT : List User ID
 
@@ -2240,7 +2080,7 @@ public class ActivityPrincipal extends Activity {
                     //btSocket02.getOutputStream().write(util.hexStringToByteArray("4019000006020000000000610A")); //Check User ID
                     //btSocket02.getOutputStream().write(util.hexStringToByteArray("4066000006020000000000AE0A")); //Read Administration Level of a User
                 }catch (Exception e){
-                    Log.e(TAG,"Suprema Commands " + e.getMessage());
+                    Log.e(TAG,"4433 " + e.getMessage());
                 }
                 break;
 
@@ -3018,7 +2858,7 @@ public class ActivityPrincipal extends Activity {
             threadHorariosRelay.startRelayReading(2);
             Thread.sleep(200);
             out.write(util.hexStringToByteArray("AAAAAAAAAA" + "244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41"));
-            Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay01 + relay02 + "30" + tiempoActivoRelay01 + tiempoActivoRelay02 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41");
+            Log.v(TAG,"244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay01 + relay02 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01 + util.getChecksum("244F4158410013424e4e4e4e4e4e4e4e4e4e4e" + relay02 + relay01 + "30" + tiempoActivoRelay02 + tiempoActivoRelay01,4) + "41");
             relay01 = "4e";
             relay02 = "4e";
             tiempoActivoRelay01 = "4e";
@@ -3727,7 +3567,7 @@ public class ActivityPrincipal extends Activity {
 
             String acumulador = "";
 
-            while (true) {
+            while (!MODO_ADB) {
                 //Log.v(TAG,"threadSerial01UPD loop");
                 if (!BT_01_IS_CONNECTED) {
                     util.sleep(1000);
@@ -3754,17 +3594,6 @@ public class ActivityPrincipal extends Activity {
                     } catch (Exception e) {
                         if (!isBooting) {
                             BT_01_IS_CONNECTED = false;
-                            /*
-                            try{
-                                Thread.sleep(3000);
-                                //btSocket01.closeBT();
-                                Log.v(TAG,"btSocket01.ConnectBT()");
-                                btSocket01.ConnectBT();
-                                internalFile.writeToAppend(fechahora.getFechahora() + ": " + "btSocket01.ConnectBT() ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
-                            }catch (Exception ex){
-                                Log.e(TAG,"btSocket01.ConnectBT() " + ex.getMessage());
-                            }
-                            */
                         }
                     }
                 }
@@ -3779,7 +3608,7 @@ public class ActivityPrincipal extends Activity {
 
             String acumulador = "";
             int tamano = 26;
-            while (true) {
+            while (!MODO_ADB) {
                 //Log.v(TAG,"threadSerial02UPD loop");
                 if (!BT_02_IS_CONNECTED) {
                     util.sleep(1000);
@@ -3831,17 +3660,6 @@ public class ActivityPrincipal extends Activity {
                     } catch (Exception e) {
                         if (!isBooting){
                             BT_02_IS_CONNECTED = false;
-                            /*
-                            try{
-                                Thread.sleep(3000);
-                                //btSocket02.closeBT();
-                                Log.v(TAG,"btSocket02.ConnectBT()");
-                                btSocket02.ConnectBT();
-                                internalFile.writeToAppend(fechahora.getFechahora() + ": " + "btSocket02.ConnectBT() ",Environment.getExternalStorageDirectory().toString() + "/tempus/" + "blueetoothonoff.txt");
-                            }catch (Exception ex){
-                                Log.e(TAG,"btSocket02.ConnectBT() " + ex.getMessage());
-                            }
-                            */
                         }
                     }
                 }
@@ -3852,16 +3670,14 @@ public class ActivityPrincipal extends Activity {
 
     /* --- CONTROL PRINCIPAL --- */
     public void controlGeneral(boolean c1,boolean c2, boolean c3) {
-        Log.v(TAG,"CONTROL GENERAL");
-        Log.v(TAG,"isCharging: " + isCharging);
-        Log.v(TAG,"isBooting: " + isBooting);
-        Log.v(TAG,"BT_01_IS_CONNECTED: " + BT_01_IS_CONNECTED);
-        Log.v(TAG,"BT_02_IS_CONNECTED: " + BT_02_IS_CONNECTED);
+        //Log.v(TAG,"CONTROL GENERAL");
+        Log.v(TAG,"BT_01_IS_CONNECTED: " + BT_01_IS_CONNECTED + " " +
+                "BT_02_IS_CONNECTED:" + BT_02_IS_CONNECTED + " " +
+                "BT_03_IS_CONNECTED: " + BT_03_IS_CONNECTED + " " +
+                "isCharging: " + isCharging + " " +
+                "isBooting: " + isBooting);
 
         if (c1 && c2 && c3){ // Si todos los seriales estan conectados podemos hacer algo
-
-            //Obtener status ADC
-            //statusADC("");
 
             if (isBooting){
                 isBooting = false;
@@ -3917,57 +3733,14 @@ public class ActivityPrincipal extends Activity {
                     //showMsgBoot(true,"Apagando Equipo en 15 segundos ... espere ...");
                     showMsgBoot(true,"Energía insuficiente, conecte cargador");
 
-                    //Intent intent01 = new Intent(ActivityPrincipal.this, ActivityLogin.class);
-                    //intent01.putExtra("llave", "valor");
-                    //startActivityForResult(intent01, 1);
-
-                    //UserInterfaceM userInterfaceM = new UserInterfaceM();
-                    //userInterfaceM.goToActivity(ActivityPrincipal.this, ActivityLogin.class,"","");
-
-                    /*
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                        }
-                    });
-                    */
-
                     c = 15;
 
-                    Thread threadShutdown = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-
-                            try {
-                                ShutdownArduino(btSocket01.getOutputStream());
-                            } catch (Exception e) {
-                                Log.e(TAG,"Error 15s -> " + e.getMessage());
-                            }
-
-                            try {
-                                Thread.sleep(15000);
-                                Process proc = Runtime.getRuntime().exec(new String[]{"su","-c","reboot -p"});
-                                proc.waitFor();
-                            } catch (Exception e) {
-                                Log.wtf(TAG,"WTF " + e.getMessage());
-                            }
-                        }
-                    });
-
-                    //logManager.RegisterLogTXT("Apagando");
-                    //threadShutdown.start();
 
                 } else {
                     logManager.RegisterLogTXT("Reconectando Interfaces");
                     c = 100;
                     detail = detail + "\n";
-                    /*
-                    BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                    if(bluetoothAdapter.disable()){
-                        bluetoothAdapter.enable();
-                    }
-                    */
+
                     showMsgBoot(true,"Reconectando Interfaces \n"+detail+"]");
                     if(INICIADO){
                         try{
@@ -4007,8 +3780,8 @@ public class ActivityPrincipal extends Activity {
     Thread threadControlPrincipal = new Thread(new Runnable() {
         @Override
         public void run() {
-            while (true) {
-                Log.d(TAG,"Debug Principal: ");
+            while (!MODO_ADB) {
+                //Log.d(TAG,"Debug Principal: ");
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -4057,15 +3830,14 @@ public class ActivityPrincipal extends Activity {
                                 break;
                         }
 
-                        Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
-                        //Log.v(TAG, "THREAD_COUNT" + String.valueOf(threadSet));
-
                     }
                 });
 
                 util.sleep(3000);
 
             }
+
+            controlGeneral(true,true,true);
         }
     });
 
@@ -4075,7 +3847,7 @@ public class ActivityPrincipal extends Activity {
             while (true) {
                 if (ctrlThreadPantallaEnabled){
 
-                    Log.d(TAG,"threadControlPantalla: [FLAG=" + flag + "] - [TIEMPO_ACTIVO=" + TIEMPO_ACTIVO + "] - [MARCACION_ACTIVA=" + MARCACION_ACTIVA + "] - [MODO_MARCACION=" + MODO_MARCACION + "]");
+                    //Log.v(TAG,"threadControlPantalla: [FLAG=" + flag + "] - [TIEMPO_ACTIVO=" + TIEMPO_ACTIVO + "] - [MARCACION_ACTIVA=" + MARCACION_ACTIVA + "] - [MODO_MARCACION=" + MODO_MARCACION + "]");
 
                     try {
                         if (TIEMPO_ACTIVO <= 0) {
@@ -4085,7 +3857,7 @@ public class ActivityPrincipal extends Activity {
                             MARCACION_ACTIVA = false;
                             MODO_MARCACION = "";
 
-                            Log.v(TAG,"threadControlPantalla: 1");
+                            // Log.v(TAG,"threadControlPantalla: 1");
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -4259,25 +4031,26 @@ public class ActivityPrincipal extends Activity {
         }
     });
 
-
     Thread threadFechahora = new Thread(new Runnable() {
         @Override
         public void run() {
             while (true) {
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Calendar calendar = Calendar.getInstance();
-                            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-                            txcHora.setText(simpleDateFormat.format(calendar.getTime()));
-                        } catch (Exception e) {
-                            Log.wtf(TAG,"Fechahora_HILO ERROR EN SET TEXT txcHora... " +e.getMessage());
+                try{
+                    Thread.sleep(250);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Calendar calendar = Calendar.getInstance();
+                                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+                                txcHora.setText(simpleDateFormat.format(calendar.getTime()));
+                            } catch (Exception e) {
+                                Log.wtf(TAG,"Fechahora_HILO ERROR EN SET TEXT txcHora... " +e.getMessage());
+                            }
                         }
-                    }
-                });
-                util.sleep(250);
+                    });
+                }catch (Exception e){
+                }
             }
         }
     });
@@ -4288,14 +4061,105 @@ public class ActivityPrincipal extends Activity {
         public void run() {
             while (true) {
                 try{
-                    statusADC("");
                     Thread.sleep(1000);
+                    statusADC("");
                 }catch (Exception e){
-                    try{
-                        Thread.sleep(1000);
-                    }catch (Exception ex){
-                    }
                     Log.e(TAG,"threadStatusADC " + e.getMessage());
+                }
+            }
+        }
+    });
+
+    Thread threadBarraTerminalInfo = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                try{
+                    Thread.sleep(1000);
+
+                    // Consulta cada 5 segundos
+                    if(Integer.valueOf(fechahora.getFechahora().substring(17,19)) % 5 == 0){
+                        // Log.v(TAG,"threadBarraTerminalInfo cada 5 segundos");
+                        idTerminal = dbManager.valexecSQL("SELECT IDTERMINAL FROM TERMINAL;");
+                        marcasNoSync = Integer.valueOf(dbManager.valexecSQL("SELECT COUNT(*) FROM MARCACIONES WHERE SINCRONIZADO = 0;"));
+                        logterminalNoSync = Integer.valueOf(dbManager.valexecSQL("SELECT COUNT(*) FROM LOG_TERMINAL WHERE SINCRONIZADO = 0"));
+                    }
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            DecimalFormat decimalFormat = new DecimalFormat("#.00");
+                            txvBarraTerminalInfo.setText("ID(" + idTerminal + ")" + "\t" +
+                                    "M(" + marcasNoSync + ")" + "\t" +
+                                    "B(" + statusBattery + "," + levelBattery + "," + voltage + "," + currentBattery + ")" + "\t" +
+                                    "E(" + turnOnExternalEnergy + "," + decimalFormat.format(levelUPS).replace(",",".") + "," + decimalFormat.format(UPSCharge).replace(",",".") + "," + temperatureTerminal + ")" + "\t" +
+                                    "DB(" + Database.sizeDB.trim() + ")" + "\t" +
+                                    "L(" + logterminalNoSync + ")" + "\t" +
+                                    "V(" + versionNameCode + ")"
+                            );
+                        }
+                    });
+
+                }catch (Exception e){
+                    Log.e(TAG,"threadBarraTerminalInfo " + e.getMessage());
+                }
+            }
+        }
+    });
+
+
+
+    Thread threadAhorroEnergia = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                try{
+                    Thread.sleep(1000);
+
+                    // Consultar si AHORRO_ENERGIA esta activado
+                    if(false){
+
+                        // Evaluar la intensidad del brillo de acuerdo al nivel de batería
+                        if(levelBattery >= 75){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                                    layoutParams.screenBrightness = (float) 1.0;
+                                    getWindow().setAttributes(layoutParams);
+                                }
+                            });
+                        }else if(levelBattery >= 50){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                                    layoutParams.screenBrightness = (float) 0.7;
+                                    getWindow().setAttributes(layoutParams);
+                                }
+                            });
+                        }else if(levelBattery >= 25){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                                    layoutParams.screenBrightness = (float) 0.4;
+                                    getWindow().setAttributes(layoutParams);
+                                }
+                            });
+                        }else{
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                                    layoutParams.screenBrightness = (float) 0.1;
+                                    getWindow().setAttributes(layoutParams);
+                                }
+                            });
+                        }
+                    }
+                }catch (Exception e){
+                    Log.e(TAG,"threadAhorroEnergia " + e.getMessage());
                 }
             }
         }
@@ -4343,101 +4207,6 @@ public class ActivityPrincipal extends Activity {
         }
     });
 
-
-    Thread LookErrorApp = new Thread(new Runnable() {
-        @Override
-        public void run() {
-
-            int indexFor = 0;
-            //Activity activity;
-            ActivityManager manager;
-            int condicionApp = -1;
-            List<ActivityManager.ProcessErrorStateInfo> stateInRun;
-            //List<ActivityManager.RunningAppProcessInfo> infoRunProcess;
-            String app;
-
-            manager = (ActivityManager) ActivityPrincipal.this.getSystemService(Context.ACTIVITY_SERVICE);
-
-            while (true) {
-
-                try {
-                    Thread.sleep(1000);
-                    Log.v(TAG,"LookErrorApp - Inicio de Revisión ");
-                    stateInRun = manager.getProcessesInErrorState();
-                    Log.v(TAG,"stateInRun " + stateInRun.toString());
-                    if (stateInRun != null) {
-                        Log.v(TAG,"stateInRun " + stateInRun.toString());
-                        if (stateInRun.size() > 0) {
-                            for (indexFor = 0; indexFor < stateInRun.size(); indexFor++) {
-                                condicionApp = stateInRun.get(indexFor).condition;
-                                //obteniendo el nombre de la app para forzar el cierre
-                                app=stateInRun.get(indexFor).processName;
-                                switch (condicionApp) {
-                                    case ActivityManager.ProcessErrorStateInfo.CRASHED:
-                                        Log.v(TAG,"LookErrorApp = " + ActivityManager.ProcessErrorStateInfo.CRASHED);
-                                        appCaida(app);
-                                        break;
-                                    case ActivityManager.ProcessErrorStateInfo.NOT_RESPONDING:
-                                        Log.v(TAG,"LookErrorApp = " + ActivityManager.ProcessErrorStateInfo.NOT_RESPONDING);
-                                        appNoResponde(app);
-                                        break;
-                                    case ActivityManager.ProcessErrorStateInfo.NO_ERROR:
-                                        Log.v(TAG,"LookErrorApp = " + ActivityManager.ProcessErrorStateInfo.NO_ERROR);
-                                        break;
-                                }
-                            }
-                        }
-                    }else{
-                        Log.v(TAG,"stateInRun " + stateInRun.toString());
-                        //Thread.sleep(1000);
-                    }
-                    Log.v(TAG,"LookErrorApp - Fin de Revisión");
-                } catch (InterruptedException e) {
-                    Log.e(TAG,"LookErrorApp " + e.getMessage());
-                }
-
-
-
-            }
-
-        }
-    });
-
-    private void appCaida(String app) {
-        Log.e( TAG, "appCaida: Preparando para cerrar"  );
-        this.forceStop(app);
-    }
-
-    private void appNoResponde(String app) {
-        Log.e( TAG, "appNoResponde: Preparando para cerrar" );
-        this.forceStop(app);
-    }
-
-    private void forceStop(String app) {
-
-        try {
-            Process suProcess = Runtime.getRuntime().exec("su");
-            DataOutputStream os = new DataOutputStream(suProcess.getOutputStream());
-
-            os.writeBytes("adb shell" + "\n");
-            os.flush();
-            os.writeBytes("am force-stop " + app + "\n");
-            os.flush();
-            os.close();
-            suProcess.waitFor();
-        } catch (IOException e) {
-            Log.e(TAG,"forceStop IOException " + e.getMessage());
-            //Toast.makeText(ActivityPrincipal.context, ex.getMessage(), Toast.LENGTH_LONG).show();
-        } catch (SecurityException e) {
-            Log.e(TAG,"forceStop SecurityException " + e.getMessage());
-            //Toast.makeText(ActivityPrincipal.context, "Can't get root access2", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Log.e(TAG,"forceStop Exception " + e.getMessage());
-            //Toast.makeText(ActivityPrincipal.context, "Can't get root access3", Toast.LENGTH_LONG).show();
-        }
-    }
-
-
     private void statusADC(String status){
         if(status.equalsIgnoreCase("")){
             try{
@@ -4456,21 +4225,13 @@ public class ActivityPrincipal extends Activity {
                 turnOnLectorBarra = -1;
                 turnOnProximidad = -1;
                 turnOnExternalEnergy = -1;
+                temperatureTerminal = -1;
             }
             //longitud es de 88
         }else if(status.length()>80){
             try{
                 //244f4158410036000000000000000000000044bcba4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e3131313131314e303041
                 //000000000000000000000044bcba4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e3131313131314e
-
-                //Log.v(TAG,"ExternalEnergy=" + util.convertHexToDecimal(status.substring(24,26)) * 0.0613725490196078); // (x * 5 / 255) * 3.13 -> voltios
-                //Log.v(TAG,"UPSCharge=" + util.convertHexToDecimal(status.substring(26,28)) * 0.0613725490196078); // (x * 5 / 255) * 3.13 -> voltios
-                //Log.v(TAG,"turnOnLan=" + util.convertHexToString(status.substring(74,76)));
-                //Log.v(TAG,"turnOnAndroid=" + util.convertHexToString(status.substring(76,78)));
-                //Log.v(TAG,"turnOnSuprema=" + util.convertHexToString(status.substring(78,80)));
-                //Log.v(TAG,"turnOnLectorBarra=" + util.convertHexToString(status.substring(80,82)));
-                //Log.v(TAG,"turnOnProximidad=" + util.convertHexToString(status.substring(82,84)));
-                //Log.v(TAG,"turnOnExternalEnergy=" + util.convertHexToString(status.substring(84,86)));
 
                 ExternalEnergy = util.convertHexToDecimal(status.substring(24,26)) * 0.0613725490196078;
                 UPSCharge = util.convertHexToDecimal(status.substring(26,28)) * 0.0613725490196078;
@@ -4484,20 +4245,17 @@ public class ActivityPrincipal extends Activity {
                 turnOnProximidad = Integer.valueOf(util.convertHexToString(status.substring(82,84)));
                 turnOnExternalEnergy = Integer.valueOf(util.convertHexToString(status.substring(84,86)));
 
-                //Log.v(TAG,"ExternalEnergy=" + ExternalEnergy); // (x * 5 / 255) * 3.13 -> voltios
-                //Log.v(TAG,"UPSCharge=" + UPSCharge); // (x * 5 / 255) * 3.13 -> voltios
-                //Log.v(TAG,"levelUPS=" + levelUPS); // (x * 5 / 255) * 3.13 -> voltios
-                //Log.v(TAG,"turnOnRelay02=" + turnOnRelay02);
-                //Log.v(TAG,"turnOnRelay01=" + turnOnRelay01);
-                //Log.v(TAG,"turnOnLan=" + turnOnLan);
-                //Log.v(TAG,"turnOnAndroid=" + turnOnAndroid);
-                //Log.v(TAG,"turnOnSuprema=" + turnOnSuprema);
-                //Log.v(TAG,"turnOnLectorBarra=" + turnOnLectorBarra);
-                //Log.v(TAG,"turnOnProximidad=" + turnOnProximidad);
-                //Log.v(TAG,"turnOnExternalEnergy=" + turnOnExternalEnergy);
+                // Verificar que se envíe el dato de temperatura
+                // En el caso que se reciba 4e4e, significa que el dato de la temperatura es null
+                if(!status.substring(28,32).equalsIgnoreCase("4e4e")){
+                    temperatureTerminal = (int) (util.convertHexToDecimal(status.substring(28,32)) * 0.48828125);
+                }else{
+                    temperatureTerminal = -1;
+                }
 
-                Log.v(TAG,"parametersInsertMarcaciones = " + parametersInsertMarcaciones);
-                Log.v(TAG,"parameterMarcacionRepetida = " + parameterMarcacionRepetida);
+
+                Log.v(TAG,"parametersInsertMarcaciones = " + parametersInsertMarcaciones + " " +
+                        "parameterMarcacionRepetida = " + parameterMarcacionRepetida);
             }catch (Exception e){
                 Log.e(TAG,"statusADC status" + e.getMessage());
             }
@@ -4513,6 +4271,8 @@ public class ActivityPrincipal extends Activity {
             turnOnLectorBarra = -1;
             turnOnProximidad = -1;
             turnOnExternalEnergy = -1;
+
+            temperatureTerminal = -1;
         }
 
     }
@@ -4557,6 +4317,67 @@ public class ActivityPrincipal extends Activity {
         }
     }
 
+
+    private void getVersionNameCode(int metodo){
+        if(metodo == 1){
+            // Este método sirve para buscar la apk con la versión mas reciente en la carpeta Download
+            // La versión más reciente se obtiene según el nombre del apk
+            // por ejemplo: 10012018120400.apk es más reciente que 19102017160200.apk
+            // Este método obtiene los nombres de todos los archivos que termines en apk y los transforma a numero,
+            // esto permite compararlos hasta obtener el número mayor (la versión más reciente)
+            try {
+                util = new Utilities();
+                // Listar los archivos de la carpeta DIRECTORY_DOWNLOADS
+                Process process = Runtime.getRuntime().exec("ls " + Environment.getExternalStorageDirectory() + "/" + Environment.DIRECTORY_DOWNLOADS + " -l");
+
+                InputStream inputStream = process.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+
+                // Obtener la lista de DIRECTORY_DOWNLOADS para seleccionar las apks disponibles y realizar la comparación
+                // hasta obtener el apk más reciente
+                String line = null;
+                long date = 0;
+                String apkName = "";
+                while (true){
+                    line = bufferedReader.readLine();
+                    if(line != null){
+                        //Log.v(TAG,"" + line);
+                        if(line.contains(".apk")){
+                            //Log.v(TAG,">>>" + line.substring(line.length()-18,line.length()-4) + "<<<");
+                            String apkNameTemp = line.substring(line.length()-18,line.length()-4);
+                            Long dateTemp = util.getApkNameToNumber(apkNameTemp);
+                            if(date < dateTemp){
+                                date = dateTemp;
+                                apkName = apkNameTemp;
+                            }
+                        }
+                    }else{
+                        break;
+                    }
+                }
+                process.waitFor();
+
+                // El nombre de la apk más reciente se guarda en una variable public static para
+                // que sea compartida en toda la aplicación y sabes con que versión de apk (software)
+                // se está trabajando
+                ActivityPrincipal.versionNameCode = apkName;
+                Log.v(TAG,"versionNameCode " + ActivityPrincipal.versionNameCode);
+
+            } catch (Exception e) {
+                Log.e(TAG,"versionNameCode " + e.getMessage());
+            }
+        }else if(metodo == 2){
+            try {
+                PackageInfo packageInfo = this.getPackageManager().getPackageInfo(getPackageName(), 0);
+                ActivityPrincipal.versionNameCode = packageInfo.versionName + packageInfo.versionCode;
+            } catch (PackageManager.NameNotFoundException e) {
+                Log.e(TAG,"versionNameCode " + e.getMessage());
+            }
+            // El nombre de versión de software se asigna manualmente
+        }
+    }
+
     public static void setImageBitmapOnImageView(ImageView imageView, String ruta, String filename){
 
         try{
@@ -4570,7 +4391,7 @@ public class ActivityPrincipal extends Activity {
 
     public static void setBackgroundColorOnTextView(TextView textView, String color, String colorex){
         try{
-            Log.v(TAG,"setBackgroundColorOnTextView ");
+            //Log.v(TAG,"setBackgroundColorOnTextView ");
             textView.setBackgroundColor(Color.parseColor(color));
         }catch (Exception e){
             textView.setBackgroundColor(Color.parseColor(colorex));
@@ -4581,7 +4402,7 @@ public class ActivityPrincipal extends Activity {
 
     public static void setTextColorOnTextView(TextView textView, String color, String colorex){
         try{
-            Log.v(TAG,"setTextColorOnTextView ");
+            //Log.v(TAG,"setTextColorOnTextView " + textView.toString());
             textView.setTextColor(Color.parseColor(color));
         }catch (Exception e){
             textView.setTextColor(Color.parseColor(colorex));
@@ -4602,6 +4423,7 @@ public class ActivityPrincipal extends Activity {
             Log.e(TAG, "runShellCommand: " + e.getMessage(), e);
         }
     }
+
 
 
 }

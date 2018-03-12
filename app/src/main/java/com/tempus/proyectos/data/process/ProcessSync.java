@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Llamadas;
+import com.tempus.proyectos.data.model.LogTerminal;
 import com.tempus.proyectos.data.model.Marcaciones;
 import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesEstados;
@@ -659,6 +660,64 @@ public class ProcessSync {
 
     }
 
+    public int syncLogTerminal(LogTerminal logTerminal){
+        //Este método o función envía los logTerminal por sincronizar al servidor principal
+        Fechahora fechahora = new Fechahora();
+        int rowaffected = 0;
+        ConexionServidor conexionServidor = new ConexionServidor();
+        String resultado = "";
+
+        if(connection == null){
+            connection = conexionServidor.getInstance().getConnection();
+        }
+
+        String sql = "[TEMPUS].[TSP_EJECUTAR_LOTE_DATA2] 'SYNC_LOG_TERMINAL_TX','','',' ','','','LOTE_DATA','1','" +
+                "pIDTERMINAL," + logTerminal.getIdterminal() + ";" +
+                "pTAG," + logTerminal.getTag() + ";" +
+                "pVALUE," + logTerminal.getValue() + ";" +
+                "pUSER," + logTerminal.getUser() + ";" +
+                "pFECHAHORA," + fechahora.getFechahoraFullSqlServer(logTerminal.getFechahora()) + "'";
+
+        Log.v(TAG,sql);
+
+        try{
+            if(connection.isClosed()){
+                Log.v(TAG,"Intentando restablecer conexion: " + connection.toString());
+                connection = conexionServidor.conectar();
+            }
+            callableStatement = connection.prepareCall(sql);
+            if(callableStatement.execute()){
+                resultSet = callableStatement.getResultSet();
+            }
+
+            while(resultSet.next()){
+                resultado = resultSet.getString("MESSAGE");
+            }
+
+            if(resultado.equalsIgnoreCase("1")){
+                rowaffected = 1;
+                Log.v(TAG,"Registro insertado");
+            }else if(resultado.contains("No se puede insertar una clave duplicada en el objeto")){
+                rowaffected = 1;
+                Log.v(TAG,"Registro ya insertado");
+            }
+
+        }catch (SQLException e) {
+            Log.v(TAG,"DBManagerServidor.syncLogTerminal SQLException " + e.getMessage());
+        }catch (java.sql.SQLException e) {
+            Log.v(TAG,"DBManagerServidor.syncLogTerminal sql.SQLException " + e.getMessage());
+        }finally {
+            try{
+                connection.close();
+                Log.v(TAG,"Conexion cerrada");
+            }catch(Exception e){
+                Log.e(TAG,"Error cerrando conexion " + e.getMessage());
+            }
+        }
+        Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
+        return rowaffected;
+    }
+
 
 
     public void ProcessLlamadas(Context context){
@@ -693,12 +752,6 @@ public class ProcessSync {
         }catch(Exception ex){
 
         }
-    }
-
-
-    public void ProcessLlamadas(){
-
-
     }
 
     public void syncFechahora(){

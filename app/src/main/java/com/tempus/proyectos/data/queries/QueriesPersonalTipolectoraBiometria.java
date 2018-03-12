@@ -32,6 +32,8 @@ public class QueriesPersonalTipolectoraBiometria {
     private Context context;
     private SQLiteDatabase database;
     private Utilities util = new Utilities();
+    QueriesLogTerminal queriesLogTerminal = new QueriesLogTerminal();
+
     public static String statusReplicate = "";
 
     public QueriesPersonalTipolectoraBiometria(Context context) {
@@ -112,7 +114,7 @@ public class QueriesPersonalTipolectoraBiometria {
                 "COUNT(*)" +
                 "FROM " + TablePersonalTipolectoraBiometria.TABLE_NAME;
 
-        Log.d("Autorizaciones", query);
+        Log.v(TAG,query);
         Cursor cursor = database.rawQuery(query, null);
 
         if(cursor.moveToNext()){
@@ -154,7 +156,7 @@ public class QueriesPersonalTipolectoraBiometria {
     public String RegistrarBiometrias(Biometrias biometrias, String ValorBiometria){
 
 
-        Log.d("Autorizaciones","Registrar Biometrias");
+        Log.v(TAG,"Registrar Biometrias");
 
         this.open();
         Fechahora fechahora = new Fechahora();
@@ -169,7 +171,7 @@ public class QueriesPersonalTipolectoraBiometria {
             database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + " AND " + TablePersonalTipolectoraBiometria.IdTipoDetaBio + " = ? ", new String[] { String.valueOf(biometrias.getIndiceBiometria()), String.valueOf(biometrias.getIdTipoDetaBio()) });
             return "BIOMETRIA ENROLADA";
         }catch(Exception e){
-            Log.d("Autorizaciones","Error en el registro de Biometria: " + e.getMessage());
+            Log.e(TAG,"Error en el registro de Biometria: " + e.getMessage());
             return "FALLO AL ENROLAR " + e.getMessage();
         }finally {
             this.close();
@@ -198,10 +200,10 @@ public class QueriesPersonalTipolectoraBiometria {
                 database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + " AND " + TablePersonalTipolectoraBiometria.IdTipoDetaBio + " = ? ", new String[] { String.valueOf(IndiceBiometria), String.valueOf(IdTipoDetaBio) });
             }
 
-            Log.v("TEMPUS: ","Biometria Actualizada a Estado " + sincronizado + " (Biometria Replicada)");
+            Log.v(TAG,"Biometria Actualizada a Estado " + sincronizado + " (Biometria Replicada)");
             return 1;
         }catch(Exception e){
-            Log.d("Autorizaciones","QueriesPersonalTipolectoraBiometria.ActualizarBiometria Error al Actualizar Biometria: " + e.getMessage());
+            Log.e(TAG,"QueriesPersonalTipolectoraBiometria.ActualizarBiometria Error al Actualizar Biometria: " + e.getMessage());
             return 0;
         }finally {
             this.close();
@@ -224,10 +226,10 @@ public class QueriesPersonalTipolectoraBiometria {
 
         try{
             database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? " + " AND " + TablePersonalTipolectoraBiometria.IdTipoDetaBio + " = ? ", new String[] { String.valueOf(IndiceBiometria), String.valueOf(IdTipoDetaBio) });
-            Log.v("TEMPUS: ","BTS-MAET Biometria Actualizada a Estado " + sincronizado + " (Biometria Enviada al Servidor)");
+            Log.v(TAG,"BTS-MAET Biometria Actualizada a Estado " + sincronizado + " (Biometria Enviada al Servidor)");
             return 1;
         }catch(Exception e){
-            Log.d("Autorizaciones","QueriesPersonalTipolectoraBiometria.ActualizarBiometria Error al Actualizar Biometria: " + e.getMessage());
+            Log.e(TAG,"QueriesPersonalTipolectoraBiometria.ActualizarBiometria Error al Actualizar Biometria: " + e.getMessage());
             return 0;
         }finally {
             this.close();
@@ -252,7 +254,7 @@ public class QueriesPersonalTipolectoraBiometria {
     }
 
     public String EliminarBiometrias(Biometrias biometrias){
-        Log.d("Autorizaciones","Eliminar Biometrias");
+        Log.v(TAG,"Eliminar Biometrias");
 
         this.open();
         Fechahora fechahora = new Fechahora();
@@ -263,13 +265,13 @@ public class QueriesPersonalTipolectoraBiometria {
         contentValues.put(TablePersonalTipolectoraBiometria.FechaBiometria,fechahora.getFecha(fechahora.getFechahora()));
         contentValues.put(TablePersonalTipolectoraBiometria.FechaHoraSinc,fechahora.getFechahora());
 
-        Log.d("Autorizaciones","eliminabiometria: " + biometrias.toString());
+        Log.v(TAG,"eliminabiometria: " + biometrias.toString());
 
         try{
             database.update(TablePersonalTipolectoraBiometria.TABLE_NAME,contentValues,TablePersonalTipolectoraBiometria.IndiceBiometria + " = ? AND " + TablePersonalTipolectoraBiometria.IdTipoLect + " = ? " , new String[] { String.valueOf(biometrias.getIndiceBiometria()), String.valueOf(biometrias.getIdTipoLect()) });
             return "BIOMETRIA ELIMINADA";
         }catch(Exception e){
-            Log.d("Autorizaciones","Error en el registro de Biometria: " + e.getMessage());
+            Log.e(TAG,"Error en el registro de Biometria: " + e.getMessage());
             return "FALLO AL ELIMINAR " + e.getMessage();
         }finally {
             this.close();
@@ -537,6 +539,13 @@ public class QueriesPersonalTipolectoraBiometria {
         }
         statusReplicate = "(RES)> " + "(EBPC=" + indicesBiometriasPorEliminar + ") " + "(OK=" + indicesBiometriasEliminados + "+" + indicesBiometriasNoEncontrado + ") " + "(KO=" + indicesBiometriasNoEliminados + ") " + "(UP=" + indicesBiometriasActualizados + ")";
         Log.v(TAG,statusReplicate);
+
+        queriesLogTerminal.insertLogTerminal(TAG,"EBPC" + "|" +
+                indicesBiometriasPorEliminar + "|" +
+                indicesBiometriasEliminados + "|" +
+                indicesBiometriasNoEncontrado + "|" +
+                indicesBiometriasNoEliminados + "|" +
+                indicesBiometriasActualizados,ActivityPrincipal.UserSession);
     }
 
     public void eliminarBiometriasPersonalActivoSinHuella(ArrayList<String> indicesArrayList){
@@ -615,6 +624,13 @@ public class QueriesPersonalTipolectoraBiometria {
         }
         statusReplicate = "(RES)> " + "(EBPASH=" + indicesBiometriasPorEliminar + ") " + "(OK=" + indicesBiometriasEliminados + "+" + indicesBiometriasNoEncontrado + ") " + "(KO=" + indicesBiometriasNoEliminados + ") " + "(UP=" + indicesBiometriasActualizados + ")";
         Log.v(TAG,statusReplicate);
+
+        queriesLogTerminal.insertLogTerminal(TAG,"EBPASH" + "|" +
+                indicesBiometriasPorEliminar + "|" +
+                indicesBiometriasEliminados + "|" +
+                indicesBiometriasNoEncontrado + "|" +
+                indicesBiometriasNoEliminados + "|" +
+                indicesBiometriasActualizados,ActivityPrincipal.UserSession);
     }
 
     public void replicarBiometriasPersonalActivoConHuella(){
@@ -808,8 +824,16 @@ public class QueriesPersonalTipolectoraBiometria {
             ActivityPrincipal.isReplicatingTemplate = false;
 
         }
+
         statusReplicate = "(RES)> " + "(RBPACH=" + indicesBiometriasPorReplicar + ") " + "(OK=" + indicesBiometriasReplicados + ") " + "(KO=" + indicesBiometriasNoReplicados + ") " + "(UP=" + indicesBiometriasActualizados + ")";
         Log.v(TAG,statusReplicate);
+
+        queriesLogTerminal.insertLogTerminal(TAG,"RBPACH" + "|" +
+                indicesBiometriasPorReplicar + "|" +
+                indicesBiometriasReplicados + "|" +
+                indicesBiometriasNoReplicados + "|" +
+                indicesBiometriasActualizados,ActivityPrincipal.UserSession);
+
     }
 
     public void freeScanOnOffSuprema(boolean freeScan){

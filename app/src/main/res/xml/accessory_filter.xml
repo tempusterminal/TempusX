@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- usado -->
+    <usb-accessory
+        manufacturer="FTDI"
+        model="Android Accessory FT312D"
+        version="1.0"/>
+    <!--<usb-accessory/> -->
+</resources>

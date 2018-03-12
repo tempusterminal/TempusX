@@ -1,22 +1,30 @@
 package com.tempus.proyectos.data.process;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Environment;
 import android.os.Looper;
 import android.os.StatFs;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.tempus.proyectos.bluetoothSerial.MainArduino;
 import com.tempus.proyectos.data.model.Marcaciones;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.Utilities;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -30,7 +38,6 @@ public class ProcessSyncUSB {
 
     String TAG = "DA-PR-USB";
 
-    MainArduino mainArduino = new MainArduino();
     OTGOnOff otgOnOff;
     Utilities utilities = new Utilities();
 
@@ -43,11 +50,7 @@ public class ProcessSyncUSB {
     public static String msg;
     public static long lfilenamemarcaciones;
 
-
-    private ArrayList<String> error = new ArrayList<String>();
-
-
-
+    QueriesLogTerminal queriesLogTerminal;
 
 
     private void writeToArduino(OutputStream out, String opcion) {
@@ -110,18 +113,13 @@ public class ProcessSyncUSB {
     }
 
 
-    private void sendMarcaciones(){
-
-
-    }
-
-
     private class OTGOnOff extends Thread{
         private Thread hilo;
         private String nombreHilo;
         private ArrayList<String> marcaciones = new ArrayList<String>();
-        private long sizeFileMarcaciones;
-        private long freeSpaceUsbOtg;
+        private long sizeFileMarcaciones = -1;
+        private long freeSpaceUsbOtg = -1;
+
 
         private String parametersnamesvalues = "";
 
@@ -136,6 +134,16 @@ public class ProcessSyncUSB {
             otgmode = true;
             Log.v(TAG,"Ejecutando Hilo " + nombreHilo);
             fechahora = new Fechahora();
+            queriesLogTerminal = new QueriesLogTerminal();
+            List<Marcaciones> marcacionesList =  new ArrayList<Marcaciones>();
+
+            // Variables para log terminal
+            // statusSyncMarcaciones es una variable para determinar el estado final de la sincronizacion de marcaciones al USB
+            // statusSyncMarcaciones = -1 no determinado / por defecto
+            // statusSyncMarcaciones = 1 sincronizacion satisfactoria
+            // statusSyncMarcaciones = 0 problemas en la sincronizacion
+            // statusSyncMarcaciones = 2 problemas en el directorio USB
+            int statusSyncMarcaciones = -1;
 
             try {
                 Log.v(TAG,"Iniciando");
@@ -144,12 +152,12 @@ public class ProcessSyncUSB {
                 //writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"AndroidPWRoff");
                 //Thread.sleep(2000);
 
-                List<Marcaciones> marcacionesList =  new ArrayList<Marcaciones>();
+
                 try{
                     QueriesMarcaciones queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
                     marcacionesList = queriesMarcaciones.select_nosync();
                 }catch (Exception e){
-
+                    Log.e(TAG,"select_nosync " + e.getMessage());
                 }
 
                 Log.v(TAG,"marcacionesList(" + marcacionesList.size() + ") =" + marcacionesList.toString());
@@ -172,56 +180,80 @@ public class ProcessSyncUSB {
                             ";pTMP_LISTAR," + marcacionesList.get(i).getTmpListar() +
                             ";pDATOS," + marcacionesList.get(i).getDatos();
 
-                        //marcaciones.add(completezeros(ActivityPrincipal.idTerminal,3) + " " + marcacionesList.get(i).getFechahora().replace("-"," ").replace(":"," ") + " " + "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0" + " " + marcacionesList.get(i).getFlgActividad() + " " + marcacionesList.get(i).getValorTarjeta());
                         marcaciones.add("{\"llamada\":\"" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_MARCACIONES_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
-                        //Log.v(TAG,"marcacionesList(" + i + ")" + marcacionesList.get(i).toString());
                     }
 
                     Log.v(TAG,"marcaciones(" + marcaciones.size() + ") = " + marcaciones.toString());
 
                     writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGenable");
                     Thread.sleep(7000);
-                    ruta = Environment.getExternalStoragePublicDirectory("") + "/"; // /storage/emulated/0/
-                    rutaotg = ruta.replace("emulated","usbotg").replace("0","");
+                    if(ActivityPrincipal.versionSDK >= 23){
+                        Process process = Runtime.getRuntime().exec("ls /mnt/m_internal_storage -l");
 
-                    // CAMBIAR RUTA, PROBAR CASOS
+                        InputStream inputStream = process.getInputStream();
+                        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+                        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
-                    //Consultar espacio libre en la USB OTG
+                        String line = null;
+                        while (true){
+                            line = bufferedReader.readLine();
+                            if(line != null){
+                                Log.v(TAG,"" + line);
+                                if(line.contains("m_internal_storage")){
+                                    Log.v(TAG,">>>" + line.substring(line.indexOf("/storage")) + "<<<");
+                                    rutaotg = line.substring(line.indexOf("/storage")) + "/";
+                                }
+                            }else{
+                                break;
+                            }
+                        }
+                        process.waitFor();
+
+                        ruta = Environment.getExternalStoragePublicDirectory("") + "/"; // /storage/emulated/0/
+
+                    }else{
+                        ruta = Environment.getExternalStoragePublicDirectory("") + "/"; // /storage/emulated/0/
+                        rutaotg = ruta.replace("emulated","usbotg").replace("0","");
+                    }
+
+
+                    // Calcular el peso del archivo de marcaciones
                     sizeFileMarcaciones = marcaciones.toString().length();
+                    // Calcular el espacio libre en el USB
                     freeSpaceUsbOtg = freeMemory(rutaotg);
                     Log.v(TAG,"sizeFileMarcaciones " + sizeFileMarcaciones);
                     Log.v(TAG,"freeSpaceUsbOtg " + freeSpaceUsbOtg);
 
-                    //file = new File(rutaotg);
-                    //file.mkdirs();
-
+                    // Verificar que exista espacio suficiente para guardar el archivo en el USB
                     if(freeSpaceUsbOtg > sizeFileMarcaciones){
                         Log.v(TAG,"rutaotg " + rutaotg);
-                        filename = "M_" + "ID_" + ActivityPrincipal.idTerminal + "_" + fechahora.getFechahoraName();
+                        filename = "M_" + "ID_" + ActivityPrincipal.idTerminal + "_" + fechahora.getFechahoraName() + ".txt";
                         msg = saveFile(rutaotg,filename,marcaciones);
 
-                        //Tiempo de espera para crear el archivo
+                        // Mantener OTG activo mientras se crea el archivo
+                        // Tiempo de espera para crear el archivo
                         long templfm = getSizeFile(rutaotg,filename);
                         for(int i = 1; i <= 7; i++){
                             writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGenable");
                             if(templfm == -1){
-                                Log.v(TAG,"Creando archivo");
+                                Log.v(TAG,"Creando archivo, continuar habilitando OTG");
                             }else if(templfm >= 0) {
                                 Log.v(TAG, "Archivo creado");
                                 lfilenamemarcaciones = getSizeFile(rutaotg,filename);
-                                i = 7;
-                            }else if(i == 5){
+                                break;
+                            }else if(i == 7){
                                 Log.v(TAG, "Tiempo de espera agotado (Crear archivo)");
                             }else if(msg.equalsIgnoreCase("Archivo Guardado")){
                                 Log.v(TAG, "Archivo Guardado");
-                                i = 7;
+                                break;
                             }
                             Log.v(TAG,"lfilenamemarcaciones vs templfm (creating) " + lfilenamemarcaciones + "/" + templfm);
                             Thread.sleep(1000);
                             templfm = getSizeFile(rutaotg,filename);
                         }
 
-                        //Tiempo de espera para escribir en el archivo
+                        // Mantener OTG activo mientras se escribe el archivo
+                        // Tiempo de espera para escribir en el archivo
                         for(int i = 1; i <= 7; i++){
                             writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGenable");
                             if(lfilenamemarcaciones > 0) {
@@ -229,19 +261,20 @@ public class ProcessSyncUSB {
                                 lfilenamemarcaciones = getSizeFile(rutaotg,filename);
                                 Thread.sleep(1000);
                                 templfm = getSizeFile(rutaotg,filename);
-                                i = 7;
+                                break;
                             }else if(lfilenamemarcaciones == 0){
                                 Log.v(TAG, "Intentando escribir archivo");
-                            }else if(i == 5){
+                            }else if(i == 7){
                                 Log.v(TAG, "Tiempo de espera agotado (Escribir archivo)");
                             }else if(msg.equalsIgnoreCase("Archivo Guardado")){
                                 Log.v(TAG, "Archivo Guardado");
-                                i = 7;
+                                break;
                             }
                             Log.v(TAG,"lfilenamemarcaciones vs templfm (writing) " + lfilenamemarcaciones + "/" + templfm);
                             Thread.sleep(1000);
                             lfilenamemarcaciones = getSizeFile(rutaotg,filename);
                         }
+
 
                         while(lfilenamemarcaciones < templfm){
                             writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGenable");
@@ -252,6 +285,7 @@ public class ProcessSyncUSB {
                                 Thread.sleep(10000);
                                 break;
                             }else if(msg.equalsIgnoreCase("Archivo Guardado")){
+                                statusSyncMarcaciones = 1;
                                 Log.v(TAG, "Archivo Guardado");
                                 Thread.sleep(10000);
                                 break;
@@ -260,20 +294,12 @@ public class ProcessSyncUSB {
                         }
 
                         if(!msg.equalsIgnoreCase("Archivo Guardado")){
-                            error.add("sizeFileMarcaciones " + sizeFileMarcaciones);
-                            error.add("freeSpaceUsbOtg " + freeSpaceUsbOtg);
-                            error.add(msg + " en " + rutaotg);
-
-                            Log.v(TAG,"Escribiendo archivo -> " + saveFile(ruta + "/tempus/log/","BCK_ERROR_" + fechahora.getFechahoraName(),error));
+                            statusSyncMarcaciones = 0;
                         }
 
                     }else{
+                        statusSyncMarcaciones = 0;
                         msg = "Falta espacio USB";
-                        error.add("sizeFileMarcaciones " + sizeFileMarcaciones);
-                        error.add("freeSpaceUsbOtg " + freeSpaceUsbOtg);
-                        error.add(msg + " en " + rutaotg);
-
-                        Log.v(TAG,"Escribiendo archivo -> " + saveFile(ruta + "/tempus/log/","BCK_ERROR_" + fechahora.getFechahoraName(),error));
                     }
 
                     //writeToArduino(ActivityPrincipal.btSocket01.getOutputStream(),"OTGdisable");
@@ -283,12 +309,22 @@ public class ProcessSyncUSB {
                     msg = "Sin Marcaciones";
                 }
 
+                // TERMINAR LOG_TERMINAL
+                queriesLogTerminal.insertLogTerminal(TAG,"USBM" + "|" +
+                                statusSyncMarcaciones + "|" +
+                                marcacionesList.size() + "|" +
+                                sizeFileMarcaciones  + "|" +
+                                freeSpaceUsbOtg
+                        ,ActivityPrincipal.UserSession);
+
                 otgmode = false;
                 Log.v(TAG,"Finalizando");
             } catch (Exception e){
                 otgmode = false;
                 Log.e(TAG,"OTGOnOff " + e.getMessage());
             }
+
+
 
         }
 
@@ -314,8 +350,19 @@ public class ProcessSyncUSB {
         FileOutputStream fileOutputStream = null;
         OutputStreamWriter outputStreamWriter = null;
         String msg = "";
+        // Añadir el subdirectorio /marcaciones
+        ruta += "/marcaciones/";
+        File file = new File(ruta);
         try{
+
+            // Solicitar permisos para escribir en storage
+
+            Log.v(TAG,"Verficación de directorio " + file.mkdir());
+
             fileOutputStream = new FileOutputStream(ruta + filename + "");
+
+
+            /*
             outputStreamWriter = new OutputStreamWriter(fileOutputStream);
 
             outputStreamWriter.write("[");
@@ -329,6 +376,18 @@ public class ProcessSyncUSB {
 
             outputStreamWriter.flush();
             outputStreamWriter.close();
+            */
+
+            fileOutputStream.write("[".getBytes());
+            for(int i = 0; i < contenido.size(); i++){
+                fileOutputStream.write(contenido.get(i).getBytes());
+                if(i < contenido.size() - 1 ){
+                    fileOutputStream.write(",".getBytes());
+                }
+            }
+            fileOutputStream.write("[".getBytes());
+            fileOutputStream.close();
+
 
             //Toast.makeText(ActivityPrincipal.context, "Guardado", Toast.LENGTH_SHORT).show();
             msg = "Archivo Guardado";
@@ -336,17 +395,14 @@ public class ProcessSyncUSB {
             Log.e(TAG,"saveBCK FileNotFoundException: " + e.getMessage());
             msg = e.getMessage();
             msg = "Error USB";
-            error.add(e.getMessage());
         }catch (IOException e){
             Log.e(TAG,"saveBCK IOException: " + e.getMessage());
             msg = e.getMessage();
             msg = "Error al Guardar";
-            error.add(e.getMessage());
         }catch (Exception e){
             Log.e(TAG,"saveBCK Exception: " + e.getMessage());
             msg = e.getMessage();
             msg = "Error General";
-            error.add(e.getMessage());
         }
         return msg;
     }

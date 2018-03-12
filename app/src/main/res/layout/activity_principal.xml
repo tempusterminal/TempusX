@@ -35,14 +35,13 @@
         android:id="@+id/txvBarraInf" />
 
     <TextView
-        android:gravity="center"
         android:text="100"
         android:textColor="@color/colorNegro"
-        android:layout_width="50dp"
-        android:layout_height="@dimen/fondo3_height"
-        android:layout_marginTop="@dimen/fondo3_marginTop"
-        android:id="@+id/txvIdTerminalInfo"/>
-
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/act_size57"
+        android:layout_marginLeft="@dimen/act_size02"
+        android:id="@+id/txvBarraTerminalInfo"/>
 
     <!-- Lineas -->
 

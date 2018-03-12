@@ -2,8 +2,11 @@ package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,6 +16,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
+import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.UserInterfaceM;
 
 import java.text.ParseException;
@@ -51,6 +56,10 @@ public class ActivityFechaHora extends Activity {
     Button btnConfMinutoUp;
     Button btnConfHoraDown;
     Button btnConfMinutoDown;
+
+    Fechahora fechahora;
+
+    QueriesLogTerminal queriesLogTerminal;
 
 
 
@@ -105,6 +114,9 @@ public class ActivityFechaHora extends Activity {
         ui.initScreen(this);
         setDateTime();
 
+        fechahora = new Fechahora();
+        queriesLogTerminal = new QueriesLogTerminal();
+
         /* --- Inicialización de Parametros Generales --- */
 
         btnMasterFechaHora.setOnClickListener(new View.OnClickListener() {
@@ -116,18 +128,35 @@ public class ActivityFechaHora extends Activity {
         btnGuardarFechaHora.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
 
-                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                String selectedDate = sdf.format(new Date(calendarFechaHora.getDate()));
-                String array[] = selectedDate.split("/");
-                int dia = Integer.parseInt(array[0]);
-                int mes = Integer.parseInt(array[1])-1;
-                int año = Integer.parseInt(array[2]);
-                int hor = Integer.parseInt(edtConfHora.getText().toString());
-                int min = Integer.parseInt(edtConfMinuto.getText().toString());
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivityFechaHora.this, R.style.AlertDialogCustom));
 
-                Log.v(TAG,"setOnClickListener " + selectedDate);
+                builder
+                        .setTitle("Actualizar Fecha Hora")
+                        .setMessage("¿Desea actualizar la fecha hora?")
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
 
-                updateDateTime(año,mes,dia,hor,min,0);
+                                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                                String selectedDate = sdf.format(new Date(calendarFechaHora.getDate()));
+                                String array[] = selectedDate.split("/");
+                                int dia = Integer.parseInt(array[0]);
+                                int mes = Integer.parseInt(array[1])-1;
+                                int año = Integer.parseInt(array[2]);
+                                int hor = Integer.parseInt(edtConfHora.getText().toString());
+                                int min = Integer.parseInt(edtConfMinuto.getText().toString());
+
+                                Log.v(TAG,"setOnClickListener " + selectedDate);
+
+                                updateDateTime(año,mes,dia,hor,min,0);
+
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
+
+
+
+
             }
         });
 
@@ -184,15 +213,21 @@ public class ActivityFechaHora extends Activity {
     }
 
     public void updateDateTime(int anio, int mes, int dia, int hora, int minuto, int segundo){
+        String logudt = "";
         try {
             //set Time to device
+            logudt = fechahora.getFechahora();
             Calendar c = Calendar.getInstance();
             c.set(anio,mes,dia,hora,minuto,segundo);
             AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
             am.setTime(c.getTimeInMillis());
+            logudt += ">" + fechahora.getFechahora();
         } catch(Exception e) {
+            logudt += ">" + fechahora.getFechahora();
             Log.e(TAG,"updateDateTime " + e.getMessage());
         }
+        queriesLogTerminal.insertLogTerminal(TAG,logudt,ActivityPrincipal.UserSession);
+        Log.v(TAG,"updateDateTime " + logudt);
     }
 
     public void setDateTime(){

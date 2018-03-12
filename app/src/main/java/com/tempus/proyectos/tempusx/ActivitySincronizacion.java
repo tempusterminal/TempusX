@@ -1,5 +1,7 @@
 package com.tempus.proyectos.tempusx;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -12,6 +14,10 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.database.SQLException;
 import android.graphics.Color;
+import android.net.wifi.WifiManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.ContextThemeWrapper;
@@ -38,7 +44,9 @@ import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
+import com.tempus.proyectos.data.process.ProcessSyncTS;
 import com.tempus.proyectos.data.process.ProcessSyncUSB;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesServicios;
@@ -49,8 +57,6 @@ import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
-import org.apache.commons.net.io.ToNetASCIIInputStream;
-import org.apache.commons.net.nntp.Threadable;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -75,6 +81,7 @@ public class ActivitySincronizacion extends Activity {
     Parameters parameters4;
 
     QueriesParameters queriesParameters;
+    QueriesLogTerminal queriesLogTerminal;
 
 
     /* --- Declaración de Variables Globales --- */
@@ -97,12 +104,13 @@ public class ActivitySincronizacion extends Activity {
 
     ImageView btnMasterSincronizacion;
     Button btnAccessVPN;
-    Button btnTest;
-    TextView txvInternet;
-    TextView txvOrigen;
-    TextView txvOrigenConnection;
+    //Button btnTest;
+    //TextView txvInternet;
+    //TextView txvOrigen;
+    //TextView txvOrigenConnection;
 
-    Button btnSyncGuardar;
+    ImageButton btnSaveServerDB;
+    ImageButton btnClearServerDB;
 
     EditText edtSyncHost;
     EditText edtSyncDB;
@@ -118,10 +126,27 @@ public class ActivitySincronizacion extends Activity {
     EditText edtWsUser;
     EditText edtWsPass;
 
+    Button btnWsnGuardar;
+    ImageButton btnSaveWsn;
+    ImageButton btnClearWsn;
+
+    EditText edtWsnServer;
+    EditText edtWsnCompany;
+    EditText edtWsnPort;
+    EditText edtWsnUser;
+    EditText edtWsnPass;
+
     TextView txvLogWsLevel01;
     TextView txvLogWsLevel02;
     TextView txvLogWsLevel03;
     TextView txvLogWsLevel04;
+
+    TextView txvLogWsnLevel01;
+    TextView txvLogWsnLevel02;
+    TextView txvLogWsnLevel03;
+    TextView txvLogWsnLevel04;
+
+    TextView txvLogServerDBLevel01;
 
     boolean internet = false;
     boolean servidor = false;
@@ -160,6 +185,14 @@ public class ActivitySincronizacion extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sincronizacion);
 
+        /* Request user permissions in runtime */
+        ActivityCompat.requestPermissions(ActivitySincronizacion.this,
+                new String[] {
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                },
+                100);
+
         /* --- Inicialización de Objetos --- */
 
         ui = new UserInterfaceM();
@@ -171,6 +204,7 @@ public class ActivitySincronizacion extends Activity {
         parameters4 = new Parameters();
 
         queriesParameters = new QueriesParameters(ActivityPrincipal.context);
+        queriesLogTerminal = new QueriesLogTerminal();
 
         /* --- Inicialización de Variables Globales --- */
 
@@ -200,12 +234,11 @@ public class ActivitySincronizacion extends Activity {
         btnMasterSincronizacion = (ImageView) findViewById(R.id.btnMasterSincronizacion);
         ActivityPrincipal.setImageBitmapOnImageView(btnMasterSincronizacion,"/tempus/img/config/","logo.png");
         btnAccessVPN = (Button) findViewById(R.id.btnAccessVPN);
-        btnTest = (Button) findViewById(R.id.btnTest);
-        txvInternet = (TextView) findViewById(R.id.txvInternet);
-        txvOrigen = (TextView) findViewById(R.id.txvOrigen);
-        txvOrigenConnection = (TextView) findViewById(R.id.txvOrigenConnection);
+        //btnTest = (Button) findViewById(R.id.btnTest);
+        //txvInternet = (TextView) findViewById(R.id.txvInternet);
+        //txvOrigen = (TextView) findViewById(R.id.txvOrigen);
+        //txvOrigenConnection = (TextView) findViewById(R.id.txvOrigenConnection);
 
-        btnSyncGuardar = (Button) findViewById(R.id.btnSyncGuardar);
 
         edtSyncHost = (EditText) findViewById(R.id.edtSyncHost);
         edtSyncDB = (EditText) findViewById(R.id.edtSyncDB);
@@ -214,6 +247,11 @@ public class ActivitySincronizacion extends Activity {
         edtSyncPass = (EditText) findViewById(R.id.edtSyncPass);
 
         btnWsGuardar = (Button) findViewById(R.id.btnWsGuardar);
+        btnWsnGuardar = (Button) findViewById(R.id.btnWsnGuardar);
+        btnSaveServerDB = (ImageButton) findViewById(R.id.btnSaveServerDB);
+        btnClearServerDB = (ImageButton) findViewById(R.id.btnClearServerDB);
+        btnSaveWsn = (ImageButton) findViewById(R.id.btnSaveWsn);
+        btnClearWsn = (ImageButton) findViewById(R.id.btnClearWsn);
 
         edtWsServer = (EditText) findViewById(R.id.edtWsServer);
         edtWsCompany = (EditText) findViewById(R.id.edtWsCompany);
@@ -221,10 +259,23 @@ public class ActivitySincronizacion extends Activity {
         edtWsUser = (EditText) findViewById(R.id.edtWsUser);
         edtWsPass = (EditText) findViewById(R.id.edtWsPass);
 
+        edtWsnServer = (EditText) findViewById(R.id.edtWsnServer);
+        edtWsnCompany = (EditText) findViewById(R.id.edtWsnCompany);
+        edtWsnPort = (EditText) findViewById(R.id.edtWsnPort);
+        edtWsnUser = (EditText) findViewById(R.id.edtWsnUser);
+        edtWsnPass = (EditText) findViewById(R.id.edtWsnPass);
+
         txvLogWsLevel01 = (TextView) findViewById(R.id.txvLogWsLevel01);
         txvLogWsLevel02 = (TextView) findViewById(R.id.txvLogWsLevel02);
         txvLogWsLevel03 = (TextView) findViewById(R.id.txvLogWsLevel03);
         txvLogWsLevel04 = (TextView) findViewById(R.id.txvLogWsLevel04);
+
+        txvLogWsnLevel01 = (TextView) findViewById(R.id.txvLogWsnLevel01);
+        txvLogWsnLevel02 = (TextView) findViewById(R.id.txvLogWsnLevel02);
+        txvLogWsnLevel03 = (TextView) findViewById(R.id.txvLogWsnLevel03);
+        txvLogWsnLevel04 = (TextView) findViewById(R.id.txvLogWsnLevel04);
+
+        txvLogServerDBLevel01 = (TextView) findViewById(R.id.txvLogServerDBLevel01);
 
         btnReplicar = (Button) findViewById(R.id.btnReplicar);
 
@@ -271,19 +322,19 @@ public class ActivitySincronizacion extends Activity {
         //Tab 3
         spec = host.newTabSpec("Tab3");
         spec.setContent(R.id.tabSync3);
-        spec.setIndicator("SERVIDOR");
+        spec.setIndicator("SERVIDOR DB");
         host.addTab(spec);
 
         //Tab 4
         spec = host.newTabSpec("Tab4");
         spec.setContent(R.id.tabSync4);
-        spec.setIndicator("WEB SERVICE");
+        spec.setIndicator("WS");
         host.addTab(spec);
 
         //Tab 5
         spec = host.newTabSpec("Tab5");
         spec.setContent(R.id.tabSync5);
-        spec.setIndicator("TEST");
+        spec.setIndicator("WS NATIVO");
         host.addTab(spec);
 
         //Tab 6
@@ -310,27 +361,47 @@ public class ActivitySincronizacion extends Activity {
         //View w1 = host.getTabWidget().getChildTabViewAt(1);
         //w1.setVisibility(View.INVISIBLE);
 
-        txvInternet.setBackgroundColor(Color.RED);
-        txvOrigen.setBackgroundColor(Color.RED);
+        //txvInternet.setBackgroundColor(Color.RED);
+        //txvOrigen.setBackgroundColor(Color.RED);
 
         connectivity = new Connectivity();
 
 
-        Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
+        Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString() + " " + ActivityPrincipal.parametersSock.size());
 
-        if(ActivityPrincipal.parametersSock.size() == 0){
+        if(ActivityPrincipal.parametersSock.size() < 3){
             getParametersSock();
         }else if(ActivityPrincipal.parametersSock.size() == 3){
             //AT+SOCK=<Protocol>,<IP address>,<Port><CR>
             Log.v(TAG,"parametersSock " + ActivityPrincipal.parametersSock.toString());
-            edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
-            edtWsCompany.setText(ActivityPrincipal.parametersWebService_01.split(",")[1]);
-            edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
-            edtWsUser.setText(ActivityPrincipal.parametersWebService_01.split(",")[3]);
-            edtWsPass.setText(ActivityPrincipal.parametersWebService_01.split(",")[4]);
 
+            if(ActivityPrincipal.parametersSock.get(1).length() < 16 && ActivityPrincipal.parametersSock.get(1).length() > 0){
+                edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
+                edtWsCompany.setText(ActivityPrincipal.parametersWebService_01.split(",")[1]);
+                edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
+                edtWsUser.setText(ActivityPrincipal.parametersWebService_01.split(",")[3]);
+                edtWsPass.setText(ActivityPrincipal.parametersWebService_01.split(",")[4]);
+            }else{
+                getParametersSock();
+            }
 
         }
+
+        Log.v(TAG,"parametersWsn " + ActivityPrincipal.parametersWsn.toString() + " " + ActivityPrincipal.parametersWsn.size());
+
+        if(ActivityPrincipal.parametersWsn.size() < 5){
+            getParametersWsn();
+        }else if(ActivityPrincipal.parametersWsn.size() == 5){
+            //192.168.0.1,TEMPUS_WS_T10,80,TEMPUS,TEMPUSSCA
+            Log.v(TAG,"parametersWsn " + ActivityPrincipal.parametersWsn.toString());
+            edtWsnServer.setText(ActivityPrincipal.parametersWsn.get(0));
+            edtWsnCompany.setText(ActivityPrincipal.parametersWsn.get(1));
+            edtWsnPort.setText(ActivityPrincipal.parametersWsn.get(2));
+            edtWsnUser.setText(ActivityPrincipal.parametersWsn.get(3));
+            edtWsnPass.setText(ActivityPrincipal.parametersWsn.get(4));
+        }
+
+
 
 
         /* --- Inicialización de Parametros Generales --- */
@@ -377,35 +448,100 @@ public class ActivitySincronizacion extends Activity {
             }
         });
 
-        btnSyncGuardar.setOnClickListener(new View.OnClickListener() {
+        btnSaveServerDB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String host = "";
-                String database = "";
-                String port = "";
-                String user = "";
-                String pass = "";
 
-                host = edtSyncHost.getText().toString();
-                database = edtSyncDB.getText().toString();
-                port = edtSyncPort.getText().toString();
-                user = edtSyncUser.getText().toString();
-                pass = edtSyncPass.getText().toString();
+                Log.v(TAG,"Parámetros a guardar:" + edtSyncHost.getText().toString() + ":" + edtSyncPort.getText().toString() + "/" + edtSyncDB.getText().toString() + "/" + edtSyncUser.getText().toString() + "," + edtSyncPass.getText().toString());
 
-                Log.d("SYNC SAVE",host+" "+database+" "+port+" "+user+" "+pass);
-
-                if (host.isEmpty() || database.isEmpty() || port.isEmpty() || user.isEmpty()){
+                if (edtSyncHost.getText().toString().isEmpty() || edtSyncDB.getText().toString().isEmpty() || edtSyncPort.getText().toString().isEmpty() || edtSyncUser.getText().toString().isEmpty() || edtSyncPass.getText().toString().isEmpty()){
                     Toast.makeText(getApplicationContext(),"Debe llenar correctamente los campos", Toast.LENGTH_SHORT).show();
                 } else {
-                    QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
-                    queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",host,host,"",database,port,user,pass);
 
-                    Toast.makeText(getApplicationContext(),"Actualizado", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivitySincronizacion.this, R.style.AlertDialogCustom));
 
-                    Log.d("SYNC SAVE","EXITO!");
+                    builder
+                            .setTitle("Guardar Servidor de Base de Datos")
+                            .setMessage("¿Desea guardar los parametros?")
+                            .setIcon(android.R.drawable.ic_dialog_dialer)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    try{
+                                        Log.v(TAG,"Guardando parametros");
+
+                                        QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+                                        queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",edtSyncHost.getText().toString(),edtSyncHost.getText().toString(),"",edtSyncDB.getText().toString(),edtSyncPort.getText().toString(),edtSyncUser.getText().toString(),edtSyncPass.getText().toString(),false);
+
+                                        queriesLogTerminal.insertLogTerminal(TAG,
+                                                "DB" + "|" +
+                                                edtSyncHost.getText().toString() + "|" +
+                                                edtSyncDB.getText().toString() + "|" +
+                                                edtSyncPort.getText().toString() + "|" +
+                                                edtSyncUser.getText().toString() + "|" +
+                                                edtSyncPass.getText().toString()
+                                                ,ActivityPrincipal.UserSession);
+
+                                        WifiManager wifiManager = (WifiManager) ActivityPrincipal.context.getSystemService(Context.WIFI_SERVICE);
+                                        if(wifiManager.isWifiEnabled()){
+                                            wifiManager.setWifiEnabled(false);
+                                            wifiManager.setWifiEnabled(true);
+                                        }
+
+                                        Toast.makeText(getApplicationContext(),"Servidor de BD actualizado", Toast.LENGTH_SHORT).show();
+
+                                        Log.v(TAG,"Parametros guardados");
+
+                                    }catch (Exception e){
+                                        Log.e(TAG,"btnSaveServerDB.setOnClickListener " + e.getMessage());
+                                    }
+
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+
                 }
 
+            }
+        });
 
+        btnClearServerDB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivitySincronizacion.this, R.style.AlertDialogCustom));
+
+                builder
+                        .setTitle("Limpiar Servidor de Base de Datos")
+                        .setMessage("¿Desea limpiar los parametros?")
+                        .setIcon(android.R.drawable.ic_dialog_dialer)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                try{
+                                    Log.v(TAG,"Limpiando parametros");
+
+                                    edtSyncHost.setText("");
+                                    edtSyncPort.setText("");
+                                    edtSyncDB.setText("");
+                                    edtSyncUser.setText("");
+                                    edtSyncPass.setText("");
+
+                                    QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+                                    queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",null,null,null,null,null,null,null,true);
+
+                                    WifiManager wifiManager = (WifiManager) ActivityPrincipal.context.getSystemService(Context.WIFI_SERVICE);
+                                    if(wifiManager.isWifiEnabled()){
+                                        wifiManager.setWifiEnabled(false);
+                                        wifiManager.setWifiEnabled(true);
+                                    }
+                                    Toast.makeText(getApplicationContext(),"Servidor de BD actualizado", Toast.LENGTH_SHORT).show();
+
+                                    Log.v(TAG,"Parametros guardados");
+
+                                }catch (Exception e){
+                                    Log.e(TAG,"btnClearServerDB.setOnClickListener " + e.getMessage());
+                                }
+
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
 
             }
         });
@@ -504,6 +640,16 @@ public class ActivitySincronizacion extends Activity {
                                             ActivityPrincipal.parametersWebService_01 = "192.168.0.1" + "," + edtWsCompany.getText().toString() + "," + "80" + "," + edtWsUser.getText().toString() + "," + edtWsPass.getText().toString();
                                             saveParameter("WEBSERVICE_01",ActivityPrincipal.parametersWebService_01);
 
+                                            if(ActivityPrincipal.parametersSock.get(1).length() < 16){
+                                                queriesLogTerminal.insertLogTerminal(TAG,
+                                                        "WS" + "|" +
+                                                                edtWsServer.getText().toString() + "|" +
+                                                                edtWsCompany.getText().toString() + "|" +
+                                                                edtWsPort.getText().toString() + "|" +
+                                                                edtWsUser.getText().toString() + "|" +
+                                                                edtWsPass.getText().toString()
+                                                        ,ActivityPrincipal.UserSession);
+                                            }
 
                                         }
                                     }catch (Exception e){
@@ -549,7 +695,66 @@ public class ActivitySincronizacion extends Activity {
         });
 
 
+        btnSaveWsn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+
+                if (edtWsnServer.getText().toString().isEmpty() || edtWsnCompany.getText().toString().isEmpty() || edtWsnPort.getText().toString().isEmpty() || edtWsnUser.getText().toString().isEmpty() || edtWsnPass.getText().toString().isEmpty()){
+                    Toast.makeText(getApplicationContext(),"Debe llenar correctamente los campos", Toast.LENGTH_SHORT).show();
+                } else {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivitySincronizacion.this, R.style.AlertDialogCustom));
+
+                    builder
+                            .setTitle("Guardar Web Service Nativo")
+                            .setMessage("¿Desea guardar los parametros?")
+                            .setIcon(android.R.drawable.ic_dialog_dialer)
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    try{
+                                        Log.v(TAG,"Guardando parametros");
+
+
+                                        /*
+                                        QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
+                                        queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",edtSyncHost.getText().toString(),edtSyncHost.getText().toString(),"",edtSyncDB.getText().toString(),edtSyncPort.getText().toString(),edtSyncUser.getText().toString(),edtSyncPass.getText().toString(),false);
+
+                                        queriesLogTerminal.insertLogTerminal(TAG,
+                                                "DB" + "|" +
+                                                        edtSyncHost.getText().toString() + "|" +
+                                                        edtSyncDB.getText().toString() + "|" +
+                                                        edtSyncPort.getText().toString() + "|" +
+                                                        edtSyncUser.getText().toString() + "|" +
+                                                        edtSyncPass.getText().toString()
+                                                ,ActivityPrincipal.UserSession);
+
+                                        WifiManager wifiManager = (WifiManager) ActivityPrincipal.context.getSystemService(Context.WIFI_SERVICE);
+                                        if(wifiManager.isWifiEnabled()){
+                                            wifiManager.setWifiEnabled(false);
+                                            wifiManager.setWifiEnabled(true);
+                                        }
+
+                                        Toast.makeText(getApplicationContext(),"Servidor de BD actualizado", Toast.LENGTH_SHORT).show();
+
+                                        Log.v(TAG,"Parametros guardados");
+
+                                        */
+
+                                    }catch (Exception e){
+                                        Log.e(TAG,"btnSaveServerDB.setOnClickListener " + e.getMessage());
+                                    }
+
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
+
+                }
+
+
+            }
+        });
+
+        /*
         btnTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -690,6 +895,7 @@ public class ActivitySincronizacion extends Activity {
                 thread.start();
             }
         });
+        */
 
         btnUsbMarcas.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -785,6 +991,8 @@ public class ActivitySincronizacion extends Activity {
                                 }
                             });
 
+
+
                             //Toast.makeText(ActivityPrincipal.context,"Ethernet Configurado",Toast.LENGTH_LONG).show();
                             Log.v(TAG,"threadUsbMarcas fin ");
                         } catch (Exception e) {
@@ -794,11 +1002,15 @@ public class ActivitySincronizacion extends Activity {
                     }
                 });
 
+                // Solcititar permisos
+                // int permissionCheck = ContextCompat.checkSelfPermission(ActivitySincronizacion.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+
                 // Iniciar proceso para guardar marcaciones BCK
+                // Hilo para la extracción de marcas y escritura del archivo .json de marcas en el USB externo
                 ProcessSyncUSB processSyncUSB = new ProcessSyncUSB();
-                //Hilo para la extracción de marcas y escritura del archivo .json de marcas en el USB externo
                 processSyncUSB.startOTGOnOff();
-                // Hilo para la UI
+                // Hilo para mostrar mensajes en el boton "Guardar Marcaciones" mientras se copia a USB al archivo marcaciones
                 threadUsbMarcas.start();
 
                 //Toast.makeText(ActivityPrincipal.context,"Procesando",Toast.LENGTH_SHORT).show();
@@ -1221,6 +1433,31 @@ public class ActivitySincronizacion extends Activity {
         threadHttpcfg.start();
     }
 
+
+    private void getParametersWsn(){
+
+        try{
+            List<Parameters> parametersList = queriesParameters.select_one_row("WEBSERVICEN_01");
+            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[0]);
+            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[1]);
+            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[2]);
+            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[3]);
+            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[4]);
+
+            if(!ActivityPrincipal.parametersWsn.isEmpty()){
+                edtWsnServer.setText(ActivityPrincipal.parametersWsn.get(0));
+                edtWsnCompany.setText(ActivityPrincipal.parametersWsn.get(1));
+                edtWsnPort.setText(ActivityPrincipal.parametersWsn.get(2));
+                edtWsnUser.setText(ActivityPrincipal.parametersWsn.get(3));
+                edtWsnPass.setText(ActivityPrincipal.parametersWsn.get(4));
+            }
+
+        }catch (Exception e){
+            Log.e(TAG,"getParametersWsn " + e.getMessage());
+        }
+
+    }
+
     Thread statusReplicateReading = new Thread(new Runnable() {
         @Override
         public void run() {
@@ -1420,17 +1657,38 @@ public class ActivitySincronizacion extends Activity {
                         });
                     }
 
-                    /*
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            txvLogWsLevel01.setText(MainEthernet.logWsLevel01);
-                            txvLogWsLevel02.setText(MainEthernet.logWsLevel02);
-                            txvLogWsLevel03.setText(MainEthernet.logWsLevel03);
-                            txvLogWsLevel04.setText(MainEthernet.logWsLevel04);
-                        }
-                    });
-                    */
+                    if(txvLogServerDBLevel01.getText().toString().equalsIgnoreCase(ConexionServidor.logserverDBLevel01)){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogServerDBLevel01.setText(ConexionServidor.logserverDBLevel01);
+                                txvLogServerDBLevel01.setTextColor(Color.BLACK);
+                            }
+                        });
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogServerDBLevel01.setTextColor(Color.GREEN);
+                                txvLogServerDBLevel01.setText(ConexionServidor.logserverDBLevel01);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogServerDBLevel01.setTextColor(Color.BLACK);
+                            }
+                        });
+                        Thread.sleep(250);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogServerDBLevel01.setTextColor(Color.GREEN);
+                            }
+                        });
+                    }
+
                 }catch (InterruptedException  e){
                     Log.e(TAG,"statusLog InterruptedException " + e.toString());
                     return;
@@ -1458,6 +1716,25 @@ public class ActivitySincronizacion extends Activity {
             }
         }catch (Exception e){
             Log.e(TAG,"statusLog.stop() " + e.getMessage());
+        }
+    }
+
+
+    @TargetApi(23)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case 100:
+                if (grantResults.length > 0
+                        || grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        || grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    /* User checks permission. */
+
+                } else {
+                    Toast.makeText(ActivitySincronizacion.this, "Permission is denied.", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                return;
         }
     }
 

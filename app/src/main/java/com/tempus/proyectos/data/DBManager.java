@@ -36,6 +36,7 @@ import com.tempus.proyectos.data.queries.QueriesTerminalConfiguracion;
 import com.tempus.proyectos.data.tables.TableEstados;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.InternalFile;
+import com.tempus.proyectos.util.Utilities;
 
 public class DBManager {
     private String TAG = "DA-DBM";
@@ -274,9 +275,6 @@ public class DBManager {
         // //////////////////////////////////
 
 
-
-
-
     }
 
     public void execSQL(String sql){
@@ -308,12 +306,16 @@ public class DBManager {
         return value;
     }
 
+    // Esta clase ejecuta el contenido de un archivo linea por linea
+    // cada linea se ejecuta sobre la base de datos del terminal
     public class BackupBd extends Thread{
         private Thread hilo;
         private String nombreHilo;
         private int type;
         private int delete;
+        private String directory = "";
         private String filename = "";
+        private Utilities utilities = new Utilities();
 
         public BackupBd(String nombreHilo) {
             this.nombreHilo = nombreHilo;
@@ -324,9 +326,11 @@ public class DBManager {
             Log.v(TAG,"Ejecutando Hilo " + nombreHilo);
 
             if(type == 1){
-                filename = "/tempus/config/config.sql";
+                directory = Environment.getExternalStoragePublicDirectory("") + "/tempus/config/"; // /storage/emulated/0/ + ... + filename
+                filename = "config";
             }else if(type == 2){
-                filename = "/tempus/backupdb.sql";
+                directory = Environment.getExternalStoragePublicDirectory("") + "/tempus/"; // /storage/emulated/0/ + ... + filename
+                filename = "backupdb";
             }
 
             try{
@@ -336,27 +340,24 @@ public class DBManager {
                     deletealltables();
                 }
 
-                DBManager dbManager = new DBManager(context);
-                dbManager.open();
+                open();
 
-                FileReader fr = new FileReader(Environment.getExternalStoragePublicDirectory("") + filename); // /storage/emulated/0/ + filename
+                FileReader fr = new FileReader(directory + utilities.getFilenameInDirectory(filename,null,directory));
                 BufferedReader br = new BufferedReader(fr);
 
                 String linea;
+                int line = 1;
                 while((linea = br.readLine()) != null){
                     try{
-                        Log.v(TAG,"linea = " + linea);
-                        dbManager.execSQL(linea);
+                        Log.v(TAG,"linea(" + (line++) + ")=" + linea);
+                        execSQL(linea);
                     }catch (Exception e){
                         Log.e(TAG,"BackupBd " + e.getMessage());
                     }
-
                 }
 
                 fr.close();
-
-                dbManager.close();
-
+                close();
 
                 Log.v(TAG,"BackupBd Finalizando");
             } catch (Exception e){
@@ -412,10 +413,6 @@ public class DBManager {
             "SELECT 'TIPO_DETALLE_BIOMETRIA', COUNT(*), MAX(TIPO_DETALLE_BIOMETRIA.FECHA_HORA_SINC), MIN(TIPO_DETALLE_BIOMETRIA.FECHA_HORA_SINC) FROM TIPO_DETALLE_BIOMETRIA " +
             "UNION " +
             "SELECT 'TIPO_LECTORA', COUNT(*), MAX(TIPO_LECTORA.FECHA_HORA_SINC), MIN(TIPO_LECTORA.FECHA_HORA_SINC) FROM TIPO_LECTORA;";
-
-
-
-
 
 
 

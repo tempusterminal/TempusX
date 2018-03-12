@@ -1,8 +1,12 @@
 package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.ContextThemeWrapper;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.tempus.proyectos.data.model.Parameters;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.util.Fechahora;
 import com.tempus.proyectos.util.UserInterfaceM;
@@ -19,12 +24,15 @@ import java.util.List;
 
 public class ActivityUsuario extends Activity {
 
+    private String TAG = "TX-AU";
+
     /* --- Declaración de Objetos --- */
 
     UserInterfaceM ui;
     Parameters parameters1;
     Parameters parameters2;
     QueriesParameters queriesParameters;
+    QueriesLogTerminal queriesLogTerminal;
     Fechahora fechahora;
 
     /* --- Declaración de Variables Globales --- */
@@ -58,6 +66,7 @@ public class ActivityUsuario extends Activity {
         parameters1 = new Parameters();
         parameters2 = new Parameters();
         queriesParameters = new QueriesParameters(ActivityPrincipal.context);
+        queriesLogTerminal = new QueriesLogTerminal();
         fechahora = new Fechahora();
 
         /* --- Inicialización de Variables Globales --- */
@@ -110,7 +119,28 @@ public class ActivityUsuario extends Activity {
         btnActualizarUsuario.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ActualizarUsuario();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivityUsuario.this, R.style.AlertDialogCustom));
+
+                builder
+                        .setTitle("Actualizar Usuario")
+                        .setMessage("¿Desea el usuario a " + edtUsuarioNuevo.getText().toString() + "?")
+                        .setIcon(android.R.drawable.ic_dialog_dialer)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                try{
+                                    Log.v(TAG,"Actualizando usuario");
+
+                                    ActualizarUsuario();
+
+                                }catch (Exception e){
+                                    Log.e(TAG,"btnLimpiarAutoriza.setOnClickListener " + e.getMessage());
+                                }
+
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
+
             }
         });
     }
@@ -152,6 +182,14 @@ public class ActivityUsuario extends Activity {
         parameters2.setFechaHoraSinc(fechahora.getFechahora());
         //queriesParameters.updateParameter(parameters2);
 
+        Log.v(TAG,"Usuario actualizado a " + usuario);
+
+        // Se registra el evento de actualizacion de nombre de usuario y contraseña
+        // Se registra el anterior usuario seguido del nuevo usuario
+        // anterior usuario > nuevo usuario
+        queriesLogTerminal.insertLogTerminal(TAG,ActivityPrincipal.UserSession + ">" + usuario,ActivityPrincipal.UserSession);
+        // Se actualiza el nuevo usuario en el UserSession
+        ActivityPrincipal.UserSession = usuario;
         ui.showAlert(this,"info","Datos actualizados, " + "Usuario:" + queriesParameters.updateParameter(parameters1) + " Contraseña:" + queriesParameters.updateParameter(parameters2));
     }
 

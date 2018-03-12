@@ -164,20 +164,34 @@ public class QueriesServicios {
         this.close();
     }
 
-    public void update(String Descripcion, String Host, String Ip, String Instance, String Database, String Port, String User, String Pass){
+    public void update(String Descripcion, String Host, String Ip, String Instance, String Database, String Port, String User, String Pass, boolean restart){
 
         this.open();
         Fechahora fechahora = new Fechahora();
-
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TableServicios.Host,Host);
-        contentValues.put(TableServicios.Ip,Ip);
-        contentValues.put(TableServicios.Instance,Instance);
-        contentValues.put(TableServicios.Database,Database);
-        contentValues.put(TableServicios.Port,Port);
-        contentValues.put(TableServicios.User,User);
-        contentValues.put(TableServicios.Pass,Pass);
-        contentValues.put(TableServicios.FechaHoraSinc,fechahora.getFechahora());
+
+        if(restart){
+            contentValues.putNull(TableServicios.Host);
+            contentValues.putNull(TableServicios.Ip);
+            contentValues.putNull(TableServicios.Instance);
+            contentValues.putNull(TableServicios.Database);
+            contentValues.putNull(TableServicios.Port);
+            contentValues.putNull(TableServicios.User);
+            contentValues.putNull(TableServicios.Pass);
+            contentValues.put(TableServicios.FechaHoraSinc,fechahora.getFechahora());
+        }else{
+            contentValues.put(TableServicios.Host,Host);
+            contentValues.put(TableServicios.Ip,Ip);
+            contentValues.put(TableServicios.Instance,Instance);
+            contentValues.put(TableServicios.Database,Database);
+            contentValues.put(TableServicios.Port,Port);
+            contentValues.put(TableServicios.User,User);
+            contentValues.put(TableServicios.Pass,Pass);
+            contentValues.put(TableServicios.FechaHoraSinc,fechahora.getFechahora());
+        }
+
+
+
 
         try{
             database.update(TableServicios.TABLE_NAME, contentValues, TableServicios.Descripcion + " = ? ", new String[] { String.valueOf(Descripcion) });

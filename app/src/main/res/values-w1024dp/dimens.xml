@@ -179,7 +179,7 @@
     <!-- Teclado -->
 
     <dimen name="txvKeyPantalla_width">924dp</dimen>
-    <dimen name="txvKeyPantalla_height">80dp</dimen>
+    <dimen name="txvKeyPantalla_height">85dp</dimen>
     <dimen name="txvKeyPantalla_marginTop">160dp</dimen>
     <dimen name="txvKeyPantalla_marginLeft">50dp</dimen>
     <dimen name="txvKeyPantalla_textSize">70sp</dimen>

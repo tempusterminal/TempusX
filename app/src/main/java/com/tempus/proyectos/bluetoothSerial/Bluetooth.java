@@ -139,6 +139,17 @@ public class Bluetooth {
         return true;
     }
 
+    // Función que permite verificar una MAC de BT para incluirlo en el logTerminal
+    // Si la MAC es 00:00:00:00:00:00 la función devolverá 0
+    // Si la MAC tiene algún valor la función devolverá la MAC sin los : (dos puntos)
+    public String getMACBTtoLog(String MAC_BT){
+        if(!MAC_BT.equalsIgnoreCase("00:00:00:00:00:00")){
+            return MAC_BT.replace(":","");
+        }else{
+            return "0";
+        }
+    }
+
     public OutputStream getOutputStream() {
         return this.outputStream;
     }

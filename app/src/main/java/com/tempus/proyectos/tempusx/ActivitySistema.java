@@ -22,10 +22,12 @@ import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Personal;
 import com.tempus.proyectos.data.queries.QueriesAutorizaciones;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesParameters;
 import com.tempus.proyectos.data.queries.QueriesPersonal;
 import com.tempus.proyectos.data.queries.QueriesTerminal;
@@ -108,6 +110,8 @@ public class ActivitySistema extends Activity {
     QueriesParameters queriesParameters;
     QueriesPersonal queriesPersonal;
     QueriesAutorizaciones queriesAutorizaciones;
+    QueriesLogTerminal queriesLogTerminal;
+    DBManager dbManager;
     ArrayList<ArrayList<String>> informationBD =  new ArrayList<ArrayList<String>>();
     private Fechahora fechahora = new Fechahora();
 
@@ -136,6 +140,8 @@ public class ActivitySistema extends Activity {
             queriesParameters = new QueriesParameters(ActivityPrincipal.context);
             queriesPersonal = new QueriesPersonal(ActivityPrincipal.context);
             queriesAutorizaciones = new QueriesAutorizaciones(ActivityPrincipal.context);
+            queriesLogTerminal = new QueriesLogTerminal();
+            dbManager = new DBManager(ActivityPrincipal.context);
 
         /* --- Inicialización de Componentes de la Interfaz --- */
 
@@ -273,7 +279,8 @@ public class ActivitySistema extends Activity {
                                         try {
 
                                             QueriesTerminal queriesTerminal = new QueriesTerminal(ActivityPrincipal.context);
-                                            queriesTerminal.startActualizarIdterminal(edtSistIdTerminal.getText().toString());
+                                            Log.v(TAG,"edtSistIdTerminal.getText().toString()=" + edtSistIdTerminal.getText().toString() + " ActivityPrincipal.idTerminal=" + ActivityPrincipal.idTerminal + " dbManager.getSizeDB()=" + dbManager.getSizeDB());
+                                            queriesTerminal.startActualizarIdterminal(edtSistIdTerminal.getText().toString(),ActivityPrincipal.idTerminal,dbManager.getSizeDB());
 
                                             Toast.makeText(getApplicationContext(), "Terminal restaurado, se REQUIERE SINCRONIZACIÓN para continuar", Toast.LENGTH_SHORT).show();
 
@@ -348,6 +355,9 @@ public class ActivitySistema extends Activity {
                                                     Log.v(TAG, "parametro a guardar->" + mr);
                                                     rowaffected = saveParameter("MARCACIONREPETIDA", mr);
                                                     if (rowaffected == 1) {
+                                                        //Se registra el evento de cambio de tiempo en marcación repetida en la tabla LOG_TERMINAL
+                                                        queriesLogTerminal.insertLogTerminal(TAG,"MR" + "|" + ActivityPrincipal.parameterMarcacionRepetida + ">" + seconds,ActivityPrincipal.UserSession);
+
                                                         //El tiempo real es en minutos, solo se esta utilizando de picker de segundos (0-59 seg)
                                                         ActivityPrincipal.parameterMarcacionRepetida = seconds;
                                                         Toast.makeText(ActivitySistema.this, "Se guardó la configuración: " + ActivityPrincipal.parameterMarcacionRepetida + " minutos", Toast.LENGTH_LONG).show();
@@ -495,7 +505,6 @@ public class ActivitySistema extends Activity {
             btnLimpiarAutoriza.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Log.v(TAG,"btnLimpiarAutoriza");
-
 
                     AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivitySistema.this, R.style.AlertDialogCustom));
 
@@ -659,16 +668,17 @@ public class ActivitySistema extends Activity {
     Thread threadAutoriza = new Thread(new Runnable() {
         @Override
         public void run() {
-            while (true) {
+            Database.getActive = true;
+            while (Database.getActive) {
                 try{
-                    Database.getActive = true;
+                    Log.v(TAG,"threadAutoriza loop");
+                    Thread.sleep(1000);
                     informationBD = Database.informationDB;
-
                     if(informationBD.size()<=15){
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                txvBDSize.setText(Database.sizeDB + Database.lastModifiedDB);
+                                txvBDSize.setText(Database.sizeDB + Database.lastModifiedDB + " " + ActivityPrincipal.idTerminal);
 
                                 setTxvAutoriza(txvTEmpresas,informationBD.get(0));
                                 setTxvAutoriza(txvTEstados,informationBD.get(1));
@@ -689,7 +699,7 @@ public class ActivitySistema extends Activity {
                             }
                         });
                     }
-                    Thread.sleep(1000);
+
                 }catch (Exception e){
                     Log.e(TAG,"threadAutoriza " + e.getMessage());
                 }
@@ -717,6 +727,8 @@ public class ActivitySistema extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         Log.v(TAG,"onDestroy");
+
+        /*
         try{
             if(threadAutoriza.isAlive()){
                 Log.v(TAG,"Deteniendo threadAutoriza");
@@ -726,11 +738,11 @@ public class ActivitySistema extends Activity {
         }catch (Exception e){
             Log.e(TAG,"threadAutoriza.stop() " + e.getMessage());
         }
+        */
 
         // Desactivar el modo activo al salir del Activity Sistema
         // la clase Database contiene esta variable
         Database.getActive = false;
-
 
     }
 }

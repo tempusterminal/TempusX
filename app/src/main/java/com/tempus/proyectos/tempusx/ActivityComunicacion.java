@@ -51,6 +51,7 @@ import android.widget.Toast;
 
 import com.tempus.proyectos.bluetoothSerial.MainEthernet;
 import com.tempus.proyectos.data.DBManager;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.tcpSerial.UsrTCP;
 import com.tempus.proyectos.util.Connectivity;
 import com.tempus.proyectos.util.Shell;
@@ -82,7 +83,7 @@ public class ActivityComunicacion extends Activity {
 
     final int REQUEST_READ_PHONE_STATE = 1;
     private TelephonyManager telephonyManager;
-    private SignalStrength      signalStrength;
+    private SignalStrength signalStrength;
 
     String TAG = "TX-AC";
 
@@ -161,6 +162,7 @@ public class ActivityComunicacion extends Activity {
 
     /* --- MainEthernet --- */
     MainEthernet mainEthernet = new MainEthernet();
+    QueriesLogTerminal queriesLogTerminal;
 
     /* --- UsrTCP --- */
     UsrTCP usrTCP = new UsrTCP();
@@ -250,6 +252,8 @@ public class ActivityComunicacion extends Activity {
         txvStatusPpp0 = (TextView) findViewById(R.id.txvStatusPpp0);
         txvStatusEth0 = (TextView) findViewById(R.id.txvStatusEth0);
 
+        queriesLogTerminal = new QueriesLogTerminal();
+
         Log.wtf(TAG,"POINT " + "PUNTO 2");
 
         if (isMobileDataEnabled()){
@@ -317,29 +321,35 @@ public class ActivityComunicacion extends Activity {
 
 
 
-        Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
+        Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString() + " " + ActivityPrincipal.parametersEthernet.size());
 
-        if(ActivityPrincipal.parametersEthernet.size() == 0){
+        if(ActivityPrincipal.parametersEthernet.size() < 4){
             getParametersEth();
         }else if(ActivityPrincipal.parametersEthernet.size() == 4){
             Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
 
-            edtEthIp.setText(ActivityPrincipal.parametersEthernet.get(1));
-            edtEthMascara.setText(ActivityPrincipal.parametersEthernet.get(2));
-            edtEthPuerta.setText(ActivityPrincipal.parametersEthernet.get(3));
+            if(ActivityPrincipal.parametersEthernet.get(1).length() < 16 && ActivityPrincipal.parametersEthernet.get(1).length() > 0){
+                edtEthIp.setText(ActivityPrincipal.parametersEthernet.get(1));
+                edtEthMascara.setText(ActivityPrincipal.parametersEthernet.get(2));
+                edtEthPuerta.setText(ActivityPrincipal.parametersEthernet.get(3));
 
-            if(ActivityPrincipal.parametersEthernet.get(0).equalsIgnoreCase("DHCP")){
-                getParametersEth();
-                //swtDhcpEth0.setChecked(true);
-                //edtEthIp.setEnabled(false);
-                //edtEthMascara.setEnabled(false);
-                //edtEthPuerta.setEnabled(false);
+                if(ActivityPrincipal.parametersEthernet.get(0).equalsIgnoreCase("DHCP")){
+                    getParametersEth();
+                    //swtDhcpEth0.setChecked(true);
+                    //edtEthIp.setEnabled(false);
+                    //edtEthMascara.setEnabled(false);
+                    //edtEthPuerta.setEnabled(false);
+                }else{
+                    swtDhcpEth0.setChecked(false);
+                    edtEthIp.setEnabled(true);
+                    edtEthMascara.setEnabled(true);
+                    edtEthPuerta.setEnabled(true);
+                }
             }else{
-                swtDhcpEth0.setChecked(false);
-                edtEthIp.setEnabled(true);
-                edtEthMascara.setEnabled(true);
-                edtEthPuerta.setEnabled(true);
+                getParametersEth();
             }
+
+
         }
 
 
@@ -433,8 +443,8 @@ public class ActivityComunicacion extends Activity {
             @Override
             public void onClick(View v) {
 
-                String msg = "";
-                String parameter = "";
+            String msg = "";
+            String parameter = "";
 
                 Thread threadEthernetcfg = new Thread(new Runnable() {
                     @Override
@@ -520,6 +530,20 @@ public class ActivityComunicacion extends Activity {
                                             edtEthMascara.setText(ActivityPrincipal.parametersEthernet.get(2));
                                             edtEthPuerta.setText(ActivityPrincipal.parametersEthernet.get(3));
 
+
+                                            // Verificar que la lontitud de parametros Ethernet para WS no exceda de n caracteres
+                                            if(parametersArray[0].length() < 10 &&
+                                                    parametersArray[1].length() < 16 &&
+                                                    parametersArray[2].length() < 16 &&
+                                                    parametersArray[3].length() < 16){
+
+                                                // Registrar el evento de actualizacion de parametros Ethernet para WS en la tabla LOG_TERMINAL
+                                                queriesLogTerminal.insertLogTerminal(TAG,parametersArray[0] + "|" +
+                                                        parametersArray[1] + "|" +
+                                                        parametersArray[2] + "|" +
+                                                        parametersArray[3],ActivityPrincipal.UserSession);
+                                            }
+
                                         }
                                     }catch (Exception e){
                                         Log.e(TAG,"parametersArray " + e.getMessage());
@@ -552,42 +576,41 @@ public class ActivityComunicacion extends Activity {
                     }
                 });
 
-
-                //mainEthernet.startEthernetATCommand("AT+WANN","=STATIC,192.168.0.78,255.255.255.0,192.168.0.2");
-                if(swtDhcpEth0.isChecked()){
-                    Log.v(TAG,"Parametros Validos (DHCP)");
-                    parameter = "=DHCP";
-                    mainEthernet.startEthernetATCommand("AT+WANN",parameter,true,true,true);
-                    threadEthernetcfg.start();
-                }else{
-                    Log.v(TAG,"edtEthIp (validando) " + edtEthIp.getText().toString());
-                    msg = validateParameters("IP", edtEthIp.getText().toString());
+            //mainEthernet.startEthernetATCommand("AT+WANN","=STATIC,192.168.0.78,255.255.255.0,192.168.0.2");
+            if(swtDhcpEth0.isChecked()){
+                Log.v(TAG,"Parametros Validos (DHCP)");
+                parameter = "=DHCP";
+                mainEthernet.startEthernetATCommand("AT+WANN",parameter,true,true,true);
+                threadEthernetcfg.start();
+            }else{
+                Log.v(TAG,"edtEthIp (validando) " + edtEthIp.getText().toString());
+                msg = validateParameters("IP", edtEthIp.getText().toString());
+                Log.v(TAG,"msg " + msg);
+                if(msg.replace(" ","").length()==0){
+                    Log.v(TAG,"edtEthMascara (validando) " + edtEthMascara.getText().toString());
+                    msg = validateParameters("Máscara",edtEthMascara.getText().toString());
                     Log.v(TAG,"msg " + msg);
                     if(msg.replace(" ","").length()==0){
-                        Log.v(TAG,"edtEthMascara (validando) " + edtEthMascara.getText().toString());
-                        msg = validateParameters("Máscara",edtEthMascara.getText().toString());
+                        Log.v(TAG,"edtEthPuerta (validando) " + edtEthPuerta.getText().toString());
+                        msg = validateParameters("P. Enlace",edtEthPuerta.getText().toString());
                         Log.v(TAG,"msg " + msg);
-                        if(msg.replace(" ","").length()==0){
-                            Log.v(TAG,"edtEthPuerta (validando) " + edtEthPuerta.getText().toString());
-                            msg = validateParameters("P. Enlace",edtEthPuerta.getText().toString());
-                            Log.v(TAG,"msg " + msg);
-                            if(msg.replace(" ","").length() > 0){
-                                Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
-                            }else{
-                                Log.v(TAG,"Parametros Validos (STATIC)");
-                                parameter = "=STATIC" + "," + edtEthIp.getText().toString() + "," + edtEthMascara.getText().toString() + "," + edtEthPuerta.getText().toString();
-                                Log.v(TAG,"parameter " + parameter);
-                                mainEthernet.startEthernetATCommand("AT+WANN",parameter,true,true,true);
-                                threadEthernetcfg.start();
-                            }
-                        }else{
+                        if(msg.replace(" ","").length() > 0){
                             Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
+                        }else{
+                            Log.v(TAG,"Parametros Validos (STATIC)");
+                            parameter = "=STATIC" + "," + edtEthIp.getText().toString() + "," + edtEthMascara.getText().toString() + "," + edtEthPuerta.getText().toString();
+                            Log.v(TAG,"parameter " + parameter);
+                            mainEthernet.startEthernetATCommand("AT+WANN",parameter,true,true,true);
+                            threadEthernetcfg.start();
                         }
                     }else{
                         Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
                     }
-
+                }else{
+                    Toast.makeText(ActivityPrincipal.context, msg, Toast.LENGTH_SHORT).show();
                 }
+
+            }
 
             }
         });
@@ -837,7 +860,7 @@ public class ActivityComunicacion extends Activity {
         try {
             Log.v(TAG,"checkDataWifiConnection: ");
 
-            wifi= (WifiManager) getSystemService(Context.WIFI_SERVICE);
+            wifi= (WifiManager) ActivityPrincipal.context.getSystemService(Context.WIFI_SERVICE);
             DhcpInfo dinfo = wifi.getDhcpInfo();
 
             s_dns1=String.valueOf(intToIp(dinfo.dns1));
@@ -1051,14 +1074,14 @@ public class ActivityComunicacion extends Activity {
 
     public void getParametersEth(){
 
-        mainEthernet.startEthernetATCommand("AT+WANN","",false,true,true);
 
-        Thread threadEthernetcfg = new Thread(new Runnable() {
+        // Hilo que sirve para obtener los parámetros del Ethernet del Módulo Ethernet
+        Thread threadEthernetcfgAuto = new Thread(new Runnable() {
             @Override
             public void run() {
-                Log.v(TAG,"threadEthernetcfg runOnUiThread inicio ");
+                Log.v(TAG,"threadEthernetcfgAuto runOnUiThread inicio ");
                 try {
-                    Log.v(TAG,"threadEthernetcfg inicio ");
+                    Log.v(TAG,"threadEthernetcfgAuto inicio ");
                     //Toast.makeText(ActivityPrincipal.context,"Configurando Ethernet",Toast.LENGTH_LONG).show();
 
                     runOnUiThread(new Runnable() {
@@ -1074,9 +1097,9 @@ public class ActivityComunicacion extends Activity {
                         }
                     });
 
-                    Log.v(TAG,"threadEthernetcfg enableSetEthernet " + MainEthernet.enableSetEthernet);
+                    Log.v(TAG,"threadEthernetcfgAuto enableSetEthernet " + MainEthernet.enableSetEthernet);
                     while(!MainEthernet.enableSetEthernet){
-                        Log.v(TAG,"threadEthernetcfg enableSetEthernet while " + MainEthernet.enableSetEthernet);
+                        Log.v(TAG,"threadEthernetcfgAuto enableSetEthernet while " + MainEthernet.enableSetEthernet);
                         Thread.sleep(250);
                     }
                     Thread.sleep(1000);
@@ -1089,7 +1112,7 @@ public class ActivityComunicacion extends Activity {
                     });
 
                     while(MainEthernet.atCommandMode){
-                        Log.v(TAG,"threadEthernetcfg atCommandMode while " + MainEthernet.atCommandMode);
+                        Log.v(TAG,"threadEthernetcfgAuto atCommandMode while " + MainEthernet.atCommandMode);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1132,6 +1155,7 @@ public class ActivityComunicacion extends Activity {
                                     ActivityPrincipal.parametersEthernet.clear();
                                     //Log.v(TAG,"parametersEthernet " + ActivityPrincipal.parametersEthernet.toString());
 
+
                                     ActivityPrincipal.parametersEthernet.add(parametersArray[0]);
                                     ActivityPrincipal.parametersEthernet.add(parametersArray[1]);
                                     ActivityPrincipal.parametersEthernet.add(parametersArray[2]);
@@ -1141,6 +1165,7 @@ public class ActivityComunicacion extends Activity {
                                     edtEthIp.setText(ActivityPrincipal.parametersEthernet.get(1));
                                     edtEthMascara.setText(ActivityPrincipal.parametersEthernet.get(2));
                                     edtEthPuerta.setText(ActivityPrincipal.parametersEthernet.get(3));
+
 
                                 }
                             }catch (Exception e){
@@ -1166,15 +1191,18 @@ public class ActivityComunicacion extends Activity {
                     });
 
                     //Toast.makeText(ActivityPrincipal.context,"Ethernet Configurado",Toast.LENGTH_LONG).show();
-                    Log.v(TAG,"threadEthernetcfg fin ");
+                    Log.v(TAG,"threadEthernetcfgAuto fin ");
                 } catch (Exception e) {
-                    Log.e(TAG,"threadEthernetcfg " + e.getMessage());
+                    Log.e(TAG,"threadEthernetcfgAuto " + e.getMessage());
                 }
-                Log.v(TAG,"threadEthernetcfg runOnUiThread fin ");
+                Log.v(TAG,"threadEthernetcfgAuto runOnUiThread fin ");
             }
         });
 
-        threadEthernetcfg.start();
+
+
+        mainEthernet.startEthernetATCommand("AT+WANN","",false,true,true);
+        threadEthernetcfgAuto.start();
 
     }
 
@@ -1183,8 +1211,12 @@ public class ActivityComunicacion extends Activity {
 
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.v(TAG,"onDestroy");
 
-
+    }
 
 
 
