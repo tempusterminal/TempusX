@@ -67,7 +67,7 @@ import java.util.List;
 
 public class ActivitySincronizacion extends Activity {
 
-    // Ultima version
+    // test
 
     String TAG = "TX-ASY";
 
