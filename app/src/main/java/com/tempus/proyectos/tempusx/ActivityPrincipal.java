@@ -45,6 +45,7 @@ import com.tempus.proyectos.crash.TXExceptionHandler;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
+import com.tempus.proyectos.data.process.ProcessSync;
 import com.tempus.proyectos.data.process.ProcessSyncDatetime;
 import com.tempus.proyectos.data.process.ProcessSyncST;
 import com.tempus.proyectos.data.process.ProcessSyncTS;
@@ -2043,6 +2044,9 @@ public class ActivityPrincipal extends Activity {
 
                 try{
                     Toast.makeText(ActivityPrincipal.this,"4433",Toast.LENGTH_SHORT).show();
+
+                    ProcessSync processSync = new ProcessSync();
+                    processSync.callWebService();
 
 
                     /*

@@ -1103,10 +1103,82 @@ public class ProcessSync {
 
     public void callWebService(){
 
+
+        /*
+        try {
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
+            //URL url = new URL("https://script.google.com/macros/s/AKfycbzGBO_zkOSZke0B4DHmpxGaDd9tOc9TsuWW2X_fG-SOB2s9KfE/exec");
+            String url = HttpUrl.parse("https://script.google.com/macros/s/AKfycbzQQcRUoudjcNTDRQJ98fovIBfXaW1wq0nmwPkJXBJ_6LKNkmqG/exec").toString();
+
+            Log.v(TAG,"marcaciones>>>" + marcaciones.toString());
+
+            String datos = "";
+            if(marcaciones.getDatos() == null){
+                datos = "";
+            }else if(marcaciones.getDatos().equalsIgnoreCase("null")){
+                datos = "";
+            }else{
+                datos = marcaciones.getDatos();
+            }
+            RequestBody formBody = new FormBody.Builder()
+                    .add("empresa",marcaciones.getEmpresa())
+                    .add("codigo",marcaciones.getCodigo())
+                    .add("fechahora",marcaciones.getFechahora())
+                    .add("numero_tarjeta",marcaciones.getValorTarjeta())
+                    .add("horatxt",marcaciones.getHoraTxt())
+                    .add("ent_sal",marcaciones.getEntSal())
+                    .add("flag",marcaciones.getFlag())
+                    .add("fecha",marcaciones.getFecha())
+                    .add("hora",marcaciones.getHora())
+                    .add("idterminal",marcaciones.getIdterminal())
+                    .add("idlectora",String.valueOf(marcaciones.getIdTipoLect()))
+                    .add("flg_actividad",marcaciones.getFlgActividad())
+                    .add("idusuario",String.valueOf(marcaciones.getIdUsuario()))
+                    .add("tmp_listar",marcaciones.getTmpListar())
+                    .add("datos",datos)
+                    .add("id","1tWS9sGSc3ULsW1ODR9N9skGDr_pnhNgHr2mhtGUXZZI")
+                    .build();
+
+            Log.v(TAG,"formBody>>>" + formBody.toString());
+
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    //.connectTimeout(2, TimeUnit.SECONDS)
+                    //.readTimeout(2, TimeUnit.SECONDS)
+                    //.writeTimeout(2, TimeUnit.SECONDS)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+            Log.v(TAG,"request>>>" + request.toString());
+
+            Response response = client.newCall(request).execute();
+            String respuesta = response.body().string();
+            Log.v(TAG,"response>>>" + respuesta);
+
+            if(respuesta.contains("Insertion successful")){
+                rowaffected = 1;
+                Log.v(TAG,"Registro insertado");
+            }
+
+            Log.v(TAG,"callWebService OK");
+        } catch (Exception e) {
+            Log.e(TAG,"callWebService " + e.getMessage());
+        }
+
+        Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
+        */
+
+
+        /*
         try{
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
             Map<String, Object> map = new LinkedHashMap<>();
             map.put("OPCION","TERMINAL");
-            map.put("EMPRESA","LDS_TEMPUS");
+            map.put("EMPRESA","TEMPUS_WS_T10");
             map.put("USER","TEMPUS");
             map.put("PASS","TEMPUSSCA");
             map.put("IP","0.0.0.0");
@@ -1122,26 +1194,44 @@ public class ProcessSync {
                 stringBuilder.append('=');
                 stringBuilder.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
             }
+
+            Log.v(TAG,"Parametros ok");
+
             byte[] postDataBytes = stringBuilder.toString().getBytes("UTF-8");
+
+            Log.v(TAG,"Parametros ok postDataBytes");
 
             URL url = new URL("http://192.168.0.42:80/Web_ServiceTempus/COntrolador/Direct_WS.php");
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+
+            Log.v(TAG,"Parametros ok httpURLConnection 1");
 
             httpURLConnection.setRequestMethod("POST");
             httpURLConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             httpURLConnection.setRequestProperty("Content-Length", String.valueOf(postDataBytes.length));
             httpURLConnection.setDoOutput(true);
+            httpURLConnection.setDoInput(true);
             httpURLConnection.getOutputStream().write(postDataBytes);
 
-            Reader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
+            Log.v(TAG,"Parametros ok postDataBytes httpURLConnection 2");
+
             String respuesta = "";
-            for (int c; (c = in.read()) >= 0; respuesta = respuesta + (char) c){
-                Log.v(TAG,"Sin horarios de Replicado");
+
+
+
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+            StringBuffer sb = new StringBuffer();
+            String line="";
+            while ((line = bufferedReader.readLine()) != null){
+                sb.append(line);
             }
 
+            Log.v(TAG,"sb=" + sb.toString());
+
         }catch(Exception e){
-            Log.v(TAG,"callWebService error: " + e.getMessage());
+            Log.e(TAG,"callWebService error: " + e.getMessage());
         }
+        */
 
     }
 

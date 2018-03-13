@@ -39,6 +39,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+
 import com.tempus.proyectos.bluetoothSerial.MainEthernet;
 import com.tempus.proyectos.data.ConexionServidor;
 import com.tempus.proyectos.data.DBManager;
@@ -66,8 +67,6 @@ import java.util.Calendar;
 import java.util.List;
 
 public class ActivitySincronizacion extends Activity {
-
-    // test de push
 
     String TAG = "TX-ASY";
 
@@ -128,11 +127,12 @@ public class ActivitySincronizacion extends Activity {
     EditText edtWsUser;
     EditText edtWsPass;
 
-    Button btnWsnGuardar;
+    //Button btnWsnGuardar;
     ImageButton btnSaveWsn;
     ImageButton btnClearWsn;
 
     EditText edtWsnServer;
+    EditText edtWsnHttpdUrl;
     EditText edtWsnCompany;
     EditText edtWsnPort;
     EditText edtWsnUser;
@@ -249,7 +249,7 @@ public class ActivitySincronizacion extends Activity {
         edtSyncPass = (EditText) findViewById(R.id.edtSyncPass);
 
         btnWsGuardar = (Button) findViewById(R.id.btnWsGuardar);
-        btnWsnGuardar = (Button) findViewById(R.id.btnWsnGuardar);
+        //btnWsnGuardar = (Button) findViewById(R.id.btnWsnGuardar);
         btnSaveServerDB = (ImageButton) findViewById(R.id.btnSaveServerDB);
         btnClearServerDB = (ImageButton) findViewById(R.id.btnClearServerDB);
         btnSaveWsn = (ImageButton) findViewById(R.id.btnSaveWsn);
@@ -262,6 +262,7 @@ public class ActivitySincronizacion extends Activity {
         edtWsPass = (EditText) findViewById(R.id.edtWsPass);
 
         edtWsnServer = (EditText) findViewById(R.id.edtWsnServer);
+        edtWsnHttpdUrl = (EditText) findViewById(R.id.edtWsnHttpdUrl);
         edtWsnCompany = (EditText) findViewById(R.id.edtWsnCompany);
         edtWsnPort = (EditText) findViewById(R.id.edtWsnPort);
         edtWsnUser = (EditText) findViewById(R.id.edtWsnUser);
@@ -394,13 +395,14 @@ public class ActivitySincronizacion extends Activity {
         if(ActivityPrincipal.parametersWsn.size() < 5){
             getParametersWsn();
         }else if(ActivityPrincipal.parametersWsn.size() == 5){
-            //192.168.0.1,TEMPUS_WS_T10,80,TEMPUS,TEMPUSSCA
+            //192.168.0.1,/Web_ServiceTempus/COntrolador/Direct_WS.php,TEMPUS_WS_T10,80,TEMPUS,TEMPUSSCA
             Log.v(TAG,"parametersWsn " + ActivityPrincipal.parametersWsn.toString());
             edtWsnServer.setText(ActivityPrincipal.parametersWsn.get(0));
-            edtWsnCompany.setText(ActivityPrincipal.parametersWsn.get(1));
-            edtWsnPort.setText(ActivityPrincipal.parametersWsn.get(2));
-            edtWsnUser.setText(ActivityPrincipal.parametersWsn.get(3));
-            edtWsnPass.setText(ActivityPrincipal.parametersWsn.get(4));
+            edtWsnHttpdUrl.setText(ActivityPrincipal.parametersWsn.get(1));
+            edtWsnCompany.setText(ActivityPrincipal.parametersWsn.get(2));
+            edtWsnPort.setText(ActivityPrincipal.parametersWsn.get(3));
+            edtWsnUser.setText(ActivityPrincipal.parametersWsn.get(4));
+            edtWsnPass.setText(ActivityPrincipal.parametersWsn.get(5));
         }
 
 
@@ -702,7 +704,7 @@ public class ActivitySincronizacion extends Activity {
             public void onClick(View view) {
 
 
-                if (edtWsnServer.getText().toString().isEmpty() || edtWsnCompany.getText().toString().isEmpty() || edtWsnPort.getText().toString().isEmpty() || edtWsnUser.getText().toString().isEmpty() || edtWsnPass.getText().toString().isEmpty()){
+                if (edtWsnServer.getText().toString().isEmpty() || edtWsnHttpdUrl.getText().toString().isEmpty() || edtWsnCompany.getText().toString().isEmpty() || edtWsnPort.getText().toString().isEmpty() || edtWsnUser.getText().toString().isEmpty() || edtWsnPass.getText().toString().isEmpty()){
                     Toast.makeText(getApplicationContext(),"Debe llenar correctamente los campos", Toast.LENGTH_SHORT).show();
                 } else {
 
@@ -1448,10 +1450,11 @@ public class ActivitySincronizacion extends Activity {
 
             if(!ActivityPrincipal.parametersWsn.isEmpty()){
                 edtWsnServer.setText(ActivityPrincipal.parametersWsn.get(0));
-                edtWsnCompany.setText(ActivityPrincipal.parametersWsn.get(1));
-                edtWsnPort.setText(ActivityPrincipal.parametersWsn.get(2));
-                edtWsnUser.setText(ActivityPrincipal.parametersWsn.get(3));
-                edtWsnPass.setText(ActivityPrincipal.parametersWsn.get(4));
+                edtWsnHttpdUrl.setText(ActivityPrincipal.parametersWsn.get(1));
+                edtWsnCompany.setText(ActivityPrincipal.parametersWsn.get(2));
+                edtWsnPort.setText(ActivityPrincipal.parametersWsn.get(3));
+                edtWsnUser.setText(ActivityPrincipal.parametersWsn.get(4));
+                edtWsnPass.setText(ActivityPrincipal.parametersWsn.get(5));
             }
 
         }catch (Exception e){

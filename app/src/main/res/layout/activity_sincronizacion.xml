@@ -903,12 +903,23 @@
                         android:id="@+id/textView16"/>
 
                     <TextView
-                        android:text="EMPRESA:"
+                        android:text="HTTPD URL:"
                         android:layout_width="@dimen/acSincronizacion_txvServer_width"
                         android:layout_height="@dimen/acSincronizacion_txvServer_height"
                         android:textColor="@color/colorTexto"
                         android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
                         android:layout_marginTop="@dimen/act_size07"
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:textStyle="bold"
+                        android:id="@+id/textView22" />
+
+                    <TextView
+                        android:text="EMPRESA:"
+                        android:layout_width="@dimen/acSincronizacion_txvServer_width"
+                        android:layout_height="@dimen/acSincronizacion_txvServer_height"
+                        android:textColor="@color/colorTexto"
+                        android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
+                        android:layout_marginTop="@dimen/act_size12"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:id="@+id/textView17" />
@@ -919,7 +930,7 @@
                         android:layout_height="@dimen/acSincronizacion_txvServer_height"
                         android:textColor="@color/colorTexto"
                         android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
-                        android:layout_marginTop="@dimen/act_size12"
+                        android:layout_marginTop="@dimen/act_size17"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:id="@+id/textView18" />
@@ -930,7 +941,7 @@
                         android:layout_height="@dimen/acSincronizacion_txvServer_height"
                         android:textColor="@color/colorTexto"
                         android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
-                        android:layout_marginTop="@dimen/act_size17"
+                        android:layout_marginTop="@dimen/act_size22"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:id="@+id/textView19" />
@@ -941,7 +952,7 @@
                         android:layout_height="@dimen/acSincronizacion_txvServer_height"
                         android:textColor="@color/colorTexto"
                         android:layout_marginLeft="@dimen/acSincronizacion_txvServer_marginLeft"
-                        android:layout_marginTop="@dimen/act_size22"
+                        android:layout_marginTop="@dimen/act_size27"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:textStyle="bold"
                         android:id="@+id/textView20" />
@@ -987,6 +998,14 @@
                         android:background="@color/colorGris"
                         />
 
+                    <TextView
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size27"
+                        android:background="@color/colorGris"
+                        />
+
 
                     <EditText
                         android:imeOptions="actionDone"
@@ -1007,11 +1026,26 @@
                         android:layout_width="@dimen/acSincronizacion_edtSync_width"
                         android:layout_height="@dimen/acSincronizacion_edtSync_height"
                         android:text=""
+                        android:textSize="@dimen/cuerpo_min_textSize"
+                        android:paddingBottom="5dp"
+                        android:inputType="textPersonName"
+                        android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
+                        android:layout_marginTop="@dimen/act_size07"
+                        android:textColor="@color/colorTexto"
+                        android:hint="/Web_ServiceTempus/COntrolador/Direct_WS.php"
+                        android:id="@+id/edtWsnHttpdUrl" />
+
+
+                    <EditText
+                        android:imeOptions="actionDone"
+                        android:layout_width="@dimen/acSincronizacion_edtSync_width"
+                        android:layout_height="@dimen/acSincronizacion_edtSync_height"
+                        android:text=""
                         android:inputType="textPersonName"
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:paddingBottom="5dp"
                         android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
-                        android:layout_marginTop="@dimen/act_size07"
+                        android:layout_marginTop="@dimen/act_size12"
                         android:textColor="@color/colorTexto"
                         android:hint="TEMPUSWS"
                         android:id="@+id/edtWsnCompany" />
@@ -1025,7 +1059,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:paddingBottom="5dp"
                         android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
-                        android:layout_marginTop="@dimen/act_size12"
+                        android:layout_marginTop="@dimen/act_size17"
                         android:textColor="@color/colorTexto"
                         android:hint="80"
                         android:id="@+id/edtWsnPort" />
@@ -1039,7 +1073,7 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:paddingBottom="5dp"
                         android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
-                        android:layout_marginTop="@dimen/act_size17"
+                        android:layout_marginTop="@dimen/act_size22"
                         android:textColor="@color/colorTexto"
                         android:hint="TEMPUS"
                         android:id="@+id/edtWsnUser" />
@@ -1053,20 +1087,10 @@
                         android:textSize="@dimen/cuerpo_min_textSize"
                         android:paddingBottom="5dp"
                         android:layout_marginLeft="@dimen/acSincronizacion_edtSync_marginLeft"
-                        android:layout_marginTop="@dimen/act_size22"
+                        android:layout_marginTop="@dimen/act_size27"
                         android:textColor="@color/colorTexto"
                         android:hint="••••••"
                         android:id="@+id/edtWsnPass" />
-
-                    <Button
-                        android:text="Guardar"
-                        android:paddingBottom="5dp"
-                        android:layout_width="@dimen/acSincronizacion_btnTest_width"
-                        android:layout_height="@dimen/acSincronizacion_btnTest_height"
-                        android:textSize="@dimen/cuerpo_min_textSize"
-                        android:layout_marginTop="@dimen/act_size27"
-                        android:layout_centerHorizontal="true"
-                        android:id="@+id/btnWsnGuardar" />
 
 
                     <ImageButton
