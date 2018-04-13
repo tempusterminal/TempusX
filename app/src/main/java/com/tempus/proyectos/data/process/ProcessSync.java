@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import com.tempus.proyectos.data.ConexionServidor;
+import com.tempus.proyectos.data.ConexionWebService;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Llamadas;
 import com.tempus.proyectos.data.model.LogTerminal;
@@ -33,10 +34,14 @@ import com.tempus.proyectos.data.model.Marcaciones;
 import com.tempus.proyectos.data.model.PersonalTipolectoraBiometria;
 import com.tempus.proyectos.data.queries.QueriesEstados;
 import com.tempus.proyectos.data.queries.QueriesLlamadas;
+import com.tempus.proyectos.data.queries.QueriesLogTerminal;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.data.queries.QueriesPersonalTipolectoraBiometria;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Fechahora;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
@@ -66,6 +71,8 @@ public class ProcessSync {
     private QueriesEstados queriesEstados;
     private QueriesLlamadas queriesLlamadas;
     private QueriesPersonalTipolectoraBiometria queriesPersonalTipolectoraBiometria;
+    private QueriesMarcaciones queriesMarcaciones;
+    private QueriesLogTerminal queriesLogTerminal;
     private DBManager dbManager;
     private ArrayList<ArrayList<String>> aavaluesiu = new ArrayList<ArrayList<String>>();
     private ArrayList<String> avaluesiu = new ArrayList<String>();
@@ -134,168 +141,6 @@ public class ProcessSync {
             }
         }
 
-
-        try{
-            //aavaluesiu = executeLlamadasServer(idllamada, llamada, parametersnamesvalues, primarykey, columns);
-            //insertUpdateData(aavaluesiu,tablename,primarykey,columns,ActivityPrincipal.context);
-        }catch (Exception e){
-            Log.e(TAG,"prepareParametersLlamadas " + e.getMessage());
-        }
-
-
-        /*
-        //Log.v (TAG,"Parametros: " + parametersnamesvalues);
-        ConexionServidor conexionServidor = new ConexionServidor();
-        if(connection == null){
-            connection = conexionServidor.getInstance().getConnection();
-        }
-
-        String sql = llamada + " '" + idllamada + "'" + ",'','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'";
-        //Log.v(TAG,sql);
-        Log.v(TAG,"Llamada: " + idllamada + " - " + parametersnamesvalues);
-        */
-
-
-        try{
-            /*
-            if(connection.isClosed()){
-                //Log.v(TAG,"Intentando restablecer conexion: " + connection.toString());
-                connection = conexionServidor.conectar();
-            }
-
-            preparedStatement = connection.prepareStatement(sql);
-            resultSet = preparedStatement.executeQuery();
-
-            aavaluesiu = new ArrayList<ArrayList<String>>();
-            ivaluesiu = 0;
-            while(resultSet.next()){
-                try{
-                    avaluesiu = new ArrayList<String>();
-                    for(int i = 0; i < resultSet.getMetaData().getColumnCount(); i++){
-                        avaluesiu.add(i,resultSet.getString(allcolumnsarray[i]));
-                        //Log.v(TAG,"resultSet(" + ivaluesiu + "," + i + "): " + resultSet.getString(allcolumnsarray[i]));
-                    }
-                    aavaluesiu.add(ivaluesiu,avaluesiu);
-                    //Log.v(TAG,"aavaluesiu: " + ivaluesiu + " - " + aavaluesiu.toString());
-
-                    ivaluesiu++;
-
-                }catch(Exception e){
-                    Log.e(TAG,"prepareParametersLlamadas.values error: " + e.getMessage());
-                }
-            }
-            resultSet.close();
-            */
-
-
-
-
-            /*
-            if(aavaluesiu.size()>0){
-                try {
-                    //Log.v(TAG,"Insertando Tabla " + tablename + ":");
-
-                    for (int i = 0; i < aavaluesiu.size(); i++) {
-                        values = "";
-                        for (int y = 0; y < aavaluesiu.get(i).size(); y++) {
-                            //Log.v(TAG,"valuesiu[" + i + "," + y + "]: " + aavaluesiu.get(i).get(y));
-
-                            if (aavaluesiu.get(i).get(y) != null) {
-                                values = values + "'" + aavaluesiu.get(i).get(y) + "'";
-                            } else {
-                                values = values + "" + aavaluesiu.get(i).get(y) + "";
-                            }
-                            if (y < aavaluesiu.get(i).size() - 1) {
-                                values = values + ",";
-                            }
-
-                        }
-                        //Log.v(TAG,"values: " + values);
-
-
-                        insert = "INSERT INTO " + tablename + "(" + primarykey + "," + columns + ") " +
-                                "VALUES(" + values + ");";
-
-
-
-
-                        try {
-                            dbManager.execSQL(insert);
-                            //dbManager.close();
-                            //Thread.sleep(50);
-                            //Log.v(TAG,"Registro insertado");
-                            Log.v(TAG, "(" + aavaluesiu.size() + "/" + (i + 1) + ")" + " " + insert);
-
-                        } catch (SQLException e) {
-                            //Log.e(TAG,"update insert " + tablename + ": " + e.getMessage());
-
-                            where = "";
-                            if (primarykeyarray.length > 0) {
-                                for (int y = 0; y < primarykeyarray.length; y++) {
-                                    where = where + primarykeyarray[y] + " = '" + aavaluesiu.get(i).get(y) + "'";
-                                    if (y < primarykeyarray.length - 1) {
-                                        where = where + " AND ";
-                                    }
-                                }
-                            }
-
-                            set = "";
-                            if (columnsarray.length > 0) {
-                                for (int z = 0; z < columnsarray.length; z++) {
-                                    if (aavaluesiu.get(i).get(z + primarykeyarray.length) != null) {
-                                        set = set + columnsarray[z] + "='" + aavaluesiu.get(i).get(z + primarykeyarray.length) + "'";
-                                    } else {
-                                        set = set + columnsarray[z] + "=" + aavaluesiu.get(i).get(z + primarykeyarray.length) + "";
-                                    }
-                                    if (z < columnsarray.length - 1) {
-                                        set = set + ", ";
-                                    }
-
-                                }
-                            }
-
-                            update = "UPDATE " + tablename +
-                                    " SET " + set +
-                                    " WHERE " + where +
-                                    ";";
-
-                            try {
-                                dbManager.execSQL(update);
-                                //dbManager.close();
-                                //Thread.sleep(50);
-                                //Log.v(TAG,"Registro actualizado");
-                                Log.v(TAG, "(" + aavaluesiu.size() + "/" + (i + 1) + ")" + " " + update);
-                            } catch (SQLException ex) {
-                                Log.e(TAG, "Error SQL update " + ex.getMessage());
-                                Thread.sleep(50);
-                            } catch (Exception ex) {
-                                Log.e(TAG, "Error update " + ex.getMessage());
-                                Thread.sleep(50);
-                            }
-                        }
-                    }
-
-
-                } catch (SQLException e) {
-                    Log.e(TAG, "No se pudo realizar la inserción / actualización " + e.getMessage());
-                } catch(Exception e){
-                    Log.e(TAG, "Error general " + e.getMessage());
-                }finally {
-                    //dbManager.close();
-                }
-            }else{
-                Log.v(TAG, "Sin registros por sincronizar");
-            }
-            */
-
-
-
-
-
-        }catch(SQLException e){
-            Log.e(TAG,"Error SQLite: " + e.getMessage());
-        }
-
         return parametersnamesvalues;
 
     }
@@ -333,6 +178,7 @@ public class ProcessSync {
                         aviu.add(i,resultSet.getString(allcolumnsarray[i]));
                         //Log.v(TAG,"resultSet(" + ivaluesiu + "," + i + "): " + resultSet.getString(allcolumnsarray[i]));
                     }
+
                     aaviu.add(ivaluesiu,aviu);
                     //Log.v(TAG,"aaviu: " + ivaluesiu + " - " + aaviu.toString());
 
@@ -347,6 +193,89 @@ public class ProcessSync {
             Log.e(TAG,"executeLlamadasServer SQLException " + e.getMessage());
         }catch(Exception e){
             Log.e(TAG,"executeLlamadasServer " + e.getMessage());
+        }
+
+        return aaviu;
+
+    }
+
+    public ArrayList<ArrayList<String>> executeLlamadasWs(String idllamada, String llamada, String parametersnamesvalues, String primarykey, String columns){
+        String[] allcolumnsarray = (primarykey + "," + columns).split(",");
+        String respuesta = "";
+
+        ArrayList<ArrayList<String>> namesvalues = new ArrayList<ArrayList<String>>();
+        ArrayList<String> namevalue = new ArrayList<String>();
+
+        ArrayList<ArrayList<String>> aaviu = new ArrayList<ArrayList<String>>();
+        ArrayList<String> aviu = new ArrayList<String>();
+
+        ConexionWebService conexionWebService = new ConexionWebService();
+        JSONArray jsonArray = new JSONArray();
+
+        if(ConexionWebService.authenticated == true){
+            try{
+                // {"session":17922,"llamada":"607_EXEC_L2","parametros":"'SYNC_PERSONAL_TX','','',' ','','','LOTE_DATA','1','pFECHA_HORA_SINC,20/09/2014 18:46:03.775'"}
+                // {"session":17922,"llamada":"607_EXEC_L2","parametros":"'SYNC_PERSONAL_TX','','',' ','','','LOTE_DATA','1','pFECHA_HORA_SINC,20/09/2014 18:46:03.775'"}
+                //String data = llamada + " '" + idllamada + "'" + ",'','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'";
+
+                namevalue.add("OPCION");
+                namevalue.add("GENERAR_DATA3");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                namevalue.add("DATA");
+                namevalue.add("{\"session\":" + ConexionWebService.jsonAuthenticated.getString("ID_SESSION") + ",\"llamada\":\"" + ConexionWebService.jsonAuthenticated.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + idllamada + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                Log.v(TAG,"Llamada: " + idllamada + " - " + parametersnamesvalues);
+                Log.v(TAG,"namesvalues: " + namesvalues.toString());
+
+                respuesta = conexionWebService.llamadasST(namesvalues);
+                Log.v(TAG,"respuesta <" + idllamada + "> " + respuesta);
+
+                if(respuesta.isEmpty()){
+                    Log.v(TAG,"respuesta vacia (no json)");
+                }else{
+                    jsonArray = new JSONArray(respuesta);
+                    aaviu = new ArrayList<ArrayList<String>>();
+                    ivaluesiu = 0;
+                    for(ivaluesiu = 0; ivaluesiu < jsonArray.length(); ivaluesiu++){
+                        try{
+                            aviu = new ArrayList<String>();
+                            //Log.v(TAG, jsonArray.getJSONObject(ivaluesiu).length() + " - " + jsonArray.getJSONObject(ivaluesiu).toString());
+                            for(int i = 0; i < allcolumnsarray.length; i++){
+                                String value = jsonArray.getJSONObject(ivaluesiu).getString(allcolumnsarray[i]);
+                                try{
+                                    value = new JSONObject(value).getString("date");
+                                }catch (Exception e){
+                                }
+
+                                if(value.equalsIgnoreCase("null")){
+                                    aviu.add(i,null);
+                                }else{
+                                    aviu.add(i,value);
+                                }
+                                //Log.v(TAG,"value " + value);
+                                //Log.v(TAG,"resultSet(" + ivaluesiu + "," + i + "): " + resultSet.getString(allcolumnsarray[i]));
+                            }
+                            aaviu.add(ivaluesiu,aviu);
+                            //Log.v(TAG,"aaviu: " + ivaluesiu + " - " + aaviu.toString());
+
+                        }catch(Exception e){
+                            Log.e(TAG,"prepareParametersLlamadas.values error: " + e.getMessage());
+                        }
+                    }
+                }
+
+            }catch(Exception e){
+                Log.e(TAG,"executeLlamadasWs " + e.getMessage());
+            }
+        }else{
+            conexionWebService.autenticar();
+            Log.v(TAG,"Autenticación en proceso");
         }
 
         return aaviu;
@@ -468,6 +397,7 @@ public class ProcessSync {
 
     public int syncMarcaciones(Marcaciones marcaciones){
         //Este método o función envía las marcaciones pors sincronizar al servidor principal
+
         Fechahora fechahora = new Fechahora();
         int rowaffected = 0;
         ConexionServidor conexionServidor = new ConexionServidor();
@@ -525,6 +455,85 @@ public class ProcessSync {
         }
         Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
         return rowaffected;
+    }
+
+    public void syncMarcacionesWs(Marcaciones marcaciones){
+        //Este método o función envía las marcaciones pors sincronizar al web service
+        queriesMarcaciones = new QueriesMarcaciones(ActivityPrincipal.context);
+        ArrayList<ArrayList<String>> namesvalues = new ArrayList<ArrayList<String>>();
+        ArrayList<String> namevalue = new ArrayList<String>();
+        String respuesta;
+        ConexionWebService conexionWebService = new ConexionWebService();
+        JSONArray jsonArray;
+        JSONObject jsonObject;
+
+        Fechahora fechahora = new Fechahora();
+        int rowaffected = 0;
+        ConexionServidor conexionServidor = new ConexionServidor();
+
+        if(ConexionWebService.authenticated == true){
+
+            try{
+                String parametersnamesvalues = "pEMPRESA," + marcaciones.getEmpresa() +
+                        ";pCODIGO," + marcaciones.getCodigo() +
+                        ";pFECHAHORA," + fechahora.getFechahoraSqlServer(marcaciones.getFechahora()) +
+                        ";pNUMERO_TARJETA," + marcaciones.getValorTarjeta() +
+                        ";pHORATXT," + marcaciones.getHoraTxt() +
+                        ";pENT_SAL," + marcaciones.getEntSal() +
+                        ";pFLAG," + marcaciones.getFlag() +
+                        ";pFECHA," + fechahora.getFechahoraSqlServer(marcaciones.getFecha()) +
+                        ";pHORA," + fechahora.getFechahoraSqlServer(marcaciones.getHora()) +
+                        ";pIDTERMINAL," + marcaciones.getIdterminal() +
+                        ";pIDLECTORA," + marcaciones.getIdTipoLect() +
+                        ";pFLG_ACTIVIDAD," + marcaciones.getFlgActividad() +
+                        ";pIDUSUARIO," + marcaciones.getIdUsuario() +
+                        ";pTMP_LISTAR," + marcaciones.getTmpListar() +
+                        ";pDATOS," + marcaciones.getDatos();
+
+                namevalue.add("OPCION");
+                namevalue.add("GENERAR_DATA3");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                namevalue.add("DATA");
+                namevalue.add("{\"session\":" + ConexionWebService.jsonAuthenticated.getString("ID_SESSION") + ",\"llamada\":\"" + ConexionWebService.jsonAuthenticated.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_MARCACIONES_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                //Log.v(TAG,"Llamada: " + idllamada + " - " + parametersnamesvalues);
+                //Log.v(TAG,"namesvalues: " + namesvalues.toString());
+
+                respuesta = conexionWebService.llamadasST(namesvalues);
+                //jsonObject = new JSONObject(respuesta);
+
+
+                Log.v(TAG, "respuesta syncMarcacionesWs: " + respuesta);
+                if (respuesta.contains("[{\"MESSAGE\":1}]")) {
+                    Log.v(TAG,"Sincronización de marcación OK (i)");
+                    queriesMarcaciones.ActualizarSincronizado(marcaciones, 1);
+                } else if (respuesta.contains("[{\"MESSAGE\":\"1\"}]")) {
+                    Log.v(TAG,"Sincronización de marcación OK (s)");
+                    queriesMarcaciones.ActualizarSincronizado(marcaciones, 1);
+                } else if (respuesta.contains("Infracción de la restricción PRIMARY KEY")) {
+                    Log.v(TAG,"Sincronización de marcación OK (Infracción de la restricción)");
+                    queriesMarcaciones.ActualizarSincronizado(marcaciones, 1);
+                }else if (respuesta.contains("ORA-00001")) {
+                    Log.v(TAG,"Sincronización de marcación OK (ORA-00001)");
+                    queriesMarcaciones.ActualizarSincronizado(marcaciones, 1);
+                } else if (respuesta.contains("No se puede insertar el valor NULL")) {
+                    Log.v(TAG, "No se completo la sincronización de marcaciones -> La columna no admite valores NULL");
+                } else {
+                    Log.v(TAG, "No se completo la sincronización de marcaciones");
+                }
+
+            }catch (Exception e){
+                Log.v(TAG,"syncMarcacionesWs " + e.getMessage());
+            }
+        }
+
+        //return rowaffected;
     }
 
     public int syncMarcacionesWsG(Marcaciones marcaciones){
@@ -660,6 +669,74 @@ public class ProcessSync {
 
     }
 
+    public void syncBiometriasWs(PersonalTipolectoraBiometria personalTipolectoraBiometria) {
+        //Este método o función envía las biometrias pors sincronizar al servidor web service
+        queriesPersonalTipolectoraBiometria = new QueriesPersonalTipolectoraBiometria(ActivityPrincipal.context);
+
+        ArrayList<ArrayList<String>> namesvalues = new ArrayList<ArrayList<String>>();
+        ArrayList<String> namevalue = new ArrayList<String>();
+        String respuesta;
+        ConexionWebService conexionWebService = new ConexionWebService();
+        JSONArray jsonArray;
+
+        Fechahora fechahora = new Fechahora();
+        int rowaffected = 0;
+
+        if(ConexionWebService.authenticated == true){
+
+            try{
+                String parametersnamesvalues = "pID_PER_TIPOLECT_BIO," + personalTipolectoraBiometria.getIdPerTipolectBio() +
+                        ";pINDICE_BIOMETRIA," + personalTipolectoraBiometria.getIndiceBiometria() +
+                        ";pEMPRESA," + personalTipolectoraBiometria.getEmpresa() +
+                        ";pCODIGO," + personalTipolectoraBiometria.getCodigo() +
+                        ";pVALOR_BIOMETRIA," + personalTipolectoraBiometria.getValorBiometria() +
+                        ";pIMAGEN_BIOMETRIA," + personalTipolectoraBiometria.getImagenBiometria() +
+                        ";pFECHA_BIOMETRIA," + personalTipolectoraBiometria.FechaBiometria +
+                        ";pFECHA_HORA_SINC," + fechahora.getFechahoraSync(personalTipolectoraBiometria.getFechaHoraSinc());
+
+                //Log.v(TAG,"parametersnamesvalues syncBiometriasWs:" + parametersnamesvalues);
+
+                namevalue.add("OPCION");
+                namevalue.add("GENERAR_DATA3");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                namevalue.add("DATA");
+                namevalue.add("{\"session\":" + ConexionWebService.jsonAuthenticated.getString("ID_SESSION") + ",\"llamada\":\"" + ConexionWebService.jsonAuthenticated.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_PERSONAL_TIPOLECTORA_BIOMETRIA_SERVER_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                //Log.v(TAG,"Llamada: " + idllamada + " - " + parametersnamesvalues);
+                //Log.v(TAG,"namesvalues: " + namesvalues.toString());
+
+                respuesta = conexionWebService.llamadasST(namesvalues);
+                //jsonArray = new JSONArray(respuesta);
+
+
+                Log.v(TAG,"respuesta syncBiometriasWs: " + respuesta);
+
+                if(respuesta.contains("{\"MESSAGE\":1}")){
+                    queriesPersonalTipolectoraBiometria.ActualizarBiometriaEnviadaServidor(personalTipolectoraBiometria.getIndiceBiometria(),personalTipolectoraBiometria.getIdTipoDetaBio());
+                    Log.v(TAG,"EthernetExecuting " + "Se completo la sincronización de biometrias (i)");
+                }else if(respuesta.contains("{\"MESSAGE\":\"1\"}")){
+                    queriesPersonalTipolectoraBiometria.ActualizarBiometriaEnviadaServidor(personalTipolectoraBiometria.getIndiceBiometria(),personalTipolectoraBiometria.getIdTipoDetaBio());
+                    Log.v(TAG,"EthernetExecuting " + "Se completo la sincronización de biometrias (s)");
+                }else if(respuesta.contains("{\"MESSAGE\":0}")){
+                    Log.v(TAG,"EthernetExecuting " + "No se completo la sincronización de biometrias -> " + respuesta);
+                }else{
+                    Log.v(TAG,"EthernetExecuting " + "No se completo la sincronización de biometrias");
+                }
+
+            }catch (Exception e){
+                Log.v(TAG,"syncBiometriasWs " + e.getMessage());
+            }
+        }
+        //return rowaffected;
+    }
+
+
     public int syncLogTerminal(LogTerminal logTerminal){
         //Este método o función envía los logTerminal por sincronizar al servidor principal
         Fechahora fechahora = new Fechahora();
@@ -716,6 +793,78 @@ public class ProcessSync {
         }
         Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
         return rowaffected;
+    }
+
+    public void syncLogTerminalWs(LogTerminal logTerminal){
+        //Este método o función envía los logTerminal por sincronizar al servidor principal
+        queriesLogTerminal = new QueriesLogTerminal();
+        ArrayList<ArrayList<String>> namesvalues = new ArrayList<ArrayList<String>>();
+        ArrayList<String> namevalue = new ArrayList<String>();
+        String respuesta;
+        ConexionWebService conexionWebService = new ConexionWebService();
+        JSONArray jsonArray;
+        JSONObject jsonObject;
+
+        Fechahora fechahora = new Fechahora();
+        int rowaffected = 0;
+        ConexionServidor conexionServidor = new ConexionServidor();
+        String resultado = "";
+
+
+        Log.v(TAG,"syncLogTerminalWs Verificando conexion");
+        if(ConexionWebService.authenticated == true){
+
+            Log.v(TAG,"syncLogTerminalWs Conexion autenticada");
+            try{
+                String parametersnamesvalues = "pIDTERMINAL," + logTerminal.getIdterminal() +
+                        ";pTAG," + logTerminal.getTag() +
+                        ";pVALUE," + logTerminal.getValue() +
+                        ";pUSER," + logTerminal.getUser() +
+                        ";pFECHAHORA," + fechahora.getFechahoraFullSqlServer(logTerminal.getFechahora());
+
+                namevalue.add("OPCION");
+                namevalue.add("GENERAR_DATA3");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                namevalue.add("DATA");
+                namevalue.add("{\"session\":" + ConexionWebService.jsonAuthenticated.getString("ID_SESSION") + ",\"llamada\":\"" + ConexionWebService.jsonAuthenticated.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_LOG_TERMINAL_TX" + "','','',' ','','','LOTE_DATA','1','" + parametersnamesvalues + "'\"}");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                //Log.v(TAG,"Llamada: " + idllamada + " - " + parametersnamesvalues);
+                //Log.v(TAG,"namesvalues: " + namesvalues.toString());
+
+                respuesta = conexionWebService.llamadasST(namesvalues);
+                //jsonObject = new JSONObject(respuesta);
+
+                Log.v(TAG, "respuesta syncLogTerminalWs: " + respuesta);
+                if (respuesta.contains("[{\"MESSAGE\":1}]")) {
+                    Log.v(TAG,"Sincronización de logTerminal OK (i)");
+                    queriesLogTerminal.ActualizarSincronizado(logTerminal, 1);
+                } else if (respuesta.contains("[{\"MESSAGE\":\"1\"}]")) {
+                    Log.v(TAG,"Sincronización de logTerminal OK (s)");
+                    queriesLogTerminal.ActualizarSincronizado(logTerminal, 1);
+                } else if (respuesta.contains("Infracción de la restricción PRIMARY KEY")) {
+                    Log.v(TAG,"Sincronización de logTerminal OK (Infracción de la restricción)");
+                    queriesLogTerminal.ActualizarSincronizado(logTerminal, 1);
+                }else if (respuesta.contains("ORA-00001")) {
+                    Log.v(TAG,"Sincronización de logTerminal OK (ORA-00001)");
+                    queriesLogTerminal.ActualizarSincronizado(logTerminal, 1);
+                } else if (respuesta.contains("No se puede insertar el valor NULL")) {
+                    Log.v(TAG, "No se completo la sincronización de logTerminal -> La columna no admite valores NULL");
+                } else {
+                    Log.v(TAG, "No se completo la sincronización de logTerminal");
+                }
+
+            }catch (Exception e){
+                Log.e(TAG,"syncLogTerminalWs " + e.getMessage());
+            }
+        }
+
+        //return rowaffected;
     }
 
 
@@ -1022,6 +1171,75 @@ public class ProcessSync {
 
     }
 
+    public void syncFechahoraWs(){
+
+        //Este método o función envía los logTerminal por sincronizar al servidor principal
+        queriesLogTerminal = new QueriesLogTerminal();
+        ArrayList<ArrayList<String>> namesvalues = new ArrayList<ArrayList<String>>();
+        ArrayList<String> namevalue = new ArrayList<String>();
+        String respuesta;
+        ConexionWebService conexionWebService = new ConexionWebService();
+        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
+
+        Fechahora fechahora = new Fechahora();
+        int rowaffected = 0;
+        ConexionServidor conexionServidor = new ConexionServidor();
+        String resultado = "";
+
+
+        Log.v(TAG,"syncFechahoraWs Verificando conexion");
+        if(ConexionWebService.authenticated == true){
+
+            Log.v(TAG,"syncFechahoraWs Conexion autenticada");
+            try{
+                namevalue.add("OPCION");
+                namevalue.add("GENERAR_DATA3");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                namevalue.add("DATA");
+                namevalue.add("{\"session\":" + ConexionWebService.jsonAuthenticated.getString("ID_SESSION") + ",\"llamada\":\"" + ConexionWebService.jsonAuthenticated.getString("ID_CONEXION") + "_" + "EXEC_L2" + "\",\"parametros\":\"'" + "SYNC_FECHAHORA_TX" + "','','',' ','','','LOTE_DATA','1','" + "" + "'\"}");
+
+                namesvalues.add(namevalue);
+                namevalue = new ArrayList<String>();
+
+                //Log.v(TAG,"Llamada: " + idllamada + " - " + parametersnamesvalues);
+                //Log.v(TAG,"namesvalues: " + namesvalues.toString());
+
+                respuesta = conexionWebService.llamadasST(namesvalues);
+                try{
+                    jsonObject = new JSONObject(respuesta);
+                }catch (Exception e){
+                    try{
+                        jsonArray = new JSONArray(respuesta);
+                    }catch (Exception ex){
+                    }
+                }
+
+
+                Log.v(TAG, "respuesta syncFechahoraWs: " + respuesta);
+                if(jsonObject.toString().contains("FECHAHORA")){
+                    Log.v(TAG,"Procesando actualización de FECHAHORA Object " + jsonObject.getString("FECHAHORA"));
+                    syncFechahora(jsonObject.getString("FECHAHORA")); //{"FECHAHORA":"2017-08-21 14:34:30.210"}
+                }else if(jsonArray.toString().contains("FECHAHORA")){
+                    Log.v(TAG,"Procesando actualización de FECHAHORA Array " + jsonArray.getJSONObject(0).getString("FECHAHORA"));
+                    syncFechahora(jsonArray.getJSONObject(0).getString("FECHAHORA")); //[{"FECHAHORA":"2017-08-21 14:34:30.210"}]
+                }else{
+                    Log.v(TAG,"No se detectó la secuencia FECHAHORA");
+                }
+
+            }catch (Exception e){
+                Log.e(TAG,"syncLogTerminalWs " + e.getMessage());
+            }
+        }
+
+        //return rowaffected;
+
+    }
+
+
     public void setFechahoraTerminal(int ano, int mes, int dia, int hora, int minuto, int segundo, int milisegundo){
 
         Calendar calendar = Calendar.getInstance();
@@ -1104,49 +1322,22 @@ public class ProcessSync {
     public void callWebService(){
 
 
-        /*
         try {
-            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-            StrictMode.setThreadPolicy(policy);
-            //URL url = new URL("https://script.google.com/macros/s/AKfycbzGBO_zkOSZke0B4DHmpxGaDd9tOc9TsuWW2X_fG-SOB2s9KfE/exec");
-            String url = HttpUrl.parse("https://script.google.com/macros/s/AKfycbzQQcRUoudjcNTDRQJ98fovIBfXaW1wq0nmwPkJXBJ_6LKNkmqG/exec").toString();
 
-            Log.v(TAG,"marcaciones>>>" + marcaciones.toString());
 
-            String datos = "";
-            if(marcaciones.getDatos() == null){
-                datos = "";
-            }else if(marcaciones.getDatos().equalsIgnoreCase("null")){
-                datos = "";
-            }else{
-                datos = marcaciones.getDatos();
-            }
+            String url = HttpUrl.parse("http://192.168.0.42:80/Web_ServiceTempus/COntrolador/Direct_WS.php").toString();
+
             RequestBody formBody = new FormBody.Builder()
-                    .add("empresa",marcaciones.getEmpresa())
-                    .add("codigo",marcaciones.getCodigo())
-                    .add("fechahora",marcaciones.getFechahora())
-                    .add("numero_tarjeta",marcaciones.getValorTarjeta())
-                    .add("horatxt",marcaciones.getHoraTxt())
-                    .add("ent_sal",marcaciones.getEntSal())
-                    .add("flag",marcaciones.getFlag())
-                    .add("fecha",marcaciones.getFecha())
-                    .add("hora",marcaciones.getHora())
-                    .add("idterminal",marcaciones.getIdterminal())
-                    .add("idlectora",String.valueOf(marcaciones.getIdTipoLect()))
-                    .add("flg_actividad",marcaciones.getFlgActividad())
-                    .add("idusuario",String.valueOf(marcaciones.getIdUsuario()))
-                    .add("tmp_listar",marcaciones.getTmpListar())
-                    .add("datos",datos)
-                    .add("id","1tWS9sGSc3ULsW1ODR9N9skGDr_pnhNgHr2mhtGUXZZI")
+                    .add("O","T")
+                    .add("EMPRESA","TEMPUS_WS_T10")
+                    .add("USER","TEMPUS")
+                    .add("PASS","TEMPUSSCA")
+                    .add("IP","0.0.0.0")
+                    .add("MAC","00-00-00-00-00-00")
+                    .add("HOSTNAME","TERMINAL")
                     .build();
 
             Log.v(TAG,"formBody>>>" + formBody.toString());
-
-            OkHttpClient client = new OkHttpClient().newBuilder()
-                    //.connectTimeout(2, TimeUnit.SECONDS)
-                    //.readTimeout(2, TimeUnit.SECONDS)
-                    //.writeTimeout(2, TimeUnit.SECONDS)
-                    .build();
 
             Request request = new Request.Builder()
                     .url(url)
@@ -1154,22 +1345,23 @@ public class ProcessSync {
                     .build();
             Log.v(TAG,"request>>>" + request.toString());
 
+            OkHttpClient client = new OkHttpClient().newBuilder()
+                    .build();
+
+            StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+            StrictMode.setThreadPolicy(policy);
             Response response = client.newCall(request).execute();
+
             String respuesta = response.body().string();
             Log.v(TAG,"response>>>" + respuesta);
 
-            if(respuesta.contains("Insertion successful")){
-                rowaffected = 1;
-                Log.v(TAG,"Registro insertado");
-            }
 
             Log.v(TAG,"callWebService OK");
         } catch (Exception e) {
             Log.e(TAG,"callWebService " + e.getMessage());
         }
 
-        Log.v(TAG,"Cantidad de filas afectadas: " + String.valueOf(rowaffected));
-        */
+
 
 
         /*
@@ -1177,7 +1369,7 @@ public class ProcessSync {
             StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
             StrictMode.setThreadPolicy(policy);
             Map<String, Object> map = new LinkedHashMap<>();
-            map.put("OPCION","TERMINAL");
+            map.put("O","T");
             map.put("EMPRESA","TEMPUS_WS_T10");
             map.put("USER","TEMPUS");
             map.put("PASS","TEMPUSSCA");
@@ -1215,24 +1407,62 @@ public class ProcessSync {
 
             Log.v(TAG,"Parametros ok postDataBytes httpURLConnection 2");
 
+
+
+            Reader in = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "UTF-8"));
             String respuesta = "";
+            for (int c; (c = in.read()) >= 0; respuesta = respuesta + (char) c){
 
-
-
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
-            StringBuffer sb = new StringBuffer();
-            String line="";
-            while ((line = bufferedReader.readLine()) != null){
-                sb.append(line);
             }
-
-            Log.v(TAG,"sb=" + sb.toString());
+            Log.v(TAG,"respuesta=" + respuesta);
 
         }catch(Exception e){
             Log.e(TAG,"callWebService error: " + e.getMessage());
-        }
         */
 
+
+    }
+
+    public void ProcessLlamadasWs(Context context){
+        //Log.v(TAG, "processarray.length: " + String.valueOf(processarray.length) );
+        //queriesLlamadas = new QueriesLlamadas(context);
+
+
+        // REVISAR TRATAMIENTO DE NULL EN JSON a BD
+
+        try{
+            List<Llamadas> llamadasList = getLlamadas(context);
+            Log.v(TAG,"llamadasList.size(): " + String.valueOf(llamadasList.size() + " " + llamadasList.toString()));
+            if(llamadasList.size() == 0){
+                Log.v(TAG," Sin llamadas por ejecutar " + String.valueOf(llamadasList.size()));
+            }else{
+
+                //Sincronizar Fechahora
+                syncFechahoraWs();
+
+                for(int i = 0; i < llamadasList.size(); i++){
+                    Log.v(TAG,llamadasList.get(i).toString());
+                    ActivityPrincipal.controlFlagSyncAutorizaciones = true;
+                    try{
+                        if(ActivityPrincipal.controlFlagSyncAutorizaciones){
+                            String parametersnamesvalues = prepareParametersLlamadas(llamadasList.get(i).getParameters(), context);
+                            Log.v(TAG,"parametersnamesvalues: " + parametersnamesvalues);
+                            aavaluesiu = executeLlamadasWs(llamadasList.get(i).getIdllamada(), llamadasList.get(i).getLlamada(), parametersnamesvalues, llamadasList.get(i).getPrimarykey(), llamadasList.get(i).getColumns());
+                            insertUpdateData(aavaluesiu,llamadasList.get(i).getTableName(),llamadasList.get(i).getPrimarykey(), llamadasList.get(i).getColumns(),context);
+                            ActivityPrincipal.controlFlagSyncAutorizaciones = false;
+                        }
+                        Thread.sleep(5000);
+                    }catch(Exception e){
+                        //Log.v(TAG,"ProcessSync.ProcessLlamadas Error: " + e.getMessage());
+                        ActivityPrincipal.controlFlagSyncAutorizaciones = false;
+                    }
+                }
+            }
+
+            Thread.sleep(1000);
+        }catch(Exception e){
+
+        }
     }
 
     public void callWSGoogle1(){

@@ -570,10 +570,12 @@ public class QueriesMarcaciones {
 
                         }
 
-                        try{
-                            cameraLocalManager.takePhotoFrontCamera(fechahora.setFileName(Fechahora),Idterminal);
-                        }catch (Exception e){
-                            Log.e(TAG,"cameraLocalManager.takePhotoFrontCamera " + e.getMessage());
+                        if(ActivityPrincipal.MODO_CAMERA){
+                            try{
+                                cameraLocalManager.takePhotoFrontCamera(fechahora.setFileName(Fechahora),Idterminal);
+                            }catch (Exception e){
+                                Log.e(TAG,"cameraLocalManager.takePhotoFrontCamera " + e.getMessage());
+                            }
                         }
 
                     }

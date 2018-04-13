@@ -28,10 +28,13 @@ public class PowerAdmin {
      Turn Off the device in safe mode
      @param confirm If true, shows a shutdown confirmation dialog.
      */
-    public void shutdown(final boolean confirm) {
-
-        boolean found = false;
-        Method shutdow = null;
+    /**
+     Turn Off the device in safe mode
+     @param confirm If true, shows a shutdown confirmation dialog.
+     */
+    public void shutdown(boolean confirm) {
+        boolean found   = false;
+        Method  shutdow = null;
         boolean invoked = false;
         try {
             Method[] methods = mPowerManager.getClass().getMethods();
@@ -39,28 +42,20 @@ public class PowerAdmin {
                 if (method.getName().equals("shutdown")) {
                     found = true;
                     shutdow = method;
-                    Log.v(TAG, "shutdown: invoked: " + String.valueOf(invoked));
+                    Log.v(TAG, "shutdown: metodo para apagar equipo, encontrado: ");
                 }
             }
-            Log.v(TAG, "method: " + methods.toString());
-
             if (found) {
-                if (confirm) {
-                    invoked = (boolean) shutdow.invoke(mPowerManager, confirm, false);
-                } else {
-                    invoked = (boolean) shutdow.invoke(mPowerManager, confirm, true);
-                }
-                Log.v(TAG,"invoked: " + String.valueOf(invoked));
-
+                if (confirm) invoked = (boolean) shutdow.invoke(mPowerManager, confirm, false);
+                else invoked = (boolean) shutdow.invoke(mPowerManager, confirm, true);
             } else
-                Log.e(TAG, "onClick: method PowerManager.shutdown  not found: ");
+                Log.e(TAG, "onClick: method PowerManager.shutdown metodo no encontrado equipo no se apaga ");
 
         } catch (IllegalAccessException e) {
             Log.e(TAG, "shutdown: " + e.getMessage(), e);
         } catch (InvocationTargetException e) {
             Log.e(TAG, "shutdown: " + e.getMessage(), e);
         }
-
     }
 
     /**
@@ -74,4 +69,6 @@ public class PowerAdmin {
     public void reboot() {
         mPowerManager.reboot(null);
     }
+
+    // TODO: 22/01/2018 fixed reboot, shutdown, showUI
 }

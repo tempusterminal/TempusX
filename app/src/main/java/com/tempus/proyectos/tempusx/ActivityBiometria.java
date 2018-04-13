@@ -37,7 +37,7 @@ import com.tempus.proyectos.threads.ThreadSupremaEnroll;
 import com.tempus.proyectos.util.UserInterfaceM;
 import com.tempus.proyectos.util.Utilities;
 
-import pl.droidsonroids.gif.GifTextView;
+//import pl.droidsonroids.gif.GifTextView;
 
 public class ActivityBiometria extends Activity {
 

@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.tempus.proyectos.data.ConexionWebService;
 import com.tempus.proyectos.data.DBManagerServidor;
 import com.tempus.proyectos.data.model.Autorizaciones;
 import com.tempus.proyectos.data.model.Biometrias;
@@ -62,6 +63,7 @@ public class ProcessSyncTS extends Thread{
         queriesLogTerminal = new QueriesLogTerminal();
         processSync = new ProcessSync();
 
+
         Connectivity connectivity = new Connectivity();
 
 
@@ -77,6 +79,7 @@ public class ProcessSyncTS extends Thread{
                     // (Se evita la verificacion a DB o WS para no consumir datos de red)
 
                     // Enviar biometrias
+                    // Enviar biometrias a Base de datos
                     try {
                         List<PersonalTipolectoraBiometria> personalTipolectoraBiometriaList = queriesPersonalTipolectoraBiometria.select_one_row();
 
@@ -90,6 +93,7 @@ public class ProcessSyncTS extends Thread{
                                 } else {
                                     Log.v(TAG, "No se completo la sincronización de biometrias");
                                 }
+
                             } catch (SQLException e) {
                                 Log.e(TAG, "ProcessSyncTS.run SQLException SQLServer: " + e.toString());
                             } catch (Exception e) {
@@ -97,13 +101,41 @@ public class ProcessSyncTS extends Thread{
                             }
                         }
 
-                        Thread.sleep(3000);
+                        Thread.sleep(500);
+
+                    } catch (SQLException e) {
+                        Log.e(TAG, "ProcessSyncTS.run SQLException SQLServer Hilo " + nombreHilo + ": " + e.getMessage());
+                    } catch (ExceptionInInitializerError e) {
+                        Log.e(TAG, "ProcessSyncTS.run ExceptionInInitializerError Hilo " + nombreHilo + ": " + e.getMessage());
+                    } catch (Exception e) {
+                        Log.e(TAG, "ProcessSyncTS.run Exception Hilo " + nombreHilo + ": " + e.getMessage());
+                    }
+
+                    // Enviar biometrias a Web Service
+                    try {
+                        List<PersonalTipolectoraBiometria> personalTipolectoraBiometriaList = queriesPersonalTipolectoraBiometria.select_one_row();
+
+                        if (personalTipolectoraBiometriaList.isEmpty()) {
+                            Log.v(TAG, "Sin biometrias por pasar");
+                        } else {
+                            Log.v(TAG, "Biometria a sincronizar: " + personalTipolectoraBiometriaList.get(0).toString());
+                            try {
+
+                                // Enviar Biometrias a Web Service
+                                processSync.syncBiometriasWs(personalTipolectoraBiometriaList.get(0));
+
+                            } catch (SQLException e) {
+                                Log.e(TAG, "ProcessSyncTS.run SQLException SQLServer: " + e.toString());
+                            } catch (Exception e) {
+                                Log.e(TAG, "(1)ProcessSyncTS.run Exception: " + e.toString());
+                            }
+                        }
+
+                        Thread.sleep(500);
 
 
                     } catch (SQLException e) {
                         Log.e(TAG, "ProcessSyncTS.run SQLException SQLServer Hilo " + nombreHilo + ": " + e.getMessage());
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, "ProcessSyncTS.run InterruptedException Hilo " + nombreHilo + ": " + e.getMessage());
                     } catch (ExceptionInInitializerError e) {
                         Log.e(TAG, "ProcessSyncTS.run ExceptionInInitializerError Hilo " + nombreHilo + ": " + e.getMessage());
                     } catch (Exception e) {
@@ -112,6 +144,7 @@ public class ProcessSyncTS extends Thread{
 
 
                     // Enviar Marcaciones
+                    // Enviar Marcaciones a Base de Datos
                     try {
                         List<Marcaciones> marcacionesList = queriesMarcaciones.select_one_row();
 
@@ -126,6 +159,7 @@ public class ProcessSyncTS extends Thread{
                                 } else {
                                     Log.v(TAG, "No se completo la sincronización de marcaciones");
                                 }
+
                             } catch (SQLException e) {
                                 Log.e(TAG, "ProcessSyncTS.run SQLException SQLServer: " + e.toString());
                             } catch (Exception e) {
@@ -135,17 +169,49 @@ public class ProcessSyncTS extends Thread{
                         }
                         // //////////////////////////////////
 
-                        Thread.sleep(5000);
+                        Thread.sleep(500);
 
                     } catch (SQLException e) {
                         Log.e(TAG, "ProcessSyncTS.run SQLException SQLServer Hilo " + nombreHilo + ": " + e.getMessage());
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, "ProcessSyncTS.run InterruptedException Hilo " + nombreHilo + ": " + e.getMessage());
                     } catch (ExceptionInInitializerError e) {
                         Log.e(TAG, "ProcessSyncTS.run ExceptionInInitializerError Hilo " + nombreHilo + ": " + e.getMessage());
                     } catch (Exception e) {
                         Log.e(TAG, "ProcessSyncTS.run Exception Hilo " + nombreHilo + ": " + e.getMessage());
                     }
+
+                    //Enviar Marcaciones a Web Service
+                    try {
+                        List<Marcaciones> marcacionesList = queriesMarcaciones.select_one_row();
+
+                        if (marcacionesList.isEmpty()) {
+                            Log.v(TAG, "Sin marcaciones por pasar");
+                        } else {
+                            Log.v(TAG, "Marcacion a sincronizar: " + marcacionesList.get(0).toString());
+
+                            try {
+
+                                //Envio de Marcaciones a Web Services
+                                processSync.syncMarcacionesWs(marcacionesList.get(0));
+
+                            } catch (SQLException e) {
+                                Log.e(TAG, "ProcessSyncTS.run SQLException SQLServer: " + e.toString());
+                            } catch (Exception e) {
+                                Log.e(TAG, "ProcessSyncTS.run Exception: " + e.toString());
+                            }
+
+                        }
+                        // //////////////////////////////////
+
+                        Thread.sleep(500);
+
+                    } catch (SQLException e) {
+                        Log.e(TAG, "ProcessSyncTS.run SQLException SQLServer Hilo " + nombreHilo + ": " + e.getMessage());
+                    } catch (ExceptionInInitializerError e) {
+                        Log.e(TAG, "ProcessSyncTS.run ExceptionInInitializerError Hilo " + nombreHilo + ": " + e.getMessage());
+                    } catch (Exception e) {
+                        Log.e(TAG, "ProcessSyncTS.run Exception Hilo " + nombreHilo + ": " + e.getMessage());
+                    }
+
 
 
                     // Deshabilitar temporalmente sincro GoogleDrive 27/12/2017
@@ -193,6 +259,7 @@ public class ProcessSyncTS extends Thread{
 
 
                     // Enviar Log Terminal
+                    // Enviar logTerminal a Base de Datos
                     try {
                         List<LogTerminal> logTerminalList = queriesLogTerminal.select_one_row();
 
@@ -215,18 +282,46 @@ public class ProcessSyncTS extends Thread{
 
                         }
                         // //////////////////////////////////
-                        Thread.sleep(1000);
+                        Thread.sleep(500);
 
                     } catch (SQLException e) {
                         Log.e(TAG, "logTerminalList SQLException " + nombreHilo + ": " + e.getMessage());
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, "logTerminalList InterruptedException " + nombreHilo + ": " + e.getMessage());
                     } catch (ExceptionInInitializerError e) {
                         Log.e(TAG, "logTerminalList Hilo " + nombreHilo + ": " + e.getMessage());
                     } catch (Exception e) {
                         Log.e(TAG, "logTerminalList Hilo " + nombreHilo + ": " + e.getMessage());
                     }
 
+                    // Enviar logTerminal a Web Service
+                    try {
+                        List<LogTerminal> logTerminalList = queriesLogTerminal.select_one_row();
+
+                        if (logTerminalList.isEmpty()) {
+                            Log.v(TAG,"Sin logTerminal por pasar");
+                        } else {
+                            Log.v(TAG,"logTerminal a sincronizar: " + logTerminalList.get(0).toString());
+
+                            try {
+
+                                processSync.syncLogTerminalWs(logTerminalList.get(0));
+
+                            } catch (SQLException e) {
+                                Log.e(TAG, "syncLogTerminal SQLException " + e.getMessage());
+                            } catch (Exception e) {
+                                Log.e(TAG, "syncLogTerminal " + e.getMessage());
+                            }
+
+                        }
+                        // //////////////////////////////////
+                        Thread.sleep(500);
+
+                    } catch (SQLException e) {
+                        Log.e(TAG, "logTerminalList SQLException " + nombreHilo + ": " + e.getMessage());
+                    } catch (ExceptionInInitializerError e) {
+                        Log.e(TAG, "logTerminalList Hilo " + nombreHilo + ": " + e.getMessage());
+                    } catch (Exception e) {
+                        Log.e(TAG, "logTerminalList Hilo " + nombreHilo + ": " + e.getMessage());
+                    }
 
 
                 }else{

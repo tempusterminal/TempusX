@@ -42,6 +42,7 @@ import com.tempus.proyectos.bluetoothSerial.MainEthernet;
 import com.tempus.proyectos.bluetoothSerial.MainHandPunch;
 import com.tempus.proyectos.bluetoothSerial.MainSuprema;
 import com.tempus.proyectos.crash.TXExceptionHandler;
+import com.tempus.proyectos.data.ConexionWebService;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
@@ -130,6 +131,7 @@ public class ActivityPrincipal extends Activity {
     public static String VALUES_PRINTER_MESSAGE = "0,0;0,1;0,2;0,3;0,4;0,5";
     public static String PRINTER_MESSAGE = "";
     public static boolean MODO_REFRIGERIO = false;
+    public static boolean MODO_CAMERA = true;
     public static String MENSAJE_MARCACIONES = "MARCACION AUTORIZADA,;ERROR,NO TIENE PERMISO EN ESTA LECTORA;ERROR,ESTADO NO PERMITE MARCACION;MARCACION REPETIDA,;ERROR,TARJETA/BIOME NO REGISTRADA;ERROR,TARJETA/BIOME NO SE RECONOCE;ERROR,LECTORA NO HABILITADA";
 
     Date TIEMPO_PRESENTE_BT01;
@@ -201,7 +203,7 @@ public class ActivityPrincipal extends Activity {
     /* --- Variables Ethernet --- */
     public static ArrayList<String> parametersEthernet = new ArrayList<String>();
     public static ArrayList<String> parametersSock = new ArrayList<String>();
-    public static ArrayList<String> parametersWsn = new ArrayList<String>();
+    public static String parametersWsn = "";
 
     /* --- Variables Marcaciones --- */
     public static String parametersInsertMarcaciones;
@@ -303,6 +305,7 @@ public class ActivityPrincipal extends Activity {
     boolean enableBoot;
     String msjBoot;
     boolean isBooting;
+    boolean isShuttingDown = false;
 
     /* --- OBjetos --- */
     Utilities util;
@@ -481,6 +484,14 @@ public class ActivityPrincipal extends Activity {
             }
             Log.v(TAG,"parametersWebService_01 = " + parametersWebService_01);
 
+            try{
+                parametersWsn = queriesParameters.idparameterToValue("WEBSERVICEN_01");
+            }catch (Exception e){
+                parametersWsn = "192.168.0.1,/Web_ServiceTempus/COntrolador/Direct_WS.php,TEMPUS_WS_T10,80,TEMPUS,TEMPUSSCA";
+                Log.e(TAG,"parametersWsn " + e.getMessage());
+            }
+            Log.v(TAG,"parametersWsn = " + parametersWsn);
+
             try {
                 MODO_EVENTO = Boolean.valueOf(queriesParameters.idparameterToValue("MODO_EVENTO"));
             } catch (Exception e) {
@@ -544,6 +555,14 @@ public class ActivityPrincipal extends Activity {
                 Log.e(TAG,"set MODO_REFRIGERIO " + e.getMessage());
             }
             Log.v(TAG, "MODO_REFRIGERIO = " + MODO_REFRIGERIO);
+
+            try {
+                MODO_CAMERA = Boolean.valueOf(queriesParameters.idparameterToValue("MODO_CAMERA"));
+            } catch (Exception e) {
+                MODO_CAMERA = true;
+                Log.e(TAG,"set MODO_CAMERA " + e.getMessage());
+            }
+            Log.v(TAG, "MODO_CAMERA = " + MODO_CAMERA);
 
             try {
                 MENSAJE_MARCACIONES = queriesParameters.idparameterToValue("MENSAJE_MARCACIONES");
@@ -1970,7 +1989,7 @@ public class ActivityPrincipal extends Activity {
                         proc.waitFor();
                     }else{
                         PowerAdmin powerAdmin = new PowerAdmin();
-                        powerAdmin.shutdown();
+                        powerAdmin.shutdown(true);
                     }
                 } catch (Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: APAGAR -> " + e.getMessage());
@@ -1996,6 +2015,9 @@ public class ActivityPrincipal extends Activity {
                 //logManager.RegisterLogTXT("COMANDO: CONFIGURACION DE ANDROID");
                 try {
                     ShutdownArduino(btSocket01.getOutputStream());
+                    Thread.sleep(5000);
+                    PowerAdmin powerAdmin = new PowerAdmin();
+                    powerAdmin.shutdown();
                 } catch (Exception e) {
                     Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: CONFIGURACION DE ANDROID -> " + e.getMessage());
                 }
@@ -2045,8 +2067,8 @@ public class ActivityPrincipal extends Activity {
                 try{
                     Toast.makeText(ActivityPrincipal.this,"4433",Toast.LENGTH_SHORT).show();
 
-                    ProcessSync processSync = new ProcessSync();
-                    processSync.callWebService();
+                    ConexionWebService conexionWebService = new ConexionWebService();
+                    conexionWebService.autenticar();
 
 
                     /*
@@ -2108,7 +2130,10 @@ public class ActivityPrincipal extends Activity {
     public void ShutdownArduino(OutputStream out) {
         Log.v(TAG, "SHUTDOWN OK");
         try {
-            out.write(util.hexStringToByteArray("244F41584100134230303030303030303030303030303030" + util.getChecksum("244F41584100134230303030303030303030303030303030",4) + "41"));
+            //Este comando apaga todo
+            //out.write(util.hexStringToByteArray("244F41584100134230303030303030303030303030303030" + util.getChecksum("244F41584100134230303030303030303030303030303030",4) + "41"));
+            //out.write(util.hexStringToByteArray("244F41584100134231313131313130313131313131313131" + util.getChecksum("244F41584100134231313131313130313131313131313131",4) + "41"));
+            out.write(util.hexStringToByteArray("244F4158410013424e4e4e4e4e4e304e4e4e4e4e4e304e4e" + util.getChecksum("244F4158410013424e4e4e4e4e4e304e4e4e4e4e4e304e4e",4) + "41"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -4231,6 +4256,20 @@ public class ActivityPrincipal extends Activity {
                 turnOnExternalEnergy = -1;
                 temperatureTerminal = -1;
             }
+
+            //Verificar que se ha activado el apago de terminal
+            if(isShuttingDown){
+                // Verificar que no este cargand
+                // Esto significa que tarjeta tempus se apago
+                if(statusBattery == 4){
+                    Log.v(TAG,"Android dejo de cargar");
+                    PowerAdmin powerAdmin = new PowerAdmin();
+                    powerAdmin.shutdown();
+                }else{
+                    Log.v(TAG,"Android CONTINUA cargando");
+                }
+            }
+
             //longitud es de 88
         }else if(status.length()>80){
             try{
@@ -4257,6 +4296,40 @@ public class ActivityPrincipal extends Activity {
                     temperatureTerminal = -1;
                 }
 
+                //Verificar que el pulsador este activo por mas de 10 segundos
+                //244f4158410036 000000000000000000000044d3d0004e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e 4e 303031313131313130303041 -> sin pulsar / pulsado menos de 10 segundos
+                //244f4158410036 000000000000000000000044d3d0004d4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e 31 303031313131313131303041 -> pulsado 10 segundos o mas
+                //244f4158410036 000000000000000000000044d3d0004e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e3030313131313131 30 303041 -> sin pulsar
+                //244f4158410036 000000000000000000000044d3d0004d4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e313030313131313131 31 303041 -> pulsado
+                //Para que esta funcion se realice se debe verificar que el terminal no este conectado a energía externa
+                if(status.substring(86,88).equalsIgnoreCase("31")){
+                    Log.v(TAG,"Esperando 10 segundos, evaluando condiciones para apagado");
+                    //Verificar que el terminal este desconectado de energía externa
+                    if(turnOnExternalEnergy == 0){
+                        //Verificar que es tiempo de apagar
+                        if(status.substring(68,70).equalsIgnoreCase("31")){
+                            Log.v(TAG,"Pulsador activo MAYOR a 10 seg");
+                            //Enviar orden de apagar tarjeta tempus
+                            try {
+                                ShutdownArduino(btSocket01.getOutputStream());
+                            } catch (Exception e) {
+                                Log.e(TAG,"ERROR_SYSTEM_MAIN " + "COMANDO: CONFIGURACION DE ANDROID -> " + e.getMessage());
+                            }
+                            isShuttingDown = true;
+                        }else{
+                            Log.v(TAG,"Pulsador activo menor a 10 seg");
+                        }
+                    }else{
+                        Log.v(TAG,"Desconectar energía externa para activar esta función");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(ActivityPrincipal.this,"Desconectar energía externa para activar esta función",Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
+                }
 
                 Log.v(TAG,"parametersInsertMarcaciones = " + parametersInsertMarcaciones + " " +
                         "parameterMarcacionRepetida = " + parameterMarcacionRepetida);

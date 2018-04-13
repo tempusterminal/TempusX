@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import com.tempus.proyectos.bluetoothSerial.MainEthernet;
 import com.tempus.proyectos.data.ConexionServidor;
+import com.tempus.proyectos.data.ConexionWebService;
 import com.tempus.proyectos.data.DBManager;
 import com.tempus.proyectos.data.model.Parameters;
 import com.tempus.proyectos.data.model.Servicios;
@@ -390,23 +391,12 @@ public class ActivitySincronizacion extends Activity {
 
         }
 
-        Log.v(TAG,"parametersWsn " + ActivityPrincipal.parametersWsn.toString() + " " + ActivityPrincipal.parametersWsn.size());
+        Log.v(TAG,"parametersWsn " + ActivityPrincipal.parametersWsn);
 
-        if(ActivityPrincipal.parametersWsn.size() < 5){
-            getParametersWsn();
-        }else if(ActivityPrincipal.parametersWsn.size() == 5){
+        if(!ActivityPrincipal.parametersWsn.isEmpty()){
             //192.168.0.1,/Web_ServiceTempus/COntrolador/Direct_WS.php,TEMPUS_WS_T10,80,TEMPUS,TEMPUSSCA
-            Log.v(TAG,"parametersWsn " + ActivityPrincipal.parametersWsn.toString());
-            edtWsnServer.setText(ActivityPrincipal.parametersWsn.get(0));
-            edtWsnHttpdUrl.setText(ActivityPrincipal.parametersWsn.get(1));
-            edtWsnCompany.setText(ActivityPrincipal.parametersWsn.get(2));
-            edtWsnPort.setText(ActivityPrincipal.parametersWsn.get(3));
-            edtWsnUser.setText(ActivityPrincipal.parametersWsn.get(4));
-            edtWsnPass.setText(ActivityPrincipal.parametersWsn.get(5));
+            getParametersWsn();
         }
-
-
-
 
         /* --- Inicialización de Parametros Generales --- */
 
@@ -474,15 +464,22 @@ public class ActivitySincronizacion extends Activity {
                                         Log.v(TAG,"Guardando parametros");
 
                                         QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
-                                        queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",edtSyncHost.getText().toString(),edtSyncHost.getText().toString(),"",edtSyncDB.getText().toString(),edtSyncPort.getText().toString(),edtSyncUser.getText().toString(),edtSyncPass.getText().toString(),false);
+                                        queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",
+                                                edtSyncHost.getText().toString().replaceAll(" ",""),
+                                                edtSyncHost.getText().toString().replaceAll(" ",""),
+                                                "",
+                                                edtSyncDB.getText().toString().replaceAll(" ",""),
+                                                edtSyncPort.getText().toString().replaceAll(" ",""),
+                                                edtSyncUser.getText().toString().replaceAll(" ",""),
+                                                edtSyncPass.getText().toString().replaceAll(" ",""),false);
 
                                         queriesLogTerminal.insertLogTerminal(TAG,
                                                 "DB" + "|" +
-                                                edtSyncHost.getText().toString() + "|" +
-                                                edtSyncDB.getText().toString() + "|" +
-                                                edtSyncPort.getText().toString() + "|" +
-                                                edtSyncUser.getText().toString() + "|" +
-                                                edtSyncPass.getText().toString()
+                                                edtSyncHost.getText().toString().replaceAll(" ","") + "|" +
+                                                edtSyncDB.getText().toString().replaceAll(" ","") + "|" +
+                                                edtSyncPort.getText().toString().replaceAll(" ","") + "|" +
+                                                edtSyncUser.getText().toString().replaceAll(" ","") + "|" +
+                                                edtSyncPass.getText().toString().replaceAll(" ","")
                                                 ,ActivityPrincipal.UserSession);
 
                                         WifiManager wifiManager = (WifiManager) ActivityPrincipal.context.getSystemService(Context.WIFI_SERVICE);
@@ -530,6 +527,15 @@ public class ActivitySincronizacion extends Activity {
 
                                     QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
                                     queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",null,null,null,null,null,null,null,true);
+
+                                    queriesLogTerminal.insertLogTerminal(TAG,
+                                            "DB" + "|" +
+                                                    edtSyncHost.getText().toString() + "|" +
+                                                    edtSyncDB.getText().toString() + "|" +
+                                                    edtSyncPort.getText().toString() + "|" +
+                                                    edtSyncUser.getText().toString() + "|" +
+                                                    edtSyncPass.getText().toString()
+                                            ,ActivityPrincipal.UserSession);
 
                                     WifiManager wifiManager = (WifiManager) ActivityPrincipal.context.getSystemService(Context.WIFI_SERVICE);
                                     if(wifiManager.isWifiEnabled()){
@@ -641,17 +647,23 @@ public class ActivitySincronizacion extends Activity {
                                             edtWsServer.setText(ActivityPrincipal.parametersSock.get(1));
                                             edtWsPort.setText(ActivityPrincipal.parametersSock.get(2));
 
-                                            ActivityPrincipal.parametersWebService_01 = "192.168.0.1" + "," + edtWsCompany.getText().toString() + "," + "80" + "," + edtWsUser.getText().toString() + "," + edtWsPass.getText().toString();
+                                            ActivityPrincipal.parametersWebService_01 =
+                                                    "192.168.0.1" + "," +
+                                                            edtWsCompany.getText().toString().replaceAll(" ","") + "," +
+                                                            "80" + "," +
+                                                            edtWsUser.getText().toString().replaceAll(" ","") + "," +
+                                                            edtWsPass.getText().toString().replaceAll(" ","");
+
                                             saveParameter("WEBSERVICE_01",ActivityPrincipal.parametersWebService_01);
 
                                             if(ActivityPrincipal.parametersSock.get(1).length() < 16){
                                                 queriesLogTerminal.insertLogTerminal(TAG,
                                                         "WS" + "|" +
-                                                                edtWsServer.getText().toString() + "|" +
-                                                                edtWsCompany.getText().toString() + "|" +
-                                                                edtWsPort.getText().toString() + "|" +
-                                                                edtWsUser.getText().toString() + "|" +
-                                                                edtWsPass.getText().toString()
+                                                                edtWsServer.getText().toString().replaceAll(" ","") + "|" +
+                                                                edtWsCompany.getText().toString().replaceAll(" ","") + "|" +
+                                                                edtWsPort.getText().toString().replaceAll(" ","") + "|" +
+                                                                edtWsUser.getText().toString().replaceAll(" ","") + "|" +
+                                                                edtWsPass.getText().toString().replaceAll(" ","")
                                                         ,ActivityPrincipal.UserSession);
                                             }
 
@@ -683,11 +695,11 @@ public class ActivitySincronizacion extends Activity {
                 //AT+SOCK=<Protocol>,<IP address>,<Port><CR>
 
                 Log.v(TAG,"edtWsServer (validando) " + edtWsServer.getText().toString());
-                msg = usrTCP.validateParameters("SERVIDOR", edtWsServer.getText().toString());
+                msg = usrTCP.validateParameters("SERVIDOR", edtWsServer.getText().toString().replaceAll(" ",""));
                 Log.v(TAG,"msg " + msg);
                 if(msg.length()==0){
                     Log.v(TAG,"Parametros Validos (HTTP)");
-                    parameter = "=HTPC" + "," + edtWsServer.getText().toString() + "," + edtWsPort.getText().toString();
+                    parameter = "=HTPC" + "," + edtWsServer.getText().toString().replaceAll(" ","") + "," + edtWsPort.getText().toString().replaceAll(" ","");
                     Log.v(TAG,"parameter " + parameter);
                     mainEthernet.startEthernetATCommand("AT+SOCK",parameter,true,true,true);
                     threadHttpcfg.start();
@@ -711,7 +723,7 @@ public class ActivitySincronizacion extends Activity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivitySincronizacion.this, R.style.AlertDialogCustom));
 
                     builder
-                            .setTitle("Guardar Web Service Nativo")
+                            .setTitle("Guardar WS Nativo")
                             .setMessage("¿Desea guardar los parametros?")
                             .setIcon(android.R.drawable.ic_dialog_dialer)
                             .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
@@ -719,34 +731,44 @@ public class ActivitySincronizacion extends Activity {
                                     try{
                                         Log.v(TAG,"Guardando parametros");
 
+                                        //"192.168.0.1,/Web_ServiceTempus/COntrolador/Direct_WS.php,TEMPUS_WS_T10,80,TEMPUS,TEMPUSSCA"
+                                        Long output = saveParameter("WEBSERVICEN_01",
+                                                edtWsnServer.getText().toString().replaceAll(" ","") + "," +
+                                                edtWsnHttpdUrl.getText().toString().replaceAll(" ","") + "," +
+                                                edtWsnCompany.getText().toString().replaceAll(" ","") + "," +
+                                                edtWsnPort.getText().toString().replaceAll(" ","") + "," +
+                                                edtWsnUser.getText().toString().replaceAll(" ","") + "," +
+                                                edtWsnPass.getText().toString().replaceAll(" ",""));
 
-                                        /*
-                                        QueriesServicios queriesServicios = new QueriesServicios(ActivityPrincipal.context);
-                                        queriesServicios.update("SERVIDOR_DATOS_PRINCIPAL",edtSyncHost.getText().toString(),edtSyncHost.getText().toString(),"",edtSyncDB.getText().toString(),edtSyncPort.getText().toString(),edtSyncUser.getText().toString(),edtSyncPass.getText().toString(),false);
+                                        if(output > 0){
+                                            ActivityPrincipal.parametersWsn = edtWsnServer.getText().toString().replaceAll(" ","") + "," +
+                                                    edtWsnHttpdUrl.getText().toString().replaceAll(" ","") + "," +
+                                                    edtWsnCompany.getText().toString().replaceAll(" ","") + "," +
+                                                    edtWsnPort.getText().toString().replaceAll(" ","") + "," +
+                                                    edtWsnUser.getText().toString().replaceAll(" ","") + "," +
+                                                    edtWsnPass.getText().toString().replaceAll(" ","");
 
-                                        queriesLogTerminal.insertLogTerminal(TAG,
-                                                "DB" + "|" +
-                                                        edtSyncHost.getText().toString() + "|" +
-                                                        edtSyncDB.getText().toString() + "|" +
-                                                        edtSyncPort.getText().toString() + "|" +
-                                                        edtSyncUser.getText().toString() + "|" +
-                                                        edtSyncPass.getText().toString()
-                                                ,ActivityPrincipal.UserSession);
-
-                                        WifiManager wifiManager = (WifiManager) ActivityPrincipal.context.getSystemService(Context.WIFI_SERVICE);
-                                        if(wifiManager.isWifiEnabled()){
-                                            wifiManager.setWifiEnabled(false);
-                                            wifiManager.setWifiEnabled(true);
+                                            ConexionWebService conexionWebService = new ConexionWebService();
+                                            conexionWebService.updateUrl();
+                                            conexionWebService.autenticar();
                                         }
 
-                                        Toast.makeText(getApplicationContext(),"Servidor de BD actualizado", Toast.LENGTH_SHORT).show();
+                                        queriesLogTerminal.insertLogTerminal(TAG,
+                                                "WSN" + "|" +
+                                                        edtWsnServer.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnHttpdUrl.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnCompany.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnPort.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnUser.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnPass.getText().toString().replaceAll(" ","")
+                                                ,ActivityPrincipal.UserSession);
 
+
+                                        Toast.makeText(getApplicationContext(),"WS Nativo actualizado", Toast.LENGTH_SHORT).show();
                                         Log.v(TAG,"Parametros guardados");
 
-                                        */
-
                                     }catch (Exception e){
-                                        Log.e(TAG,"btnSaveServerDB.setOnClickListener " + e.getMessage());
+                                        Log.e(TAG,"btnSaveWsn.setOnClickListener " + e.getMessage());
                                     }
 
                                 }})
@@ -757,6 +779,62 @@ public class ActivitySincronizacion extends Activity {
 
             }
         });
+
+        btnClearWsn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(ActivitySincronizacion.this, R.style.AlertDialogCustom));
+
+                builder
+                        .setTitle("Limpiar Web Service Nativo")
+                        .setMessage("¿Desea limpiar los parametros?")
+                        .setIcon(android.R.drawable.ic_dialog_dialer)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                try{
+                                    Log.v(TAG,"Limpiando parametros");
+
+                                    edtWsnServer.setText("");
+                                    edtWsnCompany.setText("");
+                                    edtWsnPort.setText("");
+                                    edtWsnUser.setText("");
+                                    edtWsnPass.setText("");
+
+                                    //",/Web_ServiceTempus/COntrolador/Direct_WS.php,,,,"
+                                    Long output = saveParameter("WEBSERVICEN_01",",/Web_ServiceTempus/COntrolador/Direct_WS.php,,,,");
+
+                                    if(output > 0){
+                                        ActivityPrincipal.parametersWsn = ",/Web_ServiceTempus/COntrolador/Direct_WS.php,,,,";
+
+                                        ConexionWebService conexionWebService = new ConexionWebService();
+                                        conexionWebService.updateUrl();
+                                        conexionWebService.autenticar();
+
+                                        queriesLogTerminal.insertLogTerminal(TAG,
+                                                "WSN" + "|" +
+                                                        edtWsnServer.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnHttpdUrl.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnCompany.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnPort.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnUser.getText().toString().replaceAll(" ","") + "|" +
+                                                        edtWsnPass.getText().toString().replaceAll(" ","")
+                                                ,ActivityPrincipal.UserSession);
+                                    }
+
+                                    Toast.makeText(getApplicationContext(),"WS Nativo actualizado", Toast.LENGTH_SHORT).show();
+                                    Log.v(TAG,"Parametros guardados");
+
+                                }catch (Exception e){
+                                    Log.e(TAG,"btnClearServerDB.setOnClickListener " + e.getMessage());
+                                }
+
+                            }})
+                        .setNegativeButton(android.R.string.no, null).show();
+
+            }
+        });
+
 
         /*
         btnTest.setOnClickListener(new View.OnClickListener() {
@@ -1441,22 +1519,12 @@ public class ActivitySincronizacion extends Activity {
     private void getParametersWsn(){
 
         try{
-            List<Parameters> parametersList = queriesParameters.select_one_row("WEBSERVICEN_01");
-            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[0]);
-            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[1]);
-            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[2]);
-            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[3]);
-            ActivityPrincipal.parametersWsn.add(parametersList.get(0).getValue().split(",")[4]);
-
-            if(!ActivityPrincipal.parametersWsn.isEmpty()){
-                edtWsnServer.setText(ActivityPrincipal.parametersWsn.get(0));
-                edtWsnHttpdUrl.setText(ActivityPrincipal.parametersWsn.get(1));
-                edtWsnCompany.setText(ActivityPrincipal.parametersWsn.get(2));
-                edtWsnPort.setText(ActivityPrincipal.parametersWsn.get(3));
-                edtWsnUser.setText(ActivityPrincipal.parametersWsn.get(4));
-                edtWsnPass.setText(ActivityPrincipal.parametersWsn.get(5));
-            }
-
+            edtWsnServer.setText(ActivityPrincipal.parametersWsn.split(",")[0]);
+            edtWsnHttpdUrl.setText(ActivityPrincipal.parametersWsn.split(",")[1]);
+            edtWsnCompany.setText(ActivityPrincipal.parametersWsn.split(",")[2]);
+            edtWsnPort.setText(ActivityPrincipal.parametersWsn.split(",")[3]);
+            edtWsnUser.setText(ActivityPrincipal.parametersWsn.split(",")[4]);
+            edtWsnPass.setText(ActivityPrincipal.parametersWsn.split(",")[5]);
         }catch (Exception e){
             Log.e(TAG,"getParametersWsn " + e.getMessage());
         }
@@ -1550,14 +1618,14 @@ public class ActivitySincronizacion extends Activity {
                                 txvLogWsLevel01.setText(MainEthernet.logWsLevel01);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 txvLogWsLevel01.setTextColor(Color.BLACK);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1582,14 +1650,14 @@ public class ActivitySincronizacion extends Activity {
                                 txvLogWsLevel02.setText(MainEthernet.logWsLevel02);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 txvLogWsLevel02.setTextColor(Color.BLACK);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1614,14 +1682,14 @@ public class ActivitySincronizacion extends Activity {
                                 txvLogWsLevel03.setText(MainEthernet.logWsLevel03);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 txvLogWsLevel03.setTextColor(Color.BLACK);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1646,14 +1714,14 @@ public class ActivitySincronizacion extends Activity {
                                 txvLogWsLevel04.setText(MainEthernet.logWsLevel04);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 txvLogWsLevel04.setTextColor(Color.BLACK);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1678,14 +1746,14 @@ public class ActivitySincronizacion extends Activity {
                                 txvLogServerDBLevel01.setText(ConexionServidor.logserverDBLevel01);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 txvLogServerDBLevel01.setTextColor(Color.BLACK);
                             }
                         });
-                        Thread.sleep(250);
+                        Thread.sleep(200);
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -1693,6 +1761,71 @@ public class ActivitySincronizacion extends Activity {
                             }
                         });
                     }
+
+                    if(txvLogWsnLevel01.getText().toString().equalsIgnoreCase(ConexionWebService.logWsnLevel01)){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsnLevel01.setText(ConexionWebService.logWsnLevel01);
+                                txvLogWsnLevel01.setTextColor(Color.BLACK);
+                            }
+                        });
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsnLevel01.setTextColor(Color.BLUE);
+                                txvLogWsnLevel01.setText(ConexionWebService.logWsnLevel01);
+                            }
+                        });
+                        Thread.sleep(200);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsnLevel01.setTextColor(Color.BLACK);
+                            }
+                        });
+                        Thread.sleep(200);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsnLevel01.setTextColor(Color.BLUE);
+                            }
+                        });
+                    }
+
+                    if(txvLogWsnLevel02.getText().toString().equalsIgnoreCase(ConexionWebService.logWsnLevel02)){
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsnLevel02.setText(ConexionWebService.logWsnLevel02);
+                                txvLogWsnLevel02.setTextColor(Color.BLACK);
+                            }
+                        });
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsnLevel02.setTextColor(Color.BLUE);
+                                txvLogWsnLevel02.setText(ConexionWebService.logWsnLevel02);
+                            }
+                        });
+                        Thread.sleep(200);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsnLevel02.setTextColor(Color.BLACK);
+                            }
+                        });
+                        Thread.sleep(200);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                txvLogWsnLevel02.setTextColor(Color.BLUE);
+                            }
+                        });
+                    }
+
 
                 }catch (InterruptedException  e){
                     Log.e(TAG,"statusLog InterruptedException " + e.toString());

@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import com.tempus.proyectos.data.ConexionServidor;
+import com.tempus.proyectos.data.ConexionWebService;
 import com.tempus.proyectos.data.queries.QueriesMarcaciones;
 import com.tempus.proyectos.tempusx.ActivityPrincipal;
 import com.tempus.proyectos.util.Connectivity;
@@ -42,6 +43,7 @@ public class ProcessSyncST extends Thread{
         WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         Connectivity connectivity = new Connectivity();
         ProcessSync processSync = new ProcessSync();
+        ConexionWebService conexionWebService = new ConexionWebService();
 
         while(true){
 
@@ -88,6 +90,24 @@ public class ProcessSyncST extends Thread{
 
                         }
                     }
+
+                    if(ConexionWebService.authenticated == true){
+                        try{
+                            processSync.ProcessLlamadasWs(context);
+                            Thread.sleep(3000);
+                        }catch (Exception e){
+                            Log.e(TAG,"processSync.ProcessLlamadasWs " + e.getMessage());
+                        }
+                    }else{
+                        try{
+                            conexionWebService.autenticar();
+                        }catch (Exception e){
+                            Log.e(TAG,"conexionWebService.autenticar " + e.getMessage());
+                        }
+                    }
+
+
+
 
                 }else{
                     Thread.sleep(5000);
