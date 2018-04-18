@@ -1,6 +1,7 @@
 package com.tempus.proyectos.tempusx;
 
 import android.app.Activity;
+import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,6 +16,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -133,6 +135,29 @@ public class ActivityPrincipal extends Activity {
     public static boolean MODO_REFRIGERIO = false;
     public static boolean MODO_CAMERA = true;
     public static String MENSAJE_MARCACIONES = "MARCACION AUTORIZADA,;ERROR,NO TIENE PERMISO EN ESTA LECTORA;ERROR,ESTADO NO PERMITE MARCACION;MARCACION REPETIDA,;ERROR,TARJETA/BIOME NO REGISTRADA;ERROR,TARJETA/BIOME NO SE RECONOCE;ERROR,LECTORA NO HABILITADA";
+
+    //activar modo ahorro energia
+    //max tiempo seg ahorro energia
+    //max tiempo seg back main
+    //min brillo
+    //max brillo
+    //min % bateria max brillo
+    //min % bateria turn off
+    //perifericos on/off
+    public static String MODO_AHORRO_ENERGIA = "false,30,30,0,50,30,0,4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e,4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e";
+    // Contadores para ahorro de energía
+    public static int contadorAhorroEnergia = 1;
+    public static int contadorBackToMain = 1;
+    // Sub Variables Ahorro de energía
+    public static boolean activeAhorroEnergia = false;
+    public static int maxTiempoAhorroEnergia = 30;
+    public static int maxTiempoBackToMain = 30;
+    public static int minBrilloAhorroEnergia = 0;
+    public static int maxBrilloAhorroEnergia = 50;
+    public static int minLevelBateryToMaxBrillo = 30;
+    public static int minLevelBateryToTurnOffTerminal = 0;
+    public static String adcOnAhorroEnergia = "4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e";
+    public static String adcOffAhorroEnergia = "4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e";
 
     Date TIEMPO_PRESENTE_BT01;
     Date TIEMPO_PASADO_BT01;
@@ -334,7 +359,6 @@ public class ActivityPrincipal extends Activity {
     TextView txvLinea3;
     TextView txvLinea4;
 
-
     TextClock txcHora;
 
     ImageButton btnAccessKey;
@@ -405,14 +429,21 @@ public class ActivityPrincipal extends Activity {
     private QueriesParameters queriesParameters;
     private QueriesLogTerminal queriesLogTerminal;
 
-
     // Variables para conexion por USB ADB
     UsbInterface usbInterface;
+
+    // Variables State of Lifecycle
+    private boolean isPausedLifecycle = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_principal);
+
+        // Aumentar el brillo al maximo brillo establecido
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = (float) (ActivityPrincipal.maxBrilloAhorroEnergia/100);
+        getWindow().setAttributes(layoutParams);
 
         turnOnScreen();
         context = getApplicationContext();
@@ -571,6 +602,43 @@ public class ActivityPrincipal extends Activity {
                 Log.e(TAG,"set MENSAJE_MARCACIONES " + e.getMessage());
             }
             Log.v(TAG, "MENSAJE_MARCACIONES = " + MENSAJE_MARCACIONES);
+
+            try {
+                MODO_AHORRO_ENERGIA = queriesParameters.idparameterToValue("MODO_AHORRO_ENERGIA");
+                activeAhorroEnergia = Boolean.valueOf(MODO_AHORRO_ENERGIA.split(",")[0]);
+                maxTiempoAhorroEnergia = Integer.valueOf(MODO_AHORRO_ENERGIA.split(",")[1]);
+                maxTiempoBackToMain = Integer.valueOf(MODO_AHORRO_ENERGIA.split(",")[2]);
+                minBrilloAhorroEnergia = Integer.valueOf(MODO_AHORRO_ENERGIA.split(",")[3]);
+                maxBrilloAhorroEnergia = Integer.valueOf(MODO_AHORRO_ENERGIA.split(",")[4]);
+                minLevelBateryToMaxBrillo = Integer.valueOf(MODO_AHORRO_ENERGIA.split(",")[5]);
+                minLevelBateryToTurnOffTerminal = Integer.valueOf(MODO_AHORRO_ENERGIA.split(",")[6]);
+                adcOnAhorroEnergia = MODO_AHORRO_ENERGIA.split(",")[7];
+                adcOffAhorroEnergia = MODO_AHORRO_ENERGIA.split(",")[8];
+            }catch (Exception e) {
+                MODO_AHORRO_ENERGIA = "false,30,30,0,50,30,0,4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e,4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e";
+                Log.e(TAG,"set MODO_AHORRO_ENERGIA " + e.getMessage());
+            }
+            //Parametros de prueba
+            //activeAhorroEnergia = true;
+            //maxTiempoAhorroEnergia = 5;
+            //maxTiempoBackToMain = 10;
+            //minBrilloAhorroEnergia = 0;
+            //maxBrilloAhorroEnergia = 100;
+            //minLevelBateryToMaxBrillo = 30;
+            //minLevelBateryToTurnOffTerminal = 0;
+            //adcOnAhorroEnergia = "3131314e4e4e4e4e4e4e4e4e4e4e4e4e";
+            //adcOffAhorroEnergia = "3030304e4e4e4e4e4e4e4e4e4e4e4e4e";
+
+            Log.v(TAG, "MODO_AHORRO_ENERGIA = " + MODO_AHORRO_ENERGIA + " " +
+                    "activeAhorroEnergia(" + activeAhorroEnergia + ") " +
+                    "maxTiempoAhorroEnergia(" + maxTiempoAhorroEnergia + ") " +
+                    "maxTiempoBackToMain(" + maxTiempoBackToMain + ") " +
+                    "minBrilloAhorroEnergia(" + minBrilloAhorroEnergia + ") " +
+                    "maxBrilloAhorroEnergia(" + maxBrilloAhorroEnergia + ") " +
+                    "minLevelBateryToMaxBrillo(" + minLevelBateryToMaxBrillo + ") " +
+                    "minLevelBateryToTurnOffTerminal(" + minLevelBateryToTurnOffTerminal + ") " +
+                    "adcOnAhorroEnergia(" + adcOnAhorroEnergia + ") " +
+                    "adcOffAhorroEnergia(" + adcOffAhorroEnergia + ") ");
 
             logManager = new LogManager();
             logManager.RegisterLogTXT("INICIO TEMPUSX");
@@ -757,8 +825,7 @@ public class ActivityPrincipal extends Activity {
             threadFechahora.start();
             threadStatusADC.start();
             threadBarraTerminalInfo.start();
-            // Deshabilitado, falta realizar análisis para desarrollar modos de ahorro de energía
-            //threadAhorroEnergia.start();
+            threadAhorroEnergia.start();
             // Log.v(TAG,"**********************************************05-d");
             mainEthernet.startEthernetReading();
             mainEthernet.startEthernetExecuting();
@@ -799,6 +866,8 @@ public class ActivityPrincipal extends Activity {
             // Boton Master (Logo)
             btnMaster.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
 
                     PATRON_SECRET = "";
 
@@ -901,6 +970,9 @@ public class ActivityPrincipal extends Activity {
             btnEvent01.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     flag = VALOR_BOTONES_EVENTO.split(",")[0];
                     flagPrint = btnEvent01.getText().toString();
                     Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
@@ -917,6 +989,9 @@ public class ActivityPrincipal extends Activity {
             btnEvent02.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     flag = VALOR_BOTONES_EVENTO.split(",")[1];
                     flagPrint = btnEvent02.getText().toString();
                     Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
@@ -933,6 +1008,9 @@ public class ActivityPrincipal extends Activity {
             btnEvent03.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     flag = VALOR_BOTONES_EVENTO.split(",")[2];
                     flagPrint = btnEvent03.getText().toString();
                     Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
@@ -949,6 +1027,9 @@ public class ActivityPrincipal extends Activity {
             btnEvent04.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     flag = VALOR_BOTONES_EVENTO.split(",")[3];
                     flagPrint = btnEvent04.getText().toString();
                     Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
@@ -965,6 +1046,9 @@ public class ActivityPrincipal extends Activity {
             btnEvent05.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     flag = VALOR_BOTONES_EVENTO.split(",")[4];
                     flagPrint = btnEvent05.getText().toString();
                     Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
@@ -981,6 +1065,9 @@ public class ActivityPrincipal extends Activity {
             btnEvent06.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     flag = VALOR_BOTONES_EVENTO.split(",")[5];
                     flagPrint = btnEvent06.getText().toString();
                     Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
@@ -997,6 +1084,9 @@ public class ActivityPrincipal extends Activity {
             btnEvent07.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     flag = VALOR_BOTONES_EVENTO.split(",")[6];
                     flagPrint = btnEvent07.getText().toString();
                     Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
@@ -1013,6 +1103,9 @@ public class ActivityPrincipal extends Activity {
             btnEvent08.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     flag = VALOR_BOTONES_EVENTO.split(",")[7];
                     flagPrint = btnEvent08.getText().toString();
                     Log.v(TAG, "Flg_Actividad: " + flag + " - " + "flagPrint: " + flagPrint);
@@ -1031,6 +1124,9 @@ public class ActivityPrincipal extends Activity {
             btnAccessKey.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // Reiniciar el contador a 1 cuando se pulse este boton
+                    contadorAhorroEnergia = 1;
+
                     if (flag == null || flag == "") {
 
                         //Mofidicado el 28/09/2017 para cambiar el toast 'DEBE SELECCIONAR UN EVENTO'
@@ -1047,21 +1143,6 @@ public class ActivityPrincipal extends Activity {
                                 actualizarFlag(null,null);
                             }
                         });
-
-
-
-                        /*
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    ui.showAlert(ActivityPrincipal.this, "warning", "   DEBE SELECCIONAR UN EVENTO   ");
-                                } catch (Exception e) {
-                                    Toast.makeText(ActivityPrincipal.this, e.getMessage(), Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        });
-                        */
 
                     } else {
                         if (visibleKey) {
@@ -1269,6 +1350,10 @@ public class ActivityPrincipal extends Activity {
 
     @Override
     public void onResume(){
+        isPausedLifecycle = false;
+        // Reiniciar contador para ahorrar energía
+        contadorAhorroEnergia = 1;
+
         try {
             super.onResume();
 
@@ -1287,22 +1372,10 @@ public class ActivityPrincipal extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        try{
-            int eventaction = event.getAction();
-            switch (eventaction) {
-                case MotionEvent.ACTION_DOWN:
-                    ui.initScreen(this);
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    break;
-                case MotionEvent.ACTION_UP:
-                    break;
-            }
-            return true;
-        }catch (Exception e){
-            Log.e(TAG,"onTouchEvent " + e.getMessage());
-            return true;
-        }
+        // En caso que se detecte un evento sobre la pantalla el contadorAhorroEnergia se reiniciara en 1
+        contadorAhorroEnergia = 1;
+
+        return true;
     }
 
     @Override
@@ -1339,8 +1412,6 @@ public class ActivityPrincipal extends Activity {
         }
 
     }
-
-
 
     private void showLoginDialog() {
 
@@ -1431,7 +1502,7 @@ public class ActivityPrincipal extends Activity {
             Process proc = Runtime.getRuntime().exec(new String[] { "su", "-c", "reboot -p" });
             proc.waitFor();
         } catch (Exception ex) {
-            Log.i(TAG,"TEMPUS: " + "No se puede reiniciar!!!!!!!!!!!!!!!!", ex);
+            Log.v(TAG,"TEMPUS: " + "No se puede reiniciar!!!!!!!!!!!!!!!!", ex);
         }
 
     }
@@ -1833,6 +1904,11 @@ public class ActivityPrincipal extends Activity {
         switch(patronAcceso) {
             case "123432":
                 Log.d(TAG, "SYSTEM_MAIN_INSTRUCTION " + "COMANDO: INGRESAR LOGIN");
+                // Reiniciar el contador a 1 cuando se pulse este boton
+                contadorAhorroEnergia = 1;
+                // Reiniciar el contador a 1 cuando se ingrese a un nuevo activity
+                contadorBackToMain = 1;
+
                 //logManager.RegisterLogTXT("COMANDO: INGRESAR LOGIN");
                 txvMensajePantalla.setText("PASE SU TARJETA");
                 manageAccessButtons(false);
@@ -2136,6 +2212,18 @@ public class ActivityPrincipal extends Activity {
             out.write(util.hexStringToByteArray("244F4158410013424e4e4e4e4e4e304e4e4e4e4e4e304e4e" + util.getChecksum("244F4158410013424e4e4e4e4e4e304e4e4e4e4e4e304e4e",4) + "41"));
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void onOffADC(String adc) {
+        //Log.v(TAG, "onOffADC");
+        try {
+            //Este comando apaga las tecnologias por medio de adc
+            //out.write(util.hexStringToByteArray("244F41584100134230303030303030303030303030303030" + util.getChecksum("244F41584100134230303030303030303030303030303030",4) + "41"));
+            //out.write(util.hexStringToByteArray("244F41584100134231313131313130313131313131313131" + util.getChecksum("244F41584100134231313131313130313131313131313131",4) + "41"));
+            btSocket01.getOutputStream().write(util.hexStringToByteArray("244F415841001342" + adc + util.getChecksum("244F415841001342" + adc,4) + "41"));
+        } catch (Exception e) {
+            Log.e(TAG,"onOffADC " + e.getMessage());
         }
     }
 
@@ -3220,14 +3308,19 @@ public class ActivityPrincipal extends Activity {
                 //Log.v(TAG,"trama -------------------------> " + trama);
                 //26 4011000000000000000069ba0a
 
-
                 //Log.v(TAG,"evaluar objArduino.getTipoMensaje=" + objArduino.getTipoMensaje() + " - " + "objArduino.getNroLector=" + objArduino.getNroLector() + " - " + "objArduino.getMensaje=" + objArduino.getMensaje());
                 //Log.v(TAG,"evaluar objArduino.toString()=" + objArduino.toString());
 
-
-
                 switch (objArduino.getTipoMensaje()){
                     case "00":
+
+                        // Descartar lecturas de barra 000000...
+                        if(objArduino.getNroLector().equalsIgnoreCase("09")){
+                            if(objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin()).equalsIgnoreCase("3030303030303030")){
+                                Log.v(TAG,"Se capturo tarjeta (00000000) " + objArduino.getDatosLector().substring(objArduino.getMascaraIni(),objArduino.getMascaraFin()));
+                                break;
+                            }
+                        }
 
                         // Analizar ADC
                         //boolean isADC = analizarADC(objArduino.getNroLector(), String.valueOf(util.convertHexToDecimal(objArduino.getDatosLector().substring(0, 2))));
@@ -3901,7 +3994,7 @@ public class ActivityPrincipal extends Activity {
                                     manageLayerMarcacion(false);
 
                                     if ( MODO_EVENTO ){
-                                        Log.v(TAG,"threadControlPantalla: 2");
+                                        //Log.v(TAG,"threadControlPantalla: 2");
                                         actualizarFlag(null,null);
                                         manageAccessButtons(false);
                                         txvMensajePantalla.setText("SELECCIONE EVENTO");
@@ -4141,52 +4234,87 @@ public class ActivityPrincipal extends Activity {
     Thread threadAhorroEnergia = new Thread(new Runnable() {
         @Override
         public void run() {
-            while (true) {
+            while (activeAhorroEnergia) {
                 try{
-                    Thread.sleep(1000);
+                    Log.v(TAG,"contadorAhorroEnergia(" + contadorAhorroEnergia + "/" + maxTiempoAhorroEnergia + ")" + " - " + "contadorBackToMain(" + contadorBackToMain + "/" + maxTiempoBackToMain + ")");                    Thread.sleep(1000);
 
-                    // Consultar si AHORRO_ENERGIA esta activado
-                    if(false){
-
-                        // Evaluar la intensidad del brillo de acuerdo al nivel de batería
-                        if(levelBattery >= 75){
+                    // Evaluar la intensidad del brillo de acuerdo al nivel de batería
+                    if(levelBattery >= minLevelBateryToMaxBrillo){
+                        // Evaluar la intensidad del brillo de acuerdo a la variable contadorAhorroEnergia
+                        //Modo Ahorro On
+                        if(contadorAhorroEnergia >= maxTiempoAhorroEnergia){
+                            if(isPausedLifecycle){
+                                Log.v(TAG,"isPausedLifecycle " + isPausedLifecycle);
+                            }else{
+                                Log.v(TAG,"isPausedLifecycle " + isPausedLifecycle);
+                                onOffADC(adcOffAhorroEnergia);
+                            }
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-                                    layoutParams.screenBrightness = (float) 1.0;
+                                    layoutParams.screenBrightness = (float) (minBrilloAhorroEnergia/100);
                                     getWindow().setAttributes(layoutParams);
                                 }
                             });
-                        }else if(levelBattery >= 50){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-                                    layoutParams.screenBrightness = (float) 0.7;
-                                    getWindow().setAttributes(layoutParams);
-                                }
-                            });
-                        }else if(levelBattery >= 25){
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-                                    layoutParams.screenBrightness = (float) 0.4;
-                                    getWindow().setAttributes(layoutParams);
-                                }
-                            });
+                        //Modo Ahorro Off
                         }else{
+                            if(isPausedLifecycle){
+                                Log.v(TAG,"isPausedLifecycle " + isPausedLifecycle);
+                            }else{
+                                Log.v(TAG,"isPausedLifecycle " + isPausedLifecycle);
+                                onOffADC(adcOnAhorroEnergia);
+                            }
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
-                                    layoutParams.screenBrightness = (float) 0.1;
+                                    layoutParams.screenBrightness = (float) (maxBrilloAhorroEnergia/100);
                                     getWindow().setAttributes(layoutParams);
                                 }
                             });
                         }
+                    }else{
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+                                layoutParams.screenBrightness = (float) (minBrilloAhorroEnergia/100);
+                                getWindow().setAttributes(layoutParams);
+                            }
+                        });
+                        // Evaluar la intensidad del brillo de acuerdo a la variable contadorAhorroEnergia
+                        //Modo Ahorro On
+                        if(contadorAhorroEnergia >= maxTiempoAhorroEnergia){
+                            if(isPausedLifecycle){
+                                Log.v(TAG,"isPausedLifecycle " + isPausedLifecycle);
+                            }else{
+                                Log.v(TAG,"isPausedLifecycle " + isPausedLifecycle);
+                                onOffADC(adcOffAhorroEnergia);
+                            }
+                            //Modo Ahorro Off
+                        }else{
+                            if(isPausedLifecycle){
+                                Log.v(TAG,"isPausedLifecycle " + isPausedLifecycle);
+                            }else{
+                                Log.v(TAG,"isPausedLifecycle " + isPausedLifecycle);
+                                onOffADC(adcOnAhorroEnergia);
+                            }
+                        }
                     }
+
+                    if(contadorAhorroEnergia < maxTiempoAhorroEnergia){
+                        contadorAhorroEnergia++;
+                    }else{
+                        contadorAhorroEnergia = maxTiempoAhorroEnergia;
+                    }
+
+                    if(contadorBackToMain < maxTiempoBackToMain){
+                        contadorBackToMain++;
+                    }else{
+                        contadorBackToMain = maxTiempoBackToMain;
+                    }
+
                 }catch (Exception e){
                     Log.e(TAG,"threadAhorroEnergia " + e.getMessage());
                 }
@@ -4502,6 +4630,11 @@ public class ActivityPrincipal extends Activity {
     }
 
 
-
+    @Override
+    protected void onPause() {
+        Log.v(TAG,"onPause()");
+        isPausedLifecycle = true;
+        super.onPause();
+    }
 }
 

@@ -176,6 +176,11 @@ public class ActivityComunicacion extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comunicacion);
 
+        // Aumentar el brillo al maximo brillo establecido
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = (float) (ActivityPrincipal.maxBrilloAhorroEnergia/100);
+        getWindow().setAttributes(layoutParams);
+
         int PERMISSION_READ_PHONE_STATE = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE);
 
         if (PERMISSION_READ_PHONE_STATE != PackageManager.PERMISSION_GRANTED) {
@@ -817,6 +822,9 @@ public class ActivityComunicacion extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // En caso que se detecte un evento sobre la pantalla el contadorAhorroEnergia se reiniciara en 1
+        ActivityPrincipal.contadorAhorroEnergia = 1;
+
         int eventaction = event.getAction();
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:

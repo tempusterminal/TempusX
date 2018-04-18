@@ -71,10 +71,20 @@ public class ActivityMenu extends Activity {
 
     ImageView btnMasterMenu;
 
+    Boolean isBackToMain = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+
+        // Aumentar el brillo al maximo brillo establecido
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = (float) (ActivityPrincipal.maxBrilloAhorroEnergia/100);
+        getWindow().setAttributes(layoutParams);
+
+        // Reiniciar el contador para regresar a la pantalla principal
+        ActivityPrincipal.contadorBackToMain = 1;
 
         /* --- Inicialización de Objetos --- */
 
@@ -224,10 +234,16 @@ public class ActivityMenu extends Activity {
             }
         });
 
+        // hilo para regresar despues de n segundos a la pantalla principal
+        threadBackToMain.start();
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // En caso que se detecte un evento sobre la pantalla el contadorAhorroEnergia se reiniciara en 1
+        ActivityPrincipal.contadorAhorroEnergia = 1;
+
         int eventaction = event.getAction();
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:
@@ -329,9 +345,6 @@ public class ActivityMenu extends Activity {
         Intent i = new Intent(ActivityMenu.this, ActivityPrincipal.class);
         i.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(i);
-        finish();
-
-
 
         try {
             ActivityPrincipal.objSuprema.writeToSuprema(ActivityPrincipal.btSocket02.getOutputStream(),"FreeScanOn",null);
@@ -348,4 +361,33 @@ public class ActivityMenu extends Activity {
 
 
     }
+
+    Thread threadBackToMain = new Thread(new Runnable() {
+        @Override
+        public void run() {
+            while (isBackToMain) {
+                try{
+                    Log.v(TAG,"contadorAhorroEnergia " + ActivityPrincipal.contadorBackToMain);
+                    Thread.sleep(1000);
+
+                    if(ActivityPrincipal.contadorBackToMain >= ActivityPrincipal.maxTiempoBackToMain){
+                        Log.v(TAG,"goToMain() ");
+                        goToMain();
+                        break;
+                    }
+
+                }catch (Exception e){
+                    Log.e(TAG,"threadBackToMain " + e.getMessage());
+                }
+            }
+        }
+    });
+
+    @Override
+    public void finish() {
+        Log.v(TAG,"finish");
+        isBackToMain = false;
+        super.finish();
+    }
+
 }

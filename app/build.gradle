@@ -7,8 +7,8 @@ android {
         applicationId "com.tempus.proyectos.tempusx"
         minSdkVersion 19
         targetSdkVersion 22
-        versionCode 9
-        versionName "11042018174400"
+        versionCode 10
+        versionName "17042018152600"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

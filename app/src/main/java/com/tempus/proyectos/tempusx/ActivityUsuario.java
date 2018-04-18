@@ -9,6 +9,7 @@ import android.support.v7.view.ContextThemeWrapper;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,6 +60,11 @@ public class ActivityUsuario extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_usuario);
+
+        // Aumentar el brillo al maximo brillo establecido
+        WindowManager.LayoutParams layoutParams = getWindow().getAttributes();
+        layoutParams.screenBrightness = (float) (ActivityPrincipal.maxBrilloAhorroEnergia/100);
+        getWindow().setAttributes(layoutParams);
 
         /* --- Inicialización de Objetos --- */
 
@@ -148,6 +154,9 @@ public class ActivityUsuario extends Activity {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        // En caso que se detecte un evento sobre la pantalla el contadorAhorroEnergia se reiniciara en 1
+        ActivityPrincipal.contadorAhorroEnergia = 1;
+
         int eventaction = event.getAction();
         switch (eventaction) {
             case MotionEvent.ACTION_DOWN:
